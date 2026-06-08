@@ -1,0 +1,6 @@
+interface:
+  display_name: "会议纪要"
+  short_description: "把访谈或会议转录整理为中立完整的公文纪要"
+  default_prompt: "Use $meeting-minutes to turn this Chinese meeting transcript into a neutral formal meeting memo."
+policy:
+  allow_implicit_invocation: true
