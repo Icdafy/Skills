@@ -1,6 +1,6 @@
 interface:
   display_name: "会议纪要"
-  short_description: "把访谈或会议转录整理为中立完整的公文纪要"
-  default_prompt: "Use $meeting-minutes to turn this Chinese meeting transcript into a neutral formal meeting memo."
+  short_description: "把访谈、会议或问答转录整理为中立完整的公文纪要"
+  default_prompt: "Use $meeting-minutes to turn this Chinese meeting or Q&A transcript into a neutral formal meeting memo with WeiYang official document formatting when a Word file is needed."
 policy:
   allow_implicit_invocation: true
