@@ -1,6 +1,6 @@
 interface:
   display_name: "Sound Transcribe"
-  short_description: "将本地音视频转录为文字、时间戳字幕和会议纪要素材"
-  default_prompt: "Use $sound-transcribe to transcribe this recording and generate timestamped text, TXT, SRT, and Markdown outputs."
+  short_description: "将本地音视频转录为高质量文字、说话人分离字幕、多层总结与问答/纪要素材"
+  default_prompt: "Use $sound-transcribe to transcribe this recording, then refine, summarize, and produce scene-aware outputs (timestamped MD, SRT/VTT, HTML reader, Q&A digest)."
 policy:
   allow_implicit_invocation: true
