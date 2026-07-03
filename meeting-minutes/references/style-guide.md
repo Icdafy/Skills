@@ -18,6 +18,7 @@ Use formal Chinese memo wording:
 - Keep caveats attached to the relevant claim: `预计`, `计划`, `意向`, `已签约`, `在手订单`, `尚未落地` are not interchangeable.
 - If a field is missing, write `未提及`; if a claim is unclear, write `未明确` in the relevant sentence.
 - If the transcript contains conflicting information, keep the conflict in the internal fact ledger and write the final paragraph conservatively without adding a separate `待核实事项` section unless the user asks for one.
+- Never close a paragraph with a bare unresolved-status sentence such as `尚不明确`, `需要资料作为口径依据`, or `对标口径未明确`. Delete it when it carries no substance; when the point genuinely needs later verification, convert it into a short parenthetical note in Chinese parentheses attached to the relevant sentence, e.g. `（该口径尚不明确，有待后续资料核实）`.
 
 ## Transcript Conversion
 
@@ -36,6 +37,7 @@ Use formal Chinese memo wording:
 - Second level: `（一）（二）（三）`.
 - Third level: `1. 2. 3.`.
 - Fourth level: `（1）（2）（3）`.
+- Every heading at every level starts with a two-character indent: two full-width spaces (`　　`) in chat/plain-text output, two-character first-line indent in Word output. No heading sits flush with the left margin.
 - Use short literal headings. Put interpretation and detail in the body, not in long headings.
 - Do not use a table for the opening basic information. Use four indented lines in this order: `访谈时间`, `访谈地点`, `访谈对象`, `访谈人员`.
 - Use tables only when the content is truly repeated row/column data and the user has not asked for plain official text.
@@ -44,7 +46,7 @@ Use formal Chinese memo wording:
 
 - Lead sentence: `本次访谈围绕公司基本情况、核心产品、市场拓展、财务及融资规划等事项展开，现将主要内容纪要如下：`
 - Neutral factual sentence: `公司现有...`; `项目计划...`; `产品主要应用于...`; `双方围绕...进行了沟通`.
-- Uncertainty: `该事项尚未明确具体时间表`; `相关数据未明确具体口径`.
+- Uncertainty: `该事项尚未明确具体时间表`; `相关数据未明确具体口径`. When the uncertainty needs later verification, attach it as a parenthetical note instead of a standalone closing sentence: `（相关数据口径尚不明确，有待后续资料核实）`.
 - Follow-up: `后续由...负责推进...`; `双方将继续围绕...开展沟通`.
 
 ## Quality Checklist
@@ -59,5 +61,6 @@ Before finalizing:
 - The ending section matches the source: summary, action items, or follow-up plan.
 - The memo does not silently upgrade `意向`, `预计`, `计划`, or `初步沟通` into confirmed facts.
 - The memo contains no final section named `风险与待核实事项`, `需重点关注的风险`, or `待核实事项清单` unless explicitly requested.
-- The memo does not end paragraphs with formulaic sentences such as `需进一步核实` or `材料仍需补充核实`.
+- The memo does not end paragraphs with formulaic sentences such as `需进一步核实`, `材料仍需补充核实`, `尚不明确`, `需要资料作为口径依据`, or `对标口径未明确`; any point kept for later verification appears only as a parenthetical `（）` note.
+- Every heading at every level carries the two-character indent.
 - If a source term may be misrecognized by ASR, keep the closest source wording and use `未明确` only when necessary.

@@ -11,34 +11,34 @@ Use this as the default for company/project interviews, founder interviews, expe
 　　访谈对象：{姓名、单位、职务}
 　　访谈人员：{我方人员}
 
-本次访谈围绕{核心议题}展开，现将主要内容纪要如下：
+　　本次访谈围绕{核心议题}展开，现将主要内容纪要如下：
 
-一、项目/公司基本情况
-（一）成立背景与发展历程
-（二）团队与组织架构
-（三）股权及治理情况
+　　一、项目/公司基本情况
+　　（一）成立背景与发展历程
+　　（二）团队与组织架构
+　　（三）股权及治理情况
 
-二、核心产品、技术与业务模式
-（一）核心产品及应用场景
-（二）技术路线与竞争优势
-（三）商业模式与收入构成
+　　二、核心产品、技术与业务模式
+　　（一）核心产品及应用场景
+　　（二）技术路线与竞争优势
+　　（三）商业模式与收入构成
 
-三、市场、客户与竞争格局
-（一）目标市场与行业趋势
-（二）客户拓展与订单情况
-（三）竞争对手与差异化优势
+　　三、市场、客户与竞争格局
+　　（一）目标市场与行业趋势
+　　（二）客户拓展与订单情况
+　　（三）竞争对手与差异化优势
 
-四、生产、交付与运营情况
-（一）产能与供应链
-（二）交付周期与服务模式
-（三）成本控制与管理机制
+　　四、生产、交付与运营情况
+　　（一）产能与供应链
+　　（二）交付周期与服务模式
+　　（三）成本控制与管理机制
 
-五、财务、融资与资本规划
-（一）营收、毛利、现金流或回款情况
-（二）融资需求与资金用途
-（三）上市、股权激励或后续资本计划
+　　五、财务、融资与资本规划
+　　（一）营收、毛利、现金流或回款情况
+　　（二）融资需求与资金用途
+　　（三）上市、股权激励或后续资本计划
 
-六、后续事项
+　　六、后续事项
 ```
 
 Delete sections that are unsupported by the transcript. Add domain sections when needed, such as `军工业务`, `管网巡检`, `液氢动力`, `生物制造`, `商业航天`, or `毫米波通信`. Do not add a standalone risk or pending-verification section by default; integrate source-supported constraints into the relevant topic.
@@ -54,12 +54,12 @@ Use when the transcript is short or only covers one topic.
 　　访谈对象：{对象或未提及}
 　　访谈人员：{人员或未提及}
 
-一、主要内容
-（一）{主题一}
-（二）{主题二}
-（三）{主题三}
+　　一、主要内容
+　　（一）{主题一}
+　　（二）{主题二}
+　　（三）{主题三}
 
-二、访谈总结/后续事项
+　　二、访谈总结/后续事项
 ```
 
 ## C. Work Meeting Minutes
@@ -73,11 +73,11 @@ Use when the source focuses on decisions, responsibilities, schedules, and inter
 　　访谈对象：{对象或事项相关方}
 　　访谈人员：{参会人员}
 
-一、会议背景
-二、会议主要内容
-三、会议议定事项
-四、任务分工及时间安排
-五、待协调事项
+　　一、会议背景
+　　二、会议主要内容
+　　三、会议议定事项
+　　四、任务分工及时间安排
+　　五、待协调事项
 ```
 
 Use an action-item table only when the user needs a tabular task list and the content is truly row/column data:
@@ -95,7 +95,7 @@ Polish Q&A into formal official Chinese:
 - Rewrite answers into complete factual paragraphs. Remove oral filler, repetition, and personal tone.
 - Keep numbers, dates, caveats, and uncertain status.
 - If several consecutive questions cover the same matter, group them under one second-level heading.
-- If an answer is unclear, write conservatively with `未明确` rather than adding verification language.
+- If an answer is unclear, write conservatively with `未明确` rather than adding verification language; when the point needs later verification, use a parenthetical note such as `（该口径尚不明确，有待后续资料核实）` instead of a standalone closing sentence.
 
 ```text
 {公司/项目名称}访谈纪要
@@ -104,12 +104,12 @@ Polish Q&A into formal official Chinese:
 　　访谈对象：{对象或未提及}
 　　访谈人员：{人员或未提及}
 
-本次访谈主要采取问答方式进行，现将主要内容纪要如下：
+　　本次访谈主要采取问答方式进行，现将主要内容纪要如下：
 
-一、访谈问答
-（一）关于{主题}
-问：{经正式化整理后的问题}
-答：{经正式化整理后的答复}
+　　一、访谈问答
+　　（一）关于{主题}
+　　问：{经正式化整理后的问题}
+　　答：{经正式化整理后的答复}
 ```
 
 When the transcript mixes topic narration and Q&A, keep the narrative sections first, then add `访谈问答` for the explicit exchanges. If Q&A content duplicates earlier topic sections, keep the more complete version in Q&A and avoid repeating the same paragraph twice.

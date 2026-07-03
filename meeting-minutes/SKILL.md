@@ -50,6 +50,7 @@ Use `scripts/clean_transcript.py` only when the user provides a plain text trans
    - Use first-level Chinese numbering: `一、二、三、`.
    - Use second-level numbering: `（一）（二）（三）`.
    - Use third-level numbering: `1. 2. 3.` when detail density requires it.
+   - All headings at every level (`一、`, `（一）`, `1.`, `（1）`) must begin with a two-character indent: in chat/plain-text output prefix each heading with two full-width spaces (`　　`); in Word output use the two-character first-line indent. Never place a heading flush with the left margin.
    - Do not add a standalone `风险与待核实事项`, `需重点关注的风险`, `待核实事项清单`, or `转录质量说明` section unless the user explicitly requests it.
 
 5. Draft in neutral official Chinese:
@@ -59,6 +60,7 @@ Use `scripts/clean_transcript.py` only when the user provides a plain text trans
    - For Q&A content, keep `问：` and `答：`; polish the wording into official written Chinese and remove oral filler without omitting substantive details.
    - Use concise paragraphs; avoid promotional adjectives and first-person wording.
    - Include an ending section only when supported by the source, such as `访谈总结`, `核心结论`, `后续事项`, or `后续行动计划`. Do not end paragraphs with formulaic verification language such as `需进一步核实` or `材料仍需补充核实`.
+   - When a paragraph would otherwise end with an unresolved-status sentence such as `尚不明确`, `需要资料作为口径依据`, `对标口径未明确`, or similar pending-verification wording: delete the sentence if it adds no substantive information; if the uncertainty is material and genuinely needs later verification, rewrite it as a brief note inside Chinese parentheses `（）` attached to the end of the relevant sentence, for example `（该数据口径尚不明确，有待后续资料核实）`. Never leave such wording as a bare standalone sentence closing the paragraph.
 
 6. Run a final quality check:
    - Every important transcript topic appears in the minutes.
@@ -66,6 +68,8 @@ Use `scripts/clean_transcript.py` only when the user provides a plain text trans
    - Missing information is marked, not invented.
    - The tone is neutral and formal throughout.
    - The result can stand alone without the raw transcript.
+   - Every heading at every level starts with the two-character indent (two full-width spaces in plain text; two-character first-line indent in Word).
+   - No paragraph ends with a bare unresolved-status sentence (`尚不明确`, `需要资料作为口径依据`, `对标口径未明确` and the like); each such point is either deleted or converted into a parenthetical note in `（）`.
    - The final minutes contain no `对方表示/认为/强调`, `访谈中提到`, forced risk list, pending-verification list, or transcript-quality note.
    - If creating DOCX, run `scripts/build_minutes_docx.py --audit-only <docx>` or build with `--audit` to check fonts and digit runs.
 
@@ -73,7 +77,7 @@ Use `scripts/clean_transcript.py` only when the user provides a plain text trans
 
 When the user provides transcript text directly, return the polished minutes in the chat unless they request a file. When the user provides a Word/text file and asks for a document, create the requested file and preserve the same structure in the document.
 
-Do not include drafting commentary before or after the minutes unless the user asks for explanation. If the transcript is incomplete or contradictory, keep uncertain items as `未提及` or `未明确` in the relevant sentence; do not add a separate pending-verification section by default.
+Do not include drafting commentary before or after the minutes unless the user asks for explanation. If the transcript is incomplete or contradictory, keep uncertain items as `未提及` or `未明确` in the relevant sentence, or as a short parenthetical note in `（）` when the point needs later verification; do not add a separate pending-verification section by default and do not close paragraphs with bare unresolved-status sentences.
 
 ## Default Heading Pattern
 
@@ -84,11 +88,11 @@ Do not include drafting commentary before or after the minutes unless the user a
 　　访谈对象：{对象人员、单位、职务或未提及}
 　　访谈人员：{我方人员或未提及}
 
-本次访谈围绕{核心议题}展开，现将主要内容纪要如下：
+　　本次访谈围绕{核心议题}展开，现将主要内容纪要如下：
 
-一、主要内容
-二、访谈问答
-三、核心结论/后续事项
+　　一、主要内容
+　　二、访谈问答
+　　三、核心结论/后续事项
 ```
 
 For investment/project interviews, prefer topic sections such as project background, product and technology, market and competition, business model, team and operations, financing and equity, constraints, and follow-up actions. Use `访谈问答` automatically when the source is clearly Q&A.

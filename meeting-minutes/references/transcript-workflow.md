@@ -23,6 +23,8 @@ Use this reference when the source is raw voice transcription, meeting recording
    - For Q&A, rewrite questions into neutral issue prompts and answers into complete official-style paragraphs.
    - Keep caveats: `预计`, `计划`, `意向`, `初步`, `尚未`, `未明确` must remain visible.
    - Convert `需核实`-type source wording to conservative final wording such as `未明确` when necessary; do not add a separate pending-verification section by default.
+   - If a paragraph would end with an unresolved-status sentence such as `尚不明确`, `需要资料作为口径依据`, or `对标口径未明确`: delete it when it adds nothing, or, when the point genuinely needs later verification, turn it into a parenthetical note in `（）` attached to the relevant sentence.
+   - Give every heading at every level the two-character indent (two full-width spaces in plain text).
 
 ## Voice Transcript Cleanup Rules
 
@@ -64,17 +66,18 @@ When Q&A is detected:
 
 ## Recommended Ending For Messy Transcripts
 
-Do not add a default `待核实事项` ending. Keep unclear points inside the relevant paragraph:
+Do not add a default `待核实事项` ending. Keep unclear points inside the relevant paragraph, woven into the sentence (`相关时间节点未明确`) or as a parenthetical note when later verification is needed:
 
 ```text
-相关时间节点未明确。
-具体数据口径未明确。
+项目预计于2026年三季度完成中试线建设（具体时间节点尚不明确，有待后续资料核实）。
 ```
+
+Do not leave `尚不明确`、`需要资料作为口径依据`、`对标口径未明确` as standalone sentences closing a paragraph — delete them or convert them into the parenthetical form above.
 
 Use this ending when there are clear tasks:
 
 ```text
-三、后续行动计划
+　　三、后续行动计划
 | 序号 | 事项 | 责任方 | 时间节点 | 备注 |
 | --- | --- | --- | --- | --- |
 ```

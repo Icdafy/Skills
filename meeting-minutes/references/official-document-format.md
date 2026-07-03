@@ -25,6 +25,7 @@ The user's wording `楷体GB2312` and `仿宋GB2312` corresponds to the Word fon
 - Paragraph spacing before/after: 0 pt unless a blank line is intentionally needed.
 - Body alignment: justified.
 - Body first-line indent: two Chinese characters, about 32 pt for 16 pt text.
+- Heading first-line indent: all heading levels (`一、`, `（一）`, `1.`, `（1）`) also take the two-character first-line indent, same as body paragraphs. In plain-text output this appears as two full-width spaces (`　　`) before the heading.
 - Title alignment: centered.
 
 ## Type Scale And Hierarchy
@@ -53,6 +54,7 @@ Do not use a table for this opening block. In chat/plain text output, use two fu
 ## Numbering And Attachments
 
 - Body hierarchy order: `一、` -> `（一）` -> `1.` -> `（1）`; do not reverse the order.
+- Every heading in the hierarchy starts with the two-character indent; never left-flush a heading.
 - Attachment line: `附件：1. XXXXX`; do not add book-title marks around attachment names and do not add punctuation after attachment names.
 - When there are multiple attachments, align subsequent attachment lines under the first attachment name.
 
