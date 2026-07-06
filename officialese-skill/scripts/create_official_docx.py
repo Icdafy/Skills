@@ -9,6 +9,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.section import WD_ORIENT
+from docx.enum.style import WD_STYLE_TYPE
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -17,51 +18,161 @@ from docx.shared import Cm, Pt
 
 TITLE_FONT = "方正小标宋简体"
 BODY_FONT = "仿宋_GB2312"
-BODY_FALLBACK = "仿宋"
 KAITI_FONT = "楷体_GB2312"
 HEITI_FONT = "黑体"
 SONGTI_FONT = "宋体"
 
+TITLE_SIZE = 22  # 二号
+BODY_SIZE = 16  # 三号
+PAGE_NUMBER_SIZE = 14  # 四号
+BODY_LINE_PT = 28
+TITLE_LINE_PT = 30
+TWO_CHAR_INDENT_PT = BODY_SIZE * 2
+SIGNATURE_RIGHT_INDENT_PT = BODY_SIZE * 4
+
+STYLE_TITLE = "Official Title"
+STYLE_SUBTITLE = "Official Subtitle"
+STYLE_BODY = "Official Body"
+STYLE_H1 = "Official Heading 1"
+STYLE_H2 = "Official Heading 2"
+STYLE_H3 = "Official Heading 3"
+STYLE_H4 = "Official Heading 4"
+
+
+def set_east_asia_font(obj, font_name: str) -> None:
+    rpr = obj._element.get_or_add_rPr()
+    rfonts = rpr.rFonts
+    if rfonts is None:
+        rfonts = OxmlElement("w:rFonts")
+        rpr.append(rfonts)
+    for attr in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
+        rfonts.set(qn(attr), font_name)
+
 
 def set_run_font(run, font_name: str, size_pt: int, bold: bool = False) -> None:
     run.font.name = font_name
-    run._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
+    set_east_asia_font(run, font_name)
     run.font.size = Pt(size_pt)
     run.bold = bold
 
 
-def set_paragraph_format(paragraph, line_pt: int = 28, first_indent: bool = True) -> None:
+def set_style_font(style, font_name: str, size_pt: int, bold: bool = False) -> None:
+    style.font.name = font_name
+    style.font.size = Pt(size_pt)
+    style.font.bold = bold
+    set_east_asia_font(style, font_name)
+
+
+def set_paragraph_format(
+    paragraph,
+    *,
+    line_pt: int = BODY_LINE_PT,
+    first_indent: bool = True,
+    alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
+    right_indent_pt: int = 0,
+) -> None:
     fmt = paragraph.paragraph_format
     fmt.line_spacing_rule = WD_LINE_SPACING.EXACTLY
     fmt.line_spacing = Pt(line_pt)
     fmt.space_before = Pt(0)
     fmt.space_after = Pt(0)
-    if first_indent:
-        fmt.first_line_indent = Pt(32)
-    paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    fmt.first_line_indent = Pt(TWO_CHAR_INDENT_PT) if first_indent else Pt(0)
+    fmt.right_indent = Pt(right_indent_pt)
+    paragraph.alignment = alignment
 
 
-def add_text_paragraph(doc: Document, text: str, font: str = BODY_FONT, bold: bool = False) -> None:
-    p = doc.add_paragraph()
-    set_paragraph_format(p)
+def configure_style(
+    doc: Document,
+    name: str,
+    font_name: str,
+    size_pt: int,
+    *,
+    bold: bool = False,
+    line_pt: int = BODY_LINE_PT,
+    first_indent: bool = True,
+    alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
+) -> None:
+    styles = doc.styles
+    style = styles[name] if name in styles else styles.add_style(name, WD_STYLE_TYPE.PARAGRAPH)
+    set_style_font(style, font_name, size_pt, bold)
+    fmt = style.paragraph_format
+    fmt.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    fmt.line_spacing = Pt(line_pt)
+    fmt.space_before = Pt(0)
+    fmt.space_after = Pt(0)
+    fmt.first_line_indent = Pt(TWO_CHAR_INDENT_PT) if first_indent else Pt(0)
+    style.paragraph_format.alignment = alignment
+
+
+def configure_styles(doc: Document) -> None:
+    set_style_font(doc.styles["Normal"], BODY_FONT, BODY_SIZE, False)
+    configure_style(
+        doc,
+        STYLE_TITLE,
+        TITLE_FONT,
+        TITLE_SIZE,
+        line_pt=TITLE_LINE_PT,
+        first_indent=False,
+        alignment=WD_ALIGN_PARAGRAPH.CENTER,
+    )
+    configure_style(
+        doc,
+        STYLE_SUBTITLE,
+        KAITI_FONT,
+        BODY_SIZE,
+        line_pt=BODY_LINE_PT,
+        first_indent=False,
+        alignment=WD_ALIGN_PARAGRAPH.CENTER,
+    )
+    configure_style(doc, STYLE_BODY, BODY_FONT, BODY_SIZE)
+    configure_style(doc, STYLE_H1, HEITI_FONT, BODY_SIZE, bold=False)
+    configure_style(doc, STYLE_H2, KAITI_FONT, BODY_SIZE, bold=True)
+    configure_style(doc, STYLE_H3, BODY_FONT, BODY_SIZE, bold=True)
+    configure_style(doc, STYLE_H4, BODY_FONT, BODY_SIZE, bold=False)
+
+
+def add_text_paragraph(
+    doc: Document,
+    text: str,
+    *,
+    font: str = BODY_FONT,
+    bold: bool = False,
+    style: str = STYLE_BODY,
+    first_indent: bool = True,
+    alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
+    right_indent_pt: int = 0,
+) -> None:
+    p = doc.add_paragraph(style=style)
+    set_paragraph_format(
+        p,
+        first_indent=first_indent,
+        alignment=alignment,
+        right_indent_pt=right_indent_pt,
+    )
     run = p.add_run(text)
-    set_run_font(run, font, 16, bold)
+    set_run_font(run, font, BODY_SIZE, bold)
 
 
-def add_center_line(doc: Document, text: str, font: str, size: int, line_pt: int = 30, bold: bool = False) -> None:
-    p = doc.add_paragraph()
-    p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-    p.paragraph_format.line_spacing = Pt(line_pt)
-    p.paragraph_format.space_before = Pt(0)
-    p.paragraph_format.space_after = Pt(0)
+def add_center_line(doc: Document, text: str, font: str, size: int, style: str, bold: bool = False) -> None:
+    p = doc.add_paragraph(style=style)
+    set_paragraph_format(
+        p,
+        line_pt=TITLE_LINE_PT if size == TITLE_SIZE else BODY_LINE_PT,
+        first_indent=False,
+        alignment=WD_ALIGN_PARAGRAPH.CENTER,
+    )
     run = p.add_run(text)
     set_run_font(run, font, size, bold)
 
 
+def add_blank_line(doc: Document, line_pt: int = BODY_LINE_PT) -> None:
+    p = doc.add_paragraph(style=STYLE_BODY)
+    set_paragraph_format(p, line_pt=line_pt, first_indent=False)
+
+
 def add_page_field(paragraph) -> None:
     run = paragraph.add_run("-")
-    set_run_font(run, SONGTI_FONT, 14)
+    set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE)
 
     field_begin = OxmlElement("w:fldChar")
     field_begin.set(qn("w:fldCharType"), "begin")
@@ -70,16 +181,25 @@ def add_page_field(paragraph) -> None:
     instr.set(qn("xml:space"), "preserve")
     instr.text = " PAGE "
 
+    field_separate = OxmlElement("w:fldChar")
+    field_separate.set(qn("w:fldCharType"), "separate")
+
+    result = OxmlElement("w:t")
+    result.text = "1"
+
     field_end = OxmlElement("w:fldChar")
     field_end.set(qn("w:fldCharType"), "end")
 
-    run = paragraph.add_run()
-    run._r.append(field_begin)
-    run._r.append(instr)
-    run._r.append(field_end)
+    field_run = paragraph.add_run()
+    set_run_font(field_run, SONGTI_FONT, PAGE_NUMBER_SIZE)
+    field_run._r.append(field_begin)
+    field_run._r.append(instr)
+    field_run._r.append(field_separate)
+    field_run._r.append(result)
+    field_run._r.append(field_end)
 
     run = paragraph.add_run("-")
-    set_run_font(run, SONGTI_FONT, 14)
+    set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE)
 
 
 def setup_document(doc: Document) -> None:
@@ -107,13 +227,13 @@ def setup_document(doc: Document) -> None:
 
 def add_heading(doc: Document, text: str, level: int) -> None:
     if level == 1:
-        add_text_paragraph(doc, text, HEITI_FONT, bold=False)
+        add_text_paragraph(doc, text, font=HEITI_FONT, bold=False, style=STYLE_H1)
     elif level == 2:
-        add_text_paragraph(doc, text, KAITI_FONT, bold=True)
+        add_text_paragraph(doc, text, font=KAITI_FONT, bold=True, style=STYLE_H2)
     elif level == 3:
-        add_text_paragraph(doc, text, BODY_FONT, bold=True)
+        add_text_paragraph(doc, text, font=BODY_FONT, bold=True, style=STYLE_H3)
     else:
-        add_text_paragraph(doc, text, BODY_FONT, bold=False)
+        add_text_paragraph(doc, text, font=BODY_FONT, bold=False, style=STYLE_H4)
 
 
 def add_sections(doc: Document, sections: list[dict]) -> None:
@@ -128,68 +248,74 @@ def add_sections(doc: Document, sections: list[dict]) -> None:
             add_sections(doc, children)
 
 
+def add_attachments(doc: Document, attachments: list[str]) -> None:
+    if not attachments:
+        return
+    add_blank_line(doc)
+    if len(attachments) == 1:
+        add_text_paragraph(doc, f"附件：{attachments[0]}")
+        return
+
+    add_text_paragraph(doc, f"附件：1.{attachments[0]}")
+    for idx, attachment in enumerate(attachments[1:], start=2):
+        p = doc.add_paragraph(style=STYLE_BODY)
+        set_paragraph_format(p, first_indent=False)
+        p.paragraph_format.left_indent = Pt(TWO_CHAR_INDENT_PT + BODY_SIZE * 3)
+        run = p.add_run(f"{idx}.{attachment}")
+        set_run_font(run, BODY_FONT, BODY_SIZE)
+
+
+def add_signature_block(doc: Document, issuer: str | None, date: str | None) -> None:
+    if not issuer and not date:
+        return
+
+    add_blank_line(doc)
+    add_blank_line(doc)
+    if issuer:
+        add_text_paragraph(
+            doc,
+            issuer,
+            alignment=WD_ALIGN_PARAGRAPH.RIGHT,
+            right_indent_pt=SIGNATURE_RIGHT_INDENT_PT,
+        )
+    if date:
+        add_text_paragraph(
+            doc,
+            date,
+            alignment=WD_ALIGN_PARAGRAPH.RIGHT,
+            right_indent_pt=SIGNATURE_RIGHT_INDENT_PT,
+        )
+
+
 def build_docx(data: dict, output: Path) -> None:
     doc = Document()
+    configure_styles(doc)
     setup_document(doc)
 
     issuer_title = data.get("issuer_title")
     if issuer_title:
-        add_center_line(doc, issuer_title, TITLE_FONT, 22)
+        add_center_line(doc, issuer_title, TITLE_FONT, TITLE_SIZE, STYLE_TITLE)
 
-    add_center_line(doc, data.get("title", "关于XXXX的通知"), TITLE_FONT, 22)
+    add_center_line(doc, data.get("title", "关于XXXX的通知"), TITLE_FONT, TITLE_SIZE, STYLE_TITLE)
 
     subtitle = data.get("subtitle")
     if subtitle:
-        add_center_line(doc, subtitle, KAITI_FONT, 16, line_pt=28)
+        add_center_line(doc, subtitle, KAITI_FONT, BODY_SIZE, STYLE_SUBTITLE)
 
-    doc.add_paragraph()
+    add_blank_line(doc)
 
     recipient = data.get("recipient")
     if recipient:
-        p = doc.add_paragraph()
-        set_paragraph_format(p, first_indent=False)
-        run = p.add_run(recipient)
-        set_run_font(run, BODY_FONT, 16)
+        add_text_paragraph(doc, recipient, first_indent=False)
 
     for para in data.get("body", []):
         add_text_paragraph(doc, para)
 
     add_sections(doc, data.get("sections", []))
-
-    attachments = data.get("attachments", [])
-    if attachments:
-        doc.add_paragraph()
-        if len(attachments) == 1:
-            add_text_paragraph(doc, f"附件：{attachments[0]}")
-        else:
-            add_text_paragraph(doc, f"附件：1.{attachments[0]}")
-            for idx, attachment in enumerate(attachments[1:], start=2):
-                add_text_paragraph(doc, f"      {idx}.{attachment}", first_font())
-
-    issuer = data.get("issuer")
-    date = data.get("date")
-    if issuer or date:
-        doc.add_paragraph()
-        doc.add_paragraph()
-    if issuer:
-        p = doc.add_paragraph()
-        set_paragraph_format(p)
-        p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-        p.paragraph_format.right_indent = Pt(64)
-        run = p.add_run(issuer)
-        set_run_font(run, BODY_FONT, 16)
-    if date:
-        p = doc.add_paragraph()
-        set_paragraph_format(p)
-        p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-        run = p.add_run(date)
-        set_run_font(run, BODY_FONT, 16)
+    add_attachments(doc, data.get("attachments", []))
+    add_signature_block(doc, data.get("issuer"), data.get("date"))
 
     doc.save(output)
-
-
-def first_font() -> str:
-    return BODY_FONT
 
 
 def parse_args() -> argparse.Namespace:
@@ -204,16 +330,19 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--attachment", action="append", default=[], help="Attachment name; repeat as needed")
     parser.add_argument("--issuer", help="Signature unit")
     parser.add_argument("--date", help="Chinese date, e.g. 2026年6月8日")
+    parser.add_argument("--doc-type", help="Optional document type note, e.g. 通知/请示/报告/函")
+    parser.add_argument("--direction", choices=["上行文", "平行文", "下行文", "默认"], help="Optional writing direction note")
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
     if args.input:
-        data = json.loads(args.input.read_text(encoding="utf-8"))
+        data = json.loads(args.input.read_text(encoding="utf-8-sig"))
     else:
         data = {}
-    for key in ["title", "issuer_title", "subtitle", "recipient", "issuer", "date"]:
+
+    for key in ["title", "issuer_title", "subtitle", "recipient", "issuer", "date", "doc_type", "direction"]:
         value = getattr(args, key)
         if value:
             data[key] = value
