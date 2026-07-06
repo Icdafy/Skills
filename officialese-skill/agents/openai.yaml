@@ -1,4 +1,4 @@
 interface:
   display_name: "国企公文格式"
-  short_description: "国企中文公文写作与排版格式助手"
-  default_prompt: "Use $officialese-skill to draft and format a Chinese SOE official document."
+  short_description: "国企中文公文写作、行文口吻识别与排版格式助手"
+  default_prompt: "Use $officialese-skill to draft and format a Chinese SOE official document. Detect 上行文, 平行文, or 下行文 when present, and apply the company typography rules."
