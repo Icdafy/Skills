@@ -1,0 +1,7 @@
+interface:
+  display_name: "立项报告行业分析"
+  short_description: "按公文范文撰写所属行业分析"
+  default_prompt: "Use $hangye-fenxi-pro 为拟投资企业撰写立项报告中的“二、所属行业分析”。"
+
+policy:
+  allow_implicit_invocation: true
