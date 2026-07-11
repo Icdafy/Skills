@@ -77,7 +77,7 @@ new Table({
 注：docx 通用技能建议表格用 DXA 定宽（兼容 Google Docs），公文场景以 Word 为目标，本条用户规则优先；
 
 4. 表格框线：全框线单线；表头行可加浅灰底纹（`shd fill="D9D9D9" val="clear"`），无用户要求时默认不加底纹只加粗；
-5. 单元格内容对齐：文字列左对齐或居中、数字列右对齐或居中，垂直居中（vAlign center）；
+5. **单元格内容一律水平居中 + 垂直居中**（所有列、所有行，含表头、文字、数字、百分号）——段落 `jc: center`，单元格 `vAlign: center`；
 6. 表格上方保留一句引导语（正文样式），表格下方"单位：万元"及"注："用仿宋_GB2312五号，置于表格下一行；
 7. 表内金额千分位、两位小数，与正文数据规则一致。
 
@@ -115,11 +115,31 @@ new Paragraph({
   children: [new TextRun({ text: '（一）业务及产品概况', font: { eastAsia: '楷体_GB2312' }, size: HAO3, bold: true })]
 })
 
-// 表格单元格文字
-new TextRun({ text: '……', font: { eastAsia: '仿宋_GB2312', ascii: '仿宋_GB2312' }, size: HAO5, bold: isHeaderRow })
+// 表格：整表 100% 版心 + 按窗口自动调整；每个单元格水平+垂直居中
+new Table({
+  width: { size: 100, type: WidthType.PERCENTAGE },
+  layout: TableLayoutType.AUTOFIT,
+  rows: rows.map((cells, r) => new TableRow({
+    tableHeader: r === 0,                                    // 首行为表头，跨页重复
+    children: cells.map(txt => new TableCell({
+      verticalAlign: VerticalAlign.CENTER,                  // 垂直居中
+      children: [new Paragraph({
+        alignment: AlignmentType.CENTER,                    // 水平居中
+        spacing: { line: 260, lineRule: LineRuleType.EXACT },
+        children: [new TextRun({
+          text: txt,
+          font: { eastAsia: '仿宋_GB2312', ascii: '仿宋_GB2312' },
+          size: HAO5,                                        // 五号
+          bold: r === 0                                      // 仅表头加粗
+        })]
+      })]
+    }))
+  }))
+})
 ```
 
-- 中文字体必须写进 `eastAsia`；表内数字如需与中文同款，`ascii` 也设为仿宋_GB2312；
+- 表内每个单元格段落 `AlignmentType.CENTER`、单元格 `VerticalAlign.CENTER`，无左对齐/右对齐例外；
+- 中文字体必须写进 `eastAsia`；表内数字与中文同款，`ascii` 也设为仿宋_GB2312；
 - 生成后用 docx 技能的 validate.py 校验。
 
 ## 六、标点与编号细则（规范原文）
