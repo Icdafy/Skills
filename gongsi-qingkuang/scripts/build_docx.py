@@ -10,8 +10,8 @@ build_docx.py —— 立项报告 Word 生成器
 - 四级编号标题（一、/（一）/ 1. /（1））：
   一级黑体三号不加粗；二级楷体_GB2312 三号加粗；三级仿宋_GB2312 三号加粗；四级仿宋_GB2312 三号不加粗
 - 目录（Word 原生 TOC 域，打开后可右键更新页码）
-- 表格（统一细边框 #BFBFBF、表头浅蓝底 #D9E2F3、单元格内边距、DXA 宽度、
-  所有单元格内容水平+垂直居中）
+- 表格（仿宋_GB2312 五号 10.5pt；表头行浅蓝底 #D9E2F3 且加粗；统一细边框 #BFBFBF、
+  单元格内边距；宽度按窗口自动调整（pct 100% + autofit）；所有单元格内容水平+垂直居中）
 - 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
 
 设计原则：脚本只管"排版"，不管"写作"。你（调用方）负责把写好的各章内容
@@ -84,7 +84,7 @@ TITLE_LINE_PT = 30
 TABLE_BORDER = "BFBFBF"    # 表格边框灰
 HEADER_FILL = "D9E2F3"     # 表头浅蓝底
 CONTENT_WIDTH = 8844       # A4：21cm - 2.8cm - 2.6cm ≈ 15.6cm
-TABLE_SZ = 10.5            # 数据表默认小五，避免宽表溢出；必要时调用方可拆表
+TABLE_SZ = 10.5            # 数据表五号（10.5pt）仿宋_GB2312；宽表可精简列或拆表
 
 
 def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY):
@@ -210,9 +210,8 @@ def _add_table(doc, header, rows, widths=None):
     nrows = (1 if header else 0) + len(rows)
     table = doc.add_table(rows=nrows, cols=ncols)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
-    table.autofit = False
-    # 设置表格总宽（用已存在的 tblW，避免重复/顺序错误）
-    _set_tbl_width(table, sum(widths))
+    table.autofit = True                 # 根据窗口自动调整表格
+    _set_tbl_autofit(table)              # 表宽=窗口 100%（pct）+ tblLayout=autofit
     r = 0
     if header:
         for j, h in enumerate(header):
@@ -222,21 +221,43 @@ def _add_table(doc, header, rows, widths=None):
         for j in range(ncols):
             val = row[j] if j < len(row) else ""
             _fill_cell(table.rows[r + i].cells[j], val, size=TABLE_SZ)
-    # 列宽
+    # 列宽改用百分比：保持 widths 的设计比例，随窗口宽度整体缩放
+    total = sum(widths) or 1
+    col_pct = [max(1, round(w / total * 5000)) for w in widths]  # 5000 = 100.00%
     for row in table.rows:
-        for j, w in enumerate(widths):
-            row.cells[j].width = Twips(w)
+        for j, pct in enumerate(col_pct):
+            _set_cell_width_pct(row.cells[j], pct)
     return table
 
 
-def _set_tbl_width(table, total):
+def _set_tbl_autofit(table):
+    """表格宽度设为窗口（页面内容区）宽度的 100%，并启用 autofit 布局，
+       实现 Word『根据窗口自动调整表格』。tblW 由 add_table 生成，改其属性即可，
+       位置天然合法（tblStyle 之后、jc 之前）。"""
     tblPr = table._tbl.tblPr
     tblW = tblPr.find(qn('w:tblW'))
     if tblW is None:
         tblW = OxmlElement('w:tblW')
         tblPr.append(tblW)
-    tblW.set(qn('w:w'), str(total))
-    tblW.set(qn('w:type'), 'dxa')
+    tblW.set(qn('w:w'), '5000')          # 5000 = 100.00%
+    tblW.set(qn('w:type'), 'pct')
+    layout = tblPr.find(qn('w:tblLayout'))
+    if layout is None:
+        layout = OxmlElement('w:tblLayout')
+        tblPr.append(layout)
+    layout.set(qn('w:type'), 'autofit')
+
+
+def _set_cell_width_pct(cell, pct):
+    """单元格首选宽度用百分比（tcW type=pct），配合表格 autofit 随窗口缩放。
+       tcW 在 CT_TcPr 中须位于最前，故先清已有再 insert(0)。"""
+    tcPr = cell._tc.get_or_add_tcPr()
+    for e in tcPr.findall(qn('w:tcW')):
+        tcPr.remove(e)
+    tcW = OxmlElement('w:tcW')
+    tcW.set(qn('w:w'), str(pct))
+    tcW.set(qn('w:type'), 'pct')
+    tcPr.insert(0, tcW)
 
 
 def _add_toc(doc):
