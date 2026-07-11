@@ -122,6 +122,8 @@ description: Use when 用户需要撰写、改写或质检一级市场股权投�
 
 若需要生成 `.docx`，还必须读取 [references/02-writing-style.md](references/02-writing-style.md) 的“公文版式与字体规范”。范文版式基准为 A4 页面、上下页边距约 1 英寸、左右页边距约 1.25 英寸、正文 16pt、固定 28 磅行距、正文与全部标题首行缩进 2 个中文字符；中文字体体系为“黑体/楷体_GB2312/仿宋_GB2312”，表格表头加粗。
 
+生成 `.docx` 前，先运行 `python scripts/ensure_fonts.py` 检测并按需安装公文字体（仿宋 simfang、方正小标宋简体、楷体_GB2312）。本技能已在 [assets/fonts/](assets/fonts/) 内自带这三款字体，缺失时脚本会自动复制到当前用户字体目录（无需管理员权限）。仅检测不安装可用 `python scripts/ensure_fonts.py --check`。字体为受版权保护的商用/系统字体，随本私有技能仅供本人使用，请勿再分发。
+
 ### 第 6 步：写“行业发展现状”
 
 本部分按第 5 步选择的路径写两个三级标题。
