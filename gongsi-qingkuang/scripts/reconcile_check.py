@@ -76,9 +76,19 @@ def collect_tables(blocks):
     return tables
 
 
+TOTAL_KEYWORDS = ("合计", "总计", "小计", "总收入")
+
+
 def is_total_row(row, name_col=0):
-    label = str(row[name_col]) if name_col < len(row) else ""
-    return any(k in label for k in ("合计", "总计", "小计"))
+    """合计行的标记可能在年度列、序号列或名称列（范文中客户表的"合计"在序号列），
+    故扫描前三列；长度阈值防止把含"合计"字样的公司名误判为合计行。"""
+    cols = {name_col, 0, 1, 2}
+    for c in cols:
+        if c < len(row):
+            label = str(row[c]).strip()
+            if label and len(label) <= 8 and any(k in label for k in TOTAL_KEYWORDS):
+                return True
+    return False
 
 
 class Report:
@@ -179,7 +189,7 @@ def check_customer_supplier_table(report, table):
     header = table["header"]
     if find_col(header, "客户名称") is None and find_col(header, "供应商名称") is None:
         return
-    amt_col = find_col(header, "销售金额", "采购金额")
+    amt_col = find_col(header, "销售金额", "采购金额", "收入额", "价税合计")
     if amt_col is None:
         return
     # 按"年度"列分组分别核验合计（同一张表可能含多个年度的明细+合计）
