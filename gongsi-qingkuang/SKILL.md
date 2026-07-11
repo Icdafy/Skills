@@ -110,7 +110,7 @@ python scripts/build_docx.py content.json output.docx
 }
 ```
 
-块类型：`h1/h2/h3/h4`（标题，编号自带）、`p`（段落）、`bullet`（荣誉资质列表）、`table`（`header`+`rows`，宽表给 `widths`）、`note`（灰色待补提示）、`pagebreak`。表格默认仿宋_GB2312 10.5pt、表头浅蓝底，正文公文格式（仿宋三号、首行缩进、固定行距 28 磅）。
+块类型：`h1/h2/h3/h4`（标题，编号自带）、`p`（段落）、`bullet`（荣誉资质列表）、`table`（`header`+`rows`，宽表给 `widths`）、`note`（灰色待补提示）、`pagebreak`。表格默认仿宋_GB2312 10.5pt、表头浅蓝底、所有单元格内容水平与垂直居中，正文公文格式（仿宋三号、首行缩进、固定行距 28 磅）。
 
 ## 勾稽机械校验
 

@@ -10,7 +10,8 @@ build_docx.py —— 立项报告 Word 生成器
 - 四级编号标题（一、/（一）/ 1. /（1））：
   一级黑体三号不加粗；二级楷体_GB2312 三号加粗；三级仿宋_GB2312 三号加粗；四级仿宋_GB2312 三号不加粗
 - 目录（Word 原生 TOC 域，打开后可右键更新页码）
-- 表格（统一细边框 #BFBFBF、表头浅蓝底 #D9E2F3、单元格内边距、DXA 宽度）
+- 表格（统一细边框 #BFBFBF、表头浅蓝底 #D9E2F3、单元格内边距、DXA 宽度、
+  所有单元格内容水平+垂直居中）
 - 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
 
 设计原则：脚本只管"排版"，不管"写作"。你（调用方）负责把写好的各章内容
@@ -147,12 +148,13 @@ def _indent_first_line(paragraph, chars=2):
 
 
 def _style_cell(cell, fill=None, color=TABLE_BORDER, sz=4,
-                margins=(60, 60, 100, 100)):
+                margins=(60, 60, 100, 100), valign='center'):
     """一次性构建 tcPr 的子元素，严格按 OOXML schema 顺序：
-       tcBorders → shd → tcMar 。顺序错了 Word 校验会报错。"""
+       tcBorders → shd → tcMar → vAlign 。顺序错了 Word 校验会报错。
+       valign 默认 center：单元格内容垂直居中（配合段落水平居中，实现表格内容整体居中）。"""
     tcPr = cell._tc.get_or_add_tcPr()
     # 清掉可能已存在的同名元素，避免重复
-    for tag in ('w:tcBorders', 'w:shd', 'w:tcMar'):
+    for tag in ('w:tcBorders', 'w:shd', 'w:tcMar', 'w:vAlign'):
         for e in tcPr.findall(qn(tag)):
             tcPr.remove(e)
     # 1) 边框
@@ -181,11 +183,17 @@ def _style_cell(cell, fill=None, color=TABLE_BORDER, sz=4,
         el.set(qn('w:type'), 'dxa')
         m.append(el)
     tcPr.append(m)
+    # 4) 垂直居中（水平居中在 _fill_cell 的段落上设置）
+    if valign:
+        v = OxmlElement('w:vAlign')
+        v.set(qn('w:val'), valign)
+        tcPr.append(v)
 
 
 def _fill_cell(cell, text, bold=False, header=False, size=BODY_SZ):
     cell.text = ""
     p = cell.paragraphs[0]
+    p.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 水平居中；垂直居中见 _style_cell
     p.paragraph_format.space_before = Pt(1)
     p.paragraph_format.space_after = Pt(1)
     p.paragraph_format.line_spacing = Pt(18)
