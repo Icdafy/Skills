@@ -27,7 +27,7 @@ powershell -ExecutionPolicy Bypass -File <技能目录>/scripts/ensure-fonts.ps1
 | 项目 | 规范值 | OOXML/docx-js 取值 |
 | --- | --- | --- |
 | 纸张 | A4 | width 11906 / height 16838 (DXA) |
-| 页边距 | 上3.7cm 下3.5cm 左2.8cm 右2.6cm | top 2098 / bottom 1985 / left 1588 / right 1474 |
+| 页边距 | 上3.7cm 下3.5cm 左2.8cm 右2.6cm | top 2098 / bottom 1984 / left 1588 / right 1474 |
 | 页码 | 外侧、奇偶页不同，四号宋体，格式 -1- | evenAndOddHeaderAndFooters: true；奇数页页脚右对齐、偶数页左对齐；宋体 sz 28 |
 | 正文对齐 | 两端对齐 | jc: both（docx-js: AlignmentType.JUSTIFIED） |
 
@@ -93,7 +93,7 @@ sections: [{
   properties: {
     page: {
       size: { width: 11906, height: 16838 },                        // A4
-      margin: { top: 2098, bottom: 1985, left: 1588, right: 1474 }  // 3.7/3.5/2.8/2.6cm
+      margin: { top: 2098, bottom: 1984, left: 1588, right: 1474 }  // 3.7/3.5/2.8/2.6cm
     },
     // 页码奇偶外侧需 evenAndOddHeaderAndFooters + 奇偶页脚分别右/左对齐
   },

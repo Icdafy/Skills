@@ -34,8 +34,16 @@ function Install-UserFont($family, $file) {
     if (-not (Test-Path $srcFile)) {
         Write-Output "  assets 中未找到 $file，尝试从 GitHub 下载..."
         if (-not (Test-Path $assetsDir)) { New-Item -ItemType Directory -Force $assetsDir | Out-Null }
-        gh api -H 'Accept: application/vnd.github.raw' "$repoPath/$file" > $srcFile
-        if ((Get-Item $srcFile).Length -lt 100000) { throw "下载 $file 失败（文件过小），请检查 gh 登录状态" }
+        # 注意：不能用 gh api > 文件（PowerShell 重定向按文本转码，二进制会损坏），
+        # 用 gh 取 token 后经 Invoke-WebRequest -OutFile 原始字节落盘
+        if (-not (Get-Command gh -ErrorAction SilentlyContinue)) { throw "未安装 gh CLI，无法从 GitHub 下载 $file" }
+        $tok = (& gh auth token 2>$null)
+        if (-not $tok) { throw "gh 未登录（运行 gh auth login），无法从 GitHub 下载 $file" }
+        [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+        Invoke-WebRequest -Uri "https://api.github.com/$repoPath/$file" `
+            -Headers @{ Authorization = "token $tok"; Accept = 'application/vnd.github.raw' } `
+            -OutFile $srcFile -UseBasicParsing
+        if ((Get-Item $srcFile).Length -lt 100000) { throw "下载 $file 失败（文件过小），请检查网络与 gh 登录状态" }
     }
     if (-not (Test-Path $userFontDir)) { New-Item -ItemType Directory -Force $userFontDir | Out-Null }
     $dest = Join-Path $userFontDir $file
