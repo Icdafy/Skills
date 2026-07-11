@@ -69,7 +69,7 @@ description: 撰写一级市场股权投资立项报告中的"三、主营业务
 
 - 对照 `references/quality-checklist.md` 逐项自检，重点扫描禁词禁连词、结论前置落实、逐表合计校验；
 - 默认输出 Markdown 正文，编号体系 `三、`→`（一）`→`1.`→`（1）`→`1)`；
-- 用户要求 Word 时调用 docx 技能生成公文排版 .docx；
+- 用户要求 Word 时，先运行 `scripts/ensure-fonts.ps1` 做字体自动检测（本地已装直接用，缺失则从 `assets/fonts/` 用户级安装，assets 缺失时从 GitHub 下载），再按 `references/docx-format.md` 的公文排版规范生成 .docx——主标题方正小标宋二号、正文仿宋_GB2312三号28磅固定行距、一级标题黑体三号不加粗、二级楷体_GB2312三号加粗、三级仿宋三号加粗；**表格一律仿宋_GB2312五号、表头首行加粗、宽度按窗口自动调整**；
 - 末尾不加免责声明套话，正文中的审慎表述已承担该功能。
 
 ## 四、数据红线
@@ -91,3 +91,6 @@ description: 撰写一级市场股权投资立项报告中的"三、主营业务
 | `references/research-protocol.md` | 联网检索协议：检索什么、信源优先级、归因方式、冲突处理 | 第 4 步必读 |
 | `references/metrics-formulas.md` | 指标体系、公式、计算呈现规则、交叉印证方法、数据充分性判断 | 第 5 步必读 |
 | `references/quality-checklist.md` | 输出前逐项自检清单（含禁令扫描与逐表校验） | 第 7 步必读 |
+| `references/docx-format.md` | 公文排版规范：页面/字体层级/表格规则（仿宋_GB2312五号、表头加粗、按窗口自适应）/docx-js实现要点 | 输出 .docx 时必读 |
+| `scripts/ensure-fonts.ps1` | 字体自动检测与用户级安装（仿宋_GB2312、楷体_GB2312、方正小标宋简体） | 输出 .docx 前运行 |
+| `assets/fonts/` | 三个公文字体文件（simfang.ttf、KaiTi_GB2312.ttf、FZXiaoBiaoSongJT.ttf） | 脚本自动调用 |
