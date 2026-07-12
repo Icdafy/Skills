@@ -1,10 +1,16 @@
-# 公文排版规范（.docx 输出专用）
+# 公文排版规范（.docx 输出专用，三技能统一）
 
-来源：集团《关于规范行文格式的通知》（2020年4月22日）所附《行文规范性格式模板》，加上用户补充的表格规则。用户要求输出 Word 文档时，本文件优先于 docx 通用技能中的一般性建议（目标环境是 Microsoft Word 公文场景）。
+来源：集团《关于规范行文格式的通知》（2020年4月22日）所附《行文规范性格式模板》，加上用户补充的表格规则。本规范与 hangye-fenxi、gongsi-qingkuang 两技能完全一致，由三技能共用的 `scripts/build_docx.py` 统一实现。用户要求输出 Word 文档时，本文件优先于 docx 通用技能中的一般性建议（目标环境是 Microsoft Word 公文场景）。
 
 ## 一、输出前置步骤：字体保障
 
-生成 .docx 之前先运行字体检测安装脚本：
+生成 .docx 之前先运行字体检测安装脚本（跨平台，Windows 上含用户级注册表注册）：
+
+```
+python <技能目录>/scripts/ensure_fonts.py
+```
+
+Windows 备用方案（含 assets 缺失时从 GitHub 下载兜底）：
 
 ```
 powershell -ExecutionPolicy Bypass -File <技能目录>/scripts/ensure-fonts.ps1
@@ -76,71 +82,43 @@ new Table({
 
 注：docx 通用技能建议表格用 DXA 定宽（兼容 Google Docs），公文场景以 Word 为目标，本条用户规则优先；
 
-4. 表格框线：全框线单线；表头行可加浅灰底纹（`shd fill="D9D9D9" val="clear"`），无用户要求时默认不加底纹只加粗；
+4. 表格框线：全框线单线（细灰 #BFBFBF）；表头行加浅蓝底纹（`shd fill="D9E2F3"`）并加粗——与 hangye-fenxi、gongsi-qingkuang 两技能统一，由 `scripts/build_docx.py` 自动套用；
 5. **单元格内容一律水平居中 + 垂直居中**（所有列、所有行，含表头、文字、数字、百分号）——段落 `jc: center`，单元格 `vAlign: center`；
 6. 表格上方保留一句引导语（正文样式），表格下方"单位：万元"及"注："用仿宋_GB2312五号，置于表格下一行；
 7. 表内金额千分位、两位小数，与正文数据规则一致。
 
-## 五、docx-js 实现要点
+## 五、统一渲染脚本（必须使用，禁止手写排版代码）
 
-```javascript
-// 字号(半磅)与行距(缇)常量
-const HAO2 = 44, HAO3 = 32, HAO4 = 28, HAO5 = 21;
-const LINE_TITLE = 600, LINE_BODY = 560;   // 固定值30磅/28磅
+上述全部版式由三技能共用的 `scripts/build_docx.py` 自动实现（页面/页边距/页码、四级标题体系、正文缩进与行距、表格五号+表头加粗浅蓝底+跨页重复+autofit+单元格居中）。写作方只负责把成稿组织成 content.json，不手动设置任何字体、缩进、行距或表格属性，也不再用 docx-js/OOXML 手写文档：
 
-// 页面
-sections: [{
-  properties: {
-    page: {
-      size: { width: 11906, height: 16838 },                        // A4
-      margin: { top: 2098, bottom: 1984, left: 1588, right: 1474 }  // 3.7/3.5/2.8/2.6cm
-    },
-    // 页码奇偶外侧需 evenAndOddHeaderAndFooters + 奇偶页脚分别右/左对齐
-  },
-  children: [ ... ]
-}]
-
-// 正文段
-new Paragraph({
-  alignment: AlignmentType.JUSTIFIED,
-  indent: { firstLine: 640 },              // 三号字2字符 = 32pt = 640缇
-  spacing: { line: LINE_BODY, lineRule: LineRuleType.EXACT },
-  children: [new TextRun({ text: '……', font: { eastAsia: '仿宋_GB2312', ascii: 'Times New Roman' }, size: HAO3 })]
-})
-
-// 二级标题（一）
-new Paragraph({
-  indent: { firstLine: 640 },
-  spacing: { line: LINE_BODY, lineRule: LineRuleType.EXACT },
-  children: [new TextRun({ text: '（一）业务及产品概况', font: { eastAsia: '楷体_GB2312' }, size: HAO3, bold: true })]
-})
-
-// 表格：整表 100% 版心 + 按窗口自动调整；每个单元格水平+垂直居中
-new Table({
-  width: { size: 100, type: WidthType.PERCENTAGE },
-  layout: TableLayoutType.AUTOFIT,
-  rows: rows.map((cells, r) => new TableRow({
-    tableHeader: r === 0,                                    // 首行为表头，跨页重复
-    children: cells.map(txt => new TableCell({
-      verticalAlign: VerticalAlign.CENTER,                  // 垂直居中
-      children: [new Paragraph({
-        alignment: AlignmentType.CENTER,                    // 水平居中
-        spacing: { line: 260, lineRule: LineRuleType.EXACT },
-        children: [new TextRun({
-          text: txt,
-          font: { eastAsia: '仿宋_GB2312', ascii: '仿宋_GB2312' },
-          size: HAO5,                                        // 五号
-          bold: r === 0                                      // 仅表头加粗
-        })]
-      })]
-    }))
-  }))
-})
+```bash
+python scripts/ensure_fonts.py                            # 字体保障
+python scripts/build_docx.py content.json 主营业务分析.docx  # 渲染
 ```
 
-- 表内每个单元格段落 `AlignmentType.CENTER`、单元格 `VerticalAlign.CENTER`，无左对齐/右对齐例外；
-- 中文字体必须写进 `eastAsia`；表内数字与中文同款，`ascii` 也设为仿宋_GB2312；
-- 生成后用 docx 技能的 validate.py 校验。
+content.json 结构（详见脚本头部 docstring）：
+
+```json
+{
+  "toc": false,
+  "blocks": [
+    {"type": "h1", "text": "三、主营业务分析"},
+    {"type": "h2", "text": "（一）业务及产品概况"},
+    {"type": "h3", "text": "1.军工板块"},
+    {"type": "h4", "text": "（1）业务介绍"},
+    {"type": "p", "text": "正文段落……"},
+    {"type": "p", "text": "板块开头定位判断句……", "bold": true},
+    {"type": "tnote", "text": "单位：万元", "align": "right"},
+    {"type": "table", "header": ["列1", "列2"], "rows": [["a", "b"]]},
+    {"type": "tnote", "text": "注：公司业务分类……系前期订单口径所致。"}
+  ]
+}
+```
+
+- 封面（cover）与目录（toc）默认关闭——本章节通常并入整份立项报告；独立成文时才在 content 里给 `cover`；
+- `tnote` 为表注块（仿宋_GB2312 五号）："单位：万元"放表格上方、`"align":"right"`；"注：""数据来源："放表格下方、默认左对齐；
+- 缺口数据不进 content.json（正文、表格、note 块都不放），统一在对话回复的"资料缺口与待核查清单"中提示；
+- 生成后用 docx 技能的 validate.py 校验文件有效。
 
 ## 六、标点与编号细则（规范原文）
 

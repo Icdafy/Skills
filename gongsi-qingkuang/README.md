@@ -9,7 +9,7 @@
 | 交付物 | 说明 |
 | --- | --- |
 | 章节正文 | 骨架、句式、表格全部对齐范文（早期公司=颗粒度细的逐次重演写法；成长期公司=汇总表写法）；默认 Markdown，可一键渲染公文排版 .docx |
-| 待补充资料及后续核查事项清单 | 随稿交付、正文之外；每条写清查什么文件、走什么渠道、问什么问题，可直接转给尽调团队 |
+| 待补充资料及后续核查事项清单 | 随稿在对话回复中交付、不写入报告文件；每条写清查什么文件、走什么渠道、问什么问题，可直接转给尽调团队 |
 
 资料里的每个事实只有两个合法去向：进入正文/表格（可溯源），或进入清单（可执行）——第三种去向"悄悄消失"不存在。
 
@@ -60,10 +60,13 @@
 | `references/data-and-tables.md` | 计算公式、口径与单位、勾稽自检清单、联网三大必检、标准表模板 T1–T15 |
 | `references/red-flags.md` | 按文档位置索引的红旗模式库（现象→为什么危险→核查动作）＋组合拳规则 |
 | `references/gold-examples.md` | 范文文体指纹与 14 个高质量段落逐一拆解 |
-| `scripts/build_docx.py` | 内容 JSON → 公文排版 .docx（仿宋三号、首行缩进、固定行距 28 磅） |
+| `scripts/build_docx.py` | 内容 JSON → 公文排版 .docx（与 hangye-fenxi、zhuying-yewu-fenxi 共用的三技能统一渲染器） |
+| `scripts/ensure_fonts.py` | 公文字体检测与用户级安装（仿宋_GB2312、楷体_GB2312、方正小标宋简体；Windows 含注册表注册） |
+| `scripts/style_check.py` | 语言红线机械扫描（称谓/对举连词/结论标签/缺口占位语） |
 | `scripts/reconcile_check.py` | 机械勾稽核验：股权求和=100%、人员分项=总数、客户合计、资产负债恒等式、毛利率反算等 |
 | `scripts/extract_docx.py` | 读取 .docx 资料包，逐块输出段落与表格便于建台账 |
 | `assets/content_skeleton.json` | content.json 骨架样例 |
+| `assets/fonts/` | 三款公文字体（私有技能专用，勿再分发） |
 | `evals/evals.json` | 四个回归用例（含语言红线断言与会议纪要专项） |
 
 ## 脚本用法
@@ -72,7 +75,11 @@
 # 勾稽核验（仅标准库，任何 Python 可跑；FAIL 时退出码 2）
 python scripts/reconcile_check.py content.json
 
-# 生成 Word（依赖 python-docx）
+# 语言红线机械扫描（仅标准库；命中时退出码 1）
+python scripts/style_check.py content.json
+
+# 生成 Word（依赖 python-docx；生成前先保障字体）
+python scripts/ensure_fonts.py
 python scripts/build_docx.py content.json output.docx
 
 # 读取 docx 资料包（依赖 python-docx）

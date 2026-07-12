@@ -1,32 +1,42 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-build_docx.py —— 立项报告"二、所属行业分析"章节 Word 生成器
+build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文排版 v2）
 
-把一份结构化的章节内容（JSON 或 python dict）渲染成符合公文版式的 .docx，
-表格样式逻辑移植自 gongsi-qingkuang，并按 hangye-fenxi 的表格规范做了适配：
+本脚本是 hangye-fenxi / zhuying-yewu-fenxi / gongsi-qingkuang 三个技能共用的
+排版渲染器，三份拷贝内容完全一致；修改任何一份时必须同步另外两份。
+统一公文版式基准（依据集团《关于规范行文格式的通知》所附模板 + 用户表格规则）：
 
 - A4 页面（上 3.7cm、下 3.5cm、左 2.8cm、右 2.6cm）
+- 封面主标题（方正小标宋简体二号 22pt、居中、固定行距 30 磅）；默认不生成封面
 - 正文（仿宋_GB2312 三号 16pt、两端对齐、首行缩进 2 字符、固定行距 28 磅）
-- 四级编号标题（二、/（一）/ 1. /（1））均首行缩进 2 字符、与段落平齐：
+- 四级编号标题（一、/（一）/ 1. /（1））均首行缩进 2 字符、与段落平齐：
   一级黑体三号不加粗；二级楷体_GB2312 三号加粗；三级仿宋_GB2312 三号加粗；
-  四级仿宋_GB2312 三号加粗（与 gongsi 的四级不加粗不同，hangye 的（1）加粗）
+  四级仿宋_GB2312 三号不加粗（集团规范：四级标题及正文不加粗，三技能统一）
 - 核心结论/段首论点句：整段加粗（type=p, bold=true）
-- 表格（本技能表格规范）：
+- 表格（统一表格规范）：
     * 全表统一仿宋_GB2312、五号 10.5pt
-    * 仅首行（表头）加粗，浅蓝底 #D9E2F3；其余单元格不加粗
+    * 仅首行（表头）加粗，浅蓝底 #D9E2F3；其余单元格不加粗、无底纹
     * 所有单元格内容水平居中 + 垂直居中
     * 细灰边框 #BFBFBF
-    * 宽度按窗口自动调整（autofit to window，pct 100% + tblLayout=autofit），
-      随页宽缩放不溢出；table 块的 widths 作为列宽比例（转百分比），不写死磅值
+    * 表头行跨页重复（tblHeader）
+    * 宽度按窗口自动调整（pct 100% + tblLayout=autofit），随页宽缩放不溢出；
+      table 块的 widths 作为列宽比例（转百分比），不写死磅值
+- 表注（type=tnote）："单位：万元""注：……"等，仿宋_GB2312 五号、不缩进，
+  align 可选 left/right/center（默认 left；"单位"行惯例放表格上方右对齐）
 - 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
-- 封面 / 目录：默认关闭（本章节通常并入整份立项报告）；如需独立成文，
-  在 content 里给 cover 或把 toc 设为 true
+- 封面 / 目录：默认关闭（章节通常并入整份立项报告）；独立成文时在 content
+  里给 cover 或把 toc 设为 true
+
+数据缺口纪律：资料包、会议纪要、权威网络检索均无法获得的数据，一律不进入
+本脚本渲染的报告正文与表格（也不要用 note 块写"待核查"占位）；全部缺口在
+对话回复中以"资料缺口与待核查清单"形式提示用户。note 块仅在用户明确要求
+在文中标注缺口时使用。
 
 设计原则：脚本只管"排版"，不管"写作"。调用方负责把写好的章节内容按下面的
 BLOCK 结构组织好传进来，脚本对内容零编造。
 
-生成前建议先运行 `python scripts/ensure_fonts.py` 确保三款公文字体已安装。
+生成前先运行 `python scripts/ensure_fonts.py` 确保公文字体已安装。
 
 依赖：python-docx  →  pip install python-docx --break-system-packages
 
@@ -44,6 +54,8 @@ content 结构（dict）：
      "date": "2026年7月"
   },
   "toc": false,                           # 是否插入目录域，默认 false
+  "summary": "要点概述正文（可选，多段用 \\n 分隔）",
+  "summary_title": "要点概述",            # 可选，默认"要点概述"
   "blocks": [ ...见下... ]                # 章节正文，按顺序渲染
 }
 
@@ -51,15 +63,16 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
   {"type":"h1","text":"二、所属行业分析"}          # 一级标题（自带"二、"前缀）
   {"type":"h2","text":"（一）行业发展现状"}          # 二级
   {"type":"h3","text":"1.市场规模与增长趋势"}        # 三级
-  {"type":"h4","text":"（1）政策驱动"}              # 四级
+  {"type":"h4","text":"（1）政策驱动"}              # 四级（不加粗）
   {"type":"p","text":"正文段落……"}                 # 普通段落
   {"type":"p","text":"……","bold":true}            # 加粗段落（核心结论/段首论点句）
   {"type":"bullet","items":["要点1","要点2"]}       # 项目符号列表
+  {"type":"tnote","text":"单位：万元","align":"right"}   # 表注，仿宋五号
   {"type":"table","header":["列1","列2"],           # 表格；header 可省略（无表头）
       "rows":[["a","b"],["c","d"]]}                 # autofit 到窗口，列等分
   {"type":"table","header":[...],"rows":[...],
       "widths":[3,6]}                               # 可选：列宽比例（随窗口缩放）
-  {"type":"note","text":"【待进一步核实】"}          # 灰色提示，用于缺口标注
+  {"type":"note","text":"【待进一步核实】"}          # 灰色提示；默认不使用（见缺口纪律）
   {"type":"pagebreak"}                             # 分页
 
 标题层级与编号：脚本不自动编号，"二、""（一）"等前缀由你写在 text 里。
@@ -73,7 +86,7 @@ from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
 
-# ---------- 版式常量（对齐公文格式与本技能字体规范） ----------
+# ---------- 版式常量（三技能统一公文格式） ----------
 FONT_TITLE = "方正小标宋简体"
 FONT_BODY = "仿宋_GB2312"
 FONT_H1 = "黑体"            # 使用系统原本黑体，不随技能打包替换
@@ -81,19 +94,19 @@ FONT_H2 = "楷体_GB2312"
 FONT_FOOTER = "宋体"
 FONT_EN = "Times New Roman"
 BODY_SZ = 16               # 三号
-H1_SZ = 16                 # 二、 一级标题黑体三号，不加粗
-H2_SZ = 16                 # （一）二级标题楷体_GB2312 三号，加粗
-H3_SZ = 16                 # 1. 三级标题仿宋_GB2312 三号，加粗
-H4_SZ = 16                 # （1）四级标题仿宋_GB2312 三号，加粗
+H1_SZ = 16                 # 一级标题黑体三号，不加粗
+H2_SZ = 16                 # 二级标题楷体_GB2312 三号，加粗
+H3_SZ = 16                 # 三级标题仿宋_GB2312 三号，加粗
+H4_SZ = 16                 # 四级标题仿宋_GB2312 三号，不加粗（三技能统一）
 COVER_TITLE_SZ = 22        # 二号方正小标宋简体
 COVER_ORG_SZ = 16          # 落款/机构三号仿宋_GB2312
 FOOTER_SZ = 14             # 四号宋体
 BODY_LINE_PT = 28
 TITLE_LINE_PT = 30
 TABLE_BORDER = "BFBFBF"    # 表格边框灰
-HEADER_FILL = "D9E2F3"     # 表头浅蓝底
+HEADER_FILL = "D9E2F3"     # 表头浅蓝底（三技能统一）
 CONTENT_WIDTH = 8844       # A4：21cm - 2.8cm - 2.6cm ≈ 15.6cm（DXA≈8844）
-TABLE_SZ = 10.5            # 表格统一五号，所有单元格
+TABLE_SZ = 10.5            # 表格统一五号，所有单元格；表注同
 
 
 def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY):
@@ -210,6 +223,15 @@ def _fill_cell(cell, text, bold=False, header=False, size=TABLE_SZ):
     _style_cell(cell, fill=HEADER_FILL if header else None)
 
 
+def _mark_header_row(row):
+    """表头行设 tblHeader：表格跨页时每页重复表头。"""
+    trPr = row._tr.get_or_add_trPr()
+    if trPr.find(qn('w:tblHeader')) is None:
+        th = OxmlElement('w:tblHeader')
+        th.set(qn('w:val'), 'true')
+        trPr.append(th)
+
+
 def _add_table(doc, header, rows, widths=None):
     ncols = len(header) if header else (len(rows[0]) if rows else 1)
     if not widths or len(widths) != ncols:
@@ -223,6 +245,7 @@ def _add_table(doc, header, rows, widths=None):
     if header:
         for j, h in enumerate(header):
             _fill_cell(table.rows[0].cells[j], h, header=True, size=TABLE_SZ)
+        _mark_header_row(table.rows[0])
         r = 1
     for i, row in enumerate(rows):
         for j in range(ncols):
@@ -371,7 +394,22 @@ def build(content, out_path):
         _add_toc(doc)
         doc.add_page_break()
 
+    # ---------- 要点概述（可选） ----------
+    if content.get("summary"):
+        _add_para(doc, content.get("summary_title", "要点概述"),
+                  size=H1_SZ, bold=False, align=WD_ALIGN_PARAGRAPH.CENTER,
+                  space_after=8, outline=0, line=BODY_LINE_PT,
+                  font_name=FONT_H1)
+        for para in str(content["summary"]).split("\n"):
+            if para.strip():
+                p = _add_para(doc, para.strip(), align=WD_ALIGN_PARAGRAPH.JUSTIFY,
+                              line=BODY_LINE_PT, font_name=FONT_BODY)
+                _indent_first_line(p)
+        doc.add_page_break()
+
     # ---------- 章节正文 ----------
+    ALIGN = {"left": WD_ALIGN_PARAGRAPH.LEFT, "right": WD_ALIGN_PARAGRAPH.RIGHT,
+             "center": WD_ALIGN_PARAGRAPH.CENTER}
     for blk in content.get("blocks", []):
         t = blk.get("type")
         if t == "h1":
@@ -393,8 +431,8 @@ def build(content, out_path):
                           font_name=FONT_BODY)
             _indent_first_line(p)
         elif t == "h4":
-            # hangye-fenxi 的（1）四级标题加粗（与 gongsi 四级不加粗不同）
-            p = _add_para(doc, blk["text"], size=H4_SZ, bold=True,
+            # 四级标题不加粗（集团规范：四级标题及正文不加粗，三技能统一）
+            p = _add_para(doc, blk["text"], size=H4_SZ, bold=False,
                           space_before=2, space_after=2, outline=3,
                           align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
                           font_name=FONT_BODY)
@@ -412,10 +450,17 @@ def build(content, out_path):
                 p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
                 run = p.add_run("• " + str(item))
                 _set_run_font(run, size=BODY_SZ, font_name=FONT_BODY)
+        elif t == "tnote":
+            # 表注："单位：万元""注：……"，仿宋五号、不缩进；单位行惯例右对齐
+            _add_para(doc, blk["text"], size=TABLE_SZ, bold=False,
+                      align=ALIGN.get(blk.get("align", "left")),
+                      space_before=0, space_after=2, line=18,
+                      font_name=FONT_BODY)
         elif t == "table":
             _add_table(doc, blk.get("header"), blk.get("rows", []), blk.get("widths"))
             doc.add_paragraph()  # 表后空行
         elif t == "note":
+            # 灰色提示：默认不使用——缺口一律在对话中提示，不写入报告（见文件头"数据缺口纪律"）
             _add_para(doc, blk["text"], color="808080", line=BODY_LINE_PT,
                       font_name=FONT_BODY)
         elif t == "pagebreak":
