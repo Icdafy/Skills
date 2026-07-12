@@ -122,6 +122,7 @@ hangye-fenxi/
 │   ├── 06-red-flags.md             市场/政策/需求/供给/产业链/叙事陷阱
 │   └── 07-benchmark-lessons.md     两篇范文的结构路径、解释链、图表证据岗位
 └── scripts/
+    ├── build_docx.py               章节 .docx 生成器（自动套用公文版式与表格样式）
     ├── ensure_fonts.py             公文字体检测与自动安装
     └── reconcile_check.py          市场规模/CAGR/占比/表格算术一致性校验
 ```
@@ -186,7 +187,7 @@ python scripts/ensure_fonts.py --check
 | 6 | 写"行业发展现状"（按路径 A/B 写两个三级标题） |
 | 7 | 写"产业链分析"（回答投委会五问，两个三级标题） |
 | 8 | 读 `04-tables-charts.md` 生成表格与图表建议 |
-| 9 | 读 `05-quality-checklist.md` 逐项自检；涉及数字时运行 `reconcile_check.py` |
+| 9 | 读 `05-quality-checklist.md` 逐项自检；涉及数字时运行 `reconcile_check.py`；需 `.docx` 时用 `build_docx.py` 渲染 |
 
 ### 数据一致性校验
 
@@ -196,6 +197,16 @@ python scripts/reconcile_check.py 行业分析.md
 ```
 
 脚本只校验算术和表格一致性；政策力度、产业链卡位、核心结论是否前置需人工核对。
+
+### 生成 .docx
+
+```bash
+# 先确保公文字体就位，再把结构化章节内容渲染成 .docx
+python scripts/ensure_fonts.py
+python scripts/build_docx.py content.json 行业分析.docx
+```
+
+`build_docx.py` 自动套用公文版式与表格样式：正文仿宋_GB2312 三号、各级标题按体系设字体并首行缩进 2 字符；表格统一仿宋_GB2312 五号、仅表头加粗并加浅蓝底、所有单元格水平+垂直居中、宽度按窗口自动调整（autofit）。`content` 用 `blocks` 列表组织，表格作为 `table` 块传入，结构详见脚本头部 docstring。
 
 ---
 

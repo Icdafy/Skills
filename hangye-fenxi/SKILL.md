@@ -124,6 +124,14 @@ description: Use when 用户需要撰写、改写或质检一级市场股权投�
 
 生成 `.docx` 前，先运行 `python scripts/ensure_fonts.py` 检测并按需安装公文字体（仿宋 simfang、方正小标宋简体、楷体_GB2312）。本技能已在 [assets/fonts/](assets/fonts/) 内自带这三款字体，缺失时脚本会自动复制到当前用户字体目录（无需管理员权限）。仅检测不安装可用 `python scripts/ensure_fonts.py --check`。字体为受版权保护的商用/系统字体，随本私有技能仅供本人使用，请勿再分发。
 
+字体就位后，用 [scripts/build_docx.py](scripts/build_docx.py) 渲染 `.docx`，它自动套用全部公文版式与表格规范，无需手动设置字体、缩进、行距或表格样式。做法是把写好的章节内容组织成结构化 `content`（`blocks` 列表，元素 `type` 为 `h1/h2/h3/h4/p/bullet/table/note/pagebreak`），再执行：
+
+```bash
+python scripts/build_docx.py content.json 行业分析.docx
+```
+
+表格用 `{"type":"table","header":[...],"rows":[[...]]}` 传入，脚本自动渲染成：仿宋_GB2312、五号（10.5pt）、仅首行表头加粗并加浅蓝底、所有单元格水平+垂直居中、细灰边框、宽度按窗口自动调整（autofit）。默认不生成封面和目录（本章节通常并入整份立项报告）；如需控制列宽比例，可给 `table` 块加 `widths`（列宽比例，随窗口整体缩放，不写死磅值）。`content` 结构详见脚本头部 docstring。
+
 ### 第 6 步：写“行业发展现状”
 
 本部分按第 5 步选择的路径写两个三级标题。
@@ -183,7 +191,7 @@ description: Use when 用户需要撰写、改写或质检一级市场股权投�
 - 产业链功能与格局表；
 - 产业链上中下游核心环节表。
 
-表格必须可编辑、可追溯；正文先给结论，表格承载明细。图表不能替代正文分析，必须在图前或图后说明“这张图证明了什么”。
+表格必须可编辑、可追溯；正文先给结论，表格承载明细。图表不能替代正文分析，必须在图前或图后说明“这张图证明了什么”。生成 `.docx` 时把表格作为 `table` 块交给 [scripts/build_docx.py](scripts/build_docx.py)，仿宋五号、表头加粗、单元格居中、autofit 等表格规范由脚本自动套用，正文只需组织内容与结论。
 
 ### 第 9 步：质检
 
