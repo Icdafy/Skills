@@ -74,6 +74,7 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
       "widths":[3,6]}                               # 可选：列宽比例（随窗口缩放）
   {"type":"note","text":"【待进一步核实】"}          # 灰色提示；默认不使用（见缺口纪律）
   {"type":"pagebreak"}                             # 分页
+  {"type":"_注","text":"骨架注释，不会渲染"}          # "_"开头的类型视为模板注释，跳过
 
 标题层级与编号：脚本不自动编号，"二、""（一）"等前缀由你写在 text 里。
 """
@@ -465,6 +466,9 @@ def build(content, out_path):
                       font_name=FONT_BODY)
         elif t == "pagebreak":
             doc.add_page_break()
+        elif t and str(t).startswith("_"):
+            # 下划线开头的块类型（"_注" "_说明" 等）是骨架/模板注释，不渲染
+            continue
         else:
             # 未知类型，按普通段落处理，避免内容丢失
             if blk.get("text"):

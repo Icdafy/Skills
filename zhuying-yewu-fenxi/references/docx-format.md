@@ -30,12 +30,12 @@ powershell -ExecutionPolicy Bypass -File <技能目录>/scripts/ensure-fonts.ps1
 
 ## 二、页面设置
 
-| 项目 | 规范值 | OOXML/docx-js 取值 |
+| 项目 | 规范值 | OOXML 取值（参考，脚本已实现） |
 | --- | --- | --- |
 | 纸张 | A4 | width 11906 / height 16838 (DXA) |
 | 页边距 | 上3.7cm 下3.5cm 左2.8cm 右2.6cm | top 2098 / bottom 1984 / left 1588 / right 1474 |
-| 页码 | 外侧、奇偶页不同，四号宋体，格式 -1- | evenAndOddHeaderAndFooters: true；奇数页页脚右对齐、偶数页左对齐；宋体 sz 28 |
-| 正文对齐 | 两端对齐 | jc: both（docx-js: AlignmentType.JUSTIFIED） |
+| 页码 | 外侧、奇偶页不同，四号宋体，格式 -1- | evenAndOddHeaders；奇数页页脚右对齐、偶数页左对齐；宋体 sz 28 |
+| 正文对齐 | 两端对齐 | jc: both |
 
 页边距和行间距可根据实际情况适当调整（规范原文允许），默认按上表执行。
 
@@ -70,21 +70,11 @@ powershell -ExecutionPolicy Bypass -File <技能目录>/scripts/ensure-fonts.ps1
 </w:tblPr>
 ```
 
-docx-js 写法：
-
-```javascript
-new Table({
-  width: { size: 100, type: WidthType.PERCENTAGE },
-  layout: TableLayoutType.AUTOFIT,
-  rows: [...]
-})
-```
-
-注：docx 通用技能建议表格用 DXA 定宽（兼容 Google Docs），公文场景以 Word 为目标，本条用户规则优先；
+以上 OOXML 仅作规范存档，`scripts/build_docx.py` 已按此实现，不要手写。注：docx 通用技能建议表格用 DXA 定宽（兼容 Google Docs），公文场景以 Word 为目标，本条用户规则优先；
 
 4. 表格框线：全框线单线（细灰 #BFBFBF）；表头行加浅蓝底纹（`shd fill="D9E2F3"`）并加粗——与 hangye-fenxi、gongsi-qingkuang 两技能统一，由 `scripts/build_docx.py` 自动套用；
 5. **单元格内容一律水平居中 + 垂直居中**（所有列、所有行，含表头、文字、数字、百分号）——段落 `jc: center`，单元格 `vAlign: center`；
-6. 表格上方保留一句引导语（正文样式），表格下方"单位：万元"及"注："用仿宋_GB2312五号，置于表格下一行；
+6. 表格上方保留一句引导语（正文样式）；"单位：万元"用 `tnote` 块放表格上方右对齐，"注：""数据来源："用 `tnote` 块放表格下方左对齐（均为仿宋_GB2312 五号）；
 7. 表内金额千分位、两位小数，与正文数据规则一致。
 
 ## 五、统一渲染脚本（必须使用，禁止手写排版代码）
