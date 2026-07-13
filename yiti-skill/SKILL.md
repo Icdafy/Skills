@@ -30,8 +30,8 @@ Use this skill to draft 投管公司报送投委会的"议题"文书. The input 
 - One blank line, then recipient `投委会：` at the left margin, 三号仿宋_GB2312.
 - Body: 三号仿宋_GB2312; every paragraph and every heading starts with a two-Chinese-character first-line indent.
 - First-level heading `一、会议基本信息`: 三号黑体, not bold. Second-level heading `（一）XXX议案`: 三号楷体_GB2312, bold.
-- All digits and Latin characters: Times New Roman, same point size as the surrounding text (三号 in body).
-- Tables: cell text 仿宋_GB2312 五号, centered horizontally and vertically; digits in cells Times New Roman; table autofits to content and window width.
+- All digits and Latin characters: Times New Roman. Size follows the location: 三号 in body text, 五号 inside tables.
+- Tables: cell text 仿宋_GB2312 五号, centered horizontally and vertically; digits in cells Times New Roman 五号; table autofits to content and window width.
 - Core conclusions and lead-in labels (`主要内容：` `审议依据：`) may be bold 仿宋_GB2312; no other decoration.
 - Attachment block ends the document: single attachment `附件：XXXX`; multiple attachments numbered `1.` `2.` with hanging alignment. No 落款, no date.
 
