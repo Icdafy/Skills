@@ -1,0 +1,4 @@
+interface:
+  display_name: "投委会议题"
+  short_description: "根据股东会/合伙人会议通知撰写投委会议题并生成公文排版DOCX"
+  default_prompt: "Use $yiti-skill to draft a 投委会议题 from the provided meeting notice and proposal documents. Follow the fixed skeleton (导语、会议基本信息、会议审议事项、请示事项、附件), put core conclusions first in bold, cite clause numbers and document numbers, and apply the company typography rules."
