@@ -1,6 +1,6 @@
 # Cross-agent installation
 
-The same skill directory is compatible with the shared `SKILL.md` agent-skill convention. Install the directory rather than copying only `SKILL.md`, because transcription depends on bundled scripts and references.
+The same skill directory follows the shared `SKILL.md` agent-skill convention used by Codex and Claude Code and supported by current Tencent WorkBuddy desktop builds. Install the directory rather than copying only `SKILL.md`, because transcription depends on bundled scripts and references.
 
 ## User-level locations
 
@@ -19,6 +19,8 @@ python meeting-minutes-pro/scripts/install_skill.py --target all
 Use `--target codex`, `--target claude`, or `--target workbuddy` for one platform. Add `--force` only when deliberately replacing an older installed copy.
 
 Restart the agent if the new skill is not detected. Invoke it explicitly as `$meeting-minutes-pro` in Codex, `/meeting-minutes-pro` in Claude Code, or select/call the installed skill in WorkBuddy. Agents may also activate it automatically when an uploaded media file and a transcription request match the description.
+
+WorkBuddy's installation UI and marketplace behavior can vary by release. If a manually copied folder is not detected after restart, use WorkBuddy's Skills panel to import or install the extracted skill/repository instead of guessing another filesystem location.
 
 Platform documentation:
 
