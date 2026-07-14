@@ -21,6 +21,7 @@
 | [yiti-skill](yiti-skill/) | 投委会议题撰写：根据参股企业股东会/基金合伙人会议的通知及议案，按固定骨架（导语、会议基本信息、会议审议事项、请示事项、附件）生成核心结论前置、依据可追溯的议题正文与公文排版 DOCX |
 | [ppt-to-editable](ppt-to-editable/) | 幻灯片图片转可编辑 PPTX：对单页 PPT 截图/导出图做 OCR 复核与原生形状重建 |
 | [rw-consulting-ppt](rw-consulting-ppt/) | 咨询级图片型 PPT 生成：将要点、笔记、研究结论转为整页 PNG 或纯图 PPTX 的报告展示页 |
+| [meeting-minutes-pro](meeting-minutes-pro/) | 本地会议音视频转写：使用 Qwen3-ASR-0.6B，无需云端 API，支持中英文、多语种、TXT、Markdown、JSON 与可选 SRT 输出 |
 | [sound-transcribe](sound-transcribe/) | 音视频转写：本地 faster-whisper 转写音频/视频为文本、时间戳、SRT 字幕与逐字稿 |
 
 ---

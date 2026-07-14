@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meeting Minutes Pro"
+  short_description: "Private offline meeting transcription with Qwen3-ASR 0.6B"
+  default_prompt: "Use $meeting-minutes-pro to transcribe the attached meeting audio locally."
