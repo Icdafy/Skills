@@ -16,9 +16,10 @@ SKILL_NAME = SKILL_DIR.name
 
 def destinations() -> dict[str, Path]:
     home = Path.home()
+    claude_root = Path(os.environ.get("CLAUDE_CONFIG_DIR", home / ".claude")).expanduser()
     return {
         "codex": home / ".agents" / "skills" / SKILL_NAME,
-        "claude": home / ".claude" / "skills" / SKILL_NAME,
+        "claude": claude_root / "skills" / SKILL_NAME,
         "workbuddy": home / ".workbuddy" / "skills" / SKILL_NAME,
     }
 
@@ -51,11 +52,21 @@ def main() -> int:
         status = "planned" if args.dry_run else "installed"
         if not args.dry_run:
             destination.parent.mkdir(parents=True, exist_ok=True)
-            if destination.exists():
+            if destination.resolve() == SKILL_DIR.resolve():
+                results.append({
+                    "target": target,
+                    "path": str(destination),
+                    "status": "already installed; source and destination are identical",
+                })
+                continue
+            if destination.exists() or destination.is_symlink():
                 if not args.force:
                     results.append({"target": target, "path": str(destination), "status": "exists; use --force"})
                     continue
-                shutil.rmtree(destination)
+                if destination.is_symlink() or destination.is_file():
+                    destination.unlink()
+                else:
+                    shutil.rmtree(destination)
             shutil.copytree(SKILL_DIR, destination, ignore=ignore)
         results.append({"target": target, "path": str(destination), "status": status})
     print(json.dumps({"skill": SKILL_NAME, "results": results}, ensure_ascii=False, indent=2))

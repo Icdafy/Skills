@@ -8,6 +8,8 @@ The same skill directory is compatible with the shared `SKILL.md` agent-skill co
 - Claude Code: `~/.claude/skills/meeting-minutes-pro/`
 - Tencent WorkBuddy: `~/.workbuddy/skills/meeting-minutes-pro/`
 
+If `CLAUDE_CONFIG_DIR` is set, the installer places the Claude Code copy under that directory's `skills/` folder.
+
 From an extracted release, run:
 
 ```text

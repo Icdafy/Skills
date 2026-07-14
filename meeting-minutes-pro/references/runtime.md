@@ -2,7 +2,7 @@
 
 ## Downloads and caching
 
-The first setup installs an isolated Python runtime under the user's cache directory. On Windows the deliberately short default is `%LOCALAPPDATA%\q3asr06`, which avoids PyTorch's deeply nested files exceeding the legacy Windows path limit. The first transcription downloads `Qwen/Qwen3-ASR-0.6B` from Hugging Face unless it is already cached. Timestamp mode also downloads `Qwen/Qwen3-ForcedAligner-0.6B`.
+The first setup requires a system Python 3.10 or newer and installs an isolated Python runtime under the user's cache directory. On Windows the deliberately short default is `%LOCALAPPDATA%\q3asr06`, which avoids PyTorch's deeply nested files exceeding the legacy Windows path limit. The first transcription downloads `Qwen/Qwen3-ASR-0.6B` from Hugging Face unless it is already cached. Timestamp mode also downloads `Qwen/Qwen3-ForcedAligner-0.6B`.
 
 The skill package contains no model weights and no API credential. After dependencies and weights are cached, pass `--offline` to make Hugging Face and Transformers reject network access.
 
