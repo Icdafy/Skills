@@ -1,4 +1,4 @@
 interface:
-  display_name: "Meeting Minutes Pro"
-  short_description: "Private offline meeting transcription with Qwen3-ASR 0.6B"
-  default_prompt: "Use $meeting-minutes-pro to transcribe the attached meeting audio locally."
+  display_name: "会议纪要专业版"
+  short_description: "本地转录会议音视频并生成规范完整可流转的正式会议纪要"
+  default_prompt: "Use $meeting-minutes-pro 将这份会议录音或转录稿整理为正式会议纪要。"
