@@ -4,7 +4,7 @@ The same skill directory follows the shared `SKILL.md` agent-skill convention us
 
 ## User-level locations
 
-- Codex: `~/.agents/skills/meeting-minutes-pro/`
+- Codex: `$CODEX_HOME/skills/meeting-minutes-pro/`；未设置 `CODEX_HOME` 时使用 `~/.codex/skills/meeting-minutes-pro/`
 - Claude Code: `~/.claude/skills/meeting-minutes-pro/`
 - Tencent WorkBuddy: `~/.workbuddy/skills/meeting-minutes-pro/`
 

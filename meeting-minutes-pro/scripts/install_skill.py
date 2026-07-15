@@ -16,9 +16,10 @@ SKILL_NAME = SKILL_DIR.name
 
 def destinations() -> dict[str, Path]:
     home = Path.home()
+    codex_root = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser()
     claude_root = Path(os.environ.get("CLAUDE_CONFIG_DIR", home / ".claude")).expanduser()
     return {
-        "codex": home / ".agents" / "skills" / SKILL_NAME,
+        "codex": codex_root / "skills" / SKILL_NAME,
         "claude": claude_root / "skills" / SKILL_NAME,
         "workbuddy": home / ".workbuddy" / "skills" / SKILL_NAME,
     }

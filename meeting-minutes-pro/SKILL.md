@@ -77,10 +77,16 @@ python <skill-dir>/scripts/quality_check.py <minutes-text-file> --mode auto
 
 ## DOCX 交付
 
-先通过文本校验，再运行：
+先通过文本校验，再检查固定版式所需字体：
 
 ```powershell
-<python-with-python-docx> <skill-dir>/scripts/create_minutes_docx.py `
+<runtime-python> <skill-dir>/scripts/font_preflight.py --check
+```
+
+缺少随技能提供的字体时，说明安装会修改当前用户字体目录；取得用户许可后运行 `<runtime-python> <skill-dir>/scripts/font_preflight.py --install-user`。缺少黑体或宋体时提示用户安装，不在字体替换状态下继续生成。字体检查通过后运行：
+
+```powershell
+<runtime-python> <skill-dir>/scripts/create_minutes_docx.py `
   --input "会议纪要.txt" `
   --output "会议纪要.docx" `
   --subtitle "综合办公室" `
@@ -108,5 +114,6 @@ python <skill-dir>/scripts/quality_check.py <minutes-text-file> --mode auto
 - `scripts/requirements-runtime.txt`：转录与 DOCX 运行依赖。
 - `scripts/quality_check.py`：检查缩进、标题层级、问答配对和禁用表达。
 - `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX。
+- `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装随技能提供的字体。
 - `assets/fonts/`：方正小标宋简体、楷体_GB2312、仿宋_GB2312 字体文件。
 - `assets/templates/文件字体格式.doc`：公司格式样例。发生格式冲突时，以样例和 `references/format-and-output.md` 为准。

@@ -14,12 +14,16 @@ SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
 THIRD_LEVEL = re.compile(r"^\d+\.")
 FOURTH_LEVEL = re.compile(r"^（\d+）")
 
-# Assemble the expressions to keep prohibited paired conjunctions out of prose.
+# Detect prohibited paired conjunctions anywhere within the same sentence.
+CLAUSE = r"[^\r\n。！？!?]*?"
 CONTRAST_PATTERNS = [
-    re.compile("不" + "是" + r"[\s\S]{0,30}?" + "而" + "是"),
-    re.compile("并" + "非" + r"[\s\S]{0,30}?" + "而" + "是"),
-    re.compile("不" + "仅" + r"[\s\S]{0,30}?" + "而" + "是"),
-    re.compile("不" + "但" + r"[\s\S]{0,30}?" + "而" + "且"),
+    re.compile("不" + "是" + CLAUSE + "而" + "是"),
+    re.compile("并" + "非" + CLAUSE + "而" + "是"),
+    re.compile("不" + "仅" + CLAUSE + "而" + "是"),
+    re.compile("不" + "仅" + CLAUSE + "而" + "且"),
+    re.compile("不" + "仅" + CLAUSE + "还"),
+    re.compile("不" + "但" + CLAUSE + "而" + "且"),
+    re.compile("不" + "但" + CLAUSE + "还"),
 ]
 
 

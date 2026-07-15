@@ -46,7 +46,7 @@ def probe(python: Path) -> dict[str, object]:
         return result
     code = (
         "import json, importlib.util; "
-        "mods=['qwen_asr','torch','imageio_ffmpeg']; "
+        "mods=['qwen_asr','torch','imageio_ffmpeg','docx']; "
         "print(json.dumps({m: importlib.util.find_spec(m) is not None for m in mods}))"
     )
     proc = subprocess.run(

@@ -14,6 +14,7 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 
+from font_preflight import required_font_status
 from quality_check import validate
 
 TITLE_FONT = "FZXiaoBiaoSong-B05S"
@@ -45,6 +46,7 @@ def set_exact_line_spacing(paragraph, points: float) -> None:
 def set_body_layout(paragraph) -> None:
     paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     paragraph.paragraph_format.first_line_indent = Pt(32.4)
+    paragraph.paragraph_format.widow_control = True
     set_exact_line_spacing(paragraph, 28)
 
 
@@ -94,6 +96,8 @@ def format_footer(footer, alignment: WD_ALIGN_PARAGRAPH) -> None:
 
 def configure_document(document: Document) -> None:
     section = document.sections[0]
+    section.page_width = Cm(21.0)
+    section.page_height = Cm(29.7)
     section.top_margin = Cm(3.7)
     section.bottom_margin = Cm(3.5)
     section.left_margin = Cm(2.8)
@@ -108,6 +112,8 @@ def add_title(document: Document, title: str) -> None:
     paragraph = document.add_paragraph()
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     paragraph.paragraph_format.first_line_indent = Pt(0)
+    paragraph.paragraph_format.keep_together = True
+    paragraph.paragraph_format.keep_with_next = True
     set_exact_line_spacing(paragraph, 30)
     run = paragraph.add_run(title)
     set_east_asia_font(run, TITLE_FONT, 22)
@@ -117,10 +123,13 @@ def add_subtitle(document: Document, subtitle: str) -> None:
     paragraph = document.add_paragraph()
     paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
     paragraph.paragraph_format.first_line_indent = Pt(0)
+    paragraph.paragraph_format.keep_together = True
+    paragraph.paragraph_format.keep_with_next = True
     set_exact_line_spacing(paragraph, 28)
     run = paragraph.add_run(subtitle)
     set_east_asia_font(run, KAI_FONT, 16)
     blank = document.add_paragraph()
+    blank.paragraph_format.keep_with_next = True
     set_exact_line_spacing(blank, 28)
 
 
@@ -128,9 +137,16 @@ def add_content_paragraph(document: Document, text: str) -> None:
     paragraph = document.add_paragraph()
     set_body_layout(paragraph)
     content = text.removeprefix(INDENT).strip()
-    _, font_name, bold = paragraph_role(content)
+    role, font_name, bold = paragraph_role(content)
+    if role != "body":
+        paragraph.paragraph_format.keep_together = True
+        paragraph.paragraph_format.keep_with_next = True
     run = paragraph.add_run(content)
     set_east_asia_font(run, font_name, 16, bold)
+
+
+def missing_font_families() -> list[str]:
+    return [item["family"] for item in required_font_status() if not item["installed"]]
 
 
 def read_lines(path: Path) -> list[str]:
@@ -150,6 +166,14 @@ def main() -> None:
     validation_errors = validate(args.input, args.mode)
     if validation_errors:
         parser.error("输入文本未通过校验：\n- " + "\n- ".join(validation_errors))
+    missing_fonts = missing_font_families()
+    if missing_fonts:
+        parser.error(
+            "缺少固定版式所需字体："
+            + "、".join(missing_fonts)
+            + "。先运行 font_preflight.py --check；取得用户许可后可运行 "
+            "font_preflight.py --install-user 安装随技能提供的字体。"
+        )
     lines = read_lines(args.input)
     title = next((line.strip() for line in lines if line.strip()), None)
     if not title:
