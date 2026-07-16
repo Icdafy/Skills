@@ -46,13 +46,19 @@ SCALES = {
 }
 
 ARABIC_TOKEN = re.compile(
-    r"\d+(?:\.\d+)?(?:万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千)?(?:多|余)?%?"
+    r"\d+(?:\.\d+)?(?:万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千)?(?:多|余)?(?:%|个百分点)?"
 )
 CN_NUMBER_TOKEN = re.compile(
     r"[零一二两三四五六七八九十百千]*[一二两三四五六七八九十百千](?:点[零一二三四五六七八九]+)?[万亿]+"
 )
 PERCENT_CN_TOKEN = re.compile(
     r"百分之[零一二两三四五六七八九十百点]+|[零一二两三四五六七八九十百]+(?:点[零一二三四五六七八九]+)?个百分点"
+)
+# Transcript-side only: bare Chinese numerals without a 万/亿 scale (五千,
+# 十五) are harvested as match targets so that minutes written in Arabic
+# digits still find their spoken counterparts. Too noisy for the minutes side.
+CN_RUN_TOKEN = re.compile(
+    r"[零一二两三四五六七八九十百千]{2,}(?:点[零一二三四五六七八九]+)?"
 )
 HEADING_MARK = re.compile(r"^(?:[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|（\d+）)")
 
@@ -124,8 +130,8 @@ def parse_cn_number(text: str) -> float | None:
 
 
 def parse_arabic(raw: str) -> tuple[float | None, str]:
-    kind = "percent" if raw.endswith("%") else "value"
-    body = raw.rstrip("%").replace("多", "").replace("余", "")
+    kind = "percent" if raw.endswith(("%", "个百分点")) else "value"
+    body = raw.removesuffix("个百分点").rstrip("%").replace("多", "").replace("余", "")
     match = re.match(r"(\d+(?:\.\d+)?)(.*)", body)
     if not match:
         return None, kind
@@ -161,7 +167,10 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
             continue
         searchable = HEADING_MARK.sub("", content) if body_only else content
         spans: list[tuple[int, int, str]] = []
-        for pattern in (ARABIC_TOKEN, CN_NUMBER_TOKEN, PERCENT_CN_TOKEN):
+        patterns = [ARABIC_TOKEN, CN_NUMBER_TOKEN, PERCENT_CN_TOKEN]
+        if not body_only:
+            patterns.append(CN_RUN_TOKEN)
+        for pattern in patterns:
             for match in pattern.finditer(searchable):
                 overlapped = any(
                     match.start() < end and match.end() > start for start, end, _ in spans
@@ -174,7 +183,7 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
             if raw.startswith("百分之"):
                 value = parse_cn_percent(raw)
                 kind = "percent"
-            elif raw.endswith("个百分点"):
+            elif raw.endswith("个百分点") and not raw[0].isdigit():
                 value = parse_cn_number(raw.removesuffix("个百分点"))
                 kind = "percent"
             elif raw[0].isdigit():
@@ -223,9 +232,20 @@ def verify(minutes_path: Path, transcript_paths: list[Path], allow: list[str]) -
         checked += 1
         if token.raw in allowed:
             continue
-        digits = re.sub(r"[%万亿千多余]", "", token.raw)
-        if token.raw in transcript_blob or (digits and digits in transcript_blob):
-            continue
+        # Purely numeric tokens must match on digit boundaries: "3000" is not
+        # allowed to ride on "13000". Tokens carrying a unit or % may match as
+        # plain substrings.
+        if re.fullmatch(r"\d+(?:\.\d+)?", token.raw):
+            if re.search(rf"(?<![\d.]){re.escape(token.raw)}(?![\d.])", transcript_blob):
+                continue
+        else:
+            if token.raw in transcript_blob:
+                continue
+            digits = re.sub(r"%|个百分点|[万亿千多余]", "", token.raw)
+            if re.fullmatch(r"\d+(?:\.\d+)?", digits) and re.search(
+                rf"(?<![\d.]){re.escape(digits)}(?![\d.])", transcript_blob
+            ):
+                continue
         if token.value is not None and any(
             kind == token.kind and value is not None and values_match(value, token.value)
             for kind, value in transcript_values

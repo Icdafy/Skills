@@ -23,6 +23,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -521,6 +522,10 @@ def main() -> int:
                 context=args.context,
                 sampled=args.clip_duration is not None,
             )
+            if args.engine == "qwen":
+                # Outputs are safely on disk; the per-chunk checkpoints only
+                # exist to resume an interrupted transcription.
+                shutil.rmtree(checkpoint_dir, ignore_errors=True)
     except Exception as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
         return 1

@@ -119,8 +119,10 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 <录音文件名>/
   transcript.txt / .md / .json（/.srt）   原始转录稿
   会议纪要.txt                              通过校验的纪要正文
-  会议纪要.docx / .pdf                      正式版式文件及渲染稿
+  会议纪要.docx                             正式交付文件
 ```
+
+正式交付物只有 DOCX。渲染检查生成的 PDF 属于内部校验产物，逐页核对完成后删除，不随纪要交付，用户明确索要 PDF 时除外。
 
 ## DOCX 交付
 
@@ -146,7 +148,7 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 <runtime-python> <skill-dir>/scripts/render_docx.py --input "会议纪要.docx"
 ```
 
-逐页检查生成的 PDF：字体回退（结果中 `missing_required_fonts` 非空即为字体替换，不得交付）、标题偏移、段落截断、异常分页和页码位置均需修正后再次生成并渲染。本机既无 Microsoft Word 也无 LibreOffice 时，向用户说明无法本机渲染，请用户自行打开 DOCX 核对版式。
+逐页检查生成的 PDF：字体替换（结果中 `missing_required_fonts` 或 `substituted_fonts` 非空即不得交付；标题方正小标宋因许可禁止嵌入、以轮廓输出属正常，须目检字形）、标题偏移、段落截断、异常分页和页码位置均需修正后再次生成并渲染。检查全部通过后删除该 PDF，仅交付 DOCX。本机既无 Microsoft Word 也无 LibreOffice 时，向用户说明无法本机渲染，请用户自行打开 DOCX 核对版式。
 
 ## 转录与隐私规则
 

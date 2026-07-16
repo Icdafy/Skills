@@ -50,7 +50,7 @@ def runtime_python(root: Path) -> Path:
 def probe(python: Path) -> dict[str, object]:
     result: dict[str, object] = {
         "skill_dir": str(SKILL_DIR),
-        "runtime_dir": str(python.parent.parent),
+        "runtime_dir": str(python.parent.parent.parent),
         "python": str(python),
         "ready": False,
     }
