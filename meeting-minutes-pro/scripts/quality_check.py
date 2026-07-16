@@ -13,6 +13,7 @@ FIRST_LEVEL = re.compile(r"^[一二三四五六七八九十]+、")
 SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
 THIRD_LEVEL = re.compile(r"^\d+\.")
 FOURTH_LEVEL = re.compile(r"^（\d+）")
+INTERVIEW_METADATA = ("访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：")
 
 # Detect prohibited paired conjunctions anywhere within the same sentence.
 CLAUSE = r"[^\r\n。！？!?]*?"
@@ -52,6 +53,9 @@ def validate(path: Path, mode: str) -> list[str]:
         errors.append(f"第 {title_line} 行标题不应首行缩进。")
 
     last_level = 0
+    first_heading_line: int | None = None
+    interview_metadata: list[tuple[int, int, str]] = []
+    seen_interview_metadata: dict[str, int] = {}
     qa_labels: list[tuple[int, str]] = []
     for line_number, line in visible[1:]:
         if not line.startswith(INDENT):
@@ -59,15 +63,42 @@ def validate(path: Path, mode: str) -> list[str]:
         content = line.removeprefix(INDENT).strip()
         level = level_number(content)
         if level is not None:
+            if first_heading_line is None:
+                first_heading_line = line_number
             if last_level == 0 and level > 1:
                 errors.append(f"第 {line_number} 行在缺少上级标题时使用第 {level} 级标题。")
             elif last_level and level > last_level + 1:
                 errors.append(f"第 {line_number} 行层级从第 {last_level} 级跳至第 {level} 级。")
             last_level = level
+        for field_index, field in enumerate(INTERVIEW_METADATA):
+            if content.startswith(field):
+                if field in seen_interview_metadata:
+                    errors.append(
+                        f"第 {line_number} 行重复出现“{field.removesuffix('：')}”，"
+                        f"首次出现于第 {seen_interview_metadata[field]} 行。"
+                    )
+                else:
+                    seen_interview_metadata[field] = line_number
+                    interview_metadata.append((field_index, line_number, field))
         if content.startswith("问："):
             qa_labels.append((line_number, "问"))
         if content.startswith("答："):
             qa_labels.append((line_number, "答"))
+
+    if interview_metadata:
+        field_indexes = [field_index for field_index, _, _ in interview_metadata]
+        if field_indexes != sorted(field_indexes):
+            errors.append("访谈基本信息顺序应为：访谈时间、访谈地点、访谈对象、访谈人员。")
+        if first_heading_line is not None:
+            misplaced = [
+                (line_number, field)
+                for _, line_number, field in interview_metadata
+                if line_number > first_heading_line
+            ]
+            for line_number, field in misplaced:
+                errors.append(
+                    f"第 {line_number} 行“{field.removesuffix('：')}”应置于第一个正文标题之前。"
+                )
 
     document = "\n".join(lines)
     if any(pattern.search(document) for pattern in CONTRAST_PATTERNS):
