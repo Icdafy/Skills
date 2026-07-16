@@ -143,7 +143,13 @@ def main() -> int:
             print(f"- {error}")
         return 1
 
+    text = args.input.read_text(encoding="utf-8-sig")
+    qa_pairs = len(re.findall(r"^\s*　　问：", text, re.MULTILINE))
+    pending = text.count("待核")
     print("纪要文本校验通过。")
+    print(f"提示：问答 {qa_pairs} 组；“待核”标注 {pending} 处"
+          f"{'，交付前须与用户逐项确认' if pending else ''}。"
+          "数字事实核对请另行运行 fact_check.py。")
     return 0
 
 

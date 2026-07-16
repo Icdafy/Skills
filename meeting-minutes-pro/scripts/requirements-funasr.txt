@@ -1,0 +1,4 @@
+# FunASR engine (paraformer-zh + fsmn-vad + ct-punc + cam++), models from ModelScope
+funasr>=1.2,<2
+modelscope>=1.20
+torchaudio

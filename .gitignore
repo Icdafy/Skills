@@ -1,0 +1,5 @@
+__pycache__/
+*.pyc
+# 术语库中的项目数据属于用户本地内容，不入库
+meeting-minutes-pro/glossary/*
+!meeting-minutes-pro/glossary/README.md

@@ -30,4 +30,4 @@ Platform documentation:
 
 ## Distribution
 
-Publish the whole `meeting-minutes-pro` directory in a Git repository or ZIP archive. Do not redistribute cached model weights inside the skill package. Link to the Qwen3-ASR upstream project and preserve its Apache-2.0 license notices when redistributing derivative model code or weights.
+Publish the whole `meeting-minutes-pro` directory in a Git repository or ZIP archive. Do not redistribute cached model weights inside the skill package — this applies to the Qwen3-ASR weights (Apache-2.0) and equally to the FunASR/Paraformer weights downloaded from ModelScope, which carry the ModelScope model license shown on each model card. Link to the upstream projects and preserve their license notices when redistributing derivative model code or weights.

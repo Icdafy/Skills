@@ -1,0 +1,2 @@
+# Qwen3-ASR engine (Transformers backend)
+qwen-asr==0.0.6
