@@ -19,11 +19,18 @@ import subprocess
 import sys
 import tempfile
 
+# PostScript names as they appear inside the exported PDF. 方正小标宋 is not
+# listed: its license flag (fsType=2) forbids embedding, so Word outputs the
+# title as vector outlines — visually faithful but absent from the font list.
 REQUIRED_FONT_MARKERS = (
-    "FZXiaoBiaoSong",   # 方正小标宋简体
     "KaiTi_GB2312",     # 楷体_GB2312
     "FangSong_GB2312",  # 仿宋_GB2312
 )
+
+# Fonts whose presence proves a GB2312 face was silently substituted: system
+# 楷体/仿宋 (PostScript "KaiTi"/"FangSong", no _GB2312 suffix) and WPS cloud
+# clones ("KSOF…").
+SUBSTITUTE_ALERTS = ("KaiTi", "FangSong")
 
 
 def render_with_word(docx: Path, pdf: Path) -> bool:
@@ -91,13 +98,37 @@ def render_with_soffice(docx: Path, pdf: Path) -> bool:
 
 
 def inspect_pdf(pdf: Path) -> tuple[int, list[str]]:
-    data = pdf.read_bytes()
-    pages = len(re.findall(rb"/Type\s*/Page(?![a-zA-Z])", data))
-    fonts = sorted({
-        match.decode("ascii", "replace")
-        for match in re.findall(rb"/BaseFont\s*/([#\w+~.-]+)", data)
-    })
-    return pages, fonts
+    try:
+        from pypdf import PdfReader
+
+        reader = PdfReader(str(pdf))
+        fonts: set[str] = set()
+        for page in reader.pages:
+            resources = page.get("/Resources") or {}
+            font_dict = resources.get("/Font")
+            if not font_dict:
+                continue
+            for font in font_dict.values():
+                font = font.get_object()
+                base = font.get("/BaseFont")
+                if base:
+                    fonts.add(str(base).lstrip("/"))
+                descendants = font.get("/DescendantFonts")
+                if descendants:
+                    for item in descendants:
+                        base = item.get_object().get("/BaseFont")
+                        if base:
+                            fonts.add(str(base).lstrip("/"))
+        return len(reader.pages), sorted(fonts)
+    except ImportError:
+        # Crude fallback: misses fonts stored inside compressed object streams.
+        data = pdf.read_bytes()
+        pages = len(re.findall(rb"/Type\s*/Page(?![a-zA-Z])", data))
+        fonts_found = sorted({
+            match.decode("ascii", "replace")
+            for match in re.findall(rb"/BaseFont\s*/([#\w+~.-]+)", data)
+        })
+        return pages, fonts_found
 
 
 def main() -> int:
@@ -130,6 +161,11 @@ def main() -> int:
     pages, fonts = inspect_pdf(pdf)
     fonts_blob = " ".join(fonts)
     missing_markers = [m for m in REQUIRED_FONT_MARKERS if m.casefold() not in fonts_blob.casefold()]
+    bare_names = {font.split("+")[-1] for font in fonts}
+    substituted = sorted(
+        name for name in bare_names
+        if name in SUBSTITUTE_ALERTS or name.startswith("KSOF")
+    )
     print(json.dumps({
         "ok": True,
         "renderer": renderer,
@@ -137,8 +173,10 @@ def main() -> int:
         "pages": pages,
         "embedded_fonts": fonts,
         "missing_required_fonts": missing_markers,
+        "substituted_fonts": substituted,
         "note": "逐页检查 PDF：标题、缩进、分页、页码位置；"
-                "missing_required_fonts 非空说明发生了字体替换，不得交付",
+                "missing_required_fonts 或 substituted_fonts 非空说明发生了字体替换，不得交付。"
+                "标题字体方正小标宋许可禁止嵌入，PDF 中以轮廓输出属正常，须目检标题字形是否为小标宋。",
     }, ensure_ascii=False, indent=2))
     return 0
 

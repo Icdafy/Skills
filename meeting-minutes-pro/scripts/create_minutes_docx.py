@@ -17,9 +17,12 @@ from docx.shared import Cm, Pt
 from font_preflight import required_font_status
 from quality_check import validate
 
-TITLE_FONT = "FZXiaoBiaoSong-B05S"
-KAI_FONT = "KaiTi_GB2312"
-FANGSONG_FONT = "FangSong_GB2312"
+# Localized family names: Chinese-UI Word resolves East Asian fonts by their
+# localized names, while the English names (KaiTi_GB2312 etc.) fall through to
+# the registry FontSubstitutes table and get replaced by system KaiTi/FangSong.
+TITLE_FONT = "方正小标宋简体"
+KAI_FONT = "楷体_GB2312"
+FANGSONG_FONT = "仿宋_GB2312"
 SONG_FONT = "SimSun"
 INDENT = "　　"
 
