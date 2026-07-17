@@ -1,6 +1,6 @@
 ---
 name: meeting-minutes-pro
-description: 在本地将中文、方言、英文或多语言会议录音和视频转录为文字（默认 FunASR Paraformer 引擎，支持数小时长音频、说话人分离和热词；多语言场景可切换 Qwen3-ASR 引擎），并将音视频、转录稿、访谈记录、尽调问答、路演记录和会议笔记整理为完整、客观、书面化的正式会议纪要；在生成纪要前主动收集缺失的会议或访谈时间、地点、对象、人员等基本信息；只要材料中存在问答，固定生成“整份转录稿的完整总结概述＋完整问答”结构，不交付缺少前置总结的纯 QA；交付前对纪要中的每一个数字执行事实核对，确保与转录稿一致。适用于需要本地私密转录、长录音处理、会议信息采集、会议内容完整总结、核心结论与风险提炼、数字零差错核验、国有企业公文格式排版、会议纪要 DOCX 输出和 QA 问答整理的场景。
+description: 在本地将中文、方言、英文或多语言会议录音和视频转录为文字（默认 FunASR Paraformer 引擎，支持数小时长音频、断点续传、说话人分离和热词；多语言场景可切换 Qwen3-ASR 引擎；数字密集录音可用双引擎定向复核），并将音视频、转录稿、访谈记录、尽调问答、路演记录和会议笔记整理为完整、客观、书面化的正式会议纪要；在生成纪要前主动收集缺失的会议或访谈时间、地点、对象、人员等基本信息；只要材料中存在问答，固定生成“整份转录稿的完整总结概述＋完整问答”结构，不交付缺少前置总结的纯 QA；交付前依次执行分窗覆盖率审计、问答对账和逐数字事实核对（含日期），确保纪要完整且与转录稿一致。适用于需要本地私密转录、长录音处理、会议信息采集、会议内容完整总结、核心结论与风险提炼、数字零差错核验、国有企业公文格式排版、会议纪要 DOCX 输出和 QA 问答整理的场景。
 ---
 
 # Meeting Minutes Pro
@@ -56,21 +56,27 @@ python <skill-dir>/scripts/bootstrap_runtime.py --check
 python <skill-dir>/scripts/bootstrap_runtime.py --install --engine funasr
 ```
 
-5. 对时长较长、内容重要或噪声较多的录音，先转录 60 秒样本核对效果；录音噪声大、音量低时加 `--enhance`：
+5. 对时长较长、内容重要或噪声较多的录音，先用 `--sample 60` 转录 60 秒样本核对效果（自动取音频中段，避免开头寒暄和试音误导判断）；样本结果 JSON 会给出实测转录速度（`realtime_factor`）和整段录音的预计耗时（`estimated_full_run_minutes`），据此告知用户等待时间并决定是否启用双引擎复核。录音噪声大、音量低时加 `--enhance`：
 
 ```powershell
-<runtime-python> <skill-dir>/scripts/transcribe.py --input <media-path> --output-dir <output-dir> --clip-duration 60
+<runtime-python> <skill-dir>/scripts/transcribe.py --input <media-path> --output-dir <output-dir> --sample 60
 ```
 
-6. 核对样本后执行完整转录。访谈、尽调、路演和任何可能含问答的多人会议加 `--diarize` 获取说话人轮次；通过 `--context` 提供人名、项目名称、简称、专业术语和数字写法（FunASR 引擎作为热词，Qwen 引擎作为上下文）：
+6. 核对样本后执行完整转录。访谈、尽调、路演和任何可能含问答的多人会议加 `--diarize` 获取说话人轮次；前置信息采集已确认参会人数时加 `--speakers <人数>`，让说话人聚类更稳定；通过 `--context` 提供人名、项目名称、简称、专业术语和数字写法（FunASR 引擎作为热词，Qwen 引擎作为上下文）：
 
 ```powershell
-<runtime-python> <skill-dir>/scripts/transcribe.py --input <media-path> --output-dir <output-dir> --diarize --context "人名 公司名 专业术语"
+<runtime-python> <skill-dir>/scripts/transcribe.py --input <media-path> --output-dir <output-dir> --diarize --speakers 3 --context "人名 公司名 专业术语"
 ```
 
-7. 长音频转录期间脚本会在 stderr 输出 JSON 进度；qwen 引擎的分块结果保存在输出目录 `<文件名>.chunks/` 中，中断后重新执行同一命令即自动续传。
+7. 长音频两个引擎都按静音切块转录并写检查点（stderr 输出 JSON 进度），分块结果保存在输出目录 `<文件名>.chunks/` 中，中断后重新执行同一命令即自动续传。例外：funasr 引擎启用 `--diarize` 时为保证说话人编号全程一致，改为整段单遍处理、不可断点续传；此前跑过 `--sample` 样本时，脚本会在开跑前按实测速度输出预计耗时。
 8. 需要 SRT 或带时间戳文本时加 `--timestamps`（funasr 引擎句级时间戳无额外开销；qwen 引擎会下载并加载 Qwen3-ForcedAligner-0.6B，内存占用较高）。
-9. 对数字密集、结论重大的关键录音，可执行双引擎交叉核验：分别用 `funasr` 和 `qwen` 各转录一遍，再运行 `fact_check.py --compare 转录A.txt 转录B.txt`；仅出现在单一转录稿中的数字，写入纪要时必须标注“待核”或回听录音确认。
+9. 对数字密集、结论重大的关键录音，在 funasr 完整转录后执行**双引擎定向复核**：`refine_transcript.py` 自动挑出含数字、日期、术语和提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并逐类比对（金额、百分比、日期、否定词、术语）。两引擎一致的数字视为可靠依据；报告中列为分歧的片段必须回听录音，或在纪要对应数字处标注“待核”：
+
+```powershell
+<runtime-python> <skill-dir>/scripts/refine_transcript.py --transcript <输出目录>/<文件名>.json --source <media-path> --output-dir <output-dir> --glossary <skill-dir>/glossary/<项目名>.txt
+```
+
+    GPU 充足且保障要求极高时，仍可双引擎各完整转录一遍，再用 `fact_check.py --compare 转录A.txt 转录B.txt` 全量交叉核验（CPU 环境慎用：qwen 引擎整段重转耗时可达 funasr 的数倍）。
 10. 核对生成文件、首条和末条非空转录内容，说明实际引擎、模型、设备、识别语言、输出位置和可能影响准确率的因素。
 
 ## 会议纪要流程
@@ -83,18 +89,26 @@ python <skill-dir>/scripts/bootstrap_runtime.py --install --engine funasr
    - 不使用纯 QA 或将问答零散嵌入主题正文。即使材料以陈述讨论为主、仅含少量问答，也先完成整份转录稿的主题化总结，再把全部问答集中列于后部。
    - 完全没有明确问答时，不虚构问题；使用主题式纪要完整总结整份转录稿。
    - **检测到任何一组明确问答都必须以“问：/答：”结构保留；前置总结只能增加完整阅读入口，不得替代、删减或吞并后部问答。**
-4. 长转录稿分两遍处理。第一遍按主题或时间分段起草：每段先列出该段全部数字、人名、日期、承诺、判断和结论，再完成全部问答整理；随后回到整份转录稿，结合问答之外的陈述性内容，起草能够独立阅读的完整总结概述。第二遍对照审计：拿着完成的草稿逐句回到原始转录稿核对——① 每个数字、金额、百分比、日期能否在转录稿中找到原文；② 每个“会议明确”“会议同意”等结论性表述在转录稿中是否有明确表态依据；③ 总结中的每个主题是否覆盖了对应时间窗的重要内容，并与完整问答一致；④ 受访人自述、管理层口径和核查结论是否明确区分；⑤ 将转录稿按 5–10 分钟分窗，逐窗确认“已纳入总结第 X 节和/或问答第 Y 组”或“寒暄/重复，判定省略”，任何一个时间窗都不得没有判定。审计发现问题即修改，改后重审。
-5. 读取 `references/format-and-output.md`，按固定公文格式组织正文。先保证内容完整，再压缩重复口语、寒暄和无实质内容的插话。
-6. 保留影响会议结论、任务安排、时间节点、争议焦点、条件限制和问答实质的信息。各方意见存在差异时，分别记录其范围和依据。
-7. 交付前依次执行格式校验和数字事实核对：
+4. 长转录稿分两遍处理。第一遍按主题或时间分段起草：每段先列出该段全部数字、人名、日期、承诺、判断和结论，再完成全部问答整理；随后回到整份转录稿，结合问答之外的陈述性内容，起草能够独立阅读的完整总结概述。第二遍对照审计：拿着完成的草稿逐句回到原始转录稿核对——① 每个数字、金额、百分比、日期能否在转录稿中找到原文；② 每个“会议明确”“会议同意”等结论性表述在转录稿中是否有明确表态依据；③ 总结中的每个主题是否覆盖了对应时间窗的重要内容，并与完整问答一致；④ 受访人自述、管理层口径和核查结论是否明确区分。审计发现问题即修改，改后重审。
+5. 分窗判定必须落盘并通过工具校验，不允许只在头脑中完成：先生成覆盖率清单模板，把每个窗口的“待判定”逐一改为“纳入 <总结/问答中的位置>”或“省略 <原因>”，再运行校验。清单窗口含两个以上数字事实却判“省略”、窗口缺判定、时间范围被改动均会直接失败；判“纳入”但窗口内数字均未出现在纪要中会给出警告，必须逐条人工确认：
+
+```powershell
+python <skill-dir>/scripts/audit_coverage.py --transcript <输出目录>/<文件名>.json --make-template coverage.txt
+python <skill-dir>/scripts/audit_coverage.py --transcript <输出目录>/<文件名>.json --ledger coverage.txt --minutes 会议纪要.txt
+```
+6. 读取 `references/format-and-output.md`，按固定公文格式组织正文。先保证内容完整，再压缩重复口语、寒暄和无实质内容的插话。
+7. 保留影响会议结论、任务安排、时间节点、争议焦点、条件限制和问答实质的信息。各方意见存在差异时，分别记录其范围和依据。
+8. 交付前依次执行格式校验、覆盖率审计（见第 5 条）、问答对账和数字事实核对：
 
 ```powershell
 python <skill-dir>/scripts/quality_check.py <minutes-text-file> --mode <auto|minutes|qa-summary>
-python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <transcript-txt>
+python <skill-dir>/scripts/qa_reconcile.py <minutes-text-file> --transcript <输出目录>/<文件名>.json
+python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <transcript-txt> --glossary <skill-dir>/glossary/<项目名>.txt --show-matches
 ```
 
-8. `fact_check.py` 列出的每一个无依据数字必须处理后重跑直至通过：改回转录稿原文、标注“待核”，或确属用户提供/合理推定（如由“去年”推出的年份）时用 `--allow <数字>` 显式放行并向用户说明。
-9. 修复脚本提示，并人工复核事实完整性、层级顺序、两字缩进、客观语气和问答配对。
+9. `qa_reconcile.py` 从转录稿检测疑似提问并与纪要问答对账。每个“疑似遗漏提问”要么补入完整问答，要么人工确认属误报（寒暄、修辞性反问等）后以 `--skip <编号>` 放行，并向用户说明放行理由；提示“纪要问题未在转录稿中检测到对应提问”时，须确认该问题并非虚构或过度改写。
+10. `fact_check.py` 列出的每一个无依据数字（含月份、日期）必须处理后重跑直至通过：改回转录稿原文、标注“待核”，或确属用户提供/合理推定（如由“去年”推出的年份）时用 `--allow <数字>` 显式放行并向用户说明。`--show-matches` 输出的每条转录稿依据要快速扫一遍，确认数字没有被移用到无关表述（如把市占率写成毛利率）；“术语改写提示”列出的热词须逐项确认改写对象无误。执行过定向复核时，`refine_transcript.py` 报告中分歧片段涉及的数字未经回听不得按“已核对”处理。
+11. 修复脚本提示，并人工复核事实完整性、层级顺序、两字缩进、客观语气和问答配对。
 
 ## 写作口径
 
@@ -123,11 +137,17 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 ```text
 <录音文件名>/
   transcript.txt / .md / .json（/.srt）   原始转录稿
+  coverage.txt                             覆盖率审计清单（校验通过版）
+  <文件名>.refine.md / .refine.json        定向复核报告（执行过双引擎复核时）
   会议纪要.txt                              通过校验的纪要正文
   会议纪要.docx                             正式交付文件
 ```
 
 正式交付物只有 DOCX。渲染检查生成的 PDF 属于内部校验产物，逐页核对完成后删除，不随纪要交付，用户明确索要 PDF 时除外。
+
+## 批量处理
+
+用户一次提供多个录音时，逐个走完“转录→纪要→校验”全流程，每个录音独立归档目录，不并行混排。全部处理完后向用户提交一份集中确认清单，汇总各录音的：“待核”标注及其位置、定向复核报告中的分歧片段、覆盖率审计与问答对账的警告和放行记录，供用户一次性逐项确认。多个录音属于同一项目时共用同一份 `glossary/<项目名>.txt`，前一场会议新增的术语自动惠及后续场次。
 
 ## DOCX 交付
 
@@ -169,12 +189,15 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 - `references/runtime.md`：双引擎选择、硬件、下载、隐私、离线运行和故障处理说明。
 - `references/platforms.md`：在不同智能体平台安装和分发技能的说明。
 - `scripts/bootstrap_runtime.py`：检查和安装本地转录运行环境（`--engine funasr|qwen|all`）。
-- `scripts/transcribe.py`：执行本地音视频转录（FunASR/Qwen 双引擎、长音频切分、断点续传、说话人分离、音频增强）。
+- `scripts/transcribe.py`：执行本地音视频转录（FunASR/Qwen 双引擎、长音频切分、断点续传、说话人分离与 `--speakers` 人数提示、`--sample` 中段试转与耗时预估、音频增强）。
+- `scripts/refine_transcript.py`：双引擎定向复核——自动挑出含数字、日期、术语、提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并按金额/百分比/日期/否定词/术语五类比对，输出分歧报告。
 - `scripts/install_skill.py`：安装和分发技能。
 - `scripts/requirements-runtime.txt`、`requirements-funasr.txt`、`requirements-qwen.txt`：基础与分引擎运行依赖。
 - `scripts/quality_check.py`：检查缩进、标题层级、访谈基本信息顺序、问答配对和禁用表达。
-- `tests/test_quality_check.py`：回归校验“总结在前、问答在后”、总结最低完整度和问答配对规则。
-- `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比），并支持双转录稿交叉核验。
+- `scripts/audit_coverage.py`：分窗覆盖率审计——生成逐窗判定清单模板并机械校验每个时间窗都有“纳入/省略”判定，数字密集窗口不得静默省略。
+- `scripts/qa_reconcile.py`：从转录稿检测疑似提问，与纪要问答逐条对账，防止问答遗漏或虚构。
+- `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比、月份日期、二〇二五式年份），`--show-matches` 输出转录稿侧依据上下文，`--glossary` 给出热词改写提示，并支持双转录稿交叉核验。
+- `tests/`：以上校验与规划逻辑的回归测试（quality_check、fact_check、audit_coverage、qa_reconcile、refine_transcript、transcribe 辅助函数）。
 - `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX。
 - `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，用于交付前逐页检查。
 - `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装随技能提供的字体。

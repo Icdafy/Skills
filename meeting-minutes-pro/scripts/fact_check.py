@@ -6,11 +6,21 @@ Modes
 Verify (default):
     fact_check.py minutes.txt --transcript transcript.txt [more transcripts...]
     Extracts salient numeric facts (amounts with 万/亿 scales, percentages,
-    decimals, multi-digit figures, dates) from the minutes body and requires
-    each one to appear in at least one transcript, either verbatim or as the
-    same canonical value written differently (3000万 == 三千万 == 0.3亿,
-    15% == 百分之十五). Unmatched numbers are reported as suspected
+    decimals, multi-digit figures, months/days, years) from the minutes body
+    and requires each one to appear in at least one transcript, either
+    verbatim or as the same canonical value written differently
+    (3000万 == 三千万 == 0.3亿, 15% == 百分之十五, 3月15日 == 三月十五号,
+    2025 == 二〇二五). Unmatched numbers are reported as suspected
     fabrications or rewrites and the check fails.
+
+    --show-matches additionally prints the transcript-side context for every
+    verified token so a human can confirm the number was not lifted from an
+    unrelated statement (e.g. a 30% that was market share, not gross margin).
+
+    --glossary/--term list hotword terms; terms that appear in the minutes
+    but never in the transcript are reported as rewrite advisories (the
+    drafting step may have corrected a mis-transcribed name to the glossary
+    spelling — usually intended, but each case must be confirmed).
 
 Compare:
     fact_check.py --compare a.txt b.txt
@@ -36,7 +46,7 @@ METADATA_PREFIXES = (
     "访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：",
 )
 
-CN_DIGITS = {"零": 0, "一": 1, "二": 2, "两": 2, "三": 3, "四": 4,
+CN_DIGITS = {"零": 0, "〇": 0, "一": 1, "二": 2, "两": 2, "三": 3, "四": 4,
              "五": 5, "六": 6, "七": 7, "八": 8, "九": 9}
 CN_UNITS = {"十": 10, "百": 100, "千": 1000}
 CN_BIG = {"万": 10**4, "亿": 10**8}
@@ -49,24 +59,33 @@ ARABIC_TOKEN = re.compile(
     r"\d+(?:\.\d+)?(?:万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千)?(?:多|余)?(?:%|个百分点)?"
 )
 CN_NUMBER_TOKEN = re.compile(
-    r"[零一二两三四五六七八九十百千]*[一二两三四五六七八九十百千](?:点[零一二三四五六七八九]+)?[万亿]+"
+    r"[零〇一二两三四五六七八九十百千]*[一二两三四五六七八九十百千](?:点[零一二三四五六七八九]+)?[万亿]+"
 )
 PERCENT_CN_TOKEN = re.compile(
-    r"百分之[零一二两三四五六七八九十百点]+|[零一二两三四五六七八九十百]+(?:点[零一二三四五六七八九]+)?个百分点"
+    r"百分之[零〇一二两三四五六七八九十百点]+|[零〇一二两三四五六七八九十百]+(?:点[零一二三四五六七八九]+)?个百分点"
 )
 # Transcript-side only: bare Chinese numerals without a 万/亿 scale (五千,
-# 十五) are harvested as match targets so that minutes written in Arabic
-# digits still find their spoken counterparts. Too noisy for the minutes side.
+# 十五, digit strings like 二〇二五) are harvested as match targets so that
+# minutes written in Arabic digits still find their spoken counterparts.
+# Too noisy for the minutes side.
 CN_RUN_TOKEN = re.compile(
-    r"[零一二两三四五六七八九十百千]{2,}(?:点[零一二三四五六七八九]+)?"
+    r"[零〇一二两三四五六七八九十百千]{2,}(?:点[零一二三四五六七八九]+)?"
 )
+# Calendar dates on both sides: single-digit months and days matter even
+# though bare small numbers are otherwise dropped as noise.
+DATE_TOKEN = re.compile(
+    r"(?:(?P<year>\d{2,4}|[零〇一二两三四五六七八九]{2,4})年)?"
+    r"(?P<month>1[0-2]|[1-9]|十[一二]?|[一二两三四五六七八九])月"
+    r"(?:(?P<day>3[01]|[12]?\d|[一二三四五六七八九十]{1,3})[日号])?"
+)
+CN_YEAR_TOKEN = re.compile(r"[零〇一二两三四五六七八九]{2,4}年")
 HEADING_MARK = re.compile(r"^(?:[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|（\d+）)")
 
 
 @dataclass
 class Token:
     raw: str
-    kind: str  # "value" or "percent"
+    kind: str  # "value", "percent", "month", or "day"
     value: float | None
     line_number: int
     context: str
@@ -156,6 +175,17 @@ def salient(raw: str) -> bool:
     return len(digits) >= 2
 
 
+def _context_of(searchable: str, start: int, end: int) -> str:
+    context_start = max(0, start - 12)
+    return searchable[context_start:min(len(searchable), end + 12)]
+
+
+def _parse_date_component(text: str) -> float | None:
+    if text.isdigit():
+        return float(text)
+    return parse_cn_int(text)
+
+
 def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
     tokens: list[Token] = []
     lines = text.splitlines()
@@ -166,6 +196,42 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
         if body_only and content.startswith(METADATA_PREFIXES):
             continue
         searchable = HEADING_MARK.sub("", content) if body_only else content
+
+        # Calendar dates claim their spans first so 3月15日 yields month/day
+        # tokens instead of noisy bare digits, on both sides.
+        claimed: list[tuple[int, int]] = []
+        date_tokens: list[Token] = []
+        for match in DATE_TOKEN.finditer(searchable):
+            claimed.append((match.start(), match.end()))
+            if body_only and "待核" in searchable[match.end():match.end() + 8]:
+                continue
+            context = _context_of(searchable, match.start(), match.end())
+            year = match.group("year")
+            if year:
+                date_tokens.append(Token(raw=year + "年", kind="value",
+                                         value=_parse_date_component(year),
+                                         line_number=line_number, context=context))
+            month = match.group("month")
+            date_tokens.append(Token(raw=month + "月", kind="month",
+                                     value=_parse_date_component(month),
+                                     line_number=line_number, context=context))
+            day = match.group("day")
+            if day:
+                day_raw = searchable[match.start("day"):match.end("day") + 1]
+                date_tokens.append(Token(raw=day_raw, kind="day",
+                                         value=_parse_date_component(day),
+                                         line_number=line_number, context=context))
+        for match in CN_YEAR_TOKEN.finditer(searchable):
+            if any(match.start() < end and match.end() > start for start, end in claimed):
+                continue
+            claimed.append((match.start(), match.end()))
+            if body_only and "待核" in searchable[match.end():match.end() + 8]:
+                continue
+            date_tokens.append(Token(raw=match.group(), kind="value",
+                                     value=parse_cn_int(match.group()[:-1]),
+                                     line_number=line_number,
+                                     context=_context_of(searchable, match.start(), match.end())))
+
         spans: list[tuple[int, int, str]] = []
         patterns = [ARABIC_TOKEN, CN_NUMBER_TOKEN, PERCENT_CN_TOKEN]
         if not body_only:
@@ -174,6 +240,8 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
             for match in pattern.finditer(searchable):
                 overlapped = any(
                     match.start() < end and match.end() > start for start, end, _ in spans
+                ) or any(
+                    match.start() < end and match.end() > start for start, end in claimed
                 )
                 if not overlapped:
                     spans.append((match.start(), match.end(), match.group()))
@@ -193,10 +261,10 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
             else:
                 value = parse_cn_number(raw)
                 kind = "value"
-            context_start = max(0, start - 12)
-            context = searchable[context_start:min(len(searchable), end + 12)]
             tokens.append(Token(raw=raw, kind=kind, value=value,
-                                line_number=line_number, context=context))
+                                line_number=line_number,
+                                context=_context_of(searchable, start, end)))
+        tokens.extend(date_tokens)
     return tokens
 
 
@@ -218,15 +286,35 @@ def values_match(a: float, b: float) -> bool:
     return larger > 0 and abs(a - b) / larger < 1e-9
 
 
-def verify(minutes_path: Path, transcript_paths: list[Path], allow: list[str]) -> int:
+def collect_terms(glossary_paths: list[Path], terms: list[str]) -> list[str]:
+    collected: list[str] = []
+    for path in glossary_paths:
+        collected.extend(path.read_text(encoding="utf-8-sig").split())
+    collected.extend(terms)
+    return [term for term in dict.fromkeys(collected) if len(term) >= 2]
+
+
+def verify(
+    minutes_path: Path,
+    transcript_paths: list[Path],
+    allow: list[str],
+    terms: list[str] | None = None,
+    show_matches: bool = False,
+) -> int:
     minutes_text = normalize(minutes_path.read_text(encoding="utf-8-sig"))
     transcripts = [normalize(p.read_text(encoding="utf-8-sig")) for p in transcript_paths]
     transcript_blob = "\n".join(transcripts)
     transcript_tokens = extract_tokens(transcript_blob, body_only=False)
-    transcript_values = [(t.kind, t.value) for t in transcript_tokens if t.value is not None]
+    transcript_value_tokens = [t for t in transcript_tokens if t.value is not None]
     allowed = {normalize(item) for item in allow}
 
+    def blob_context(position: int, length: int) -> str:
+        start = max(0, position - 14)
+        end = min(len(transcript_blob), position + length + 14)
+        return transcript_blob[start:end].replace("\n", " ")
+
     unmatched: list[Token] = []
+    matched: list[tuple[Token, str]] = []
     checked = 0
     for token in extract_tokens(minutes_text, body_only=True):
         checked += 1
@@ -235,25 +323,57 @@ def verify(minutes_path: Path, transcript_paths: list[Path], allow: list[str]) -
         # Purely numeric tokens must match on digit boundaries: "3000" is not
         # allowed to ride on "13000". Tokens carrying a unit or % may match as
         # plain substrings.
+        evidence: str | None = None
         if re.fullmatch(r"\d+(?:\.\d+)?", token.raw):
-            if re.search(rf"(?<![\d.]){re.escape(token.raw)}(?![\d.])", transcript_blob):
-                continue
+            found = re.search(rf"(?<![\d.]){re.escape(token.raw)}(?![\d.])", transcript_blob)
+            if found:
+                evidence = blob_context(found.start(), len(token.raw))
         else:
-            if token.raw in transcript_blob:
-                continue
-            digits = re.sub(r"%|个百分点|[万亿千多余]", "", token.raw)
-            if re.fullmatch(r"\d+(?:\.\d+)?", digits) and re.search(
-                rf"(?<![\d.]){re.escape(digits)}(?![\d.])", transcript_blob
-            ):
-                continue
-        if token.value is not None and any(
-            kind == token.kind and value is not None and values_match(value, token.value)
-            for kind, value in transcript_values
-        ):
-            continue
-        unmatched.append(token)
+            position = transcript_blob.find(token.raw)
+            if position >= 0:
+                evidence = blob_context(position, len(token.raw))
+            else:
+                digits = re.sub(r"%|个百分点|[万亿千多余]", "", token.raw)
+                if re.fullmatch(r"\d+(?:\.\d+)?", digits):
+                    found = re.search(
+                        rf"(?<![\d.]){re.escape(digits)}(?![\d.])", transcript_blob
+                    )
+                    if found:
+                        evidence = blob_context(found.start(), len(digits))
+        if evidence is None and token.value is not None:
+            for candidate in transcript_value_tokens:
+                if candidate.kind == token.kind and values_match(candidate.value, token.value):
+                    evidence = candidate.context.replace("\n", " ")
+                    break
+        if evidence is None:
+            unmatched.append(token)
+        else:
+            matched.append((token, evidence))
 
     print(f"共核对 {checked} 个数字事实，转录稿来源 {len(transcript_paths)} 份。")
+    if show_matches and matched:
+        print("已核对数字的转录稿依据（请人工确认数字未被移用到无关表述）：")
+        for token, evidence in matched:
+            # "←" stays inside GBK so Windows consoles do not choke on it.
+            print(f"- 第 {token.line_number} 行「{token.raw}」 ← …{evidence}…")
+
+    if terms:
+        body_lines = [
+            line.removeprefix(INDENT).strip()
+            for line in minutes_text.splitlines()
+            if line.strip() and not line.removeprefix(INDENT).strip().startswith(METADATA_PREFIXES)
+        ]
+        body_text = "\n".join(body_lines)
+        rewritten = [
+            term for term in terms
+            if term in body_text and term not in transcript_blob
+        ]
+        if rewritten:
+            print("术语改写提示（不计入通过/失败）：以下热词出现在纪要正文但未出现在"
+                  "转录稿原文，多为对误转词的规范改写，请逐项确认改写对象无误：")
+            for term in rewritten:
+                print(f"- 「{term}」")
+
     if unmatched:
         print("以下数字在转录稿中找不到依据（疑似改写、误转或幻觉），"
               "必须逐一人工核实，或改为转录稿原文，或标注“待核”：")
@@ -269,7 +389,9 @@ def compare(path_a: Path, path_b: Path) -> int:
         text = normalize(path.read_text(encoding="utf-8-sig"))
         result: dict[tuple[str, float], Token] = {}
         for token in extract_tokens(text, body_only=False):
-            if token.value is not None and salient(token.raw):
+            if token.value is not None and (
+                token.kind in ("month", "day") or salient(token.raw)
+            ):
                 result.setdefault((token.kind, round(token.value, 6)), token)
         return result
 
@@ -301,6 +423,14 @@ def main() -> int:
     parser.add_argument("--allow", action="append", default=[],
                         help="a number token confirmed by the user or by explicit "
                              "reasoning (e.g. --allow 2025); may be repeated")
+    parser.add_argument("--glossary", action="append", type=Path, default=[],
+                        help="hotword file whose terms are checked for rewrite "
+                             "advisories; may be repeated")
+    parser.add_argument("--term", action="append", default=[],
+                        help="a single hotword term for rewrite advisories; may be repeated")
+    parser.add_argument("--show-matches", action="store_true",
+                        help="print the transcript context of every verified number "
+                             "so misplaced figures can be spotted manually")
     args = parser.parse_args()
 
     if args.compare:
@@ -316,7 +446,12 @@ def main() -> int:
     for path in args.transcript:
         if not path.is_file():
             parser.error(f"找不到转录稿：{path}")
-    return verify(args.minutes, args.transcript, args.allow)
+    for path in args.glossary:
+        if not path.is_file():
+            parser.error(f"找不到术语文件：{path}")
+    terms = collect_terms(args.glossary, args.term)
+    return verify(args.minutes, args.transcript, args.allow,
+                  terms=terms, show_matches=args.show_matches)
 
 
 if __name__ == "__main__":

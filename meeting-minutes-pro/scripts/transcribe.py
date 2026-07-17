@@ -4,14 +4,22 @@
 Engines
 -------
 funasr  Default. Paraformer-zh + fsmn-vad + ct-punc pipeline from ModelScope.
-        Handles hours-long audio natively via VAD segmentation, produces
-        sentence timestamps at no extra cost, and supports optional speaker
-        diarization (--diarize, cam++) and hotwords (--context).
+        Handles hours-long audio via VAD segmentation, produces sentence
+        timestamps at no extra cost, and supports optional speaker
+        diarization (--diarize, cam++, with an optional --speakers count
+        hint) and hotwords (--context). Long non-diarized audio is chunked
+        at silences with per-chunk checkpoints so interrupted runs resume;
+        diarized runs stay single-pass because cam++ clusters speakers per
+        call and chunking would renumber them.
 qwen    Qwen3-ASR (default 0.6B) via the qwen-asr Transformers backend.
         Recommended for multilingual or dialect-heavy recordings. Long audio
         is split at silences (ffmpeg silencedetect) into chunks that are
         transcribed sequentially with per-chunk checkpoints, so an
         interrupted run resumes instead of starting over.
+
+Use --sample N to transcribe an N-second probe taken from the middle of the
+recording (openings are usually greetings and mic checks); the result JSON
+reports the measured realtime factor and a full-run time estimate.
 """
 
 from __future__ import annotations
@@ -27,6 +35,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import wave
 
 
@@ -37,11 +46,17 @@ FUNASR_VAD_DEFAULT = "fsmn-vad"
 FUNASR_PUNC_DEFAULT = "ct-punc"
 FUNASR_SPK_DEFAULT = "cam++"
 
-# Single-pass limit for the qwen engine; longer audio is chunked at silences.
+# Single-pass limits; longer audio is chunked at silences with per-chunk
+# checkpoints. Diarized funasr runs are never chunked: cam++ clusters
+# speakers per generate() call, so chunking would renumber 说话人N labels.
 QWEN_SINGLE_PASS_SECONDS = 600.0
-CHUNK_TARGET_SECONDS = 120.0
-CHUNK_MIN_SECONDS = 30.0
-CHUNK_MAX_SECONDS = 180.0
+QWEN_CHUNK_TARGET_SECONDS = 120.0
+QWEN_CHUNK_MIN_SECONDS = 30.0
+QWEN_CHUNK_MAX_SECONDS = 180.0
+FUNASR_SINGLE_PASS_SECONDS = 1800.0
+FUNASR_CHUNK_TARGET_SECONDS = 600.0
+FUNASR_CHUNK_MIN_SECONDS = 240.0
+FUNASR_CHUNK_MAX_SECONDS = 900.0
 
 
 @dataclass
@@ -78,17 +93,24 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--timestamps", action="store_true", help="emit sentence timestamps and SRT")
     parser.add_argument("--diarize", action="store_true",
                         help="funasr only: label speaker turns with the cam++ model")
+    parser.add_argument("--speakers", type=int, default=None,
+                        help="funasr with --diarize: known participant count passed to "
+                             "cam++ clustering (preset_spk_num) for steadier speaker labels")
     parser.add_argument("--enhance", action="store_true",
                         help="preprocess audio with loudness normalization and light denoising")
     parser.add_argument("--offline", action="store_true", help="forbid model/network downloads")
     parser.add_argument("--clip-start", type=float, default=0.0)
     parser.add_argument("--clip-duration", type=float)
+    parser.add_argument("--sample", type=float, default=None,
+                        help="transcribe an N-second probe from the middle of the recording "
+                             "and report the measured realtime factor plus a full-run estimate")
     parser.add_argument("--max-new-tokens", type=int, default=None,
                         help="qwen only; default scales with audio length per chunk")
-    parser.add_argument("--chunk-seconds", type=float, default=CHUNK_TARGET_SECONDS,
-                        help="qwen only: target chunk length for long-audio splitting")
+    parser.add_argument("--chunk-seconds", type=float, default=None,
+                        help="target chunk length for long-audio splitting "
+                             "(defaults: qwen 120s, funasr 600s)")
     parser.add_argument("--no-resume", action="store_true",
-                        help="qwen only: ignore existing chunk checkpoints and retranscribe")
+                        help="ignore existing chunk checkpoints and retranscribe")
     return parser.parse_args()
 
 
@@ -135,6 +157,19 @@ def wav_duration(path: Path) -> float:
         return handle.getnframes() / float(handle.getframerate())
 
 
+def media_duration(path: Path) -> float | None:
+    """Parse the container duration from the ffmpeg -i header without decoding."""
+    proc = subprocess.run(
+        [ffmpeg_exe(), "-nostdin", "-hide_banner", "-i", str(path)],
+        capture_output=True, text=True, check=False,
+    )
+    match = re.search(r"Duration:\s*(\d+):(\d{2}):(\d{2}(?:\.\d+)?)", proc.stderr)
+    if not match:
+        return None
+    hours, minutes, seconds = match.groups()
+    return int(hours) * 3600 + int(minutes) * 60 + float(seconds)
+
+
 def detect_silences(wav_path: Path) -> list[tuple[float, float]]:
     """Return (start, end) silence intervals using ffmpeg silencedetect."""
     cmd = [
@@ -156,15 +191,21 @@ def detect_silences(wav_path: Path) -> list[tuple[float, float]]:
     return silences
 
 
-def plan_chunks(duration: float, silences: list[tuple[float, float]], target: float) -> list[tuple[float, float]]:
+def plan_chunks(
+    duration: float,
+    silences: list[tuple[float, float]],
+    target: float,
+    minimum: float,
+    maximum: float,
+) -> list[tuple[float, float]]:
     """Split [0, duration] at silence midpoints near multiples of the target length."""
-    target = min(max(target, CHUNK_MIN_SECONDS), CHUNK_MAX_SECONDS)
+    target = min(max(target, minimum), maximum)
     midpoints = sorted((a + b) / 2 for a, b in silences)
     chunks: list[tuple[float, float]] = []
     cursor = 0.0
-    while duration - cursor > CHUNK_MAX_SECONDS:
+    while duration - cursor > maximum:
         ideal = cursor + target
-        low, high = cursor + CHUNK_MIN_SECONDS, cursor + CHUNK_MAX_SECONDS
+        low, high = cursor + minimum, cursor + maximum
         candidates = [m for m in midpoints if low <= m <= high]
         cut = min(candidates, key=lambda m: abs(m - ideal)) if candidates else high
         chunks.append((cursor, cut))
@@ -219,7 +260,13 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
         chunks = [(0.0, duration)]
     else:
         progress({"stage": "plan", "engine": "qwen", "duration": round(duration, 1)})
-        chunks = plan_chunks(duration, detect_silences(wav_path), args.chunk_seconds)
+        chunks = plan_chunks(
+            duration,
+            detect_silences(wav_path),
+            args.chunk_seconds or QWEN_CHUNK_TARGET_SECONDS,
+            QWEN_CHUNK_MIN_SECONDS,
+            QWEN_CHUNK_MAX_SECONDS,
+        )
 
     max_chunk = max(end - start for start, end in chunks)
     model_kwargs = {
@@ -245,7 +292,9 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
             checkpoint = checkpoint_dir / f"chunk_{index:04d}.json"
             if not single_pass and not args.no_resume and checkpoint.is_file():
                 cached = json.loads(checkpoint.read_text(encoding="utf-8"))
-                if abs(cached.get("start", -1) - start) < 0.5 and abs(cached.get("end", -1) - end) < 0.5:
+                if (cached.get("engine", "qwen") == "qwen"
+                        and abs(cached.get("start", -1) - start) < 0.5
+                        and abs(cached.get("end", -1) - end) < 0.5):
                     texts.append(cached["text"])
                     stamps.extend(Stamp(**item) for item in cached.get("stamps", []))
                     if cached.get("language"):
@@ -281,6 +330,7 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
             stamps.extend(chunk_stamps)
             if not single_pass:
                 checkpoint.write_text(json.dumps({
+                    "engine": "qwen",
                     "start": start,
                     "end": end,
                     "language": detected_language,
@@ -310,7 +360,9 @@ def funasr_device(requested: str) -> str:
     return "cpu"
 
 
-def run_funasr(args: argparse.Namespace, wav_path: Path) -> TranscribeResult:
+def run_funasr(
+    args: argparse.Namespace, wav_path: Path, duration: float, checkpoint_dir: Path
+) -> TranscribeResult:
     try:
         from funasr import AutoModel
     except ImportError as exc:
@@ -322,6 +374,29 @@ def run_funasr(args: argparse.Namespace, wav_path: Path) -> TranscribeResult:
 
     device = funasr_device(args.device)
     want_sentences = args.timestamps or args.diarize
+    # cam++ clusters speakers per generate() call, so diarized recordings keep
+    # a single pass to hold 说话人N numbering consistent end to end.
+    single_pass = (
+        args.diarize
+        or args.clip_duration is not None
+        or duration <= FUNASR_SINGLE_PASS_SECONDS
+    )
+    if single_pass:
+        chunks = [(0.0, duration)]
+        if args.diarize and duration > FUNASR_SINGLE_PASS_SECONDS:
+            progress({"stage": "plan", "engine": "funasr", "single_pass": True,
+                      "note": "diarization runs in one pass to keep speaker labels consistent"})
+    else:
+        progress({"stage": "plan", "engine": "funasr", "duration": round(duration, 1)})
+        chunks = plan_chunks(
+            duration,
+            detect_silences(wav_path),
+            args.chunk_seconds or FUNASR_CHUNK_TARGET_SECONDS,
+            FUNASR_CHUNK_MIN_SECONDS,
+            FUNASR_CHUNK_MAX_SECONDS,
+        )
+        checkpoint_dir.mkdir(parents=True, exist_ok=True)
+
     model_kwargs = {
         "model": args.model or FUNASR_MODEL_DEFAULT,
         "vad_model": FUNASR_VAD_DEFAULT,
@@ -337,32 +412,67 @@ def run_funasr(args: argparse.Namespace, wav_path: Path) -> TranscribeResult:
         model_kwargs["spk_model"] = FUNASR_SPK_DEFAULT
     progress({"stage": "load", "engine": "funasr", "device": device})
     model = AutoModel(**model_kwargs)
-    generate_kwargs = {"input": str(wav_path), "batch_size_s": 300}
-    if args.context.strip():
-        generate_kwargs["hotword"] = args.context.strip()
-    results = model.generate(**generate_kwargs)
-    if not results:
-        raise RuntimeError("the model returned no result")
-    result = results[0]
-    text = str(result.get("text", "")).strip()
+
+    texts: list[str] = []
     stamps: list[Stamp] = []
-    for sentence in result.get("sentence_info") or []:
-        sentence_text = str(sentence.get("text", "")).strip()
-        if not sentence_text:
-            continue
-        speaker = None
-        if args.diarize and sentence.get("spk") is not None:
-            speaker = f"说话人{int(sentence['spk']) + 1}"
-        stamps.append(Stamp(
-            text=sentence_text,
-            start=float(sentence.get("start", 0)) / 1000.0,
-            end=float(sentence.get("end", 0)) / 1000.0,
-            speaker=speaker,
-        ))
-    if not text and stamps:
-        text = "".join(x.text for x in stamps)
+    with tempfile.TemporaryDirectory(prefix="funasr-chunks-") as temp_dir:
+        for index, (start, end) in enumerate(chunks, start=1):
+            checkpoint = checkpoint_dir / f"chunk_{index:04d}.json"
+            if not single_pass and not args.no_resume and checkpoint.is_file():
+                cached = json.loads(checkpoint.read_text(encoding="utf-8"))
+                if (cached.get("engine") == "funasr"
+                        and abs(cached.get("start", -1) - start) < 0.5
+                        and abs(cached.get("end", -1) - end) < 0.5):
+                    texts.append(cached["text"])
+                    stamps.extend(Stamp(**item) for item in cached.get("stamps", []))
+                    progress({"stage": "chunk", "index": index, "total": len(chunks), "cached": True})
+                    continue
+            if single_pass:
+                chunk_wav = wav_path
+            else:
+                chunk_wav = Path(temp_dir) / f"chunk_{index:04d}.wav"
+                prepare_wav(wav_path, chunk_wav, clip_start=start, clip_duration=end - start)
+            generate_kwargs = {"input": str(chunk_wav), "batch_size_s": 300}
+            if args.context.strip():
+                generate_kwargs["hotword"] = args.context.strip()
+            if args.diarize and args.speakers:
+                # Known participant count constrains the cam++ clustering.
+                generate_kwargs["preset_spk_num"] = args.speakers
+            results = model.generate(**generate_kwargs)
+            if not results:
+                raise RuntimeError(f"the model returned no result for chunk {index}")
+            result = results[0]
+            chunk_text = str(result.get("text", "")).strip()
+            chunk_stamps: list[Stamp] = []
+            for sentence in result.get("sentence_info") or []:
+                sentence_text = str(sentence.get("text", "")).strip()
+                if not sentence_text:
+                    continue
+                speaker = None
+                if args.diarize and sentence.get("spk") is not None:
+                    speaker = f"说话人{int(sentence['spk']) + 1}"
+                chunk_stamps.append(Stamp(
+                    text=sentence_text,
+                    start=start + float(sentence.get("start", 0)) / 1000.0,
+                    end=start + float(sentence.get("end", 0)) / 1000.0,
+                    speaker=speaker,
+                ))
+            if not chunk_text and chunk_stamps:
+                chunk_text = "".join(x.text for x in chunk_stamps)
+            texts.append(chunk_text)
+            stamps.extend(chunk_stamps)
+            if not single_pass:
+                checkpoint.write_text(json.dumps({
+                    "engine": "funasr",
+                    "start": start,
+                    "end": end,
+                    "text": chunk_text,
+                    "stamps": [asdict(x) for x in chunk_stamps],
+                }, ensure_ascii=False), encoding="utf-8")
+                progress({"stage": "chunk", "index": index, "total": len(chunks), "cached": False})
+
     return TranscribeResult(
-        text=text,
+        text="\n".join(t for t in texts if t),
         language="Chinese" if args.language.lower() in {"auto", "none", ""} else args.language,
         stamps=stamps if want_sentences else [],
         speakers=args.diarize and any(x.speaker for x in stamps),
@@ -420,6 +530,7 @@ def write_outputs(
     duration: float,
     context: str,
     sampled: bool,
+    extra: dict | None = None,
 ) -> dict[str, str]:
     output_dir.mkdir(parents=True, exist_ok=True)
     suffix = ".sample" if sampled else ""
@@ -465,6 +576,7 @@ def write_outputs(
         "text": outcome.text.strip(),
         "timestamps": [asdict(x) for x in outcome.stamps],
     }
+    payload.update(extra or {})
     paths["json"].write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     if stamp_groups:
         srt_path = Path(str(prefix) + ".srt")
@@ -477,6 +589,23 @@ def write_outputs(
     return {name: str(path) for name, path in paths.items()}
 
 
+def emit_eta(output_dir: Path, source: Path, duration: float) -> None:
+    """Report an ETA for the full run based on an earlier --sample probe."""
+    sample_json = output_dir / f"{safe_stem(source)}.sample.json"
+    if not sample_json.is_file():
+        return
+    try:
+        rtf = json.loads(sample_json.read_text(encoding="utf-8")).get("realtime_factor")
+    except Exception:
+        return
+    if rtf:
+        progress({
+            "stage": "eta",
+            "estimated_minutes": round(duration * float(rtf) / 60, 1),
+            "based_on": sample_json.name,
+        })
+
+
 def main() -> int:
     args = parse_args()
     source = args.input.expanduser().resolve()
@@ -487,21 +616,45 @@ def main() -> int:
     if args.diarize and args.engine != "funasr":
         print(json.dumps({"ok": False, "error": "--diarize requires --engine funasr"}, ensure_ascii=False))
         return 2
+    if args.speakers is not None:
+        if args.speakers < 1:
+            print(json.dumps({"ok": False, "error": "--speakers must be a positive integer"}, ensure_ascii=False))
+            return 2
+        if not args.diarize:
+            print(json.dumps({"ok": False, "error": "--speakers requires --diarize"}, ensure_ascii=False))
+            return 2
     if args.offline:
         os.environ["HF_HUB_OFFLINE"] = "1"
         os.environ["TRANSFORMERS_OFFLINE"] = "1"
+
+    full_duration = media_duration(source)
+    if args.sample is not None:
+        if args.sample <= 0:
+            print(json.dumps({"ok": False, "error": "--sample must be positive"}, ensure_ascii=False))
+            return 2
+        args.clip_duration = args.sample
+        # Probe the middle of the recording: openings are usually greetings,
+        # introductions, and microphone checks that misrepresent audio quality.
+        if full_duration and full_duration > args.sample * 2:
+            args.clip_start = max(0.0, full_duration * 0.4)
+        else:
+            args.clip_start = 0.0
 
     try:
         with tempfile.TemporaryDirectory(prefix="mmp-asr-") as temp_dir:
             wav_path = Path(temp_dir) / "input.wav"
             prepare_wav(source, wav_path, args.clip_start, args.clip_duration, enhance=args.enhance)
             duration = wav_duration(wav_path)
+            sampled = args.clip_duration is not None
+            checkpoint_dir = output_dir / f"{safe_stem(source)}.chunks"
+            if not sampled:
+                emit_eta(output_dir, source, duration)
+            started = time.monotonic()
             if args.engine == "funasr":
-                outcome = run_funasr(args, wav_path)
+                outcome = run_funasr(args, wav_path, duration, checkpoint_dir)
                 device = funasr_device(args.device)
                 model_name = args.model or FUNASR_MODEL_DEFAULT
             else:
-                checkpoint_dir = output_dir / f"{safe_stem(source)}.chunks"
                 outcome = run_qwen(args, wav_path, duration, checkpoint_dir)
                 model_name = args.model or QWEN_MODEL_DEFAULT
                 device = "cpu"
@@ -511,6 +664,18 @@ def main() -> int:
                     device = choose_device(torch, args.device)[0]
                 except Exception:
                     pass
+            elapsed = time.monotonic() - started
+            realtime_factor = round(elapsed / duration, 3) if duration else None
+            extra = {
+                "elapsed_seconds": round(elapsed, 1),
+                "realtime_factor": realtime_factor,
+            }
+            if full_duration:
+                extra["media_duration_seconds"] = round(full_duration, 3)
+            if sampled and realtime_factor and full_duration:
+                extra["estimated_full_run_minutes"] = round(
+                    full_duration * realtime_factor / 60, 1
+                )
             outputs = write_outputs(
                 output_dir=output_dir,
                 source=source,
@@ -520,11 +685,13 @@ def main() -> int:
                 model=model_name,
                 duration=duration,
                 context=args.context,
-                sampled=args.clip_duration is not None,
+                sampled=sampled,
+                extra=extra,
             )
-            if args.engine == "qwen":
+            if not sampled:
                 # Outputs are safely on disk; the per-chunk checkpoints only
-                # exist to resume an interrupted transcription.
+                # exist to resume an interrupted transcription. Sample probes
+                # never write checkpoints and must not delete a full run's.
                 shutil.rmtree(checkpoint_dir, ignore_errors=True)
     except Exception as exc:
         print(json.dumps({"ok": False, "error": str(exc)}, ensure_ascii=False, indent=2))
@@ -540,6 +707,7 @@ def main() -> int:
         "timestamps": bool(outcome.stamps),
         "speaker_labels": outcome.speakers,
         "outputs": outputs,
+        **extra,
     }, ensure_ascii=False, indent=2))
     return 0
 

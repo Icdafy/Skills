@@ -104,6 +104,23 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertTrue(any("内容不足" in error for error in errors))
 
+    def test_long_qa_demands_proportional_summary(self) -> None:
+        # A two-hour interview: ~30k characters of Q/A must not pass with a
+        # 600-character overview; the requirement scales up to 2000 characters.
+        answer = "答：" + "回答内容涉及技术路线、订单结构、毛利率与产能爬坡等。" * 60
+        qa_lines: list[str] = []
+        for _ in range(20):
+            qa_lines.append("问：请介绍公司当前的业务进展和主要客户结构情况？")
+            qa_lines.append(answer)
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            substantial_summary() * 4,  # ~700 chars, below the scaled minimum
+            "二、完整问答纪要",
+            *qa_lines,
+        )
+        self.assertTrue(any("内容不足" in error for error in errors))
+
     def test_summary_must_precede_questions(self) -> None:
         errors = self.errors(
             "auto",

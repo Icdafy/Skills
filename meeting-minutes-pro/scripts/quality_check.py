@@ -209,7 +209,10 @@ def validate(path: Path, mode: str) -> list[str]:
                     ]
                     summary_chars = sum(len(content) for content in summary_body)
                     qa_chars = sum(len(content) for content in qa_body)
-                    minimum_summary_chars = min(600, max(120, qa_chars // 10))
+                    # Scale with the Q/A volume: a two-hour interview carries
+                    # thousands of characters of Q/A and deserves far more than
+                    # a token overview, hence the 2000-character ceiling.
+                    minimum_summary_chars = min(2000, max(120, qa_chars // 10))
                     if summary_chars < minimum_summary_chars:
                         errors.append(
                             "“完整总结概述”内容不足：当前正文约 "

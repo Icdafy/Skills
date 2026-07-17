@@ -8,9 +8,9 @@ Two local engines share one isolated runtime. Select with `transcribe.py --engin
 | --- | --- | --- |
 | 模型 | `paraformer-zh`（seaco-Paraformer）+ `fsmn-vad` + `ct-punc`，可选 `cam++` | `Qwen/Qwen3-ASR-0.6B`，可选 `Qwen/Qwen3-ASR-1.7B` |
 | 下载来源 | ModelScope（魔搭，中国大陆网络友好） | Hugging Face |
-| 长音频 | 原生 VAD 分段，数小时录音直接处理 | 脚本按静音切块（ffmpeg silencedetect），逐块转录并写检查点，中断自动续传 |
+| 长音频 | 原生 VAD 分段；超过 30 分钟且未启用 `--diarize` 时按静音切块（约 10 分钟一块）写检查点、中断自动续传；`--diarize` 时整段单遍处理以保证说话人编号一致 | 脚本按静音切块（ffmpeg silencedetect），逐块转录并写检查点，中断自动续传 |
 | 时间戳 | 句级时间戳随说话人流水线产生，无额外开销 | 需 `--timestamps` 加载 Qwen3-ForcedAligner-0.6B，内存占用较高 |
-| 说话人分离 | `--diarize`（cam++） | 不支持 |
+| 说话人分离 | `--diarize`（cam++）；已知参会人数时加 `--speakers N`（传入 preset_spk_num）提高聚类稳定性 | 不支持 |
 | 热词/上下文 | `--context` 作为热词（hotword） | `--context` 作为上下文提示 |
 | 架构与速度 | 非自回归 Paraformer，CPU 上速度快 | 自回归解码，CPU 上长录音耗时明显 |
 | 适用 | 中文及中英混杂的会议、访谈、路演 | 纯外语、粤语等方言、多语言混合（52 种语言） |
@@ -36,11 +36,11 @@ With the qwen engine, use the 0.6B model on general laptops. When CUDA with ampl
 
 Use `--context` for company names, people's names, abbreviations, technical vocabulary, and exact number spellings that may occur; reuse and extend the per-project files under `glossary/`. Context is a recognition hint, not text that must appear; keep it short and relevant. For known Chinese recordings on the qwen engine, also specify `--language Chinese`.
 
-Run a 60-second sample before an important long recording. Use `--enhance` for noisy, quiet, or far-field audio (loudness normalization plus light denoising). If names or numbers remain uncertain, preserve the raw output and list the uncertainty instead of guessing.
+Run `--sample 60` before an important long recording: the probe is taken from the middle of the audio (openings are greetings and mic checks), and the result JSON reports the measured realtime factor plus an estimated full-run duration — quote that estimate to the user before starting the long run. Use `--enhance` for noisy, quiet, or far-field audio (loudness normalization plus light denoising). If names or numbers remain uncertain, preserve the raw output and list the uncertainty instead of guessing.
 
-For number-critical recordings, transcribe with both engines and run `fact_check.py --compare` on the two transcripts; treat numbers that appear in only one transcript as 待核 until confirmed against the audio.
+For number-critical recordings, the default assurance step is targeted dual-engine review: after the funasr master transcript, run `refine_transcript.py` to re-transcribe only the risky segments (numbers, dates, glossary terms, questions) with Qwen3-ASR and compare them category by category (amounts, percentages, dates, negation words, glossary terms). Figures the two engines agree on are strong evidence; figures they disagree on must be re-listened to or marked 待核. This typically covers 10–30% of the audio, so it stays practical on CPU-only machines. When ample GPU is available and assurance requirements are extreme, transcribing everything with both engines and running `fact_check.py --compare` remains the exhaustive option.
 
-Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说话人2…; it does not know real names. Map labels to the participant list confirmed during 前置信息采集, and keep the numeric labels when unsure. Overlapping speech, clipped microphones, background music, and distant voices still require human review.
+Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说话人2…; it does not know real names. Pass the participant count confirmed during 前置信息采集 via `--speakers N`. Map labels to the confirmed participant list, and keep the numeric labels when unsure. Overlapping speech, clipped microphones, background music, and distant voices still require human review.
 
 ## Troubleshooting
 
@@ -49,7 +49,8 @@ Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说�
 - Model download blocked: retry on an allowed network, or manually download the official model and pass its local path with `--model`.
 - Out of memory: disable `--timestamps` (qwen), close other applications, use `--device cpu`, and process a shorter clip.
 - MPS or GPU operator failure: retry with `--device cpu`.
-- Interrupted long transcription (qwen): rerun the identical command; completed chunks under `<输出目录>/<文件名>.chunks/` are reused automatically. Pass `--no-resume` to force a clean retranscription.
+- Interrupted long transcription (either engine): rerun the identical command; completed chunks under `<输出目录>/<文件名>.chunks/` are reused automatically. Pass `--no-resume` to force a clean retranscription. Diarized funasr runs are single-pass and restart from the beginning — quote the ETA from the `--sample` probe up front.
+- Interrupted targeted review: rerun the identical `refine_transcript.py` command; finished clips under `<输出目录>/<文件名>.refine-chunks/` are reused.
 - Media decoding failure: confirm the source file is complete and readable. The skill uses the FFmpeg binary bundled by `imageio-ffmpeg`.
 
 ## Upstream
