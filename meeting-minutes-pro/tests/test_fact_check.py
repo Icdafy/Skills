@@ -86,6 +86,15 @@ class VerifyTests(unittest.TestCase):
         )
         self.assertEqual(code, 0)
 
+    def test_colloquial_year_span_not_force_verified(self) -> None:
+        # 两三年/一两年 are approximations, not years; they must not be
+        # extracted as numeric facts that fail verification.
+        code, _ = run_verify(
+            minutes_doc("公司预计未来两三年完成产能扩张。"),
+            "我们尽快把产能提上去",
+        )
+        self.assertEqual(code, 0)
+
     def test_amount_equivalence_still_passes(self) -> None:
         code, _ = run_verify(
             minutes_doc("全年营收3000万元。"),

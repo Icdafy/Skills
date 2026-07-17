@@ -72,13 +72,16 @@ CN_RUN_TOKEN = re.compile(
     r"[零〇一二两三四五六七八九十百千]{2,}(?:点[零一二三四五六七八九]+)?"
 )
 # Calendar dates on both sides: single-digit months and days matter even
-# though bare small numbers are otherwise dropped as noise.
+# though bare small numbers are otherwise dropped as noise. Year digit
+# strings exclude 两: real years are never written with it (二〇二五, 九八),
+# while colloquial approximations (两三年, 一两年) are and must not be
+# force-verified as numbers.
 DATE_TOKEN = re.compile(
-    r"(?:(?P<year>\d{2,4}|[零〇一二两三四五六七八九]{2,4})年)?"
+    r"(?:(?P<year>\d{2,4}|[零〇一二三四五六七八九]{2,4})年)?"
     r"(?P<month>1[0-2]|[1-9]|十[一二]?|[一二两三四五六七八九])月"
     r"(?:(?P<day>3[01]|[12]?\d|[一二三四五六七八九十]{1,3})[日号])?"
 )
-CN_YEAR_TOKEN = re.compile(r"[零〇一二两三四五六七八九]{2,4}年")
+CN_YEAR_TOKEN = re.compile(r"[零〇一二三四五六七八九]{2,4}年")
 HEADING_MARK = re.compile(r"^(?:[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|（\d+）)")
 
 

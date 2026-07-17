@@ -158,11 +158,18 @@ def wav_duration(path: Path) -> float:
 
 
 def media_duration(path: Path) -> float | None:
-    """Parse the container duration from the ffmpeg -i header without decoding."""
-    proc = subprocess.run(
-        [ffmpeg_exe(), "-nostdin", "-hide_banner", "-i", str(path)],
-        capture_output=True, text=True, check=False,
-    )
+    """Parse the container duration from the ffmpeg -i header without decoding.
+
+    Best-effort: runs before the main try-block, so it must never raise —
+    a missing runtime dependency should surface later as a clean JSON error.
+    """
+    try:
+        proc = subprocess.run(
+            [ffmpeg_exe(), "-nostdin", "-hide_banner", "-i", str(path)],
+            capture_output=True, text=True, check=False,
+        )
+    except Exception:
+        return None
     match = re.search(r"Duration:\s*(\d+):(\d{2}):(\d{2}(?:\.\d+)?)", proc.stderr)
     if not match:
         return None
