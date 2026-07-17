@@ -14,9 +14,29 @@ SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
 THIRD_LEVEL = re.compile(r"^\d+\.")
 FOURTH_LEVEL = re.compile(r"^（\d+）")
 INTERVIEW_METADATA = ("访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：")
-SUMMARY_MARKERS = ("核心结论摘要", "综合摘要", "会议摘要", "访谈摘要", "尽调摘要", "总结与研判")
-QA_SECTION_MARKERS = ("完整问答纪要", "问答纪要", "问答环节")
-QA_SUMMARY_TITLE_MARKERS = ("尽职调查", "尽调", "访谈", "路演", "项目交流")
+SUMMARY_MARKERS = (
+    "完整总结概述",
+    "总体情况概述",
+    "主要内容概述",
+    "访谈主要内容",
+    "会议主要内容",
+    "核心结论摘要",
+    "核心结论",
+    "综合摘要",
+    "会议摘要",
+    "访谈摘要",
+    "尽调摘要",
+    "总结与研判",
+)
+QA_SECTION_MARKERS = (
+    "完整问答纪要",
+    "完整问答",
+    "访谈重点问答",
+    "访谈问答",
+    "重点问答",
+    "问答纪要",
+    "问答环节",
+)
 
 # Detect prohibited paired conjunctions anywhere within the same sentence.
 CLAUSE = r"[^\r\n。！？!?]*?"
@@ -113,7 +133,10 @@ def validate(path: Path, mode: str) -> list[str]:
         errors.append("存在禁用的对照式连词组合。")
 
     qa_detected = bool(qa_labels)
-    if mode in ("qa", "qa-summary") or (mode == "auto" and qa_detected):
+    # Every explicit Q/A label must be paired, regardless of the selected mode.
+    # The legacy ``qa`` mode is retained as a compatibility alias but no longer
+    # permits a pure-QA deliverable.
+    if qa_detected or mode in ("qa", "qa-summary"):
         if not qa_labels:
             errors.append("问答纪要必须同时包含“问：”和“答：”。")
         else:
@@ -132,15 +155,9 @@ def validate(path: Path, mode: str) -> list[str]:
             if waiting_for_answer:
                 errors.append(f"第 {question_line} 行“问：”后缺少对应“答：”。")
 
-    # Internal interview files often use a generic title such as “项目会议纪要”.
-    # Treat the fixed interview metadata fields as stronger structural evidence
-    # than the title so auto mode cannot silently accept a pure-QA interview.
-    auto_summary_context = bool(interview_metadata) or any(
-        marker in title for marker in QA_SUMMARY_TITLE_MARKERS
-    )
-    summary_required = mode == "qa-summary" or (
-        mode == "auto" and qa_detected and auto_summary_context
-    )
+    # A minutes deliverable containing Q/A must always begin with a standalone,
+    # comprehensive thematic overview. Pure Q/A is not a valid output shape.
+    summary_required = qa_detected or mode in ("qa", "qa-summary")
     if summary_required:
         if not qa_detected:
             errors.append("组合式问答纪要必须包含完整的“问：/答：”内容。")
@@ -167,7 +184,7 @@ def validate(path: Path, mode: str) -> list[str]:
             ]
             if not summary_candidates:
                 errors.append(
-                    "组合式问答纪要须在完整问答前设置一级标题“核心结论摘要”（或同义标题）。"
+                    "含问答的纪要须在完整问答前设置一级标题“完整总结概述”（或同义标题）。"
                 )
             if not qa_section_candidates:
                 errors.append(
@@ -177,7 +194,7 @@ def validate(path: Path, mode: str) -> list[str]:
                 summary_line = summary_candidates[0][0]
                 qa_section_line = qa_section_candidates[-1][0]
                 if summary_line >= qa_section_line:
-                    errors.append("“核心结论摘要”必须置于“完整问答纪要”之前。")
+                    errors.append("“完整总结概述”必须置于“完整问答纪要”之前。")
                 else:
                     summary_body = [
                         content
@@ -185,8 +202,20 @@ def validate(path: Path, mode: str) -> list[str]:
                         if summary_line < line_number < qa_section_line
                         and not content.startswith(INTERVIEW_METADATA)
                     ]
-                    if not summary_body:
-                        errors.append("“核心结论摘要”不得为空，须包含可追溯的总结或研判内容。")
+                    qa_body = [
+                        content
+                        for line_number, content in body_lines
+                        if line_number >= first_question_line
+                    ]
+                    summary_chars = sum(len(content) for content in summary_body)
+                    qa_chars = sum(len(content) for content in qa_body)
+                    minimum_summary_chars = min(600, max(120, qa_chars // 10))
+                    if summary_chars < minimum_summary_chars:
+                        errors.append(
+                            "“完整总结概述”内容不足：当前正文约 "
+                            f"{summary_chars} 字，按问答篇幅至少应达到约 "
+                            f"{minimum_summary_chars} 字，并覆盖整份转录稿的主要主题。"
+                        )
 
     return errors
 
@@ -198,6 +227,12 @@ def main() -> int:
         "--mode", choices=("auto", "minutes", "qa", "qa-summary"), default="auto"
     )
     args = parser.parse_args()
+
+    if args.mode == "qa":
+        print(
+            "提示：纯 QA 模式已停用；--mode qa 现按 qa-summary 兼容校验。",
+            file=sys.stderr,
+        )
 
     if not args.input.is_file():
         parser.error(f"找不到文件：{args.input}")
