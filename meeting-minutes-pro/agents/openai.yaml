@@ -1,4 +1,4 @@
 interface:
   display_name: "会议纪要专业版"
-  short_description: "先采集会议信息，再本地转录并生成规范完整的正式会议纪要"
-  default_prompt: "Use $meeting-minutes-pro 先询问我尚未提供的会议基本信息，再将这份录音或转录稿整理为正式会议纪要。"
+  short_description: "本地转录并生成总结研判与完整问答兼备的正式会议纪要"
+  default_prompt: "Use $meeting-minutes-pro 先补齐会议基本信息，再将这份录音或转录稿整理为含核心摘要、风险研判和完整问答的正式会议纪要。"
