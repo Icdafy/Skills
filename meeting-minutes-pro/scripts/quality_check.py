@@ -132,10 +132,14 @@ def validate(path: Path, mode: str) -> list[str]:
             if waiting_for_answer:
                 errors.append(f"第 {question_line} 行“问：”后缺少对应“答：”。")
 
+    # Internal interview files often use a generic title such as “项目会议纪要”.
+    # Treat the fixed interview metadata fields as stronger structural evidence
+    # than the title so auto mode cannot silently accept a pure-QA interview.
+    auto_summary_context = bool(interview_metadata) or any(
+        marker in title for marker in QA_SUMMARY_TITLE_MARKERS
+    )
     summary_required = mode == "qa-summary" or (
-        mode == "auto"
-        and qa_detected
-        and any(marker in title for marker in QA_SUMMARY_TITLE_MARKERS)
+        mode == "auto" and qa_detected and auto_summary_context
     )
     if summary_required:
         if not qa_detected:
