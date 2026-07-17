@@ -14,6 +14,9 @@ SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
 THIRD_LEVEL = re.compile(r"^\d+\.")
 FOURTH_LEVEL = re.compile(r"^（\d+）")
 INTERVIEW_METADATA = ("访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：")
+SUMMARY_MARKERS = ("核心结论摘要", "综合摘要", "会议摘要", "访谈摘要", "尽调摘要", "总结与研判")
+QA_SECTION_MARKERS = ("完整问答纪要", "问答纪要", "问答环节")
+QA_SUMMARY_TITLE_MARKERS = ("尽职调查", "尽调", "访谈", "路演", "项目交流")
 
 # Detect prohibited paired conjunctions anywhere within the same sentence.
 CLAUSE = r"[^\r\n。！？!?]*?"
@@ -57,12 +60,15 @@ def validate(path: Path, mode: str) -> list[str]:
     interview_metadata: list[tuple[int, int, str]] = []
     seen_interview_metadata: dict[str, int] = {}
     qa_labels: list[tuple[int, str]] = []
+    headings: list[tuple[int, int, str]] = []
+    body_lines: list[tuple[int, str]] = []
     for line_number, line in visible[1:]:
         if not line.startswith(INDENT):
             errors.append(f"第 {line_number} 行未以两个全角空格起首。")
         content = line.removeprefix(INDENT).strip()
         level = level_number(content)
         if level is not None:
+            headings.append((line_number, level, content))
             if first_heading_line is None:
                 first_heading_line = line_number
             if last_level == 0 and level > 1:
@@ -70,6 +76,8 @@ def validate(path: Path, mode: str) -> list[str]:
             elif last_level and level > last_level + 1:
                 errors.append(f"第 {line_number} 行层级从第 {last_level} 级跳至第 {level} 级。")
             last_level = level
+        else:
+            body_lines.append((line_number, content))
         for field_index, field in enumerate(INTERVIEW_METADATA):
             if content.startswith(field):
                 if field in seen_interview_metadata:
@@ -105,7 +113,7 @@ def validate(path: Path, mode: str) -> list[str]:
         errors.append("存在禁用的对照式连词组合。")
 
     qa_detected = bool(qa_labels)
-    if mode == "qa" or (mode == "auto" and qa_detected):
+    if mode in ("qa", "qa-summary") or (mode == "auto" and qa_detected):
         if not qa_labels:
             errors.append("问答纪要必须同时包含“问：”和“答：”。")
         else:
@@ -124,13 +132,67 @@ def validate(path: Path, mode: str) -> list[str]:
             if waiting_for_answer:
                 errors.append(f"第 {question_line} 行“问：”后缺少对应“答：”。")
 
+    summary_required = mode == "qa-summary" or (
+        mode == "auto"
+        and qa_detected
+        and any(marker in title for marker in QA_SUMMARY_TITLE_MARKERS)
+    )
+    if summary_required:
+        if not qa_detected:
+            errors.append("组合式问答纪要必须包含完整的“问：/答：”内容。")
+        else:
+            question_lines = [
+                line_number for line_number, label in qa_labels if label == "问"
+            ]
+            if not question_lines:
+                return errors
+            first_question_line = min(question_lines)
+            summary_candidates = [
+                (line_number, content)
+                for line_number, level, content in headings
+                if level == 1
+                and line_number < first_question_line
+                and any(marker in content for marker in SUMMARY_MARKERS)
+            ]
+            qa_section_candidates = [
+                (line_number, content)
+                for line_number, level, content in headings
+                if level == 1
+                and line_number < first_question_line
+                and any(marker in content for marker in QA_SECTION_MARKERS)
+            ]
+            if not summary_candidates:
+                errors.append(
+                    "组合式问答纪要须在完整问答前设置一级标题“核心结论摘要”（或同义标题）。"
+                )
+            if not qa_section_candidates:
+                errors.append(
+                    "组合式问答纪要须在首个问题前设置一级标题“完整问答纪要”（或同义标题）。"
+                )
+            if summary_candidates and qa_section_candidates:
+                summary_line = summary_candidates[0][0]
+                qa_section_line = qa_section_candidates[-1][0]
+                if summary_line >= qa_section_line:
+                    errors.append("“核心结论摘要”必须置于“完整问答纪要”之前。")
+                else:
+                    summary_body = [
+                        content
+                        for line_number, content in body_lines
+                        if summary_line < line_number < qa_section_line
+                        and not content.startswith(INTERVIEW_METADATA)
+                    ]
+                    if not summary_body:
+                        errors.append("“核心结论摘要”不得为空，须包含可追溯的总结或研判内容。")
+
     return errors
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Check meeting-minutes-pro text output.")
     parser.add_argument("input", type=Path, help="UTF-8 plain-text minutes file")
-    parser.add_argument("--mode", choices=("auto", "minutes", "qa"), default="auto")
+    parser.add_argument(
+        "--mode", choices=("auto", "minutes", "qa", "qa-summary"), default="auto"
+    )
     args = parser.parse_args()
 
     if not args.input.is_file():
