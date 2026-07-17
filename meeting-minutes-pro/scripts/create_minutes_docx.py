@@ -161,7 +161,9 @@ def main() -> None:
     parser.add_argument("--input", type=Path, required=True, help="validated UTF-8 plain-text minutes")
     parser.add_argument("--output", type=Path, required=True, help="destination .docx path")
     parser.add_argument("--subtitle", default=None, help="optional centered department or subtitle line")
-    parser.add_argument("--mode", choices=("auto", "minutes", "qa"), default="auto")
+    parser.add_argument(
+        "--mode", choices=("auto", "minutes", "qa", "qa-summary"), default="auto"
+    )
     args = parser.parse_args()
 
     if not args.input.is_file():
