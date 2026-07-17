@@ -16,9 +16,9 @@ sentences merge into clips with padding for context. Per-clip checkpoints
 make interrupted runs resumable; rerun the identical command to continue.
 
 Outputs <stem>.refine.json and a human-readable <stem>.refine.md. Every clip
-listed under 分歧 must be re-listened to, or its numbers marked 待核 in the
-minutes; agreement between two independent engines is strong evidence the
-figure is right. Comparison covers numbers/dates (canonically, so 三千万
+listed under 分歧 must be re-listened to before its numbers enter the
+minutes (待核 annotations are not allowed in the deliverable); agreement
+between two independent engines is strong evidence the figure is right. Comparison covers numbers/dates (canonically, so 三千万
 equals 3000万), negation words, and glossary terms.
 """
 
@@ -176,8 +176,8 @@ def write_report(
         if total_duration else f"- 复核片段：{len(clips)} 个",
         f"- 结果：一致 {len(consistent)}、分歧 {len(conflicted)}、待人工复核 {len(review)}",
         "",
-        "双引擎一致的数字可视为可靠依据；下列分歧片段写入纪要前必须回听录音，",
-        "或在纪要对应位置标注“待核”。",
+        "双引擎一致的数字可视为可靠依据；下列分歧片段写入纪要前必须回听录音确认，",
+        "无法确认的数字改用转录稿原文并在对话中向用户说明，不在纪要中标注“待核”。",
         "",
     ]
     if conflicted:

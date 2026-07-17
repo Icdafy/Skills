@@ -50,6 +50,43 @@ CONTRAST_PATTERNS = [
     re.compile("不" + "但" + CLAUSE + "还"),
 ]
 
+# 硬性禁用：记录人员附注式的“待核实/待核验/待落实”、以及主观判断和指导性
+# 表述。纪要只客观陈述会议内容；仅当相同表述确为转录稿中真实谈及的会议
+# 内容（如受访人自己说“以合同为准”）时，才可用 --allow-line <行号> 放行。
+PENDING_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (re.compile(r"待核|待落实|待验证|待证实|待确认|待查证"), "“待核/待核实/待落实”类标注"),
+    (re.compile(r"有待|尚待"), "“有待/尚待”类表述"),
+    (re.compile(r"(?:尚|仍)需(?:核实|核验|验证|确认|落实)"), "“尚需核实”类表述"),
+    (re.compile(r"需(?:要)?(?:进一步)?(?:核实|核验|验证|落实)"), "“需核实/需核验/需落实”类表述"),
+    (re.compile(r"进一步(?:核实|核验|验证|查证|比对)"), "“进一步核实”类表述"),
+    (
+        re.compile(r"(?:需|须|应|建议)结合[^\r\n。！？]{0,30}(?:核实|核验|验证|确认|比对)"),
+        "“需结合……核实”类表述",
+    ),
+    (re.compile(r"以[^\r\n。！？，；、]{1,20}为准"), "“以……为准”类表述"),
+    (
+        re.compile(r"(?:需要?|应予?|后续需?要?|建议)重点关注|建议关注|值得关注"),
+        "“需重点关注/建议关注”类表述",
+    ),
+    (
+        re.compile(r"建议(?:下一步|后续|跟进|补充|进一步)|下一步建议|值得注意的是"),
+        "“下一步建议”类指导性表述",
+    ),
+]
+
+# 完整总结概述中禁止出现的板块标题（更新规则：总结概述只客观归纳会议
+# 内容，不设“主要风险”“待核实事项”“后续需重点关注”等记录人员自设板块）。
+SUMMARY_BANNED_HEADING = re.compile(
+    r"主要风险|风险提示|风险与|风险及|风险、|待核|重点关注|后续关注|需关注"
+)
+
+# 访谈对象行中出现单位或职务信息但未使用（）括注时给出错误。
+AFFILIATION_HINT = re.compile(
+    r"公司|集团|银行|基金|证券|研究院|研究所|大学|学院|中心|部门|单位|科技|有限|"
+    r"董事|监事|经理|总裁|总监|主任|部长|处长|科长|组长|负责人|创始人|合伙人|"
+    r"工程师|会计师|分析师|顾问|CEO|CFO|CTO|COO"
+)
+
 
 def level_number(text: str) -> int | None:
     if FIRST_LEVEL.match(text):
@@ -63,7 +100,9 @@ def level_number(text: str) -> int | None:
     return None
 
 
-def validate(path: Path, mode: str) -> list[str]:
+def validate(
+    path: Path, mode: str, allowed_lines: frozenset[int] | set[int] = frozenset()
+) -> list[str]:
     lines = path.read_text(encoding="utf-8-sig").splitlines()
     visible = [(index + 1, line) for index, line in enumerate(lines) if line.strip()]
     errors: list[str] = []
@@ -110,8 +149,28 @@ def validate(path: Path, mode: str) -> list[str]:
                     interview_metadata.append((field_index, line_number, field))
         if content.startswith("问："):
             qa_labels.append((line_number, "问"))
+            # 更新规则：连续问答时每组之间必须空一行；紧随各级标题的首问除外。
+            previous_raw = lines[line_number - 2] if line_number >= 2 else ""
+            previous_content = previous_raw.removeprefix(INDENT).strip()
+            if previous_content and level_number(previous_content) is None:
+                errors.append(
+                    f"第 {line_number} 行新一组问答开始前应空一行，"
+                    "与上一组问答或正文以空行分隔。"
+                )
         if content.startswith("答："):
             qa_labels.append((line_number, "答"))
+        if content.startswith("访谈对象："):
+            subject_value = content.removeprefix("访谈对象：").strip()
+            if (
+                subject_value
+                and "（" not in subject_value
+                and "(" not in subject_value
+                and AFFILIATION_HINT.search(subject_value)
+            ):
+                errors.append(
+                    f"第 {line_number} 行访谈对象的单位、职务或补充说明"
+                    "应置于人名后的（）内，如“张某某（某某公司总经理）”。"
+                )
 
     if interview_metadata:
         field_indexes = [field_index for field_index, _, _ in interview_metadata]
@@ -131,6 +190,21 @@ def validate(path: Path, mode: str) -> list[str]:
     document = "\n".join(lines)
     if any(pattern.search(document) for pattern in CONTRAST_PATTERNS):
         errors.append("存在禁用的对照式连词组合。")
+
+    # 更新规则：纪要只客观陈述会议内容，任何“待核实/待核验/待落实”“以……
+    # 为准”“需重点关注”等核验提示句、主观判断和指导性意见一律禁止。
+    for line_number, line in visible:
+        if line_number in allowed_lines:
+            continue
+        content = line.removeprefix(INDENT).strip()
+        for pattern, label in PENDING_PATTERNS:
+            if pattern.search(content):
+                errors.append(
+                    f"第 {line_number} 行出现禁用的核验或指导类表述（{label}）；"
+                    "纪要只客观陈述会议内容。仅当该表述确为转录稿中真实谈及的"
+                    f"会议内容时，用 --allow-line {line_number} 放行并向用户说明。"
+                )
+                break
 
     qa_detected = bool(qa_labels)
     # Every explicit Q/A label must be paired, regardless of the selected mode.
@@ -196,6 +270,17 @@ def validate(path: Path, mode: str) -> list[str]:
                 if summary_line >= qa_section_line:
                     errors.append("“完整总结概述”必须置于“完整问答纪要”之前。")
                 else:
+                    for heading_line, _, heading_content in headings:
+                        if (
+                            summary_line < heading_line < qa_section_line
+                            and heading_line not in allowed_lines
+                            and SUMMARY_BANNED_HEADING.search(heading_content)
+                        ):
+                            errors.append(
+                                f"第 {heading_line} 行：完整总结概述中不得设置"
+                                "“主要风险”“待核实事项”“重点关注”类板块，"
+                                "只按材料实际主题客观归纳。"
+                            )
                     summary_body = [
                         content
                         for line_number, content in body_lines
@@ -229,6 +314,14 @@ def main() -> int:
     parser.add_argument(
         "--mode", choices=("auto", "minutes", "qa", "qa-summary"), default="auto"
     )
+    parser.add_argument(
+        "--allow-line",
+        type=int,
+        action="append",
+        default=[],
+        metavar="行号",
+        help="放行该行的禁用核验/指导类表述；仅限转录稿中真实谈及的会议内容",
+    )
     args = parser.parse_args()
 
     if args.mode == "qa":
@@ -240,7 +333,8 @@ def main() -> int:
     if not args.input.is_file():
         parser.error(f"找不到文件：{args.input}")
 
-    errors = validate(args.input, args.mode)
+    allowed_lines = frozenset(args.allow_line)
+    errors = validate(args.input, args.mode, allowed_lines)
     if errors:
         print("纪要文本校验未通过：")
         for error in errors:
@@ -249,11 +343,11 @@ def main() -> int:
 
     text = args.input.read_text(encoding="utf-8-sig")
     qa_pairs = len(re.findall(r"^\s*　　问：", text, re.MULTILINE))
-    pending = text.count("待核")
     print("纪要文本校验通过。")
-    print(f"提示：问答 {qa_pairs} 组；“待核”标注 {pending} 处"
-          f"{'，交付前须与用户逐项确认' if pending else ''}。"
-          "数字事实核对请另行运行 fact_check.py。")
+    if allowed_lines:
+        released = "、".join(str(number) for number in sorted(allowed_lines))
+        print(f"提示：第 {released} 行的表述已按转录稿真实内容放行，交付前向用户说明。")
+    print(f"提示：问答 {qa_pairs} 组。数字事实核对请另行运行 fact_check.py。")
     return 0
 
 

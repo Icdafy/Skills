@@ -26,10 +26,12 @@ Compare:
     fact_check.py --compare a.txt b.txt
     Cross-checks two independent transcriptions of the same recording and
     lists numeric values present in one but not the other. Use for the
-    dual-engine high-fidelity mode; mismatches should be marked 待核.
+    dual-engine high-fidelity mode; mismatches must be resolved by
+    re-listening — 待核 annotations are no longer allowed in the minutes.
 
 Metadata lines (会议时间：/访谈时间：…) come from the user, not the
-recording, and are exempt. Tokens already marked 待核 nearby are skipped.
+recording, and are exempt. Tokens marked 待核 nearby are still skipped for
+legacy documents only.
 """
 
 from __future__ import annotations
@@ -379,7 +381,8 @@ def verify(
 
     if unmatched:
         print("以下数字在转录稿中找不到依据（疑似改写、误转或幻觉），"
-              "必须逐一人工核实，或改为转录稿原文，或标注“待核”：")
+              "必须逐一处理：回听录音确认、改回转录稿原文，或经用户确认后用 "
+              "--allow 显式放行；不得在纪要中以“待核”标注代替处理：")
         for token in unmatched:
             print(f"- 第 {token.line_number} 行「{token.raw}」，上下文：…{token.context}…")
         return 1
@@ -408,7 +411,7 @@ def compare(path_a: Path, path_b: Path) -> int:
         return 0
     for name, only in ((path_a.name, only_a), (path_b.name, only_b)):
         if only:
-            print(f"仅出现在 {name} 中的数字（写入纪要前应回听录音或标注“待核”）：")
+            print(f"仅出现在 {name} 中的数字（写入纪要前必须回听录音确认）：")
             for token in only:
                 print(f"- 「{token.raw}」，上下文：…{token.context}…")
     return 1

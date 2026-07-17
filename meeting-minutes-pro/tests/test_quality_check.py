@@ -31,8 +31,8 @@ def document(title: str, *lines: str) -> TextInput:
 
 def substantial_summary() -> str:
     sentence = (
-        "会议围绕项目定位、技术体系、产品能力、商业化路径、团队资源、"
-        "主要风险和后续核查事项进行了完整梳理。"
+        "会议围绕项目定位、技术体系、产品能力、商业化路径、团队资源"
+        "和后续安排等主题进行了完整梳理。"
     )
     return sentence * 4
 
@@ -131,6 +131,102 @@ class QualityCheckTests(unittest.TestCase):
             substantial_summary(),
         )
         self.assertTrue(any("完整总结概述" in error for error in errors))
+
+    def test_pending_verification_phrase_is_rejected(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、会议主要内容",
+            substantial_summary() + "具体产能数据需结合审计报告进一步核实。",
+        )
+        self.assertTrue(any("核验或指导类表述" in error for error in errors))
+
+    def test_daihe_marker_is_rejected(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、会议主要内容",
+            substantial_summary() + "订单金额为三千万元（待核）。",
+        )
+        self.assertTrue(any("核验或指导类表述" in error for error in errors))
+
+    def test_yizhun_phrase_is_rejected(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、会议主要内容",
+            substantial_summary() + "最终数据以年报披露为准。",
+        )
+        self.assertTrue(any("核验或指导类表述" in error for error in errors))
+
+    def test_allow_line_releases_quoted_content(self) -> None:
+        doc = document(
+            "项目会议纪要",
+            "一、会议主要内容",
+            substantial_summary(),
+            "受访人表示，最终交付时间以合同约定为准。",
+        )
+        errors = QUALITY_CHECK.validate(doc, "auto")
+        self.assertTrue(any("核验或指导类表述" in error for error in errors))
+        self.assertEqual([], QUALITY_CHECK.validate(doc, "auto", {4}))
+
+    def test_risk_section_in_summary_is_rejected(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            "（一）项目情况",
+            substantial_summary(),
+            "（二）主要风险与待核事项",
+            substantial_summary(),
+            "二、完整问答纪要",
+            "问：项目处于什么阶段？",
+            "答：处于验证阶段。",
+        )
+        self.assertTrue(any("板块" in error for error in errors))
+
+    def test_consecutive_qa_groups_require_blank_line(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、核心结论",
+            substantial_summary(),
+            "二、访谈重点问答",
+            "问：项目处于什么阶段？",
+            "答：处于验证阶段。",
+            "问：客户结构如何？",
+            "答：以头部客户为主。",
+        )
+        self.assertTrue(any("空一行" in error for error in errors))
+
+    def test_blank_line_between_qa_groups_passes(self) -> None:
+        text = "\n".join(
+            [
+                "项目会议纪要",
+                INDENT + "一、核心结论",
+                INDENT + substantial_summary(),
+                INDENT + "二、访谈重点问答",
+                INDENT + "问：项目处于什么阶段？",
+                INDENT + "答：处于验证阶段。",
+                "",
+                INDENT + "问：客户结构如何？",
+                INDENT + "答：以头部客户为主。",
+            ]
+        )
+        self.assertEqual([], QUALITY_CHECK.validate(TextInput(text), "auto"))
+
+    def test_interviewee_affiliation_requires_parentheses(self) -> None:
+        errors = self.errors(
+            "auto",
+            "访谈对象：张某某，某某公司总经理",
+            "一、会议主要内容",
+            substantial_summary(),
+        )
+        self.assertTrue(any("（）" in error for error in errors))
+
+    def test_interviewee_with_parentheses_passes(self) -> None:
+        errors = self.errors(
+            "auto",
+            "访谈对象：张某某（某某公司总经理）",
+            "一、会议主要内容",
+            substantial_summary(),
+        )
+        self.assertEqual([], errors)
 
 
 if __name__ == "__main__":
