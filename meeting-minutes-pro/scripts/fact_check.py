@@ -105,6 +105,28 @@ class Token:
 
 FULLWIDTH_MAP = str.maketrans("０１２３４５６７８９．％", "0123456789.%")
 
+# 语境绑定：纪要侧数字上下文与转录稿依据上下文的 bigram 相似度低于该值时，
+# 标记“疑似移用”（数字存在但可能安到了无关表述上），供人工优先确认。
+CONTEXT_BINDING_MIN = 0.2
+
+
+def _bigrams(text: str) -> set[str]:
+    cleaned = re.sub(r"[^\w]", "", text)
+    if len(cleaned) < 2:
+        return {cleaned} if cleaned else set()
+    return {cleaned[i:i + 2] for i in range(len(cleaned) - 1)}
+
+
+def context_binding(minutes_context: str, evidence_context: str, raw: str) -> float:
+    """Similarity of the two contexts with the figures themselves removed, so a
+    shared number cannot inflate the score."""
+    left = re.sub(r"[\d.%]+", "", minutes_context.replace(raw, ""))
+    right = re.sub(r"[\d.%]+", "", evidence_context.replace(raw, ""))
+    grams_left, grams_right = _bigrams(left), _bigrams(right)
+    if not grams_left or not grams_right:
+        return 0.0
+    return len(grams_left & grams_right) / min(len(grams_left), len(grams_right))
+
 
 def normalize(text: str) -> str:
     # Deliberately narrow: full-width digits/percent only. NFKC would also
@@ -407,11 +429,21 @@ def verify(
             matched.append((token, evidence))
 
     print(f"共核对 {checked} 个数字事实，转录稿来源 {len(transcript_paths)} 份。")
+    scored = [
+        (token, evidence, context_binding(token.context, evidence, token.raw))
+        for token, evidence in matched
+    ]
+    suspicious = [item for item in scored if item[2] < CONTEXT_BINDING_MIN]
     if show_matches and matched:
-        print("已核对数字的转录稿依据（请人工确认数字未被移用到无关表述）：")
-        for token, evidence in matched:
+        print("已核对数字的转录稿依据（请人工确认数字未被移用到无关表述；"
+              "低语境相似度条目排在前面，优先确认）：")
+        for token, evidence, binding in sorted(scored, key=lambda item: item[2]):
+            marker = "［低语境相似度，疑似移用］" if binding < CONTEXT_BINDING_MIN else ""
             # "←" stays inside GBK so Windows consoles do not choke on it.
-            print(f"- 第 {token.line_number} 行「{token.raw}」 ← …{evidence}…")
+            print(f"- 第 {token.line_number} 行「{token.raw}」{marker} ← …{evidence}…")
+    elif suspicious:
+        print(f"提示：{len(suspicious)} 处数字的纪要语境与转录稿依据语境相似度较低"
+              "（疑似移用），建议加 --show-matches 逐条确认。")
 
     if terms:
         body_lines = [

@@ -81,7 +81,8 @@ class Window:
         tokens = fact_check.extract_tokens(fact_check.normalize(text), body_only=False)
         seen: dict[str, None] = {}
         for token in tokens:
-            if fact_check.salient(token.raw) or token.kind in ("month", "day"):
+            if (fact_check.salient(token.raw)
+                    or token.kind in ("month", "day", "percent")):
                 seen.setdefault(token.raw)
         self.numbers = list(seen)
         self.number_tokens = [
@@ -90,8 +91,9 @@ class Window:
         ]
         sentences = [part.strip() for part in qa_reconcile.SENTENCE_SPLIT.split(text)
                      if part.strip()]
-        self.questions = sum(1 for sentence in sentences
-                             if qa_reconcile.is_question(sentence))
+        self.question_sentences = [sentence for sentence in sentences
+                                   if qa_reconcile.is_question(sentence)]
+        self.questions = len(self.question_sentences)
         self.terms = [term for term in terms if term in text]
 
 
@@ -243,6 +245,16 @@ def validate(
         for token in minutes_tokens if token.value is not None
     }
     headings = minutes_headings(minutes_raw)
+    minutes_question_list = qa_reconcile.minutes_questions(minutes_path)
+
+    def question_reaches_minutes(sentence: str) -> bool:
+        required = qa_reconcile.effective_threshold(
+            sentence, qa_reconcile.DEFAULT_MIN_SIMILARITY
+        )
+        return any(
+            qa_reconcile.similarity(sentence, question) >= required
+            for question in minutes_question_list
+        )
 
     included_positions = [
         remark.split("｜")[0].strip(" ｜|")
@@ -282,6 +294,10 @@ def validate(
                 f"窗口 {window.index} 的纳入位置「{cleaned}」无法对应纪要中的"
                 "任何标题或通用位置（总结/概述/问答等），请写明真实位置。"
             )
+        unmatched_questions = [
+            sentence for sentence in window.question_sentences
+            if not question_reaches_minutes(sentence)
+        ]
         if decision == "省略":
             if len(window.numbers) >= 2:
                 errors.append(
@@ -292,13 +308,26 @@ def validate(
                 warnings.append(
                     f"窗口 {window.index} 被省略但含数字「{window.numbers[0]}」，请再次确认。"
                 )
+            if unmatched_questions:
+                warnings.append(
+                    f"窗口 {window.index} 被省略，但其中的疑似提问"
+                    f"「{unmatched_questions[0][:24]}」未在纪要问答中找到对应，请确认省略合理。"
+                )
         elif decision == "纳入" and window.numbers:
             hit = any(
                 token.raw in minutes_text
                 or (token.kind, round(token.value, 6)) in minutes_values
                 for token in window.number_tokens
             ) or any(raw in minutes_text for raw in window.numbers)
-            if not hit:
+            if not hit and unmatched_questions:
+                # 两个弱信号叠加（数字未现＋提问未对上）＝该段大概率整体遗漏。
+                warnings.append(
+                    f"强警告：窗口 {window.index}（{window.label}）判定纳入，但其数字"
+                    f"（{'、'.join(window.numbers[:4])}）均未出现在纪要，且窗口内疑似提问"
+                    f"「{unmatched_questions[0][:24]}」也未在纪要问答中找到对应——"
+                    "两个信号叠加，疑似该段内容整体遗漏，请优先核查。"
+                )
+            elif not hit:
                 warnings.append(
                     f"窗口 {window.index}（{window.label}）判定纳入，但其数字"
                     f"（{'、'.join(window.numbers[:4])}）均未出现在纪要中，请核实。"

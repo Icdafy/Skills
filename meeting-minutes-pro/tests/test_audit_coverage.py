@@ -196,6 +196,27 @@ class AuditCoverageTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("疑似机械填写", buffer.getvalue())
 
+    def test_combined_signals_escalate_to_strong_warning(self) -> None:
+        extra = self.root / "fuse.json"
+        extra.write_text(json.dumps({"text": "", "timestamps": [
+            stamp("公司去年营收3000万元。", 10.0, 15.0),
+            stamp("咱们产能现在到多少了？", 700.0, 704.0),
+            stamp("产能爬坡到每月500台。", 705.0, 710.0),
+        ]}, ensure_ascii=False), encoding="utf-8")
+        windows, _ = AUDIT.build_windows(extra, 300.0, 1500)
+        minutes = self.write_minutes("一、完整总结概述", "公司去年营收3000万元。")
+        ledger = self.write_ledger(
+            "窗口 1（00:00–05:00）：纳入 总结",
+            "窗口 2（05:00–10:00）：省略 空白段",
+            "窗口 3（10:00–11:50）：纳入 总结",
+        )
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = AUDIT.validate(windows, "time", ledger, minutes)
+        output = buffer.getvalue()
+        self.assertEqual(code, 0)
+        self.assertIn("疑似该段内容整体遗漏", output)
+
     def test_text_fallback_windows(self) -> None:
         plain = self.root / "plain.txt"
         plain.write_text("第一段内容。" * 100 + "\n" + "第二段内容。" * 100, encoding="utf-8")

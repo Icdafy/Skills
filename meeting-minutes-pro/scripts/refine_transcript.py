@@ -101,9 +101,10 @@ def number_map(text: str) -> dict[tuple, str]:
     for token in fact_check.extract_tokens(fact_check.normalize(text), body_only=False):
         if token.value is None:
             continue
-        # 以“年”结尾的日期（二〇二三年）由中文数字写成，salient() 提不出
-        # digits，需单独放行——日期与金额同为复核重点。
-        if not (fact_check.salient(token.raw) or token.kind in ("month", "day")
+        # 以“年”结尾的日期（二〇二三年）和三成/个点等口语百分比由中文写成，
+        # salient() 提不出 digits，需单独放行——它们与金额同为复核重点。
+        if not (fact_check.salient(token.raw)
+                or token.kind in ("month", "day", "percent")
                 or token.raw.endswith("年")):
             continue
         result.setdefault((token.kind, round(token.value, 6)), token.raw)
@@ -123,7 +124,8 @@ def ordered_values(text: str) -> list[tuple]:
     for token in fact_check.extract_tokens(fact_check.normalize(text), body_only=False):
         if token.value is None:
             continue
-        if not (fact_check.salient(token.raw) or token.kind in ("month", "day")
+        if not (fact_check.salient(token.raw)
+                or token.kind in ("month", "day", "percent")
                 or token.raw.endswith("年")):
             continue
         key = (token.kind, round(token.value, 6))

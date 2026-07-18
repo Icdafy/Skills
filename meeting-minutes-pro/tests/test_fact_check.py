@@ -166,6 +166,35 @@ class ColloquialPercentTests(unittest.TestCase):
         self.assertEqual(code, 0)
 
 
+class ContextBindingTests(unittest.TestCase):
+    def test_misplaced_number_marked_suspicious(self) -> None:
+        # 30% exists in the transcript but belongs to market share, not margin.
+        code, output = run_verify(
+            minutes_doc("毛利率为30%。"),
+            "我们的市场份额30%左右",
+            show_matches=True,
+        )
+        self.assertEqual(code, 0)
+        self.assertIn("疑似移用", output)
+
+    def test_well_bound_number_not_marked(self) -> None:
+        code, output = run_verify(
+            minutes_doc("毛利率为30%。"),
+            "整体毛利率大概30%左右",
+            show_matches=True,
+        )
+        self.assertEqual(code, 0)
+        self.assertNotIn("疑似移用", output)
+
+    def test_hint_printed_without_show_matches(self) -> None:
+        code, output = run_verify(
+            minutes_doc("毛利率为30%。"),
+            "我们的市场份额30%左右",
+        )
+        self.assertEqual(code, 0)
+        self.assertIn("语境", output)
+
+
 class CompareTests(unittest.TestCase):
     def test_date_disagreement_across_engines(self) -> None:
         with TempFiles() as files:

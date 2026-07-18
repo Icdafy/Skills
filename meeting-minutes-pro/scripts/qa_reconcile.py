@@ -22,7 +22,14 @@ from pathlib import Path
 import re
 import sys
 
+SCRIPT_DIR = Path(__file__).resolve().parent
+if str(SCRIPT_DIR) not in sys.path:
+    sys.path.insert(0, str(SCRIPT_DIR))
+
+import fact_check  # noqa: E402
+
 INDENT = "　　"
+HEADING_MARK = re.compile(r"^(?:[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|（\d+）)")
 QUESTION_MARK = re.compile(r"[？?]")
 INTERROGATIVES = re.compile(
     r"多少|什么|怎么|如何|为什么|为啥|是否|能不能|会不会|有没有|可不可以|"
@@ -103,13 +110,95 @@ def stamps_to_candidates(stamps: list[dict]) -> list[Candidate]:
     return candidates
 
 
-def minutes_questions(path: Path) -> list[str]:
-    questions: list[str] = []
+def minutes_qa_groups(path: Path) -> list[tuple[str, str]]:
+    """(question, group_text) pairs; group_text spans 问： to the next 问：
+    or heading, so the answer-substance check sees the whole Q&A group."""
+    groups: list[tuple[str, list[str]]] = []
     for line in path.read_text(encoding="utf-8-sig").splitlines():
         content = line.removeprefix(INDENT).strip()
+        if not content:
+            continue
         if content.startswith("问："):
-            questions.append(content.removeprefix("问：").strip())
-    return questions
+            groups.append((content.removeprefix("问：").strip(), [content]))
+        elif groups and HEADING_MARK.match(content):
+            groups.append(("", []))  # heading closes the current group
+        elif groups and groups[-1][0]:
+            groups[-1][1].append(content)
+    return [(question, "\n".join(lines))
+            for question, lines in groups if question]
+
+
+def minutes_questions(path: Path) -> list[str]:
+    return [question for question, _ in minutes_qa_groups(path)]
+
+
+def load_stamps(path: Path) -> list[dict]:
+    if path.suffix.lower() != ".json":
+        return []
+    payload = json.loads(path.read_text(encoding="utf-8-sig"))
+    return [
+        item for item in payload.get("timestamps") or []
+        if str(item.get("text", "")).strip()
+    ]
+
+
+def _salient_tokens(text: str) -> list:
+    return [
+        token for token in fact_check.extract_tokens(
+            fact_check.normalize(text), body_only=False)
+        if token.value is not None and (
+            fact_check.salient(token.raw)
+            or token.kind in ("month", "day", "percent")
+            or token.raw.endswith("年")
+        )
+    ]
+
+
+def answer_number_gaps(
+    matched: list[tuple[int, Candidate, str, float]],
+    all_candidates: list[Candidate],
+    stamps: list[dict],
+    groups: list[tuple[str, str]],
+) -> list[tuple[int, str, list[str]]]:
+    """Numbers spoken in each answered window that never reached the minutes'
+    corresponding Q&A group. Warnings only — a figure may be deliberately
+    summarised away, so the human confirms each gap."""
+    group_by_question = {}
+    for question, group_text in groups:
+        group_by_question.setdefault(question, group_text)
+    question_starts = sorted(
+        candidate.start for candidate in all_candidates
+        if candidate.start is not None
+    )
+    gaps: list[tuple[int, str, list[str]]] = []
+    for index, candidate, question, _score in matched:
+        if candidate.start is None:
+            continue
+        later = [start for start in question_starts if start > candidate.start]
+        window_end = later[0] if later else float("inf")
+        answer_text = "".join(
+            str(item["text"]) for item in stamps
+            if candidate.start < float(item.get("start", 0.0)) < window_end
+        )
+        if not answer_text:
+            continue
+        group_text = group_by_question.get(question, "")
+        group_norm = fact_check.normalize(group_text)
+        group_values = {
+            (token.kind, round(token.value, 6))
+            for token in fact_check.extract_tokens(group_norm, body_only=False)
+            if token.value is not None
+        }
+        missing: list[str] = []
+        for token in _salient_tokens(answer_text):
+            key = (token.kind, round(token.value, 6))
+            if key in group_values or token.raw in group_norm:
+                continue
+            if token.raw not in missing:
+                missing.append(token.raw)
+        if missing:
+            gaps.append((index, question, missing))
+    return gaps
 
 
 def bigrams(text: str) -> set[str]:
@@ -204,7 +293,8 @@ def main() -> int:
         parser.error(f"找不到转录稿：{args.transcript}")
 
     candidates = load_candidates(args.transcript)
-    questions = minutes_questions(args.minutes)
+    groups = minutes_qa_groups(args.minutes)
+    questions = [question for question, _ in groups]
     print(f"转录稿检测到疑似提问 {len(candidates)} 个；纪要包含问答 {len(questions)} 组。")
 
     if not candidates:
@@ -226,6 +316,15 @@ def main() -> int:
         print("警告：以下纪要问题未在转录稿中检测到对应提问，请确认并非虚构或过度改写：")
         for question in orphaned:
             print(f"- 问：{question[:50]}")
+
+    # 答案实质对账：答复窗口里说过的显著数字必须进入纪要对应问答组。
+    stamps = load_stamps(args.transcript)
+    if stamps and matched:
+        gaps = answer_number_gaps(matched, candidates, stamps, groups)
+        for index, question, missing in gaps:
+            print(f"警告：问「{question[:30]}」的答复中，转录稿数字"
+                  f"「{'、'.join(missing[:6])}」未出现在纪要该组问答中，"
+                  "请确认是否为刻意省略并向用户说明。")
 
     if suspected:
         print("以下疑似提问未在纪要问答中找到对应内容（疑似遗漏），"

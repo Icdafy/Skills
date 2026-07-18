@@ -103,6 +103,48 @@ class ReconcileTests(unittest.TestCase):
         self.assertEqual(matched, [])
 
 
+class AnswerGapTests(unittest.TestCase):
+    def test_missing_answer_number_reported(self) -> None:
+        candidate = QA.Candidate("咱们全年营收能到多少？", 10.0, "说话人1")
+        matched = [(1, candidate, "全年营收能到多少？", 0.9)]
+        stamps = [
+            {"text": "咱们全年营收能到多少？", "start": 10.0, "end": 14.0},
+            {"text": "全年营收大概3000万，净利率一成。", "start": 15.0, "end": 20.0},
+        ]
+        groups = [("全年营收能到多少？",
+                   "问：全年营收能到多少？\n答：全年营收约3000万元。")]
+        gaps = QA.answer_number_gaps(matched, [candidate], stamps, groups)
+        self.assertEqual(len(gaps), 1)
+        self.assertIn("一成", gaps[0][2])
+        self.assertNotIn("3000万", gaps[0][2])
+
+    def test_complete_answer_has_no_gap(self) -> None:
+        candidate = QA.Candidate("咱们全年营收能到多少？", 10.0, "说话人1")
+        matched = [(1, candidate, "全年营收能到多少？", 0.9)]
+        stamps = [
+            {"text": "咱们全年营收能到多少？", "start": 10.0, "end": 14.0},
+            {"text": "全年营收大概3000万，净利率一成。", "start": 15.0, "end": 20.0},
+        ]
+        groups = [("全年营收能到多少？",
+                   "问：全年营收能到多少？\n答：全年营收约3000万元，净利率约10%。")]
+        gaps = QA.answer_number_gaps(matched, [candidate], stamps, groups)
+        self.assertEqual(gaps, [])
+
+    def test_answer_window_ends_at_next_question(self) -> None:
+        first = QA.Candidate("咱们全年营收能到多少？", 10.0, "说话人1")
+        second = QA.Candidate("团队现在多少人？", 30.0, "说话人1")
+        matched = [(1, first, "全年营收能到多少？", 0.9)]
+        stamps = [
+            {"text": "全年营收大概3000万。", "start": 15.0, "end": 20.0},
+            {"text": "团队现在有50人。", "start": 35.0, "end": 40.0},
+        ]
+        groups = [("全年营收能到多少？",
+                   "问：全年营收能到多少？\n答：约3000万元。")]
+        gaps = QA.answer_number_gaps(matched, [first, second], stamps, groups)
+        # 50人 belongs to the next question's window and must not be demanded here.
+        self.assertEqual(gaps, [])
+
+
 class LoadingTests(unittest.TestCase):
     def test_load_candidates_from_json_and_minutes_questions(self) -> None:
         with tempfile.TemporaryDirectory() as raw:
@@ -123,6 +165,25 @@ class LoadingTests(unittest.TestCase):
                 encoding="utf-8",
             )
             self.assertEqual(QA.minutes_questions(minutes), ["全年营收预计多少？"])
+
+    def test_minutes_qa_groups_split_by_question_and_heading(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            minutes = Path(raw) / "minutes.txt"
+            minutes.write_text(
+                "访谈纪要\n"
+                + INDENT + "二、完整问答纪要\n"
+                + INDENT + "问：营收多少？\n"
+                + INDENT + "答：约3000万元。\n"
+                + INDENT + "（二）团队情况\n"
+                + INDENT + "问：团队多少人？\n"
+                + INDENT + "答：共50人。",
+                encoding="utf-8",
+            )
+            groups = QA.minutes_qa_groups(minutes)
+            self.assertEqual(len(groups), 2)
+            self.assertIn("3000万元", groups[0][1])
+            self.assertNotIn("50人", groups[0][1])
+            self.assertIn("50人", groups[1][1])
 
 
 if __name__ == "__main__":
