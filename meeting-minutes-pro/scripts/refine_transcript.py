@@ -34,8 +34,9 @@ human ear stays the final arbiter.
 Outputs <stem>.refine.json and a human-readable <stem>.refine.md. Every clip
 listed under 分歧 must be re-listened to before its numbers enter the
 minutes (待核 annotations are not allowed in the deliverable); agreement
-between two independent engines is strong evidence the figure is right. Comparison covers numbers/dates (canonically, so 三千万
-equals 3000万), negation words, and glossary terms.
+between two independent engines is strong evidence the figure is right.
+Comparison covers numbers/dates (canonically, so 三千万 equals 3000万),
+negation words, and glossary terms.
 """
 
 from __future__ import annotations
@@ -711,7 +712,13 @@ def main() -> int:
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     write_report(report_md, args.transcript, args.model, clips, duration,
                  budget_minutes=args.budget_minutes, audio_dir=audio_dir)
-    shutil.rmtree(checkpoint_dir, ignore_errors=True)
+    if skipped:
+        # A budgeted run left clips unreviewed: keep the checkpoints so a rerun
+        # with a larger --budget-minutes reuses the finished clips instantly.
+        transcribe.progress({"stage": "checkpoints", "kept": len(selected),
+                             "note": "预算运行保留检查点，加大预算重跑可续传"})
+    else:
+        shutil.rmtree(checkpoint_dir, ignore_errors=True)
 
     summary = {
         "ok": True,
