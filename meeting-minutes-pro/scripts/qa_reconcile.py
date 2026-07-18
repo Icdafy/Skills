@@ -12,6 +12,16 @@ minutes' 问： lines, and fails when questions appear to have been dropped.
 
 Detection is heuristic; after human review a false positive is released with
 --skip <编号> (repeatable), and the reason must be reported to the user.
+Short candidates (under 10 cleaned chars) need a higher similarity to count
+as matched, so a genuinely dropped question cannot slip through on a
+coincidental bigram overlap. --show-matches prints the full
+transcript-question <-> minutes-question mapping for positive review.
+
+With a timestamped .json transcript the script also reconciles answer
+substance: salient numbers spoken between a matched question and the next
+question must appear in the minutes' corresponding Q&A group (built by
+minutes_qa_groups, split at 问： lines and headings); gaps are warnings for
+the human to confirm as deliberate omissions.
 """
 
 from __future__ import annotations

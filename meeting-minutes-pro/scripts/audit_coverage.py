@@ -334,7 +334,7 @@ def validate(
                 )
 
     for warning in warnings:
-        print(f"警告：{warning}")
+        print(warning if warning.startswith("强警告") else f"警告：{warning}")
     if errors:
         print("覆盖率审计未通过：")
         for error in errors:
