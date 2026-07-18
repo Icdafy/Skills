@@ -37,6 +37,9 @@ class RiskSelectionTests(unittest.TestCase):
     def test_plain_talk_not_selected(self) -> None:
         self.assertEqual(REFINE.sentence_risks("大家先随便聊聊。", []), ())
 
+    def test_chinese_year_selected(self) -> None:
+        self.assertIn("number", REFINE.sentence_risks("公司二〇二三年成立。", []))
+
 
 class ClipPlanningTests(unittest.TestCase):
     def test_adjacent_risky_sentences_merge_with_padding(self) -> None:
@@ -101,6 +104,76 @@ class ComparisonTests(unittest.TestCase):
         conflicts = REFINE.compare_texts("三月十五号交付。", "三月二十号交付。", [])
         categories = {item["category"] for item in conflicts}
         self.assertIn("数字", categories)
+
+
+class OrderComparisonTests(unittest.TestCase):
+    def test_same_set_different_order_conflicts(self) -> None:
+        conflicts = REFINE.compare_texts(
+            "市占率30%，毛利率15%。", "市占率15%，毛利率30%。", []
+        )
+        categories = {item["category"] for item in conflicts}
+        self.assertIn("数字顺序", categories)
+
+    def test_same_order_does_not_conflict(self) -> None:
+        conflicts = REFINE.compare_texts(
+            "市占率百分之三十，毛利率15%。", "市占率30%，毛利率15%。", []
+        )
+        self.assertEqual(conflicts, [])
+
+    def test_presence_conflict_not_doubled_as_order(self) -> None:
+        conflicts = REFINE.compare_texts("毛利率30%。", "毛利率13%。", [])
+        categories = [item["category"] for item in conflicts]
+        self.assertIn("数字", categories)
+        self.assertNotIn("数字顺序", categories)
+
+    def test_repetition_does_not_conflict(self) -> None:
+        conflicts = REFINE.compare_texts(
+            "3000万，对，3000万。", "3000万。", []
+        )
+        self.assertEqual(conflicts, [])
+
+
+class RiskScoreTests(unittest.TestCase):
+    def test_amount_with_commitment_outranks_bare_year(self) -> None:
+        high = REFINE.clip_risk_score("承诺回购价3000万元。", [])
+        low = REFINE.clip_risk_score("公司二〇二三年成立。", [])
+        self.assertGreater(high, low)
+
+    def test_negation_and_glossary_raise_score(self) -> None:
+        base = REFINE.clip_risk_score("产能500台。", [])
+        richer = REFINE.clip_risk_score("张三说产能不能超过500台。", ["张三"])
+        self.assertGreater(richer, base)
+
+
+class BudgetTests(unittest.TestCase):
+    @staticmethod
+    def clip(index: int, start: float, end: float, score: int) -> "REFINE.Clip":
+        return REFINE.Clip(index=index, start=start, end=end, reasons=("number",),
+                           funasr_text="", score=score)
+
+    def test_highest_scores_selected_within_budget(self) -> None:
+        clips = [self.clip(1, 0, 60, 5), self.clip(2, 100, 160, 1),
+                 self.clip(3, 200, 260, 3)]
+        selected, skipped = REFINE.apply_budget(clips, 2.0)
+        self.assertEqual([c.index for c in selected], [1, 3])
+        self.assertEqual([c.index for c in skipped], [2])
+        self.assertEqual(skipped[0].status, "skipped")
+
+    def test_top_risk_clip_always_reviewed(self) -> None:
+        clips = [self.clip(1, 0, 300, 9), self.clip(2, 400, 430, 1)]
+        selected, skipped = REFINE.apply_budget(clips, 1.0)
+        self.assertEqual([c.index for c in selected], [1])
+        self.assertEqual([c.index for c in skipped], [2])
+
+    def test_no_budget_selects_everything(self) -> None:
+        clips = [self.clip(1, 0, 60, 5), self.clip(2, 100, 160, 1)]
+        selected, skipped = REFINE.apply_budget(clips, None)
+        self.assertEqual(len(selected), 2)
+        self.assertEqual(skipped, [])
+
+    def test_safe_hms_has_no_colons(self) -> None:
+        self.assertEqual(REFINE.safe_hms(3661), "010101")
+        self.assertNotIn(":", REFINE.safe_hms(7325.4))
 
 
 if __name__ == "__main__":

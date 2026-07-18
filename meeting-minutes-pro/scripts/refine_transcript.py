@@ -15,6 +15,14 @@ glossary terms, or question marks (or everything with --all). Adjacent risky
 sentences merge into clips with padding for context. Per-clip checkpoints
 make interrupted runs resumable; rerun the identical command to continue.
 
+--budget-minutes M ranks clips by risk score (amounts/percentages in
+commitment-like sentences first) and reviews highest-risk clips until the
+budget is spent; skipped clips stay in the report as single-engine-only.
+Number comparison is order-sensitive: identical value sets in a different
+first-occurrence order are reported as 数字顺序 conflicts. Conflict and
+review clips are exported as individual wav files under
+<stem>.review-clips/ for click-to-play re-listening (--no-audio disables).
+
 Outputs <stem>.refine.json and a human-readable <stem>.refine.md. Every clip
 listed under 分歧 must be re-listened to before its numbers enter the
 minutes (待核 annotations are not allowed in the deliverable); agreement
@@ -42,6 +50,11 @@ import fact_check  # noqa: E402
 import transcribe  # noqa: E402
 
 NEGATIONS = ("没有", "不能", "不可", "禁止", "未", "无法", "取消", "终止", "暂停")
+# Sentences carrying commitments or hard limits: mis-heard numbers here hurt the
+# most, so they raise the clip's risk score for --budget-minutes prioritising.
+CONCLUSION_HINTS = ("承诺", "约定", "保证", "不低于", "不超过", "上限", "下限",
+                    "违约", "交付", "期限", "截止", "签约", "合同", "订单", "中标",
+                    "回购", "对赌")
 DEFAULT_PAD_SECONDS = 1.5
 DEFAULT_MERGE_GAP_SECONDS = 4.0
 DEFAULT_MAX_CLIP_SECONDS = 120.0
@@ -57,8 +70,10 @@ class Clip:
     reasons: tuple[str, ...]
     funasr_text: str
     qwen_text: str = ""
-    status: str = "pending"  # consistent | conflict | review
+    status: str = "pending"  # consistent | conflict | review | skipped
     conflicts: list[dict] = field(default_factory=list)
+    score: int = 0
+    audio: str = ""
 
 
 def number_map(text: str) -> dict[tuple, str]:
@@ -67,10 +82,59 @@ def number_map(text: str) -> dict[tuple, str]:
     for token in fact_check.extract_tokens(fact_check.normalize(text), body_only=False):
         if token.value is None:
             continue
-        if not (fact_check.salient(token.raw) or token.kind in ("month", "day")):
+        # 以“年”结尾的日期（二〇二三年）由中文数字写成，salient() 提不出
+        # digits，需单独放行——日期与金额同为复核重点。
+        if not (fact_check.salient(token.raw) or token.kind in ("month", "day")
+                or token.raw.endswith("年")):
             continue
         result.setdefault((token.kind, round(token.value, 6)), token.raw)
     return result
+
+
+def ordered_values(text: str) -> list[tuple]:
+    """Salient numbers/dates as (kind, value, raw) in first-occurrence order.
+
+    Both engines' texts pass through the same extraction rule, so comparing the
+    two sequences detects same-set-different-order cases (a figure attached to
+    the wrong statement). Duplicated values keep only their first occurrence so
+    ASR stutter/repetition differences do not raise false alarms.
+    """
+    seen: set[tuple] = set()
+    ordered: list[tuple] = []
+    for token in fact_check.extract_tokens(fact_check.normalize(text), body_only=False):
+        if token.value is None:
+            continue
+        if not (fact_check.salient(token.raw) or token.kind in ("month", "day")
+                or token.raw.endswith("年")):
+            continue
+        key = (token.kind, round(token.value, 6))
+        if key in seen:
+            continue
+        seen.add(key)
+        ordered.append((token.kind, round(token.value, 6), token.raw))
+    return ordered
+
+
+def clip_risk_score(text: str, terms: list[str]) -> int:
+    """Rank clips for --budget-minutes: amounts/percentages in commitment-like
+    sentences first, bare years and questions last."""
+    score = 0
+    for kind, value, raw in ordered_values(text):
+        if kind == "percent" or any(unit in raw for unit in ("万", "亿")):
+            score += 3
+        elif kind in ("month", "day") or raw.endswith("年"):
+            score += 2
+        else:
+            score += 1
+    if any(hint in text for hint in CONCLUSION_HINTS):
+        score += 2
+    if any(word in text for word in NEGATIONS):
+        score += 1
+    if any(term in text for term in terms):
+        score += 1
+    if "？" in text or "?" in text:
+        score += 1
+    return score
 
 
 def sentence_risks(text: str, terms: list[str]) -> tuple[str, ...]:
@@ -102,6 +166,17 @@ def compare_texts(funasr_text: str, qwen_text: str, terms: list[str]) -> list[di
                 "category": name,
                 "funasr_only": funasr_only,
                 "qwen_only": qwen_only,
+            })
+    # Same number set on both sides can still hide a swap (30% market share vs
+    # 30% gross margin). When presence agrees, compare first-occurrence order.
+    if not any(item["category"] == "数字" for item in conflicts):
+        left_seq = ordered_values(funasr_text)
+        right_seq = ordered_values(qwen_text)
+        if [item[:2] for item in left_seq] != [item[:2] for item in right_seq]:
+            conflicts.append({
+                "category": "数字顺序",
+                "funasr_only": [item[2] for item in left_seq],
+                "qwen_only": [item[2] for item in right_seq],
             })
     return conflicts
 
@@ -148,7 +223,64 @@ def plan_clips(
             reasons=tuple(sorted(risks)),
             funasr_text="".join(members),
         ))
+    for clip in clips:
+        clip.score = clip_risk_score(clip.funasr_text, terms)
     return clips
+
+
+def apply_budget(clips: list[Clip], budget_minutes: float | None) -> tuple[list[Clip], list[Clip]]:
+    """Greedy highest-score-first selection within the review time budget.
+
+    The single highest-risk clip is always reviewed even when it alone exceeds
+    the budget — a budget must never silently drop the most critical figures.
+    Returns (selected, skipped), both in time order; skipped clips are marked
+    with status "skipped" and stay in the report so nothing is dropped silently.
+    """
+    if budget_minutes is None:
+        return list(clips), []
+    remaining = budget_minutes * 60.0
+    selected: list[Clip] = []
+    skipped: list[Clip] = []
+    for position, clip in enumerate(sorted(clips, key=lambda c: (-c.score, c.index))):
+        duration = clip.end - clip.start
+        if position == 0 or duration <= remaining:
+            selected.append(clip)
+            remaining -= duration
+        else:
+            skipped.append(clip)
+    for clip in skipped:
+        clip.status = "skipped"
+    selected.sort(key=lambda c: c.index)
+    skipped.sort(key=lambda c: c.index)
+    return selected, skipped
+
+
+def safe_hms(seconds: float) -> str:
+    """011005 style timestamp safe for Windows filenames (no colons)."""
+    total = max(0, int(round(seconds)))
+    hours, remainder = divmod(total, 3600)
+    minutes, secs = divmod(remainder, 60)
+    return f"{hours:02d}{minutes:02d}{secs:02d}"
+
+
+def export_review_audio(clips: list[Clip], source: Path, output_dir: Path, stem: str) -> str | None:
+    """Cut every conflict/review clip from the source media into its own wav so
+    re-listening is click-to-play instead of scrubbing the full recording."""
+    targets = [clip for clip in clips if clip.status in ("conflict", "review")]
+    if not targets:
+        return None
+    audio_dir = output_dir / f"{stem}.review-clips"
+    if audio_dir.exists():
+        shutil.rmtree(audio_dir)
+    audio_dir.mkdir(parents=True)
+    for clip in targets:
+        name = f"clip_{clip.index:04d}_{safe_hms(clip.start)}-{safe_hms(clip.end)}.wav"
+        path = audio_dir / name
+        transcribe.prepare_wav(
+            source, path, clip_start=clip.start, clip_duration=clip.end - clip.start
+        )
+        clip.audio = str(path)
+    return str(audio_dir)
 
 
 def hms(seconds: float) -> str:
@@ -161,20 +293,36 @@ def write_report(
     model_name: str,
     clips: list[Clip],
     total_duration: float,
+    budget_minutes: float | None = None,
+    audio_dir: str | None = None,
 ) -> None:
     consistent = [c for c in clips if c.status == "consistent"]
     conflicted = [c for c in clips if c.status == "conflict"]
     review = [c for c in clips if c.status == "review"]
-    covered = sum(c.end - c.start for c in clips)
+    skipped = [c for c in clips if c.status == "skipped"]
+    reviewed = [c for c in clips if c.status != "skipped"]
+    covered = sum(c.end - c.start for c in reviewed)
     lines = [
         "# 定向复核报告",
         "",
         f"- 主转录稿：`{transcript.name}`（FunASR）",
         f"- 复核引擎：`{model_name}`",
-        f"- 复核片段：{len(clips)} 个，共 {covered / 60:.1f} 分钟"
+        f"- 复核片段：{len(reviewed)} 个，共 {covered / 60:.1f} 分钟"
         f"（占全长 {total_duration / 60:.1f} 分钟的 {covered / total_duration * 100:.0f}%）"
-        if total_duration else f"- 复核片段：{len(clips)} 个",
-        f"- 结果：一致 {len(consistent)}、分歧 {len(conflicted)}、待人工复核 {len(review)}",
+        if total_duration else f"- 复核片段：{len(reviewed)} 个",
+        f"- 结果：一致 {len(consistent)}、分歧 {len(conflicted)}、待人工复核 {len(review)}"
+        + (f"、预算外未复核 {len(skipped)}" if skipped else ""),
+    ]
+    if budget_minutes is not None:
+        skipped_seconds = sum(c.end - c.start for c in skipped)
+        lines.append(
+            f"- 风险预算：{budget_minutes:g} 分钟，按风险分从高到低选取；"
+            f"跳过低风险片段 {len(skipped)} 个（共 {skipped_seconds / 60:.1f} 分钟），"
+            "明细见文末，未复核内容仅有单引擎背书。"
+        )
+    if audio_dir:
+        lines.append(f"- 回听音频：分歧与待复核片段已剪出至 `{Path(audio_dir).name}/`，逐条点开即听。")
+    lines += [
         "",
         "双引擎一致的数字可视为可靠依据；下列分歧片段写入纪要前必须回听录音确认，",
         "无法确认的数字改用转录稿原文并在对话中向用户说明，不在纪要中标注“待核”。",
@@ -190,14 +338,25 @@ def write_report(
             for conflict in clip.conflicts:
                 funasr_side = "、".join(conflict["funasr_only"]) or "（无）"
                 qwen_side = "、".join(conflict["qwen_only"]) or "（无）"
-                lines.append(f"- 分歧（{conflict['category']}）：FunASR 独有「{funasr_side}」；"
-                             f"Qwen 独有「{qwen_side}」")
+                if conflict["category"] == "数字顺序":
+                    lines.append(
+                        f"- 分歧（数字顺序）：FunASR 侧顺序「{funasr_side}」；"
+                        f"Qwen 侧顺序「{qwen_side}」——同组数字出现顺序不一致，"
+                        "疑似数字被安到不同表述上，回听时须确认每个数字的指代。"
+                    )
+                else:
+                    lines.append(f"- 分歧（{conflict['category']}）：FunASR 独有「{funasr_side}」；"
+                                 f"Qwen 独有「{qwen_side}」")
+            if clip.audio:
+                lines.append(f"- 回听音频：`{Path(clip.audio).name}`")
             lines.append("")
     if review:
         lines.append("## 待人工复核的片段（复核引擎未返回内容）")
         lines.append("")
         for clip in review:
-            lines.append(f"- 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）：{clip.funasr_text[:60]}")
+            audio_note = f" ｜回听：`{Path(clip.audio).name}`" if clip.audio else ""
+            lines.append(f"- 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）："
+                         f"{clip.funasr_text[:60]}{audio_note}")
         lines.append("")
     if consistent:
         lines.append("## 双引擎一致的片段")
@@ -205,6 +364,13 @@ def write_report(
         for clip in consistent:
             lines.append(f"- 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）"
                          f"［{'、'.join(clip.reasons)}］{clip.funasr_text[:40]}")
+        lines.append("")
+    if skipped:
+        lines.append("## 预算外未复核的片段（仅单引擎，未经双引擎背书）")
+        lines.append("")
+        for clip in skipped:
+            lines.append(f"- 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）"
+                         f"［风险分 {clip.score}］{clip.funasr_text[:40]}")
     target.write_text("\n".join(lines).rstrip() + "\n", encoding="utf-8")
 
 
@@ -228,10 +394,19 @@ def main() -> int:
     parser.add_argument("--max-clip", type=float, default=DEFAULT_MAX_CLIP_SECONDS)
     parser.add_argument("--all", action="store_true",
                         help="re-transcribe every segment (full dual-engine pass)")
+    parser.add_argument("--budget-minutes", type=float, default=None,
+                        help="review time budget: clips are ranked by risk score "
+                             "and reviewed highest-first until the budget is spent; "
+                             "skipped clips are listed in the report")
+    parser.add_argument("--no-audio", action="store_true",
+                        help="do not export conflict/review clips as wav files")
     parser.add_argument("--dry-run", action="store_true",
                         help="plan and print the clips without loading any model")
     parser.add_argument("--no-resume", action="store_true")
     args = parser.parse_args()
+
+    if args.budget_minutes is not None and args.budget_minutes <= 0:
+        parser.error("--budget-minutes 必须为正数")
 
     if not args.transcript.is_file():
         parser.error(f"找不到转录稿：{args.transcript}")
@@ -265,17 +440,25 @@ def main() -> int:
                           "note": "未发现需要复核的高风险片段"}, ensure_ascii=False))
         return 0
 
+    selected, skipped = apply_budget(clips, args.budget_minutes)
+    if not selected:
+        parser.error("--budget-minutes 过小：任何片段都无法纳入复核，请增大预算")
+
     if args.dry_run:
+        selected_ids = {c.index for c in selected}
         print(json.dumps({
             "ok": True,
             "dry_run": True,
+            "budget_minutes": args.budget_minutes,
             "clips": [
                 {"index": c.index, "start": c.start, "end": c.end,
                  "duration": round(c.end - c.start, 1), "reasons": list(c.reasons),
+                 "score": c.score, "selected": c.index in selected_ids,
                  "preview": c.funasr_text[:40]}
                 for c in clips
             ],
-            "covered_seconds": round(sum(c.end - c.start for c in clips), 1),
+            "covered_seconds": round(sum(c.end - c.start for c in selected), 1),
+            "skipped_clips": len(skipped),
             "total_seconds": round(duration, 1),
         }, ensure_ascii=False, indent=2))
         return 0
@@ -312,7 +495,7 @@ def main() -> int:
 
     started = time.monotonic()
     with tempfile.TemporaryDirectory(prefix="mmp-refine-") as temp_dir:
-        for clip in clips:
+        for clip in selected:
             checkpoint = checkpoint_dir / f"clip_{clip.index:04d}.json"
             cached_text: str | None = None
             if not args.no_resume and checkpoint.is_file():
@@ -345,26 +528,33 @@ def main() -> int:
                 clip.conflicts = compare_texts(clip.funasr_text, clip.qwen_text, terms)
                 clip.status = "conflict" if clip.conflicts else "consistent"
             transcribe.progress({"stage": "clip", "index": clip.index,
-                                 "total": len(clips), "status": clip.status})
+                                 "total": len(selected), "status": clip.status})
+
+    audio_dir: str | None = None
+    if not args.no_audio:
+        audio_dir = export_review_audio(clips, args.source, output_dir, stem)
 
     report_json = output_dir / f"{stem}.refine.json"
     report_md = output_dir / f"{stem}.refine.md"
     report_json.write_text(json.dumps({
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "transcript": str(args.transcript),
         "source": str(args.source),
         "model": args.model,
         "device": device,
+        "budget_minutes": args.budget_minutes,
+        "review_audio_dir": audio_dir,
         "clips": [
             {"index": c.index, "start": c.start, "end": c.end,
-             "reasons": list(c.reasons), "status": c.status,
+             "reasons": list(c.reasons), "score": c.score, "status": c.status,
              "funasr_text": c.funasr_text, "qwen_text": c.qwen_text,
-             "conflicts": c.conflicts}
+             "conflicts": c.conflicts, "audio": c.audio}
             for c in clips
         ],
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    write_report(report_md, args.transcript, args.model, clips, duration)
+    write_report(report_md, args.transcript, args.model, clips, duration,
+                 budget_minutes=args.budget_minutes, audio_dir=audio_dir)
     shutil.rmtree(checkpoint_dir, ignore_errors=True)
 
     summary = {
@@ -373,7 +563,10 @@ def main() -> int:
         "consistent": sum(1 for c in clips if c.status == "consistent"),
         "conflict": sum(1 for c in clips if c.status == "conflict"),
         "review": sum(1 for c in clips if c.status == "review"),
-        "covered_seconds": round(sum(c.end - c.start for c in clips), 1),
+        "skipped": len(skipped),
+        "budget_minutes": args.budget_minutes,
+        "review_audio_dir": audio_dir,
+        "covered_seconds": round(sum(c.end - c.start for c in selected), 1),
         "total_seconds": round(duration, 1),
         "elapsed_seconds": round(time.monotonic() - started, 1),
         "outputs": {"json": str(report_json), "md": str(report_md)},

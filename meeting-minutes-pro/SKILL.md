@@ -71,7 +71,7 @@ python <skill-dir>/scripts/bootstrap_runtime.py --install --engine funasr
 
 7. 长音频两个引擎都按静音切块转录并写检查点（stderr 输出 JSON 进度），分块结果保存在输出目录 `<文件名>.chunks/` 中，中断后重新执行同一命令即自动续传。例外：funasr 引擎启用 `--diarize` 时为保证说话人编号全程一致，改为整段单遍处理、不可断点续传；此前跑过 `--sample` 样本时，脚本会在开跑前按实测速度输出预计耗时。
 8. 需要 SRT 或带时间戳文本时加 `--timestamps`（funasr 引擎句级时间戳无额外开销；qwen 引擎会下载并加载 Qwen3-ForcedAligner-0.6B，内存占用较高）。
-9. 对数字密集、结论重大的关键录音，在 funasr 完整转录后执行**双引擎定向复核**：`refine_transcript.py` 自动挑出含数字、日期、术语和提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并逐类比对（金额、百分比、日期、否定词、术语）。两引擎一致的数字视为可靠依据；报告中列为分歧的片段必须回听录音确认后才能写入纪要，无法确认的数字改用转录稿原文并在对话中向用户说明，不在纪要中标注“待核”：
+9. 对数字密集、结论重大的关键录音，在 funasr 完整转录后执行**双引擎定向复核**：`refine_transcript.py` 自动挑出含数字、日期、术语和提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并逐类比对（金额、百分比、日期、否定词、术语；数字比对为顺序敏感，同组数字顺序不一致会按“数字顺序”报分歧）。机器性能有限或录音很长时加 `--budget-minutes <分钟数>`，按风险分从高到低复核到预算用完，风险最高的片段始终必选，被跳过的片段在报告中明示。分歧与待复核片段会自动剪出独立音频存入 `<文件名>.review-clips/`，逐条点开回听即可裁决（`--no-audio` 关闭）。两引擎一致的数字视为可靠依据；报告中列为分歧的片段必须回听录音确认后才能写入纪要，无法确认的数字改用转录稿原文并在对话中向用户说明，不在纪要中标注“待核”：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/refine_transcript.py --transcript <输出目录>/<文件名>.json --source <media-path> --output-dir <output-dir> --glossary <skill-dir>/glossary/<项目名>.txt
@@ -145,6 +145,7 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
   transcript.txt / .md / .json（/.srt）   原始转录稿
   coverage.txt                             覆盖率审计清单（校验通过版）
   <文件名>.refine.md / .refine.json        定向复核报告（执行过双引擎复核时）
+  <文件名>.review-clips/                    分歧片段回听音频（存在分歧时；逐条确认后可删除）
   会议纪要.txt                              通过校验的纪要正文
   会议纪要.docx                             正式交付文件
 ```
@@ -196,7 +197,7 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 - `references/platforms.md`：在不同智能体平台安装和分发技能的说明。
 - `scripts/bootstrap_runtime.py`：检查和安装本地转录运行环境（`--engine funasr|qwen|all`）。
 - `scripts/transcribe.py`：执行本地音视频转录（FunASR/Qwen 双引擎、长音频切分、断点续传、说话人分离与 `--speakers` 人数提示、`--sample` 中段试转与耗时预估、音频增强）。
-- `scripts/refine_transcript.py`：双引擎定向复核——自动挑出含数字、日期、术语、提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并按金额/百分比/日期/否定词/术语五类比对，输出分歧报告。
+- `scripts/refine_transcript.py`：双引擎定向复核——自动挑出含数字、日期、术语、提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并按金额/百分比/日期/否定词/术语五类比对，输出分歧报告；数字比对顺序敏感（防同组数字张冠李戴），`--budget-minutes` 按风险分优先复核关键片段（最高风险片段必选），分歧与待复核片段自动剪出回听音频（`--no-audio` 关闭）。
 - `scripts/install_skill.py`：安装和分发技能。
 - `scripts/requirements-runtime.txt`、`requirements-funasr.txt`、`requirements-qwen.txt`：基础与分引擎运行依赖。
 - `scripts/quality_check.py`：检查缩进、标题层级、访谈基本信息顺序、访谈对象括注、问答配对、问答组间空行，并硬性拦截“待核实/待核验/待落实”“以××为准”“需重点关注”等核验提示句、指导性表述和总结概述中的风险类板块（`--allow-line` 放行转录稿真实谈及的内容）。
