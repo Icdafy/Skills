@@ -14,7 +14,7 @@
 | 固定纪要结构 | 材料中只要存在问答，固定输出"**完整总结概述＋完整问答纪要**"，不交付纯 QA，不用摘要吞并问答 |
 | 四重交付校验 | 格式校验（quality_check）→ 分窗覆盖率审计（audit_coverage）→ 问答对账（qa_reconcile）→ 逐数字事实核对（fact_check），全部通过才允许生成 DOCX |
 | 公文版式 DOCX | 方正小标宋/黑体/楷体_GB2312/仿宋_GB2312 固定版式，生成后渲染 PDF 逐页检查字体替换与分页，仅交付 DOCX |
-| 术语库复用 | `glossary/<项目名>.txt` 按项目沉淀人名、简称、专业术语，跨会议自动复用 |
+| 术语库复用 | `glossary/<项目名>.txt` 按项目沉淀人名、简称、专业术语，跨会议自动复用（仅本地）；`glossary/industry/` 内置低空经济、商业航天行业术语库，随技能分发；上传 BP、会议笔记等资料时仅提取术语，不将资料内容写入纪要 |
 
 ## 内容硬性规则（quality_check.py 机械拦截）
 
@@ -71,7 +71,7 @@ meeting-minutes-pro/
   SKILL.md                     触发与执行逻辑
   references/                  版式规范、运行环境、平台安装说明
   scripts/                     转写、复核、四重校验、DOCX 生成与渲染检查
-  glossary/                    按项目维护的热词术语库
+  glossary/                    按项目维护的热词术语库（仅本地）＋ industry/ 行业术语库（随库分发）
   assets/fonts/                方正小标宋简体、楷体_GB2312、仿宋_GB2312
   assets/templates/            公司格式样例
   tests/                       校验与规划逻辑回归测试（71 项）
