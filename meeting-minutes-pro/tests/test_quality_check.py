@@ -219,6 +219,23 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertTrue(any("（）" in error for error in errors))
 
+    def test_common_words_are_not_false_positives(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、会议主要内容",
+            substantial_summary()
+            + "受访人表示，公司期待核心团队进一步扩充，员工现有待遇高于行业平均水平。",
+        )
+        self.assertEqual([], errors)
+
+    def test_waiting_verification_is_still_caught(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、会议主要内容",
+            substantial_summary() + "上述产能数据等待核实。",
+        )
+        self.assertTrue(any("核验或指导类表述" in error for error in errors))
+
     def test_interviewee_with_parentheses_passes(self) -> None:
         errors = self.errors(
             "auto",

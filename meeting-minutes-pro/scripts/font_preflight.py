@@ -43,8 +43,9 @@ FONT_SPECS: tuple[dict[str, Any], ...] = (
         "registry_name": None,
     },
     {
-        "family": "SimSun",
-        "aliases": ("SimSun", "simsun.ttc", "simsun.ttf"),
+        # Arabic numerals throughout the minutes are set in Times New Roman.
+        "family": "Times New Roman",
+        "aliases": ("Times New Roman", "times.ttf", "timesnewroman"),
         "asset": None,
         "registry_name": None,
     },

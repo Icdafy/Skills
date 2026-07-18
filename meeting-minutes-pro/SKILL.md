@@ -162,7 +162,7 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 <runtime-python> <skill-dir>/scripts/font_preflight.py --check
 ```
 
-缺少随技能提供的字体时，说明安装会修改当前用户字体目录；取得用户许可后运行 `<runtime-python> <skill-dir>/scripts/font_preflight.py --install-user`。缺少黑体或宋体时提示用户安装，不在字体替换状态下继续生成。字体检查通过后运行；含问答的纪要统一使用 `qa-summary`（`qa` 仅作为向后兼容别名，仍会按 `qa-summary` 校验），无问答纪要使用 `minutes` 或 `auto`：
+缺少随技能提供的字体时，说明安装会修改当前用户字体目录；取得用户许可后运行 `<runtime-python> <skill-dir>/scripts/font_preflight.py --install-user`。缺少黑体或 Times New Roman 时提示用户安装，不在字体替换状态下继续生成。字体检查通过后运行；含问答的纪要统一使用 `qa-summary`（`qa` 仅作为向后兼容别名，仍会按 `qa-summary` 校验），无问答纪要使用 `minutes` 或 `auto`：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/create_minutes_docx.py `

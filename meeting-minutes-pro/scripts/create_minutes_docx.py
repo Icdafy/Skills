@@ -23,7 +23,6 @@ from quality_check import validate
 TITLE_FONT = "方正小标宋简体"
 KAI_FONT = "楷体_GB2312"
 FANGSONG_FONT = "仿宋_GB2312"
-SONG_FONT = "SimSun"
 NUMBER_FONT = "Times New Roman"
 INDENT = "　　"
 
