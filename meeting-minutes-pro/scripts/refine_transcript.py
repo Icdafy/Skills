@@ -23,6 +23,14 @@ first-occurrence order are reported as 数字顺序 conflicts. Conflict and
 review clips are exported as individual wav files under
 <stem>.review-clips/ for click-to-play re-listening (--no-audio disables).
 
+Conflicts get a third piece of evidence for re-listen prioritising: with
+--voter sensevoice, SenseVoiceSmall (funasr package, a third independent
+model family) votes 2-of-3; otherwise an enhanced-audio Qwen re-pass
+arbitrates (disable with --no-arbitrate). A verdict of 支持主稿 downgrades
+the conflict to low re-listen priority; 支持复核稿 flags the master
+transcript itself as suspect. Verdicts never auto-clear a conflict — the
+human ear stays the final arbiter.
+
 Outputs <stem>.refine.json and a human-readable <stem>.refine.md. Every clip
 listed under 分歧 must be re-listened to before its numbers enter the
 minutes (待核 annotations are not allowed in the deliverable); agreement
@@ -37,6 +45,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 import json
 from pathlib import Path
+import re
 import shutil
 import sys
 import tempfile
@@ -60,6 +69,11 @@ DEFAULT_MERGE_GAP_SECONDS = 4.0
 DEFAULT_MAX_CLIP_SECONDS = 120.0
 MIN_CLIP_SECONDS = 2.0
 CONTEXT_CHAR_LIMIT = 400
+# Third-vote engine: SenseVoiceSmall runs inside the already-installed funasr
+# package and is a different model family from both Paraformer and Qwen3-ASR,
+# so its vote is reasonably independent of either side.
+SENSEVOICE_MODEL = "iic/SenseVoiceSmall"
+SENSEVOICE_TAG = re.compile(r"<\|[^|]*\|>")
 
 
 @dataclass
@@ -74,6 +88,10 @@ class Clip:
     conflicts: list[dict] = field(default_factory=list)
     score: int = 0
     audio: str = ""
+    third_text: str = ""
+    third_source: str = ""
+    verdict: str = ""
+    priority: str = ""  # conflicts: "high" (default) | "low" (third evidence backs master)
 
 
 def number_map(text: str) -> dict[tuple, str]:
@@ -179,6 +197,32 @@ def compare_texts(funasr_text: str, qwen_text: str, terms: list[str]) -> list[di
                 "qwen_only": [item[2] for item in right_seq],
             })
     return conflicts
+
+
+def strip_sensevoice_tags(text: str) -> str:
+    """SenseVoice emits rich tags like <|zh|><|NEUTRAL|>; keep plain text only."""
+    return SENSEVOICE_TAG.sub("", text).strip()
+
+
+def third_text_verdict(funasr_text: str, qwen_text: str, third_text: str,
+                       terms: list[str]) -> str:
+    """Adjudicate a funasr-vs-qwen conflict with a third transcription.
+
+    The third text comes from either an independent engine vote (SenseVoice)
+    or an enhanced-audio Qwen re-pass. It never auto-clears a conflict — it
+    only sets the re-listen priority; the human ear stays the final arbiter.
+    """
+    if not third_text.strip():
+        return "无法判定"
+    vs_funasr = compare_texts(funasr_text, third_text, terms)
+    vs_qwen = compare_texts(qwen_text, third_text, terms)
+    if not vs_funasr and vs_qwen:
+        return "支持主稿"
+    if not vs_qwen and vs_funasr:
+        return "支持复核稿"
+    if vs_funasr and vs_qwen:
+        return "三方各异"
+    return "无法判定"
 
 
 def plan_clips(
@@ -310,7 +354,13 @@ def write_report(
         f"- 复核片段：{len(reviewed)} 个，共 {covered / 60:.1f} 分钟"
         f"（占全长 {total_duration / 60:.1f} 分钟的 {covered / total_duration * 100:.0f}%）"
         if total_duration else f"- 复核片段：{len(reviewed)} 个",
-        f"- 结果：一致 {len(consistent)}、分歧 {len(conflicted)}、待人工复核 {len(review)}"
+        f"- 结果：一致 {len(consistent)}、分歧 {len(conflicted)}"
+        + (
+            f"（高优先级 {sum(1 for c in conflicted if c.priority != 'low')}、"
+            f"低优先级 {sum(1 for c in conflicted if c.priority == 'low')}）"
+            if any(c.priority == "low" for c in conflicted) else ""
+        )
+        + f"、待人工复核 {len(review)}"
         + (f"、预算外未复核 {len(skipped)}" if skipped else ""),
     ]
     if budget_minutes is not None:
@@ -326,10 +376,14 @@ def write_report(
         "",
         "双引擎一致的数字可视为可靠依据；下列分歧片段写入纪要前必须回听录音确认，",
         "无法确认的数字改用转录稿原文并在对话中向用户说明，不在纪要中标注“待核”。",
+        "低优先级分歧＝第三份证据支持主稿口径，仍须回听，但可排在高优先级之后处理。",
         "",
     ]
     if conflicted:
-        lines.append("## 存在分歧的片段")
+        conflicted = sorted(
+            conflicted, key=lambda c: (0 if c.priority != "low" else 1, c.index)
+        )
+        lines.append("## 存在分歧的片段（高优先级在前）")
         lines.append("")
         for clip in conflicted:
             lines.append(f"### 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）")
@@ -347,6 +401,12 @@ def write_report(
                 else:
                     lines.append(f"- 分歧（{conflict['category']}）：FunASR 独有「{funasr_side}」；"
                                  f"Qwen 独有「{qwen_side}」")
+            if clip.verdict:
+                priority_note = "低（可后置）" if clip.priority == "low" else "高"
+                lines.append(f"- 仲裁（{clip.third_source}）：{clip.verdict}；"
+                             f"回听优先级：{priority_note}")
+                if clip.third_text:
+                    lines.append(f"- 第三份转写：{clip.third_text}")
             if clip.audio:
                 lines.append(f"- 回听音频：`{Path(clip.audio).name}`")
             lines.append("")
@@ -355,8 +415,11 @@ def write_report(
         lines.append("")
         for clip in review:
             audio_note = f" ｜回听：`{Path(clip.audio).name}`" if clip.audio else ""
+            verdict_note = (
+                f" ｜{clip.third_source}：{clip.verdict}" if clip.verdict else ""
+            )
             lines.append(f"- 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）："
-                         f"{clip.funasr_text[:60]}{audio_note}")
+                         f"{clip.funasr_text[:60]}{verdict_note}{audio_note}")
         lines.append("")
     if consistent:
         lines.append("## 双引擎一致的片段")
@@ -398,6 +461,13 @@ def main() -> int:
                         help="review time budget: clips are ranked by risk score "
                              "and reviewed highest-first until the budget is spent; "
                              "skipped clips are listed in the report")
+    parser.add_argument("--voter", choices=("none", "sensevoice"), default="none",
+                        help="third engine for 2-of-3 voting on conflicts "
+                             "(SenseVoiceSmall via the funasr package); downgrades "
+                             "master-backed conflicts to low re-listen priority")
+    parser.add_argument("--no-arbitrate", action="store_true",
+                        help="skip the enhanced-audio Qwen re-pass that arbitrates "
+                             "conflicts when no voter engine is enabled")
     parser.add_argument("--no-audio", action="store_true",
                         help="do not export conflict/review clips as wav files")
     parser.add_argument("--dry-run", action="store_true",
@@ -493,6 +563,52 @@ def main() -> int:
     context = " ".join(terms + ([args.context] if args.context.strip() else []))[:CONTEXT_CHAR_LIMIT]
     language = None if args.language.lower() in {"auto", "none", ""} else args.language
 
+    voter_model = None
+    if args.voter == "sensevoice":
+        try:
+            from funasr import AutoModel as FunASRAutoModel
+        except ImportError as exc:
+            print(json.dumps({
+                "ok": False,
+                "error": f"sensevoice voter needs the funasr engine: {exc}; "
+                         "run scripts/bootstrap_runtime.py --install --engine funasr",
+            }, ensure_ascii=False))
+            return 1
+        transcribe.progress({"stage": "load", "engine": "sensevoice"})
+        voter_model = FunASRAutoModel(
+            model=SENSEVOICE_MODEL,
+            vad_model="fsmn-vad",
+            vad_kwargs={"max_single_segment_time": 30000},
+            device=transcribe.funasr_device(args.device),
+            disable_update=True,
+            disable_pbar=True,
+        )
+
+    def voter_transcribe(clip: Clip, temp_dir: str) -> str:
+        checkpoint = checkpoint_dir / f"clip_{clip.index:04d}.voter.json"
+        if not args.no_resume and checkpoint.is_file():
+            cached = json.loads(checkpoint.read_text(encoding="utf-8"))
+            if (cached.get("model") == SENSEVOICE_MODEL
+                    and abs(cached.get("start", -1) - clip.start) < 0.5
+                    and abs(cached.get("end", -1) - clip.end) < 0.5):
+                return str(cached.get("text", ""))
+        voter_wav = Path(temp_dir) / f"clip_{clip.index:04d}.voter.wav"
+        transcribe.prepare_wav(
+            args.source, voter_wav, clip_start=clip.start, clip_duration=clip.end - clip.start
+        )
+        results = voter_model.generate(
+            input=str(voter_wav), language="auto", use_itn=True,
+            merge_vad=True, merge_length_s=15,
+        )
+        text = strip_sensevoice_tags(str(results[0].get("text", ""))) if results else ""
+        checkpoint.write_text(json.dumps({
+            "model": SENSEVOICE_MODEL,
+            "start": clip.start,
+            "end": clip.end,
+            "text": text,
+        }, ensure_ascii=False), encoding="utf-8")
+        return text
+
     started = time.monotonic()
     with tempfile.TemporaryDirectory(prefix="mmp-refine-") as temp_dir:
         for clip in selected:
@@ -527,8 +643,44 @@ def main() -> int:
             else:
                 clip.conflicts = compare_texts(clip.funasr_text, clip.qwen_text, terms)
                 clip.status = "conflict" if clip.conflicts else "consistent"
+            if clip.status == "conflict":
+                clip.priority = "high"
+
+            # Third evidence: an independent engine vote (preferred) or an
+            # enhanced-audio Qwen re-pass. Sets re-listen priority only —
+            # conflicts are never auto-cleared.
+            if voter_model is not None and clip.status in ("conflict", "review"):
+                clip.third_text = voter_transcribe(clip, temp_dir)
+                clip.third_source = "第三引擎三取二（SenseVoice）"
+            elif (not args.no_arbitrate and clip.status == "conflict"):
+                enhanced_wav = Path(temp_dir) / f"clip_{clip.index:04d}.enh.wav"
+                transcribe.prepare_wav(
+                    args.source, enhanced_wav,
+                    clip_start=clip.start, clip_duration=clip.end - clip.start,
+                    enhance=True,
+                )
+                results = model.transcribe(
+                    audio=str(enhanced_wav), context=context, language=language,
+                    return_time_stamps=False,
+                )
+                clip.third_text = str(results[0].text).strip() if results else ""
+                clip.third_source = "增强重转仲裁（Qwen）"
+            if clip.third_source:
+                if clip.status == "review":
+                    if not clip.third_text:
+                        clip.verdict = "无法判定"
+                    elif not compare_texts(clip.funasr_text, clip.third_text, terms):
+                        clip.verdict = "支持主稿"
+                    else:
+                        clip.verdict = "三方各异"
+                else:
+                    clip.verdict = third_text_verdict(
+                        clip.funasr_text, clip.qwen_text, clip.third_text, terms
+                    )
+                clip.priority = "low" if clip.verdict == "支持主稿" else "high"
             transcribe.progress({"stage": "clip", "index": clip.index,
-                                 "total": len(selected), "status": clip.status})
+                                 "total": len(selected), "status": clip.status,
+                                 "verdict": clip.verdict or None})
 
     audio_dir: str | None = None
     if not args.no_audio:
@@ -545,11 +697,15 @@ def main() -> int:
         "device": device,
         "budget_minutes": args.budget_minutes,
         "review_audio_dir": audio_dir,
+        "voter": args.voter,
+        "arbitrate": not args.no_arbitrate,
         "clips": [
             {"index": c.index, "start": c.start, "end": c.end,
              "reasons": list(c.reasons), "score": c.score, "status": c.status,
              "funasr_text": c.funasr_text, "qwen_text": c.qwen_text,
-             "conflicts": c.conflicts, "audio": c.audio}
+             "conflicts": c.conflicts, "audio": c.audio,
+             "third_text": c.third_text, "third_source": c.third_source,
+             "verdict": c.verdict, "priority": c.priority}
             for c in clips
         ],
     }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -562,8 +718,11 @@ def main() -> int:
         "clips": len(clips),
         "consistent": sum(1 for c in clips if c.status == "consistent"),
         "conflict": sum(1 for c in clips if c.status == "conflict"),
+        "conflict_high": sum(1 for c in clips if c.status == "conflict" and c.priority != "low"),
+        "conflict_low": sum(1 for c in clips if c.status == "conflict" and c.priority == "low"),
         "review": sum(1 for c in clips if c.status == "review"),
         "skipped": len(skipped),
+        "voter": args.voter,
         "budget_minutes": args.budget_minutes,
         "review_audio_dir": audio_dir,
         "covered_seconds": round(sum(c.end - c.start for c in selected), 1),

@@ -176,5 +176,57 @@ class BudgetTests(unittest.TestCase):
         self.assertNotIn(":", REFINE.safe_hms(7325.4))
 
 
+class VerdictTests(unittest.TestCase):
+    def test_third_agreeing_with_master(self) -> None:
+        verdict = REFINE.third_text_verdict("毛利率30%。", "毛利率13%。", "毛利率30%。", [])
+        self.assertEqual(verdict, "支持主稿")
+
+    def test_third_agreeing_with_reviewer(self) -> None:
+        verdict = REFINE.third_text_verdict("毛利率30%。", "毛利率13%。", "毛利率13%。", [])
+        self.assertEqual(verdict, "支持复核稿")
+
+    def test_three_way_disagreement(self) -> None:
+        verdict = REFINE.third_text_verdict("毛利率30%。", "毛利率13%。", "毛利率23%。", [])
+        self.assertEqual(verdict, "三方各异")
+
+    def test_empty_third_text(self) -> None:
+        verdict = REFINE.third_text_verdict("毛利率30%。", "毛利率13%。", "", [])
+        self.assertEqual(verdict, "无法判定")
+
+    def test_equivalent_writing_counts_as_agreement(self) -> None:
+        verdict = REFINE.third_text_verdict("营收三千万。", "营收300万。", "营收3000万。", [])
+        self.assertEqual(verdict, "支持主稿")
+
+    def test_strip_sensevoice_tags(self) -> None:
+        raw = "<|zh|><|NEUTRAL|><|Speech|><|woitn|>毛利率30%。"
+        self.assertEqual(REFINE.strip_sensevoice_tags(raw), "毛利率30%。")
+
+
+class ReportPriorityTests(unittest.TestCase):
+    def test_high_priority_conflicts_listed_first(self) -> None:
+        import tempfile
+
+        low = REFINE.Clip(index=1, start=0.0, end=10.0, reasons=("number",),
+                          funasr_text="A产能500台。", qwen_text="A产能600台。",
+                          status="conflict",
+                          conflicts=[{"category": "数字", "funasr_only": ["500"],
+                                      "qwen_only": ["600"]}],
+                          priority="low", verdict="支持主稿",
+                          third_source="增强重转仲裁（Qwen）", third_text="A产能500台。")
+        high = REFINE.Clip(index=2, start=20.0, end=30.0, reasons=("number",),
+                           funasr_text="B毛利率30%。", qwen_text="B毛利率13%。",
+                           status="conflict",
+                           conflicts=[{"category": "数字", "funasr_only": ["30%"],
+                                       "qwen_only": ["13%"]}],
+                           priority="high")
+        with tempfile.TemporaryDirectory() as temp_dir:
+            target = Path(temp_dir) / "report.md"
+            REFINE.write_report(target, Path("t.json"), "m", [low, high], 100.0)
+            content = target.read_text(encoding="utf-8")
+        self.assertLess(content.index("片段 2"), content.index("片段 1"))
+        self.assertIn("支持主稿", content)
+        self.assertIn("高优先级 1、低优先级 1", content)
+
+
 if __name__ == "__main__":
     unittest.main()
