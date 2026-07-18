@@ -29,6 +29,67 @@ def document(title: str, *lines: str) -> TextInput:
     return TextInput(title + "\n" + "\n".join(INDENT + line for line in lines))
 
 
+class CustomBannedTests(unittest.TestCase):
+    def test_custom_phrase_blocks(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "公司业务实现全面赋能。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), ["赋能"])
+        self.assertTrue(any("赋能" in error for error in errors))
+
+    def test_custom_phrase_released_by_allow_line(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "公司业务实现全面赋能。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", {3}, ["赋能"])
+        self.assertFalse(any("赋能" in error for error in errors))
+
+    def test_empty_custom_list_is_noop(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "公司经营情况良好。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+        self.assertFalse(any("自定义禁用" in error for error in errors))
+
+
+class HalfwidthPunctTests(unittest.TestCase):
+    def test_halfwidth_paren_next_to_cjk_flagged(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "张某某(总经理)介绍了情况。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+        self.assertTrue(any("半角标点" in error for error in errors))
+
+    def test_thousands_separator_not_flagged(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "全年营收1,234万元符合预期。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+        self.assertFalse(any("半角标点" in error for error in errors))
+
+
+class DuplicateQuestionTests(unittest.TestCase):
+    def test_near_identical_questions_flagged(self) -> None:
+        doc = document(
+            "访谈纪要",
+            "一、完整总结概述",
+            "总结内容概述。",
+            "二、完整问答纪要",
+            "问：公司全年营收能达到多少？",
+            "答：约3000万元。",
+            "",
+            "问：公司全年营收能达到多少呢？",
+            "答：与上一问相同。",
+        )
+        errors = QUALITY_CHECK.validate(doc, "qa-summary", frozenset(), [])
+        self.assertTrue(any("疑似重复问答" in error for error in errors))
+
+    def test_distinct_questions_not_flagged(self) -> None:
+        doc = document(
+            "访谈纪要",
+            "一、完整总结概述",
+            "总结内容概述。",
+            "二、完整问答纪要",
+            "问：公司全年营收能达到多少？",
+            "答：约3000万元。",
+            "",
+            "问：创始团队的行业背景如何？",
+            "答：均来自相关行业。",
+        )
+        errors = QUALITY_CHECK.validate(doc, "qa-summary", frozenset(), [])
+        self.assertFalse(any("疑似重复问答" in error for error in errors))
+
+
 def substantial_summary() -> str:
     sentence = (
         "会议围绕项目定位、技术体系、产品能力、商业化路径、团队资源"

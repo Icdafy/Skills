@@ -109,6 +109,12 @@ python <skill-dir>/scripts/qa_reconcile.py <minutes-text-file> --transcript <输
 python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <transcript-txt> --glossary <skill-dir>/glossary/<项目名>.txt --show-matches
 ```
 
+    推荐用一键编排器代替逐条执行：`check_all.py` 依次跑完四项校验，把各关结果与全部放行记录（`--allow-line/--skip/--allow` 原样转发）落盘为交付目录中的 `checks-summary.json`，审计痕迹随纪要归档：
+
+```powershell
+python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目录>/<文件名>.json --ledger coverage.txt --glossary <skill-dir>/glossary/<项目名>.txt --mode qa-summary
+```
+
 9. `qa_reconcile.py` 从转录稿检测疑似提问并与纪要问答对账。每个“疑似遗漏提问”要么补入完整问答，要么人工确认属误报（寒暄、修辞性反问等）后以 `--skip <编号>` 放行，并向用户说明放行理由；提示“纪要问题未在转录稿中检测到对应提问”时，须确认该问题并非虚构或过度改写。
 10. `fact_check.py` 列出的每一个无依据数字（含月份、日期）必须处理后重跑直至通过：回听录音确认、改回转录稿原文，或确属用户提供/合理推定（如由“去年”推出的年份）时用 `--allow <数字>` 显式放行并向用户说明；不得在纪要中以“待核”标注代替处理。`--show-matches` 输出的每条转录稿依据要快速扫一遍，确认数字没有被移用到无关表述（如把市占率写成毛利率）；“术语改写提示”列出的热词须逐项确认改写对象无误。执行过定向复核时，`refine_transcript.py` 报告中分歧片段涉及的数字未经回听不得按“已核对”处理。
 11. `quality_check.py` 会硬性拦截“待核实/待核验/待落实”“需结合××核实”“以××为准”“需重点关注”等核验提示句和指导性表述，以及总结概述中的“主要风险”“待核实事项”类板块。仅当被拦截的表述确为转录稿中真实谈及的会议内容（如受访人自己说“以合同为准”）时，用 `--allow-line <行号>` 放行并向用户说明；生成 DOCX 时传入相同参数。
@@ -149,6 +155,7 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
   <文件名>.refine.md / .refine.json        定向复核报告（执行过双引擎复核时）
   <文件名>.review-clips/                    分歧片段回听音频（存在分歧时；逐条确认后可删除）
   会议纪要.txt                              通过校验的纪要正文
+  checks-summary.json                      四重校验与放行记录汇总（check_all.py 生成）
   会议纪要.docx                             正式交付文件
 ```
 
@@ -184,6 +191,12 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 
 逐页检查生成的 PDF：字体替换（结果中 `missing_required_fonts` 或 `substituted_fonts` 非空即不得交付；标题方正小标宋因许可禁止嵌入、以轮廓输出属正常，须目检字形）、标题偏移、段落截断、异常分页和页码位置均需修正后再次生成并渲染。检查全部通过后删除该 PDF，仅交付 DOCX。本机既无 Microsoft Word 也无 LibreOffice 时，向用户说明无法本机渲染，请用户自行打开 DOCX 核对版式。
 
+DOCX 生成后用运行时 Python 追加内容回读比对——逐段核验 DOCX 文本与通过校验的纪要文本一致（忽略空白，副标题行豁免），段落丢失、内容错位或 DOCX 旧于纪要文本均拦截：
+
+```powershell
+<runtime-python> <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目录>/<文件名>.json --ledger coverage.txt --mode qa-summary --docx 会议纪要.docx
+```
+
 ## 转录与隐私规则
 
 - 默认引擎为 FunASR（`paraformer-zh` + `fsmn-vad` + `ct-punc`，可选 `cam++` 说话人分离），模型从 ModelScope 下载；备选引擎为 Qwen3-ASR（默认 `Qwen/Qwen3-ASR-0.6B`，官方 `qwen-asr` Transformers 后端），模型从 Hugging Face 下载。
@@ -202,10 +215,11 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 - `scripts/refine_transcript.py`：双引擎定向复核——自动挑出含数字、日期、术语、提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并按金额/百分比/日期/否定词/术语五类比对，输出分歧报告；数字比对顺序敏感（防同组数字张冠李戴），`--budget-minutes` 按风险分优先复核关键片段（最高风险片段必选），分歧与待复核片段自动剪出回听音频（`--no-audio` 关闭）；分歧默认经增强重转仲裁分出回听高低优先级，`--voter sensevoice` 启用第三引擎三取二投票。
 - `scripts/install_skill.py`：安装和分发技能。
 - `scripts/requirements-runtime.txt`、`requirements-funasr.txt`、`requirements-qwen.txt`：基础与分引擎运行依赖。
-- `scripts/quality_check.py`：检查缩进、标题层级、访谈基本信息顺序、访谈对象括注、问答配对、问答组间空行，并硬性拦截“待核实/待核验/待落实”“以××为准”“需重点关注”等核验提示句、指导性表述和总结概述中的风险类板块（`--allow-line` 放行转录稿真实谈及的内容）。
-- `scripts/audit_coverage.py`：分窗覆盖率审计——生成逐窗判定清单模板并机械校验每个时间窗都有“纳入/省略”判定，数字密集窗口不得静默省略。
-- `scripts/qa_reconcile.py`：从转录稿检测疑似提问，与纪要问答逐条对账，防止问答遗漏或虚构。
-- `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比、月份日期、二〇二五式年份），`--show-matches` 输出转录稿侧依据上下文，`--glossary` 给出热词改写提示，并支持双转录稿交叉核验。
+- `scripts/check_all.py`：一键校验编排器——依次执行四项校验并落盘 `checks-summary.json`（各关结果＋全部放行记录＋归档验收）；`--docx` 追加 DOCX 内容回读比对（逐段一致、副标题豁免、新旧校验）。
+- `scripts/quality_check.py`：检查缩进、标题层级、访谈基本信息顺序、访谈对象括注、问答配对、问答组间空行、半角标点混用和疑似重复问答，并硬性拦截“待核实/待核验/待落实”“以××为准”“需重点关注”等核验提示句、指导性表述和总结概述中的风险类板块；支持 `glossary/banned-phrases.txt` 机构自定义禁词（`--allow-line` 放行转录稿真实谈及的内容）。
+- `scripts/audit_coverage.py`：分窗覆盖率审计——生成逐窗判定清单模板（含数字、疑似提问、术语提示）并机械校验每个时间窗都有“纳入/省略”判定，数字密集窗口不得静默省略；纳入位置须对应纪要真实标题，全部同位置时提示疑似机械填写。
+- `scripts/qa_reconcile.py`：从转录稿检测疑似提问，与纪要问答逐条对账，防止问答遗漏或虚构；短问题自动抬高匹配门槛防静默漏配，`--show-matches` 输出完整对账映射供正向浏览。
+- `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比、月份日期、二〇二五式年份，以及三成/三个点/千分之五等口语形态），`--show-matches` 输出转录稿侧依据上下文，`--glossary` 给出热词改写提示，并支持双转录稿交叉核验（含数字顺序比对）。
 - `tests/`：以上校验与规划逻辑的回归测试（quality_check、fact_check、audit_coverage、qa_reconcile、refine_transcript、transcribe 辅助函数）。
 - `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX。
 - `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，用于交付前逐页检查。

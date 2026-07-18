@@ -9,6 +9,15 @@ import sys
 from pathlib import Path
 
 INDENT = "　　"
+SKILL_DIR = Path(__file__).resolve().parent.parent
+# 机构自定义禁词文件：每行一条短语，# 开头为注释；与项目术语文件一样属
+# 本地配置（glossary/* 已被 .gitignore 排除），不随技能分发。
+CUSTOM_BANNED_FILE = SKILL_DIR / "glossary" / "banned-phrases.txt"
+# 公文正文使用全角标点；紧邻中文字符的半角标点视为格式错误。纯数字场景
+# （千分位 1,234 等）两侧无中文字符，不受影响。
+HALFWIDTH_PUNCT_NEAR_CJK = re.compile(
+    r"[一-鿿][,;:?!()]|[,;:?!()][一-鿿]"
+)
 FIRST_LEVEL = re.compile(r"^[一二三四五六七八九十]+、")
 SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
 THIRD_LEVEL = re.compile(r"^\d+\.")
@@ -92,6 +101,29 @@ AFFILIATION_HINT = re.compile(
 )
 
 
+def load_custom_banned() -> list[str]:
+    try:
+        lines = CUSTOM_BANNED_FILE.read_text(encoding="utf-8-sig").splitlines()
+    except OSError:
+        return []
+    return [line.strip() for line in lines
+            if line.strip() and not line.strip().startswith("#")]
+
+
+def _bigrams(text: str) -> set[str]:
+    cleaned = re.sub(r"[^\w]", "", text)
+    if len(cleaned) < 2:
+        return {cleaned} if cleaned else set()
+    return {cleaned[i:i + 2] for i in range(len(cleaned) - 1)}
+
+
+def _similarity(a: str, b: str) -> float:
+    grams_a, grams_b = _bigrams(a), _bigrams(b)
+    if not grams_a or not grams_b:
+        return 0.0
+    return len(grams_a & grams_b) / min(len(grams_a), len(grams_b))
+
+
 def level_number(text: str) -> int | None:
     if FIRST_LEVEL.match(text):
         return 1
@@ -105,7 +137,10 @@ def level_number(text: str) -> int | None:
 
 
 def validate(
-    path: Path, mode: str, allowed_lines: frozenset[int] | set[int] = frozenset()
+    path: Path,
+    mode: str,
+    allowed_lines: frozenset[int] | set[int] = frozenset(),
+    custom_banned: list[str] | None = None,
 ) -> list[str]:
     lines = path.read_text(encoding="utf-8-sig").splitlines()
     visible = [(index + 1, line) for index, line in enumerate(lines) if line.strip()]
@@ -123,6 +158,7 @@ def validate(
     interview_metadata: list[tuple[int, int, str]] = []
     seen_interview_metadata: dict[str, int] = {}
     qa_labels: list[tuple[int, str]] = []
+    question_lines_seen: list[tuple[int, str]] = []
     headings: list[tuple[int, int, str]] = []
     body_lines: list[tuple[int, str]] = []
     for line_number, line in visible[1:]:
@@ -153,6 +189,7 @@ def validate(
                     interview_metadata.append((field_index, line_number, field))
         if content.startswith("问："):
             qa_labels.append((line_number, "问"))
+            question_lines_seen.append((line_number, content.removeprefix("问：").strip()))
             # 更新规则：连续问答时每组之间必须空一行；紧随各级标题的首问除外。
             previous_raw = lines[line_number - 2] if line_number >= 2 else ""
             previous_content = previous_raw.removeprefix(INDENT).strip()
@@ -209,6 +246,47 @@ def validate(
                     f"会议内容时，用 --allow-line {line_number} 放行并向用户说明。"
                 )
                 break
+
+    # 机构自定义禁词（glossary/banned-phrases.txt）：命中即失败，出口与
+    # 内置禁用表述一致（--allow-line，仅限转录稿真实内容）。
+    banned_phrases = load_custom_banned() if custom_banned is None else list(custom_banned)
+    if banned_phrases:
+        for line_number, line in visible:
+            if line_number in allowed_lines:
+                continue
+            content = line.removeprefix(INDENT).strip()
+            for phrase in banned_phrases:
+                if phrase and phrase in content:
+                    errors.append(
+                        f"第 {line_number} 行出现自定义禁用表述「{phrase}」"
+                        "（glossary/banned-phrases.txt）；仅当其确为转录稿真实"
+                        f"内容时，用 --allow-line {line_number} 放行并向用户说明。"
+                    )
+                    break
+
+    # 半角标点紧邻中文：公文正文应使用全角标点。
+    for line_number, line in visible:
+        content = line.removeprefix(INDENT).strip()
+        found = HALFWIDTH_PUNCT_NEAR_CJK.search(content)
+        if found:
+            errors.append(
+                f"第 {line_number} 行中文内容中混用了半角标点（…{found.group()}…），"
+                "公文正文应使用全角标点。"
+            )
+
+    # 纪要内部重复问答：几乎相同的两问多为起草时的重复粘贴。
+    for i in range(len(question_lines_seen)):
+        for j in range(i + 1, len(question_lines_seen)):
+            line_i, text_i = question_lines_seen[i]
+            line_j, text_j = question_lines_seen[j]
+            if line_j in allowed_lines:
+                continue
+            if (min(len(text_i), len(text_j)) >= 8
+                    and _similarity(text_i, text_j) >= 0.9):
+                errors.append(
+                    f"第 {line_j} 行问题与第 {line_i} 行几乎相同（疑似重复问答）；"
+                    f"确为两次相似提问时用 --allow-line {line_j} 放行。"
+                )
 
     qa_detected = bool(qa_labels)
     # Every explicit Q/A label must be paired, regardless of the selected mode.

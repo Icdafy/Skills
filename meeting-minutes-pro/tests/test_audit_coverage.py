@@ -148,6 +148,54 @@ class AuditCoverageTests(unittest.TestCase):
         self.assertIn("警告", output)
         self.assertIn("均未出现在纪要中", output)
 
+    def test_implausible_position_fails(self) -> None:
+        minutes = self.write_minutes(
+            "一、完整总结概述",
+            "公司去年营收3000万元，毛利率约30%，计划3月15日交付，产能爬坡到每月500台。",
+        )
+        ledger = self.write_ledger(
+            "窗口 1（00:00–05:00）：纳入 财务模型表",
+            "窗口 2（05:00–10:00）：省略 寒暄",
+            "窗口 3（10:00–15:00）：纳入 总结一",
+        )
+        code, output = self.validate(ledger, minutes)
+        self.assertEqual(code, 1)
+        self.assertIn("无法对应", output)
+
+    def test_template_question_and_term_hints(self) -> None:
+        extra = self.root / "q.json"
+        extra.write_text(json.dumps({"text": "", "timestamps": [
+            stamp("咱们全年营收能到多少？", 10.0, 15.0),
+            stamp("张三补充了具体情况。", 20.0, 25.0),
+        ]}, ensure_ascii=False), encoding="utf-8")
+        windows, _ = AUDIT.build_windows(extra, 300.0, 1500, ["张三"])
+        template = self.root / "hint.txt"
+        AUDIT.write_template(windows, template)
+        content = template.read_text(encoding="utf-8")
+        self.assertIn("疑似提问×1", content)
+        self.assertIn("术语×1：张三", content)
+
+    def test_uniform_positions_warn(self) -> None:
+        extra = self.root / "five.json"
+        extra.write_text(json.dumps({"text": "", "timestamps": [
+            stamp(f"第{i}段的情况说明。", i * 300 + 10.0, i * 300 + 15.0)
+            for i in range(5)
+        ]}, ensure_ascii=False), encoding="utf-8")
+        windows, _ = AUDIT.build_windows(extra, 300.0, 1500)
+        minutes = self.write_minutes("一、完整总结概述", "会议介绍了公司经营情况。")
+        ledger = self.write_ledger(
+            "窗口 1（00:00–05:00）：纳入 总结",
+            "窗口 2（05:00–10:00）：纳入 总结",
+            "窗口 3（10:00–15:00）：纳入 总结",
+            "窗口 4（15:00–20:00）：纳入 总结",
+            "窗口 5（20:00–20:15）：纳入 总结",
+        )
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = AUDIT.validate(windows, "time", ledger, minutes)
+        self.assertEqual(code, 0)
+        self.assertIn("疑似机械填写", buffer.getvalue())
+
     def test_text_fallback_windows(self) -> None:
         plain = self.root / "plain.txt"
         plain.write_text("第一段内容。" * 100 + "\n" + "第二段内容。" * 100, encoding="utf-8")

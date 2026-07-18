@@ -32,6 +32,10 @@ FILLERS = ("是吧", "对吧", "对不对", "是不是", "好吧", "行吗", "�
 SENTENCE_SPLIT = re.compile(r"(?<=[。！？!?；;\n])")
 MERGE_GAP_SECONDS = 5.0
 DEFAULT_MIN_SIMILARITY = 0.30
+# 短问题的 bigram 少，包含度天然虚高，容易把真正被遗漏的提问误判为已匹配
+# （静默漏报比误报更危险）；对净长不足 10 字的候选抬高匹配门槛。
+SHORT_TEXT_CHARS = 10
+SHORT_TEXT_MIN_SIMILARITY = 0.45
 
 
 class Candidate:
@@ -131,33 +135,51 @@ def fmt_time(seconds: float | None) -> str:
     return f"{hours}:{minutes:02d}:{secs:02d}" if hours else f"{minutes:02d}:{secs:02d}"
 
 
+def effective_threshold(text: str, base: float) -> float:
+    cleaned = re.sub(r"[^\w]", "", text)
+    if len(cleaned) < SHORT_TEXT_CHARS:
+        return max(base, SHORT_TEXT_MIN_SIMILARITY)
+    return base
+
+
 def reconcile(
     candidates: list[Candidate],
     questions: list[str],
     min_similarity: float,
     skip: list[int],
-) -> tuple[list[tuple[int, Candidate, float]], list[str]]:
-    """Return (suspected omissions, minutes questions with no transcript source)."""
+) -> tuple[list[tuple[int, Candidate, float]], list[str],
+           list[tuple[int, Candidate, str, float]]]:
+    """Return (suspected omissions, orphaned minutes questions, matches).
+
+    matches carries the full 转录提问 ↔ 纪要问答 mapping for --show-matches,
+    mirroring fact_check's positive-evidence output.
+    """
     suspected: list[tuple[int, Candidate, float]] = []
+    matched: list[tuple[int, Candidate, str, float]] = []
     matched_questions: set[int] = set()
     for index, candidate in enumerate(candidates, start=1):
+        required = effective_threshold(candidate.text, min_similarity)
         best_score, best_question = 0.0, None
         for q_index, question in enumerate(questions):
             score = similarity(candidate.text, question)
             if score > best_score:
                 best_score, best_question = score, q_index
-        if best_score >= min_similarity and best_question is not None:
+        if best_score >= required and best_question is not None:
             matched_questions.add(best_question)
+            matched.append((index, candidate, questions[best_question], best_score))
         elif index not in skip:
             suspected.append((index, candidate, best_score))
 
     orphaned = [
         question for q_index, question in enumerate(questions)
         if q_index not in matched_questions
-        and all(similarity(candidate.text, question) < min_similarity
-                for candidate in candidates)
+        and all(
+            similarity(candidate.text, question)
+            < effective_threshold(candidate.text, min_similarity)
+            for candidate in candidates
+        )
     ]
-    return suspected, orphaned
+    return suspected, orphaned, matched
 
 
 def main() -> int:
@@ -171,6 +193,9 @@ def main() -> int:
     parser.add_argument("--skip", action="append", type=int, default=[],
                         help="release a reviewed false positive by its 编号; repeatable, "
                              "and the justification must be reported to the user")
+    parser.add_argument("--show-matches", action="store_true",
+                        help="print the full transcript-question ↔ minutes-question "
+                             "mapping for positive review")
     args = parser.parse_args()
 
     if not args.minutes.is_file():
@@ -186,7 +211,17 @@ def main() -> int:
         print("未检测到疑似提问；如访谈确有问答，请人工复核转录稿。")
         return 0
 
-    suspected, orphaned = reconcile(candidates, questions, args.min_similarity, args.skip)
+    suspected, orphaned, matched = reconcile(
+        candidates, questions, args.min_similarity, args.skip
+    )
+    if args.show_matches and matched:
+        print("对账映射（转录疑似提问 ↔ 纪要问答，请正向浏览确认指向未变）：")
+        for index, candidate, question, score in matched:
+            speaker = f"【{candidate.speaker}】" if candidate.speaker else ""
+            print(f"- 编号 {index}［{fmt_time(candidate.start)}］{speaker}"
+                  f"{candidate.text[:40]}")
+            # "<->" 保持在 GBK 字符集内，避免 Windows 控制台输出失败。
+            print(f"    <-> 问：{question[:40]}（相似度 {score:.2f}）")
     if orphaned:
         print("警告：以下纪要问题未在转录稿中检测到对应提问，请确认并非虚构或过度改写：")
         for question in orphaned:

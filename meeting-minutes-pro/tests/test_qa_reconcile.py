@@ -59,9 +59,11 @@ class ReconcileTests(unittest.TestCase):
     def test_all_questions_covered(self) -> None:
         candidates = self.make_candidates("公司目前的毛利率大概是多少？")
         questions = ["公司目前的毛利率水平是多少？"]
-        suspected, orphaned = QA.reconcile(candidates, questions, 0.30, [])
+        suspected, orphaned, matched = QA.reconcile(candidates, questions, 0.30, [])
         self.assertEqual(suspected, [])
         self.assertEqual(orphaned, [])
+        self.assertEqual(len(matched), 1)
+        self.assertIn("毛利率", matched[0][2])
 
     def test_dropped_question_is_flagged(self) -> None:
         candidates = self.make_candidates(
@@ -69,7 +71,7 @@ class ReconcileTests(unittest.TestCase):
             "创始团队之前有没有相关行业的从业背景？",
         )
         questions = ["公司目前的毛利率水平是多少？"]
-        suspected, _ = QA.reconcile(candidates, questions, 0.30, [])
+        suspected, _, _ = QA.reconcile(candidates, questions, 0.30, [])
         self.assertEqual(len(suspected), 1)
         self.assertIn("创始团队", suspected[0][1].text)
 
@@ -79,7 +81,7 @@ class ReconcileTests(unittest.TestCase):
             "创始团队之前有没有相关行业的从业背景？",
         )
         questions = ["公司目前的毛利率水平是多少？"]
-        suspected, _ = QA.reconcile(candidates, questions, 0.30, [2])
+        suspected, _, _ = QA.reconcile(candidates, questions, 0.30, [2])
         self.assertEqual(suspected, [])
 
     def test_fabricated_minutes_question_is_orphaned(self) -> None:
@@ -88,9 +90,17 @@ class ReconcileTests(unittest.TestCase):
             "公司目前的毛利率水平是多少？",
             "公司未来三年的上市计划是什么？",
         ]
-        _, orphaned = QA.reconcile(candidates, questions, 0.30, [])
+        _, orphaned, _ = QA.reconcile(candidates, questions, 0.30, [])
         self.assertEqual(len(orphaned), 1)
         self.assertIn("上市计划", orphaned[0])
+
+    def test_short_candidate_needs_higher_similarity(self) -> None:
+        # 净长不足 10 字的候选阈值抬到 0.45：弱相似不再静默算作已匹配。
+        candidates = self.make_candidates("毛利多少？")
+        questions = ["净利润率多少"]
+        suspected, _, matched = QA.reconcile(candidates, questions, 0.30, [])
+        self.assertEqual(len(suspected), 1)
+        self.assertEqual(matched, [])
 
 
 class LoadingTests(unittest.TestCase):

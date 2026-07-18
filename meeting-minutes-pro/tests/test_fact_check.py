@@ -139,6 +139,33 @@ class VerifyTests(unittest.TestCase):
         self.assertNotIn("术语改写提示", output)
 
 
+class ColloquialPercentTests(unittest.TestCase):
+    def test_cheng_matches_written_percent(self) -> None:
+        code, _ = run_verify(minutes_doc("毛利率约30%。"), "毛利率大概三成吧")
+        self.assertEqual(code, 0)
+
+    def test_cheng_half_matches_written_percent(self) -> None:
+        code, _ = run_verify(minutes_doc("毛利率约35%。"), "毛利率三成半左右")
+        self.assertEqual(code, 0)
+
+    def test_ge_dian_matches_written_percent(self) -> None:
+        code, _ = run_verify(minutes_doc("费用率上升3%。"), "费用率涨了3个点")
+        self.assertEqual(code, 0)
+
+    def test_cn_ge_dian_matches_written_percent(self) -> None:
+        code, _ = run_verify(minutes_doc("费用率上升3%。"), "费用率涨了三个点")
+        self.assertEqual(code, 0)
+
+    def test_qianfenzhi_matches_written_percent(self) -> None:
+        code, _ = run_verify(minutes_doc("不良率为0.5%。"), "不良率控制在千分之五")
+        self.assertEqual(code, 0)
+
+    def test_cheng_verb_not_misparsed(self) -> None:
+        # 建成三栋/组成 etc. must not fabricate percent evidence.
+        code, _ = run_verify(minutes_doc("园区规划建设三栋厂房。"), "园区建成三栋厂房")
+        self.assertEqual(code, 0)
+
+
 class CompareTests(unittest.TestCase):
     def test_date_disagreement_across_engines(self) -> None:
         with TempFiles() as files:
@@ -148,6 +175,25 @@ class CompareTests(unittest.TestCase):
             with contextlib.redirect_stdout(buffer):
                 code = FACT_CHECK.compare(a, b)
         self.assertEqual(code, 1)
+
+    def test_same_set_different_order_flagged(self) -> None:
+        with TempFiles() as files:
+            a = files.write("a.txt", "市占率30%，毛利率15%")
+            b = files.write("b.txt", "市占率15%，毛利率30%")
+            buffer = io.StringIO()
+            with contextlib.redirect_stdout(buffer):
+                code = FACT_CHECK.compare(a, b)
+        self.assertEqual(code, 1)
+        self.assertIn("顺序不同", buffer.getvalue())
+
+    def test_same_order_passes(self) -> None:
+        with TempFiles() as files:
+            a = files.write("a.txt", "市占率百分之三十，毛利率15%")
+            b = files.write("b.txt", "市占率30%，毛利率15%")
+            buffer = io.StringIO()
+            with contextlib.redirect_stdout(buffer):
+                code = FACT_CHECK.compare(a, b)
+        self.assertEqual(code, 0)
 
 
 if __name__ == "__main__":

@@ -66,6 +66,13 @@ CN_NUMBER_TOKEN = re.compile(
 PERCENT_CN_TOKEN = re.compile(
     r"百分之[零〇一二两三四五六七八九十百点]+|[零〇一二两三四五六七八九十百]+(?:点[零一二三四五六七八九]+)?个百分点"
 )
+# Transcript-side colloquial percent forms (recognition targets only — the
+# minutes side writes the normalized form): 三成==30%、三成半==35%、
+# 3个点/三个点==3%、千分之五==0.5%、万分之五==0.05%. The 成 pattern excludes
+# common non-numeric continuations (成员/成本/成立…) via lookahead.
+CN_CHENG_TOKEN = re.compile(r"[一二两三四五六七八九十]成[半多]?(?![员本立效品色果])")
+POINT_TOKEN = re.compile(r"(?:\d+(?:\.\d+)?|[一二两三四五六七八九十半]{1,3})个点")
+FRACTION_CN_TOKEN = re.compile(r"[千万]分之[零〇一二两三四五六七八九十百点]+")
 # Transcript-side only: bare Chinese numerals without a 万/亿 scale (五千,
 # 十五, digit strings like 二〇二五) are harvested as match targets so that
 # minutes written in Arabic digits still find their spoken counterparts.
@@ -240,6 +247,9 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
         spans: list[tuple[int, int, str]] = []
         patterns = [ARABIC_TOKEN, CN_NUMBER_TOKEN, PERCENT_CN_TOKEN]
         if not body_only:
+            # Colloquial percent forms claim their spans before the generic
+            # patterns split them (3个点 must not decay into a bare 3).
+            patterns = [FRACTION_CN_TOKEN, POINT_TOKEN, CN_CHENG_TOKEN] + patterns
             patterns.append(CN_RUN_TOKEN)
         for pattern in patterns:
             for match in pattern.finditer(searchable):
@@ -256,6 +266,15 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
             if raw.startswith("百分之"):
                 value = parse_cn_percent(raw)
                 kind = "percent"
+            elif raw.startswith(("千分之", "万分之")):
+                value = parse_cn_fraction(raw)
+                kind = "percent"
+            elif raw.endswith("个点"):
+                value = parse_point(raw)
+                kind = "percent"
+            elif CN_CHENG_TOKEN.fullmatch(raw):
+                value = parse_cheng(raw)
+                kind = "percent"
             elif raw.endswith("个百分点") and not raw[0].isdigit():
                 value = parse_cn_number(raw.removesuffix("个百分点"))
                 kind = "percent"
@@ -271,6 +290,38 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
                                 context=_context_of(searchable, start, end)))
         tokens.extend(date_tokens)
     return tokens
+
+
+def parse_cn_fraction(raw: str) -> float | None:
+    """千分之X / 万分之X expressed as percent values (千分之五 == 0.5%)."""
+    divisor = 10.0 if raw.startswith("千分之") else 100.0
+    value = parse_cn_percent("百分之" + raw[3:])
+    return value / divisor if value is not None else None
+
+
+def parse_point(raw: str) -> float | None:
+    """Colloquial X个点 as a percent value (三个点 == 3%)."""
+    body = raw.removesuffix("个点")
+    if not body:
+        return None
+    if body == "半":
+        return 0.5
+    if body[0].isdigit():
+        try:
+            return float(body)
+        except ValueError:
+            return None
+    return parse_cn_int(body)
+
+
+def parse_cheng(raw: str) -> float | None:
+    """Colloquial X成 as a percent value (三成 == 30%, 三成半 == 35%)."""
+    half = raw.endswith("半")
+    body = raw.rstrip("半多").removesuffix("成")
+    value = parse_cn_int(body)
+    if value is None:
+        return None
+    return value * 10 + (5 if half else 0)
 
 
 def parse_cn_percent(raw: str) -> float | None:
@@ -391,22 +442,49 @@ def verify(
 
 
 def compare(path_a: Path, path_b: Path) -> int:
-    def value_set(path: Path) -> dict[tuple[str, float], Token]:
+    def tokens_of(path: Path) -> list[Token]:
         text = normalize(path.read_text(encoding="utf-8-sig"))
-        result: dict[tuple[str, float], Token] = {}
-        for token in extract_tokens(text, body_only=False):
+        return [
+            token for token in extract_tokens(text, body_only=False)
             if token.value is not None and (
                 token.kind in ("month", "day") or salient(token.raw)
-            ):
-                result.setdefault((token.kind, round(token.value, 6)), token)
+                or token.raw.endswith("年")
+            )
+        ]
+
+    def value_set(tokens: list[Token]) -> dict[tuple[str, float], Token]:
+        result: dict[tuple[str, float], Token] = {}
+        for token in tokens:
+            result.setdefault((token.kind, round(token.value, 6)), token)
         return result
 
-    values_a, values_b = value_set(path_a), value_set(path_b)
+    def first_occurrence_order(tokens: list[Token]) -> list[tuple[tuple, str]]:
+        seen: set[tuple] = set()
+        order: list[tuple[tuple, str]] = []
+        for token in tokens:
+            key = (token.kind, round(token.value, 6))
+            if key not in seen:
+                seen.add(key)
+                order.append((key, token.raw))
+        return order
+
+    tokens_a, tokens_b = tokens_of(path_a), tokens_of(path_b)
+    values_a, values_b = value_set(tokens_a), value_set(tokens_b)
     only_a = [tok for key, tok in values_a.items() if key not in values_b]
     only_b = [tok for key, tok in values_b.items() if key not in values_a]
     print(f"交叉核对：{path_a.name} 提取 {len(values_a)} 个数值，"
           f"{path_b.name} 提取 {len(values_b)} 个数值。")
     if not only_a and not only_b:
+        # Same value sets can still hide a swap; compare first-occurrence order
+        # (mirrors the order-sensitive check in refine_transcript).
+        order_a = first_occurrence_order(tokens_a)
+        order_b = first_occurrence_order(tokens_b)
+        if [key for key, _ in order_a] != [key for key, _ in order_b]:
+            print("两份转录稿的数字集合一致，但出现顺序不同"
+                  "（疑似同组数字被安到不同表述上，须回听确认指代）：")
+            print(f"- {path_a.name}：{'、'.join(raw for _, raw in order_a)}")
+            print(f"- {path_b.name}：{'、'.join(raw for _, raw in order_b)}")
+            return 1
         print("两份转录稿的数字完全一致。")
         return 0
     for name, only in ((path_a.name, only_a), (path_b.name, only_b)):
