@@ -12,6 +12,7 @@ import argparse
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import venv
@@ -27,6 +28,123 @@ REQUIREMENTS_ENGINE = {
 
 BASE_MODULES = ("imageio_ffmpeg", "docx")
 ENGINE_MODULES = {"funasr": "funasr", "qwen": "qwen_asr"}
+
+# Hardware tiers drive the dual-engine strategy. The tier is advisory and
+# degrades gracefully — no tier ever blocks producing the minutes; it only
+# changes how deep the dual-engine assurance goes and how long it takes.
+TIER_ADVICE = {
+    "T0": "仅用 funasr 引擎完成主转录；确需双引擎复核时加 --budget-minutes 10 "
+          "严控重转耗时，避免 qwen 引擎的 --timestamps（对齐模型内存占用高）。",
+    "T1": "默认档：funasr 主转录＋refine_transcript.py 定向复核（Qwen3-ASR-0.6B）；"
+          "录音很长时加 --budget-minutes 控制复核耗时。",
+    "T2": "可在征得用户同意后改用 --model Qwen/Qwen3-ASR-1.7B，扩大复核覆盖，"
+          "或启用 --voter sensevoice 第三引擎三取二投票。",
+    "T3": "可全量双引擎转录（refine_transcript.py --all 或 fact_check.py --compare），"
+          "并启用 --voter sensevoice 三取二投票获得最高保障。",
+}
+
+
+def total_ram_gb() -> float | None:
+    """Physical RAM in GiB via stdlib only; None when undetectable."""
+    try:
+        if os.name == "nt":
+            import ctypes
+
+            class MemoryStatusEx(ctypes.Structure):
+                _fields_ = [
+                    ("dwLength", ctypes.c_ulong),
+                    ("dwMemoryLoad", ctypes.c_ulong),
+                    ("ullTotalPhys", ctypes.c_ulonglong),
+                    ("ullAvailPhys", ctypes.c_ulonglong),
+                    ("ullTotalPageFile", ctypes.c_ulonglong),
+                    ("ullAvailPageFile", ctypes.c_ulonglong),
+                    ("ullTotalVirtual", ctypes.c_ulonglong),
+                    ("ullAvailVirtual", ctypes.c_ulonglong),
+                    ("ullAvailExtendedVirtual", ctypes.c_ulonglong),
+                ]
+
+            status = MemoryStatusEx()
+            status.dwLength = ctypes.sizeof(MemoryStatusEx)
+            if not ctypes.windll.kernel32.GlobalMemoryStatusEx(ctypes.byref(status)):
+                return None
+            return status.ullTotalPhys / 2**30
+        if sys.platform == "darwin":
+            proc = subprocess.run(["sysctl", "-n", "hw.memsize"],
+                                  capture_output=True, text=True, timeout=10, check=False)
+            return int(proc.stdout.strip()) / 2**30 if proc.returncode == 0 else None
+        with open("/proc/meminfo", encoding="ascii") as handle:
+            for line in handle:
+                if line.startswith("MemTotal:"):
+                    return int(line.split()[1]) / 2**20
+    except Exception:
+        return None
+    return None
+
+
+def cuda_vram_gb() -> tuple[float | None, str | None]:
+    """Largest NVIDIA GPU's VRAM in GiB via nvidia-smi; (None, None) without CUDA."""
+    try:
+        proc = subprocess.run(
+            ["nvidia-smi", "--query-gpu=memory.total,name",
+             "--format=csv,noheader,nounits"],
+            capture_output=True, text=True, timeout=10, check=False,
+        )
+        if proc.returncode != 0 or not proc.stdout.strip():
+            return None, None
+        best_gb, best_name = 0.0, None
+        for line in proc.stdout.strip().splitlines():
+            memory_mb, _, name = line.partition(",")
+            gigabytes = float(memory_mb.strip()) / 1024
+            if gigabytes > best_gb:
+                best_gb, best_name = gigabytes, name.strip()
+        return (best_gb, best_name) if best_name else (None, None)
+    except Exception:
+        return None, None
+
+
+def classify_tier(ram_gb: float | None, vram_gb: float | None) -> tuple[str, str]:
+    """Map hardware to a tier. Unknown RAM defaults to T1, never to a block."""
+    if vram_gb is not None and vram_gb >= 16:
+        return "T3", f"CUDA 显存 {vram_gb:.0f}GB"
+    if vram_gb is not None and vram_gb >= 8:
+        return "T2", f"CUDA 显存 {vram_gb:.0f}GB"
+    if ram_gb is None:
+        return "T1", "无法探测内存，按默认档处理"
+    if ram_gb >= 12:
+        return "T1", f"内存 {ram_gb:.0f}GB，无充足 CUDA 显存"
+    return "T0", f"内存 {ram_gb:.0f}GB 偏小"
+
+
+def hardware_report() -> dict:
+    ram = total_ram_gb()
+    vram, gpu_name = cuda_vram_gb()
+    disk_free = None
+    try:
+        disk_free = shutil.disk_usage(Path.home()).free / 2**30
+    except Exception:
+        pass
+    return {
+        "ram_gb": round(ram, 1) if ram is not None else None,
+        "cpu_cores": os.cpu_count(),
+        "cuda": vram is not None,
+        "gpu_name": gpu_name,
+        "vram_gb": round(vram, 1) if vram is not None else None,
+        "disk_free_gb": round(disk_free, 1) if disk_free is not None else None,
+    }
+
+
+def attach_tier(result: dict) -> None:
+    """Add hardware facts and the T0–T3 recommendation to a probe/install result."""
+    hardware = hardware_report()
+    tier, reason = classify_tier(hardware.get("ram_gb"), hardware.get("vram_gb"))
+    advice = TIER_ADVICE[tier]
+    engines = result.get("engines") or {}
+    if tier != "T0" and not engines.get("qwen"):
+        advice += " 当前未安装 qwen 引擎：执行双引擎复核前先 --install --engine qwen。"
+    result["hardware"] = hardware
+    result["tier"] = tier
+    result["tier_reason"] = reason
+    result["tier_advice"] = advice
 
 
 def cache_root() -> Path:
@@ -149,6 +267,7 @@ def main() -> int:
     except Exception as exc:
         print(json.dumps({"ready": False, "error": str(exc)}, ensure_ascii=False, indent=2))
         return 1
+    attach_tier(result)
     print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0 if result.get("ready") else 2
 

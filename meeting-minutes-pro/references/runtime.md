@@ -25,6 +25,17 @@ After dependencies and weights are cached, pass `--offline` to reject Hugging Fa
 
 ## Hardware
 
+`bootstrap_runtime.py --check` probes RAM, CUDA VRAM (via nvidia-smi), CPU cores, and free disk with the standard library only, and reports an advisory tier that drives how deep the dual-engine assurance goes. No tier blocks delivery — lower tiers only shorten the double-checked portion:
+
+| Tier | 判定 | 双引擎策略建议 |
+| --- | --- | --- |
+| T0 | 内存 < 12GB，无≥8GB CUDA | 仅 funasr 主转录；确需复核加 `--budget-minutes 10`，避免 qwen `--timestamps` |
+| T1 | 内存 ≥ 12GB（默认档） | funasr 主转录＋定向复核（0.6B）；长录音加 `--budget-minutes` |
+| T2 | CUDA 显存 ≥ 8GB | 征询用户后可换 1.7B 模型、扩大复核覆盖或 `--voter sensevoice` |
+| T3 | CUDA 显存 ≥ 16GB | 全量双引擎（`--all` / `fact_check --compare`）＋三取二投票 |
+
+The tier is a recommendation: quote it (with the reason) to the user, degrade loudly rather than silently, and honor explicit user overrides with an ETA warning.
+
 - NVIDIA CUDA: automatically selected and normally fastest.
 - CPU: universal fallback. The funasr engine is comfortable on ordinary laptops; for the qwen engine on long recordings expect significant time and prefer 32 GB RAM.
 - Apple: auto mode uses CPU because MPS operator coverage varies by PyTorch release; users may opt in with `--device mps` and retry with `--device cpu` after an MPS error.

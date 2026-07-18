@@ -51,6 +51,8 @@ description: 在本地将中文、方言、英文或多语言会议录音和视�
 python <skill-dir>/scripts/bootstrap_runtime.py --check
 ```
 
+    结果 JSON 除运行环境外还包含本机硬件分档：`tier`（T0–T3）、`tier_reason` 与 `tier_advice`。按建议选择转录与复核策略——T0（内存小）仅 funasr 主转录、复核加 `--budget-minutes` 严控耗时；T1（默认档）定向复核；T2（CUDA 显存 ≥8GB）可询问用户改用 1.7B 模型或启用 `--voter sensevoice`；T3（≥16GB）可全量双引擎加三取二投票。分档只是建议，任何档位都能完成完整交付；用户明确要求时可越档执行，并说明预计耗时。
+
 4. 首次运行缺少依赖或模型时，先取得用户对网络下载的许可，再安装运行环境（`--engine funasr`、`--engine qwen` 或 `--engine all`）：
 
 ```powershell
@@ -195,7 +197,7 @@ python <skill-dir>/scripts/fact_check.py <minutes-text-file> --transcript <trans
 - `references/format-and-output.md`：固定字体、版式、层级、写作口径，以及“完整总结概述＋完整问答”和无问答主题式模板。
 - `references/runtime.md`：双引擎选择、硬件、下载、隐私、离线运行和故障处理说明。
 - `references/platforms.md`：在不同智能体平台安装和分发技能的说明。
-- `scripts/bootstrap_runtime.py`：检查和安装本地转录运行环境（`--engine funasr|qwen|all`）。
+- `scripts/bootstrap_runtime.py`：检查和安装本地转录运行环境（`--engine funasr|qwen|all`），并探测内存、CUDA 显存与磁盘，输出 T0–T3 硬件分档建议（`tier`/`tier_advice`）供选择双引擎复核策略。
 - `scripts/transcribe.py`：执行本地音视频转录（FunASR/Qwen 双引擎、长音频切分、断点续传、说话人分离与 `--speakers` 人数提示、`--sample` 中段试转与耗时预估、音频增强）。
 - `scripts/refine_transcript.py`：双引擎定向复核——自动挑出含数字、日期、术语、提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并按金额/百分比/日期/否定词/术语五类比对，输出分歧报告；数字比对顺序敏感（防同组数字张冠李戴），`--budget-minutes` 按风险分优先复核关键片段（最高风险片段必选），分歧与待复核片段自动剪出回听音频（`--no-audio` 关闭）；分歧默认经增强重转仲裁分出回听高低优先级，`--voter sensevoice` 启用第三引擎三取二投票。
 - `scripts/install_skill.py`：安装和分发技能。
