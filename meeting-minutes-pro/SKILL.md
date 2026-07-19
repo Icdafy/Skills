@@ -183,7 +183,7 @@ python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目
   --mode qa-summary
 ```
 
-脚本会再次执行文本校验（文本校验用过 `--allow-line` 时此处传入相同参数），并依据公司样例设置 A4 页面、页边距、字体、字号、固定行距、两字缩进、全文阿拉伯数字 Times New Roman（字号随所在文字）、问答组间空行，以及三号仿宋_GB2312 的 `-1-` 页码（奇偶页不同，奇数页居右、偶数页居左）。生成后运行渲染检查：
+脚本会再次执行文本校验（文本校验用过 `--allow-line` 时此处传入相同参数），并依据公司样例设置 A4 页面、页边距、字体、字号、固定行距、两字缩进、全文西文字母与阿拉伯数字 Times New Roman（字号随所在文字，`5G`/`A4`/`Qwen3` 等西文段整体走西文字体）、问答组间空行，以及三号仿宋_GB2312 的 `-1-` 页码（奇偶页不同，奇数页居右、偶数页居左）。版式规约集中在 `scripts/format_spec.py`，与文本校验共用同一份层级与字体定义。生成后默认把 fsType 允许嵌入的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使文件在未安装这两款字体的机器上仍忠实呈现（`--no-embed` 关闭；方正小标宋因许可禁止嵌入，与其在 PDF 中走轮廓一致，自动跳过）；可用 `python <skill-dir>/scripts/embed_fonts.py --docx 会议纪要.docx --verify` 复核嵌入字体。生成后运行渲染检查：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/render_docx.py --input "会议纪要.docx"
@@ -221,7 +221,9 @@ DOCX 生成后用运行时 Python 追加内容回读比对——逐段核验 DOC
 - `scripts/qa_reconcile.py`：从转录稿检测疑似提问，与纪要问答逐条对账，防止问答遗漏或虚构；短问题自动抬高匹配门槛防静默漏配，`--show-matches` 输出完整对账映射供正向浏览；对已匹配的问答执行答案实质对账——答复窗口内说过的显著数字未进入纪要对应问答组即告警。
 - `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比、月份日期、二〇二五式年份，以及三成/三个点/千分之五等口语形态），`--show-matches` 输出转录稿侧依据上下文并按语境绑定分排序——纪要语境与依据语境相似度低的数字标记“疑似移用”置顶，`--glossary` 给出热词改写提示，并支持双转录稿交叉核验（含数字顺序比对）。
 - `tests/`：以上校验与规划逻辑的回归测试（quality_check、fact_check、audit_coverage、qa_reconcile、refine_transcript、transcribe 辅助函数）。
-- `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX。
+- `scripts/format_spec.py`：排版规约的唯一真源——层级识别正则、角色→字体/字号/加粗映射、西文段规则、页面几何与字体清单；`quality_check.py`（校验）、`create_minutes_docx.py`（渲染）、`render_docx.py`、`font_preflight.py`、`embed_fonts.py` 全部从此导入，校验与渲染判定不会漂移。
+- `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX（版式取自 `format_spec.py`），并默认将可嵌入的随附字体嵌入 DOCX（`--no-embed` 关闭）。
+- `scripts/embed_fonts.py`：按 ECMA-376 混淆字体机制把 fsType 允许的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使其在未装字体的机器上忠实呈现（渲染器无关，不依赖 Word/LibreOffice）；`--verify` 反混淆各嵌入部件并校验为有效字体；方正小标宋 fsType 受限，不嵌入。
 - `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，用于交付前逐页检查。
 - `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装随技能提供的字体。
 - `glossary/`：按项目或公司维护的热词术语文件，跨会议复用（仅本地，不入库）；`glossary/industry/`：随技能分发的行业术语库（低空经济、商业航天），供相关行业会议挑选热词并作规范写法参照。

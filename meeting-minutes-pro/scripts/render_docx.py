@@ -19,18 +19,18 @@ import subprocess
 import sys
 import tempfile
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from format_spec import pdf_required_markers, pdf_substitute_alerts  # noqa: E402
+
 # PostScript names as they appear inside the exported PDF. 方正小标宋 is not
 # listed: its license flag (fsType=2) forbids embedding, so Word outputs the
 # title as vector outlines — visually faithful but absent from the font list.
-REQUIRED_FONT_MARKERS = (
-    "KaiTi_GB2312",     # 楷体_GB2312
-    "FangSong_GB2312",  # 仿宋_GB2312
-)
+REQUIRED_FONT_MARKERS = pdf_required_markers()  # ("KaiTi_GB2312", "FangSong_GB2312")
 
-# Fonts whose presence proves a GB2312 face was silently substituted: system
-# 楷体/仿宋 (PostScript "KaiTi"/"FangSong", no _GB2312 suffix) and WPS cloud
-# clones ("KSOF…").
-SUBSTITUTE_ALERTS = ("KaiTi", "FangSong")
+# Bare PostScript names whose presence proves a GB2312 face was silently
+# substituted: system 楷体/仿宋 ("KaiTi"/"FangSong", no _GB2312 suffix) and WPS
+# cloud clones ("KSOF…", handled separately below).
+SUBSTITUTE_ALERTS = pdf_substitute_alerts()  # ("KaiTi", "FangSong")
 
 
 def render_with_word(docx: Path, pdf: Path) -> bool:

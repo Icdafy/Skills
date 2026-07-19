@@ -1,10 +1,18 @@
 #!/usr/bin/env python3
-"""Create a fixed-format Chinese meeting-minutes DOCX from validated plain text."""
+"""Create a fixed-format Chinese meeting-minutes DOCX from validated plain text.
+
+Layout knowledge (heading grammar, role→font mapping, western-run rule, sizes,
+geometry, fonts) is imported from ``format_spec`` — the same module the text
+validator uses — so the rendered DOCX can never disagree with what
+``quality_check`` accepted. After saving, the bundled GB2312 faces are embedded
+into the package (see ``embed_fonts``) so the file renders faithfully on
+machines that lack 仿宋_GB2312 / 楷体_GB2312; pass ``--no-embed`` to skip.
+"""
 
 from __future__ import annotations
 
 import argparse
-import re
+import sys
 from pathlib import Path
 
 from docx import Document
@@ -14,25 +22,41 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
 
-from font_preflight import required_font_status
-from quality_check import validate
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from format_spec import (  # noqa: E402  (needs the path shim above)
+    BODY_LINE_SPACING,
+    BODY_SIZE,
+    BOTTOM_MARGIN_CM,
+    FANGSONG_FONT,
+    FIRST_LINE_INDENT_PT,
+    INDENT,
+    KAI_FONT,
+    LEFT_MARGIN_CM,
+    NUMBER_FONT,
+    PAGE_HEIGHT_CM,
+    PAGE_NUMBER_SIZE,
+    PAGE_WIDTH_CM,
+    RIGHT_MARGIN_CM,
+    SUBTITLE_LINE_SPACING,
+    SUBTITLE_SIZE,
+    TITLE_FONT,
+    TITLE_LINE_SPACING,
+    TITLE_SIZE,
+    TOP_MARGIN_CM,
+    WESTERN_SEGMENT,
+    paragraph_role,
+)
+from embed_fonts import (  # noqa: E402
+    default_font_paths,
+    embed_fonts_into_docx,
+    verify_embedded_fonts,
+)
+from font_preflight import required_font_status  # noqa: E402
+from quality_check import validate  # noqa: E402
 
-# Localized family names: Chinese-UI Word resolves East Asian fonts by their
-# localized names, while the English names (KaiTi_GB2312 etc.) fall through to
-# the registry FontSubstitutes table and get replaced by system KaiTi/FangSong.
-TITLE_FONT = "方正小标宋简体"
-KAI_FONT = "楷体_GB2312"
-FANGSONG_FONT = "仿宋_GB2312"
-NUMBER_FONT = "Times New Roman"
-INDENT = "　　"
-
-FIRST_LEVEL = re.compile(r"^[一二三四五六七八九十]+、")
-SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
-THIRD_LEVEL = re.compile(r"^\d+\.")
-FOURTH_LEVEL = re.compile(r"^（\d+）")
-# Arabic numerals (with decimal/thousands separators and a trailing percent
-# sign) are set in Times New Roman at the size of the surrounding text.
-NUMBER_SEGMENT = re.compile(r"\d+(?:[.,]\d+)*%?")
+# Page numbers follow the explicit footer rule: `-1-`, 三号 (16 pt),
+# 仿宋_GB2312 throughout, odd pages right / even pages left.
+PAGE_NUMBER_FONT = FANGSONG_FONT
 
 
 def set_east_asia_font(run, font_name: str, size: float, bold: bool = False) -> None:
@@ -42,7 +66,9 @@ def set_east_asia_font(run, font_name: str, size: float, bold: bool = False) -> 
     run._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
 
 
-def set_number_font(run, east_asia_font: str, size: float, bold: bool = False) -> None:
+def set_western_font(run, east_asia_font: str, size: float, bold: bool = False) -> None:
+    """Latin letters and Arabic numerals are set in Times New Roman; the
+    surrounding East Asian face is kept as the CJK fallback."""
     run.font.name = NUMBER_FONT
     run.font.size = Pt(size)
     run.bold = bold
@@ -50,14 +76,14 @@ def set_number_font(run, east_asia_font: str, size: float, bold: bool = False) -
 
 
 def add_text_runs(paragraph, text: str, font_name: str, size: float, bold: bool = False) -> None:
-    """Add runs for ``text``, switching Arabic numerals to Times New Roman."""
+    """Add runs for ``text``, switching western (ASCII) runs to Times New Roman."""
     cursor = 0
-    for match in NUMBER_SEGMENT.finditer(text):
+    for match in WESTERN_SEGMENT.finditer(text):
         if match.start() > cursor:
             run = paragraph.add_run(text[cursor:match.start()])
             set_east_asia_font(run, font_name, size, bold)
         run = paragraph.add_run(match.group())
-        set_number_font(run, font_name, size, bold)
+        set_western_font(run, font_name, size, bold)
         cursor = match.end()
     if cursor < len(text):
         run = paragraph.add_run(text[cursor:])
@@ -73,27 +99,9 @@ def set_exact_line_spacing(paragraph, points: float) -> None:
 
 def set_body_layout(paragraph) -> None:
     paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    paragraph.paragraph_format.first_line_indent = Pt(32.4)
+    paragraph.paragraph_format.first_line_indent = Pt(FIRST_LINE_INDENT_PT)
     paragraph.paragraph_format.widow_control = True
-    set_exact_line_spacing(paragraph, 28)
-
-
-def paragraph_role(text: str) -> tuple[str, str, bool]:
-    if FIRST_LEVEL.match(text):
-        return "first", "SimHei", False
-    if SECOND_LEVEL.match(text):
-        return "second", KAI_FONT, True
-    if THIRD_LEVEL.match(text):
-        return "third", FANGSONG_FONT, True
-    if FOURTH_LEVEL.match(text):
-        return "fourth", FANGSONG_FONT, False
-    return "body", FANGSONG_FONT, False
-
-
-# Page numbers follow the explicit footer rule: `-1-`, 三号 (16 pt),
-# 仿宋_GB2312 throughout, odd pages right / even pages left.
-PAGE_NUMBER_FONT = FANGSONG_FONT
-PAGE_NUMBER_SIZE = 16
+    set_exact_line_spacing(paragraph, BODY_LINE_SPACING)
 
 
 def append_page_field(paragraph) -> None:
@@ -132,12 +140,12 @@ def format_footer(footer, alignment: WD_ALIGN_PARAGRAPH) -> None:
 
 def configure_document(document: Document) -> None:
     section = document.sections[0]
-    section.page_width = Cm(21.0)
-    section.page_height = Cm(29.7)
-    section.top_margin = Cm(3.7)
-    section.bottom_margin = Cm(3.5)
-    section.left_margin = Cm(2.8)
-    section.right_margin = Cm(2.6)
+    section.page_width = Cm(PAGE_WIDTH_CM)
+    section.page_height = Cm(PAGE_HEIGHT_CM)
+    section.top_margin = Cm(TOP_MARGIN_CM)
+    section.bottom_margin = Cm(BOTTOM_MARGIN_CM)
+    section.left_margin = Cm(LEFT_MARGIN_CM)
+    section.right_margin = Cm(RIGHT_MARGIN_CM)
     section.start_type = WD_SECTION_START.NEW_PAGE
     document.settings.odd_and_even_pages_header_footer = True
     format_footer(section.footer, WD_ALIGN_PARAGRAPH.RIGHT)
@@ -150,8 +158,8 @@ def add_title(document: Document, title: str) -> None:
     paragraph.paragraph_format.first_line_indent = Pt(0)
     paragraph.paragraph_format.keep_together = True
     paragraph.paragraph_format.keep_with_next = True
-    set_exact_line_spacing(paragraph, 30)
-    add_text_runs(paragraph, title, TITLE_FONT, 22)
+    set_exact_line_spacing(paragraph, TITLE_LINE_SPACING)
+    add_text_runs(paragraph, title, TITLE_FONT, TITLE_SIZE)
 
 
 def add_subtitle(document: Document, subtitle: str) -> None:
@@ -160,11 +168,11 @@ def add_subtitle(document: Document, subtitle: str) -> None:
     paragraph.paragraph_format.first_line_indent = Pt(0)
     paragraph.paragraph_format.keep_together = True
     paragraph.paragraph_format.keep_with_next = True
-    set_exact_line_spacing(paragraph, 28)
-    add_text_runs(paragraph, subtitle, KAI_FONT, 16)
+    set_exact_line_spacing(paragraph, SUBTITLE_LINE_SPACING)
+    add_text_runs(paragraph, subtitle, KAI_FONT, SUBTITLE_SIZE)
     blank = document.add_paragraph()
     blank.paragraph_format.keep_with_next = True
-    set_exact_line_spacing(blank, 28)
+    set_exact_line_spacing(blank, SUBTITLE_LINE_SPACING)
 
 
 def add_content_paragraph(document: Document, text: str) -> None:
@@ -175,13 +183,13 @@ def add_content_paragraph(document: Document, text: str) -> None:
     if role != "body":
         paragraph.paragraph_format.keep_together = True
         paragraph.paragraph_format.keep_with_next = True
-    add_text_runs(paragraph, content, font_name, 16, bold)
+    add_text_runs(paragraph, content, font_name, BODY_SIZE, bold)
 
 
 def add_qa_separator(document: Document) -> None:
     """Blank spacer line rendered between consecutive Q/A groups."""
     paragraph = document.add_paragraph()
-    set_exact_line_spacing(paragraph, 28)
+    set_exact_line_spacing(paragraph, BODY_LINE_SPACING)
 
 
 def missing_font_families() -> list[str]:
@@ -192,6 +200,13 @@ def read_lines(path: Path) -> list[str]:
     return path.read_text(encoding="utf-8-sig").splitlines()
 
 
+def embed_bundled_fonts(output: Path) -> dict:
+    """Embed the bundled GB2312 faces into ``output`` and verify the result."""
+    report = embed_fonts_into_docx(output, default_font_paths())
+    report["verify"] = verify_embedded_fonts(output)
+    return report
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Create fixed-format meeting minutes DOCX.")
     parser.add_argument("--input", type=Path, required=True, help="validated UTF-8 plain-text minutes")
@@ -199,6 +214,11 @@ def main() -> None:
     parser.add_argument("--subtitle", default=None, help="optional centered department or subtitle line")
     parser.add_argument(
         "--mode", choices=("auto", "minutes", "qa", "qa-summary"), default="auto"
+    )
+    parser.add_argument(
+        "--no-embed",
+        action="store_true",
+        help="不把随附字体嵌入 DOCX（默认嵌入，使文件在未装字体的机器上仍忠实呈现）",
     )
     parser.add_argument(
         "--allow-line",
@@ -253,6 +273,23 @@ def main() -> None:
     args.output.parent.mkdir(parents=True, exist_ok=True)
     document.save(args.output)
     print(f"已生成：{args.output}")
+
+    if not args.no_embed:
+        report = embed_bundled_fonts(args.output)
+        embedded = "、".join(item["font"] for item in report["embedded"]) or "无"
+        print(f"已嵌入字体：{embedded}")
+        for item in report["skipped"]:
+            print(f"未嵌入 {item['font']}：{item['reason']}")
+        if not report["verify"]["ok"]:
+            parser.error(
+                "字体嵌入校验未通过，请勿交付该 DOCX：\n"
+                + "\n".join(
+                    f"- {font['font']}：{font.get('error', '未知')}"
+                    for font in report["verify"]["fonts"]
+                    if not font.get("valid")
+                )
+                or "- 未设置 w:embedTrueTypeFonts"
+            )
 
 
 if __name__ == "__main__":

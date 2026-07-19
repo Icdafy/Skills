@@ -8,7 +8,9 @@ import re
 import sys
 from pathlib import Path
 
-INDENT = "　　"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from format_spec import INDENT, level_number  # noqa: E402  (needs path shim)
+
 SKILL_DIR = Path(__file__).resolve().parent.parent
 # 机构自定义禁词文件：每行一条短语，# 开头为注释；与项目术语文件一样属
 # 本地配置（glossary/* 已被 .gitignore 排除），不随技能分发。
@@ -18,10 +20,6 @@ CUSTOM_BANNED_FILE = SKILL_DIR / "glossary" / "banned-phrases.txt"
 HALFWIDTH_PUNCT_NEAR_CJK = re.compile(
     r"[一-鿿][,;:?!()]|[,;:?!()][一-鿿]"
 )
-FIRST_LEVEL = re.compile(r"^[一二三四五六七八九十]+、")
-SECOND_LEVEL = re.compile(r"^（[一二三四五六七八九十]+）")
-THIRD_LEVEL = re.compile(r"^\d+\.")
-FOURTH_LEVEL = re.compile(r"^（\d+）")
 INTERVIEW_METADATA = ("访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：")
 SUMMARY_MARKERS = (
     "完整总结概述",
@@ -122,18 +120,6 @@ def _similarity(a: str, b: str) -> float:
     if not grams_a or not grams_b:
         return 0.0
     return len(grams_a & grams_b) / min(len(grams_a), len(grams_b))
-
-
-def level_number(text: str) -> int | None:
-    if FIRST_LEVEL.match(text):
-        return 1
-    if SECOND_LEVEL.match(text):
-        return 2
-    if THIRD_LEVEL.match(text):
-        return 3
-    if FOURTH_LEVEL.match(text):
-        return 4
-    return None
 
 
 def validate(
