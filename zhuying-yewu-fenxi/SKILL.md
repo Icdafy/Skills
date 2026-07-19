@@ -95,6 +95,7 @@ description: 撰写一级市场股权投资立项报告中的"三、主营业务
 | `references/docx-format.md` | 公文排版规范（三技能统一）：页面/字体层级/表格规则（仿宋_GB2312五号、表头加粗+浅蓝底、按窗口自适应）/统一渲染脚本说明 | 输出 .docx 时必读 |
 | `scripts/build_docx.py` | 三技能统一 Word 渲染脚本（content.json → 公文排版 .docx），禁止绕开它手写排版 | 输出 .docx 时运行 |
 | `scripts/ensure_fonts.py` | 字体自动检测与用户级安装（仿宋_GB2312、楷体_GB2312、方正小标宋简体；跨平台，Windows 含注册表注册） | 输出 .docx 前运行 |
+| `scripts/embed_fonts.py` | 字体嵌入器：`build_docx.py` 保存后自动把随附的仿宋_GB2312、楷体_GB2312 嵌入 .docx（方正小标宋许可禁止嵌入，自动跳过），未装字体的机器打开不掉字；`--verify` 复核 | 自动调用；需复核时手动运行 |
 | `scripts/style_check.py` | 语言红线机械扫描（称谓/对举连词/结论标签/缺口占位语） | 第 7 步自检时运行 |
 | `scripts/ensure-fonts.ps1` | 字体安装的 PowerShell 备用方案（含 GitHub 下载兜底） | ensure_fonts.py 不可用时 |
 | `assets/fonts/` | 三个公文字体文件（simfang.ttf、KaiTi_GB2312.ttf、FZXiaoBiaoSongJT.ttf） | 脚本自动调用 |

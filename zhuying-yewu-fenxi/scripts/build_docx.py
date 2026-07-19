@@ -25,6 +25,9 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
 - 表注（type=tnote）："单位：万元""注：……"等，仿宋_GB2312 五号、不缩进，
   align 可选 left/right/center（默认 left；"单位"行惯例放表格上方右对齐）
 - 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
+- 字体嵌入：保存后自动把随附的仿宋_GB2312、楷体_GB2312 嵌入 DOCX，使文件在未
+  安装这两款字体的机器上仍忠实呈现（方正小标宋许可禁止嵌入，自动跳过）；
+  嵌入经反混淆校验，失败则保留未嵌入版本，绝不影响正常生成
 - 封面 / 目录：默认关闭（章节通常并入整份立项报告）；独立成文时在 content
   里给 cover 或把 toc 设为 true
 
@@ -80,12 +83,17 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
 """
 
 import sys, json
+from pathlib import Path
+
 from docx import Document
 from docx.shared import Pt, RGBColor, Twips, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from embed_fonts import embed_bundled_fonts  # 随技能分发的字体嵌入器
 
 # ---------- 版式常量（三技能统一公文格式） ----------
 FONT_TITLE = "方正小标宋简体"
@@ -476,6 +484,9 @@ def build(content, out_path):
                           line=BODY_LINE_PT, font_name=FONT_BODY)
 
     doc.save(out_path)
+    # 嵌入随附的可嵌入字体，使交付件在未装 仿宋_GB2312/楷体_GB2312 的机器上
+    # 不掉字；校验不过时保留未嵌入版本，不影响生成结果。
+    embed_bundled_fonts(out_path)
     return out_path
 
 

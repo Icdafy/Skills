@@ -32,6 +32,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import sys
 from pathlib import Path
 
 from docx import Document
@@ -41,6 +42,9 @@ from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.shared import Cm, Pt
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from embed_fonts import embed_bundled_fonts  # noqa: E402  随技能分发的字体嵌入器
 
 TITLE_FONT = "方正小标宋简体"
 BODY_FONT = "仿宋_GB2312"
@@ -300,6 +304,10 @@ def build_docx(data: dict, output: Path) -> None:
     add_attachments(doc, data.get("attachments", []))
 
     doc.save(output)
+    # 嵌入随附的可嵌入字体（仿宋_GB2312、楷体_GB2312），使交付件在未装这两款
+    # 字体的机器上不掉字；方正小标宋许可禁止嵌入，自动跳过。校验不过则保留
+    # 未嵌入版本，不影响生成。
+    embed_bundled_fonts(output)
 
 
 def main() -> None:
