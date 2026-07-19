@@ -33,6 +33,8 @@ DOCX 生成工具必须写入字体的中文本地化族名——`方正小标�
 
 DOCX 交付前，`create_minutes_docx.py` 会把 fsType 允许嵌入的随附字体（楷体_GB2312、仿宋_GB2312，均 fsType=0）按 ECMA-376 混淆字体机制嵌入 DOCX，使文件在未安装这两款字体的机器上仍忠实呈现；方正小标宋简体因 fsType=2 不嵌入（与其在 PDF 中走轮廓一致）。嵌入是渲染器无关的，不依赖 Word/LibreOffice；`embed_fonts.py --verify` 会反混淆各嵌入部件并校验其为有效字体。`--no-embed` 可关闭嵌入。
 
+嵌入条目必须在 `<w:embedRegular>` 之前带上字体描述（`w:panose1`/`w:charset`/`w:family`/`w:pitch`/`w:sig`），其中 **`w:charset` 是必需的**：Word 只有知道该字体服务于哪种字符集，才会启用嵌入字体；缺少它时 Word 会**静默忽略嵌入字体并回退系统字体**（实测：把仿宋以一个未安装的字体名嵌入，缺描述时中文回退 SimSun／微软雅黑，补上 `w:charset` 后 PDF 中出现 `___WRD_EMBED_SUB_*`，即确已使用嵌入字体）。charset 由字体 OS/2 表的 `ulCodePageRange` 推导（GB2312 → `86`）。同理，校验时须按 `<w:font>` 块解析、不能假设 `<w:embedRegular>` 紧跟开标签，否则连 Word 自己生成的文件都会被误判为未嵌入。
+
 生成 DOCX 前运行 `scripts/font_preflight.py --check`。缺少随技能提供的字体时，先取得用户对当前用户字体目录变更的许可，再运行 `scripts/font_preflight.py --install-user`；缺少黑体或宋体时停止生成并提示用户安装。不得在发生字体替换的情况下交付文件。
 
 除居中的大标题，以及确有必要时居中的副标题或部门行外，所有内容均用两个全角空格 `　　` 起首。DOCX 中以「首行缩进两字符」实现（`w:firstLineChars="200"`，随字号自适应，符合公文模板惯例），并保留 32.4 磅的绝对首行缩进作为兼容渲染器的回退，不用普通半角空格凑缩进。

@@ -146,6 +146,25 @@ def page_side(xs: list[float], width: float) -> str | None:
     return "right" if (min(xs) + max(xs)) / 2 > width / 2 else "left"
 
 
+def footer_xs(candidates: list[tuple[float, float]], body_ys: list[float],
+              page_height: float) -> list[float]:
+    """x positions of the page-number glyphs, from (y, x) dash/digit candidates.
+
+    The footer is derived from the page's own content instead of a hard-coded
+    margin: it is the dash/digit cluster lying below every line of body text, so
+    the check survives a different footer distance, bottom margin or page size.
+    Only the lowest text line is kept — the page number is a single line, so a
+    numeric table row sitting low on the page cannot contaminate it. Falls back
+    to a low band when the page carries no body text at all.
+    """
+    cutoff = min(body_ys) if body_ys else page_height * 0.11
+    below = [(y, x) for y, x in candidates if y < cutoff]
+    if not below:
+        return []
+    baseline = min(y for y, _ in below)
+    return [x for y, x in below if y <= baseline + 5]
+
+
 def expected_side(page_number: int) -> str:
     """1-indexed: odd pages carry the number on the right, even on the left."""
     return "right" if page_number % 2 == 1 else "left"
@@ -168,21 +187,27 @@ def page_number_sides(pdf: Path) -> dict:
             height = float(page.mediabox.height)
         except (TypeError, ValueError):
             continue
-        xs: list[float] = []
+        candidates: list[tuple[float, float]] = []   # dash/digit runs: (y, x)
+        body_ys: list[float] = []                    # everything else: y
 
-        def visitor(text, cm, tm, font_dict, font_size, _xs=xs, _h=height):
-            # The footer sits in a low band above the page edge (~y 40 for A4).
-            # The lower bound skips pypdf's matrix-less artefacts (wrapped runs
-            # reported at x=y=0).
-            if is_footer_token(text) and 1 < tm[5] < _h * 0.11:
-                _xs.append(float(tm[4]))
+        def visitor(text, cm, tm, font_dict, font_size,
+                    _c=candidates, _b=body_ys):
+            # y <= 1 skips pypdf's matrix-less artefacts (wrapped runs reported
+            # at x=y=0), which would otherwise drag the footer centre sideways.
+            y = float(tm[5])
+            if not text.strip() or y <= 1:
+                return
+            if is_footer_token(text):
+                _c.append((y, float(tm[4])))
+            else:
+                _b.append(y)
 
         try:
             page.extract_text(visitor_text=visitor)
         except Exception:  # noqa: BLE001 - a parse hiccup must not fail the render
             pass
         want = expected_side(index)
-        detected = page_side(xs, width)
+        detected = page_side(footer_xs(candidates, body_ys, height), width)
         entry = {"page": index, "expected": want, "detected": detected}
         if detected is not None:
             entry["ok"] = detected == want
