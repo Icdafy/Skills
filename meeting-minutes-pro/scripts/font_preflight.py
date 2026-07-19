@@ -13,42 +13,23 @@ import subprocess
 import sys
 from typing import Any
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from format_spec import FONT_CATALOG  # noqa: E402  (needs the path shim above)
+
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 FONT_DIR = SKILL_DIR / "assets" / "fonts"
 
-FONT_SPECS: tuple[dict[str, Any], ...] = (
+# Install/check view of the shared font catalogue (family, aliases, bundled
+# asset and Windows registry name); embedding metadata lives in format_spec.
+FONT_SPECS: tuple[dict[str, Any], ...] = tuple(
     {
-        "family": "FZXiaoBiaoSong-B05S",
-        "aliases": ("FZXiaoBiaoSong-B05S", "方正小标宋简体"),
-        "asset": "方正小标宋简体.ttf",
-        "registry_name": "方正小标宋简体 (TrueType)",
-    },
-    {
-        "family": "KaiTi_GB2312",
-        "aliases": ("KaiTi_GB2312", "楷体_GB2312"),
-        "asset": "楷体_GB2312.ttf",
-        "registry_name": "楷体_GB2312 (TrueType)",
-    },
-    {
-        "family": "FangSong_GB2312",
-        "aliases": ("FangSong_GB2312", "仿宋_GB2312"),
-        "asset": "simfang.ttf",
-        "registry_name": "仿宋_GB2312 (TrueType)",
-    },
-    {
-        "family": "SimHei",
-        "aliases": ("SimHei", "simhei.ttf"),
-        "asset": None,
-        "registry_name": None,
-    },
-    {
-        # Arabic numerals throughout the minutes are set in Times New Roman.
-        "family": "Times New Roman",
-        "aliases": ("Times New Roman", "times.ttf", "timesnewroman"),
-        "asset": None,
-        "registry_name": None,
-    },
+        "family": entry["family"],
+        "aliases": entry["aliases"],
+        "asset": entry["asset"],
+        "registry_name": entry["registry_name"],
+    }
+    for entry in FONT_CATALOG
 )
 
 
