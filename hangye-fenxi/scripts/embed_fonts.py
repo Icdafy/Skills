@@ -3,7 +3,10 @@
 on machines that do not have 仿宋_GB2312 / 楷体_GB2312 installed.
 
 Self-contained (no cross-skill imports); a byte-identical copy lives in each
-公文-DOCX skill. Uses the ECMA-376 obfuscated-font mechanism (content type
+公文-DOCX skill because skills are independently distributable. Change the
+gongsi-qingkuang copy, then run ``python tools/check_shared_scripts.py --sync``
+to propagate it; ``python tools/check_shared_scripts.py`` fails on drift.
+Uses the ECMA-376 obfuscated-font mechanism (content type
 ``application/vnd.openxmlformats-officedocument.obfuscatedFont``), which is
 renderer-independent — Word and LibreOffice both honour it, no COM/soffice
 round-trip. Only faces whose OS/2 fsType permits embedding are included;

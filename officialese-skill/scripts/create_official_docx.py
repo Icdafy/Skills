@@ -25,6 +25,9 @@ BODY_FONT = "仿宋_GB2312"
 KAITI_FONT = "楷体_GB2312"
 HEITI_FONT = "黑体"
 SONGTI_FONT = "宋体"
+# 西文字母与阿拉伯数字统一 Times New Roman；中文走 eastAsia，Word 在同一 run 内
+# 按字符类型自动分派，无需拆分 run。页码是例外，见 add_page_field。
+WESTERN_FONT = "Times New Roman"
 
 TITLE_SIZE = 22  # 二号
 BODY_SIZE = 16  # 三号
@@ -43,28 +46,39 @@ STYLE_H3 = "Official Heading 3"
 STYLE_H4 = "Official Heading 4"
 
 
-def set_east_asia_font(obj, font_name: str) -> None:
+def set_east_asia_font(obj, font_name: str, western_font: str | None = None) -> None:
+    """CJK 用 ``font_name``；西文字母与阿拉伯数字用 ``western_font``（默认
+    Times New Roman）。Word 依 rFonts 在同一 run 内按字符类型分派字体，因此
+    中英混排无需拆分 run。
+
+    传 ``western_font=font_name`` 可让整个 run 都用中文字体——页码即如此：
+    GB/T 9704 规定页码为四号宋体阿拉伯数字，数字不走 Times。"""
+    western = western_font or WESTERN_FONT
     rpr = obj._element.get_or_add_rPr()
     rfonts = rpr.rFonts
     if rfonts is None:
         rfonts = OxmlElement("w:rFonts")
         rpr.append(rfonts)
-    for attr in ("w:ascii", "w:hAnsi", "w:eastAsia", "w:cs"):
-        rfonts.set(qn(attr), font_name)
+    rfonts.set(qn("w:ascii"), western)
+    rfonts.set(qn("w:hAnsi"), western)
+    rfonts.set(qn("w:cs"), western)
+    rfonts.set(qn("w:eastAsia"), font_name)
 
 
-def set_run_font(run, font_name: str, size_pt: int, bold: bool = False) -> None:
-    run.font.name = font_name
-    set_east_asia_font(run, font_name)
+def set_run_font(run, font_name: str, size_pt: int, bold: bool = False,
+                 western_font: str | None = None) -> None:
+    run.font.name = western_font or WESTERN_FONT
+    set_east_asia_font(run, font_name, western_font)
     run.font.size = Pt(size_pt)
     run.bold = bold
 
 
-def set_style_font(style, font_name: str, size_pt: int, bold: bool = False) -> None:
-    style.font.name = font_name
+def set_style_font(style, font_name: str, size_pt: int, bold: bool = False,
+                   western_font: str | None = None) -> None:
+    style.font.name = western_font or WESTERN_FONT
     style.font.size = Pt(size_pt)
     style.font.bold = bold
-    set_east_asia_font(style, font_name)
+    set_east_asia_font(style, font_name, western_font)
 
 
 def set_paragraph_format(
@@ -175,8 +189,10 @@ def add_blank_line(doc: Document, line_pt: int = BODY_LINE_PT) -> None:
 
 
 def add_page_field(paragraph) -> None:
+    # 页码整体走宋体（含阿拉伯数字），依 GB/T 9704「页码用四号半角宋体阿拉伯
+    # 数字」；这是全文西文走 Times New Roman 的唯一例外。
     run = paragraph.add_run("-")
-    set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE)
+    set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
 
     field_begin = OxmlElement("w:fldChar")
     field_begin.set(qn("w:fldCharType"), "begin")
@@ -195,7 +211,7 @@ def add_page_field(paragraph) -> None:
     field_end.set(qn("w:fldCharType"), "end")
 
     field_run = paragraph.add_run()
-    set_run_font(field_run, SONGTI_FONT, PAGE_NUMBER_SIZE)
+    set_run_font(field_run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
     field_run._r.append(field_begin)
     field_run._r.append(instr)
     field_run._r.append(field_separate)
@@ -203,7 +219,7 @@ def add_page_field(paragraph) -> None:
     field_run._r.append(field_end)
 
     run = paragraph.add_run("-")
-    set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE)
+    set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
 
 
 def setup_document(doc: Document) -> None:
