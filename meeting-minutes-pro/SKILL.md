@@ -208,6 +208,7 @@ DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段�
 ## 资源
 
 - `references/format-and-output.md`：固定字体、版式、层级、写作口径，以及“完整总结概述＋完整问答”和无问答主题式模板。
+- `references/architecture.md`：排版层分层结构、`format_spec` 唯一真源原则，以及是否引入文档模型（IR）的决策记录与触发条件——改动排版脚本前先读。
 - `references/runtime.md`：双引擎选择、硬件、下载、隐私、离线运行和故障处理说明。
 - `references/platforms.md`：在不同智能体平台安装和分发技能的说明。
 - `scripts/bootstrap_runtime.py`：检查和安装本地转录运行环境（`--engine funasr|qwen|all`），并探测内存、CUDA 显存与磁盘，输出 T0–T3 硬件分档建议（`tier`/`tier_advice`）供选择双引擎复核策略。
