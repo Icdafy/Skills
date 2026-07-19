@@ -264,8 +264,10 @@ def embed_bundled_fonts(docx_path: Path, font_dir: Path | None = None) -> dict:
         print("未找到可嵌入的随附字体，跳过嵌入。")
         return {"ok": None, "embedded": [], "skipped": [],
                 "reason": "assets/fonts 中未找到目标字体"}
-    tmp = docx_path.with_suffix(docx_path.suffix + ".embed.tmp")
+    tmp: Path | None = None
     try:
+        # 临时路径的计算也放进 try：任何异常都不得外泄破坏正常生成。
+        tmp = docx_path.with_suffix(docx_path.suffix + ".embed.tmp")
         report = embed_fonts_into_docx(docx_path, fonts, out_path=tmp)
         report["verify"] = verify_embedded_fonts(tmp)
         if report["verify"]["ok"]:
@@ -281,7 +283,8 @@ def embed_bundled_fonts(docx_path: Path, font_dir: Path | None = None) -> dict:
             print("字体嵌入校验未通过，保留未嵌入版本。")
             report["ok"] = False
     except Exception as exc:  # noqa: BLE001 - embedding must never break generation
-        Path(tmp).unlink(missing_ok=True)
+        if tmp is not None:
+            Path(tmp).unlink(missing_ok=True)
         print(f"字体嵌入跳过（{exc}），保留原文件。")
         return {"ok": False, "error": str(exc)}
     return report
