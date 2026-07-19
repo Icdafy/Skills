@@ -29,6 +29,8 @@
 | 工具 | 说明 |
 | --- | --- |
 | [tools/check_shared_scripts.py](tools/check_shared_scripts.py) | 校验跨技能共享脚本的多份副本是否一致，防止静默漂移。技能自包含、可独立分发，故不能跨技能 import，`build_docx.py`（立项三技能）与 `embed_fonts.py`（五个公文技能）必须各自留物理副本。改动流程：改 `gongsi-qingkuang` 下的基准副本 → `python tools/check_shared_scripts.py --sync` 同步 → 提交前 `python tools/check_shared_scripts.py` 校验（漂移即退出码 1）。 |
+| [tools/verify_embedding_with_word.py](tools/verify_embedding_with_word.py) | 决定性验证「嵌入 DOCX 的字体真的被渲染器使用」。把随附字体内部名改成本机未安装的名字再排版，带阴性对照：不嵌入必须回退系统字体，嵌入后必须不回退。单元测试只能断言 fontTable 写了 `w:charset`，证明不了渲染器会采用——这个盲区曾让一版"看起来成功、实际无效"的实现通过全部校验。改动任何 `embed_fonts.py` 后建议跑一次：`python tools/verify_embedding_with_word.py --skill <技能> [--renderer word\|libreoffice]`。 |
+| [tools/tests/](tools/tests/) | 五个公文 DOCX 技能的仓库级回归测试（以子进程调各技能 CLI，避免同名 `embed_fonts` 串味）：`python -m unittest discover -s tools/tests`。 |
 
 ---
 
