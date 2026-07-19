@@ -87,7 +87,7 @@ description: 撰写股权投资立项报告中"公司情况"章节（公司基�
 
 ## Word 输出
 
-渲染前先运行 `python scripts/ensure_fonts.py`：本技能 `assets/fonts/` 自带三款公文字体（仿宋 simfang、方正小标宋简体、楷体_GB2312），缺失时自动做用户级安装（Windows 含注册表注册，无需管理员权限）。
+渲染前先运行 `python scripts/ensure_fonts.py`：本技能 `assets/fonts/` 自带三款公文字体（仿宋 simfang、方正小标宋简体、楷体_GB2312），缺失时自动做用户级安装（Windows 含注册表注册，无需管理员权限）。生成的 `.docx` 会自动嵌入随附的仿宋_GB2312、楷体_GB2312（方正小标宋许可禁止嵌入，自动跳过），未装这两款字体的机器打开也不掉字；嵌入经反混淆校验，失败时保留未嵌入版本、不影响生成。可用 `python scripts/embed_fonts.py --docx 输出.docx --verify` 复核。
 
 `scripts/build_docx.py` 只负责排版（三技能共用同一份渲染脚本，禁止手写排版代码）。把内容组织成 JSON 再运行：
 

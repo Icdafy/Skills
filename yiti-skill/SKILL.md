@@ -44,4 +44,5 @@ Use this skill to draft 投管公司报送投委会的"议题"文书. The input 
 - `assets/fonts/楷体_GB2312.ttf`: subtitle and second-level heading font.
 - `assets/fonts/simfang.ttf`: 仿宋_GB2312 body font.
 - `assets/templates/文件字体格式.doc`: original company format sample.
-- `scripts/create_yiti_docx.py`: deterministic 议题 DOCX generator with mixed Chinese/Times New Roman runs, inline bold, and formatted tables.
+- `scripts/create_yiti_docx.py`: deterministic 议题 DOCX generator with mixed Chinese/Times New Roman runs, inline bold, and formatted tables. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 so the file renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails.
+- `scripts/embed_fonts.py`: font embedder used by the generator; run `python scripts/embed_fonts.py --docx out.docx --verify` to re-check an existing file.

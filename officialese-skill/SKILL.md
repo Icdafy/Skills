@@ -47,4 +47,5 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 - `assets/fonts/楷体_GB2312.ttf`: subtitle and second-level heading font.
 - `assets/fonts/simfang.ttf`: 仿宋_GB2312 body font.
 - `assets/templates/文件字体格式.doc`: original uploaded format sample.
-- `scripts/create_official_docx.py`: deterministic starter DOCX generator.
+- `scripts/create_official_docx.py`: deterministic starter DOCX generator. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails.
+- `scripts/embed_fonts.py`: font embedder used by the generator; run `python scripts/embed_fonts.py --docx out.docx --verify` to re-check an existing file.
