@@ -4,7 +4,11 @@
 build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文排版 v2）
 
 本脚本是 hangye-fenxi / zhuying-yewu-fenxi / gongsi-qingkuang 三个技能共用的
-排版渲染器，三份拷贝内容完全一致；修改任何一份时必须同步另外两份。
+排版渲染器。技能自包含、可独立分发，故不能跨技能 import，三份必须各自留物理
+副本且内容完全一致。改动流程：改 gongsi-qingkuang 下的基准副本，然后运行
+    python tools/check_shared_scripts.py --sync
+把改动同步到另外两份；提交前用 `python tools/check_shared_scripts.py` 校验一致
+（不带 --sync 时发现漂移即退出码 1）。不要手工逐份修改。
 统一公文版式基准（依据集团《关于规范行文格式的通知》所附模板 + 用户表格规则）：
 
 - A4 页面（上 3.7cm、下 3.5cm、左 2.8cm、右 2.6cm）

@@ -24,6 +24,12 @@
 | [meeting-minutes-pro](meeting-minutes-pro/) | 本地音视频转写＋正式会议纪要一体化：FunASR/Qwen3-ASR 双引擎、数小时长音频、说话人分离、热词术语库；自动采集会议基本信息，识别并保留 QA 问答，数字逐项对照转录稿核验，公文版式 DOCX 输出并渲染检查；详见文件夹内 README |
 | [sound-transcribe](sound-transcribe/) | 音视频转写：本地 faster-whisper 转写音频/视频为文本、时间戳、SRT 字幕与逐字稿 |
 
+## 仓库维护工具
+
+| 工具 | 说明 |
+| --- | --- |
+| [tools/check_shared_scripts.py](tools/check_shared_scripts.py) | 校验跨技能共享脚本的多份副本是否一致，防止静默漂移。技能自包含、可独立分发，故不能跨技能 import，`build_docx.py`（立项三技能）与 `embed_fonts.py`（五个公文技能）必须各自留物理副本。改动流程：改 `gongsi-qingkuang` 下的基准副本 → `python tools/check_shared_scripts.py --sync` 同步 → 提交前 `python tools/check_shared_scripts.py` 校验（漂移即退出码 1）。 |
+
 ---
 
 各技能文件夹内含 `SKILL.md`（触发与执行逻辑）及 `references/` 等配套资源；详细说明见各文件夹内 README（如有）。
