@@ -12,6 +12,7 @@ machines that lack 仿宋_GB2312 / 楷体_GB2312; pass ``--no-embed`` to skip.
 from __future__ import annotations
 
 import argparse
+import os
 import sys
 from pathlib import Path
 
@@ -211,9 +212,23 @@ def read_lines(path: Path) -> list[str]:
 
 
 def embed_bundled_fonts(output: Path) -> dict:
-    """Embed the bundled GB2312 faces into ``output`` and verify the result."""
-    report = embed_fonts_into_docx(output, default_font_paths())
-    report["verify"] = verify_embedded_fonts(output)
+    """Embed the bundled GB2312 faces into ``output`` and verify the result.
+
+    Embeds into a temp file and only replaces ``output`` once verification
+    passes, so a failed embedding never leaves a modified DOCX on disk — the
+    caller still hard-fails, but on the intact un-embedded file rather than a
+    half-written one.
+    """
+    tmp = output.with_suffix(output.suffix + ".embed.tmp")
+    try:
+        report = embed_fonts_into_docx(output, default_font_paths(), tmp)
+        report["verify"] = verify_embedded_fonts(tmp)
+        if report["verify"]["ok"]:
+            os.replace(tmp, output)
+            report["docx"] = str(output)
+            report["verify"]["docx"] = str(output)
+    finally:
+        Path(tmp).unlink(missing_ok=True)
     return report
 
 

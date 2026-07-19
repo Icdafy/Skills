@@ -188,10 +188,10 @@ def page_number_sides(pdf: Path) -> dict:
             entry["ok"] = detected == want
         pages_report.append(entry)
 
-    detected = [p for p in pages_report if p.get("detected")]
+    detected_pages = [p for p in pages_report if p.get("detected")]
     return {
         "available": True,
-        "ok": all(p["ok"] for p in detected) if detected else None,
+        "ok": all(p["ok"] for p in detected_pages) if detected_pages else None,
         "pages": pages_report,
     }
 
