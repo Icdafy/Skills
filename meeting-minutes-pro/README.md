@@ -73,7 +73,7 @@ python scripts/fact_check.py 会议纪要.txt --transcript out/录音.txt --show
 ```
 meeting-minutes-pro/
   SKILL.md                     触发与执行逻辑
-  references/                  版式规范、运行环境、平台安装说明
+  references/                  版式规范、架构说明（含 IR 决策与触发条件）、运行环境、平台安装说明
   scripts/                     转写、复核、四重校验、DOCX 生成/字体嵌入/样式回读/渲染检查（版式规约集中在 format_spec.py）
   glossary/                    按项目维护的热词术语库（仅本地）＋ industry/ 行业术语库（随库分发）
   assets/fonts/                方正小标宋简体、楷体_GB2312、仿宋_GB2312
