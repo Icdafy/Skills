@@ -63,6 +63,52 @@ class FsTypeGateTests(unittest.TestCase):
         self.assertTrue(EF.is_sfnt((EF.FONT_DIR / "simfang.ttf").read_bytes()))
 
 
+class FontDescriptorTests(unittest.TestCase):
+    """Word only uses an embedded face once w:charset tells it which script the
+    face serves; without the descriptor it silently falls back to a system font."""
+
+    def test_gb2312_charset_is_derived_from_os2(self) -> None:
+        descriptor = EF.font_descriptor((EF.FONT_DIR / "simfang.ttf").read_bytes())
+        self.assertIn('<w:charset w:val="86"/>', descriptor)  # GB2312
+        self.assertIn("<w:panose1 ", descriptor)
+        self.assertIn("<w:sig ", descriptor)
+
+    def test_unreadable_font_yields_no_descriptor(self) -> None:
+        self.assertEqual(EF.font_descriptor(b"not a font at all"), "")
+
+
+class EmbeddedFontEntriesTests(unittest.TestCase):
+    """The font table must be parsed per <w:font> block: a real one carries the
+    descriptor between the opening tag and <w:embedRegular>, and Word also emits
+    w:subsetted before w:fontKey."""
+
+    def test_entry_with_descriptor_and_subsetted(self) -> None:
+        xml = ('<w:fonts><w:font w:name="仿宋_GB2312">'
+               '<w:panose1 w:val="02010609030101010101"/>'
+               '<w:charset w:val="86"/><w:pitch w:val="variable"/>'
+               '<w:embedRegular r:id="rId1" w:subsetted="1" '
+               'w:fontKey="{AABBCCDD-1122-3344-5566-778899AABBCC}"/>'
+               "</w:font></w:fonts>")
+        self.assertEqual(
+            EF.embedded_font_entries(xml),
+            [("仿宋_GB2312", "rId1", "{AABBCCDD-1122-3344-5566-778899AABBCC}")],
+        )
+
+    def test_font_without_embedded_face_is_ignored(self) -> None:
+        xml = ('<w:fonts><w:font w:name="Symbol">'
+               '<w:charset w:val="02"/></w:font></w:fonts>')
+        self.assertEqual(EF.embedded_font_entries(xml), [])
+
+    def test_multiple_faces(self) -> None:
+        xml = ("<w:fonts>"
+               '<w:font w:name="A"><w:embedRegular r:id="r1" w:fontKey="{K1}"/></w:font>'
+               '<w:font w:name="B"><w:charset w:val="86"/>'
+               '<w:embedRegular r:id="r2" w:fontKey="{K2}"/></w:font>'
+               "</w:fonts>")
+        self.assertEqual(EF.embedded_font_entries(xml),
+                         [("A", "r1", "{K1}"), ("B", "r2", "{K2}")])
+
+
 @unittest.skipUnless(HAS_DOCX, "python-docx not installed")
 class EmbedIntoDocxTests(unittest.TestCase):
     def _make_docx(self, path: Path) -> None:
@@ -83,6 +129,9 @@ class EmbedIntoDocxTests(unittest.TestCase):
             with zipfile.ZipFile(docx_path) as archive:
                 names = archive.namelist()
                 self.assertIn("word/fonts/font1.odttf", names)
+                # The descriptor must reach the file, else Word ignores the face.
+                font_table = archive.read("word/fontTable.xml").decode("utf-8")
+                self.assertIn('<w:charset w:val="86"/>', font_table)
                 content_types = archive.read("[Content_Types].xml").decode("utf-8")
                 self.assertIn('Extension="odttf"', content_types)
                 settings = archive.read("word/settings.xml").decode("utf-8")

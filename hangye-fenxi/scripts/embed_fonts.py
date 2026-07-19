@@ -48,8 +48,19 @@ EMBED_TARGETS: dict[str, tuple[str, ...]] = {
 }
 
 
+# OS/2 ulCodePageRange1 bit -> w:charset value, written the way Word writes it.
+_CODEPAGE_CHARSETS: tuple[tuple[int, str], ...] = (
+    (0x00040000, "86"),  # bit18 GB2312 简体中文
+    (0x00100000, "88"),  # bit20 Big5 繁体中文
+    (0x00020000, "80"),  # bit17 Shift-JIS 日文
+    (0x00080000, "81"),  # bit19 Wansung 韩文
+    (0x00200000, "82"),  # bit21 Johab 韩文
+)
+
+
 # --- Font-file inspection --------------------------------------------------
-def read_fs_type(font: bytes) -> int | None:
+def _os2_offset(font: bytes) -> int | None:
+    """Byte offset of the OS/2 table, or None."""
     if len(font) < 12 or font[:4] not in _SFNT_SIGNATURES:
         return None
     num_tables = struct.unpack(">H", font[4:6])[0]
@@ -57,14 +68,50 @@ def read_fs_type(font: bytes) -> int | None:
     for _ in range(num_tables):
         if offset + 16 > len(font):
             break
-        tag = font[offset:offset + 4]
-        table_offset = struct.unpack(">I", font[offset + 8:offset + 12])[0]
-        if tag == b"OS/2":
-            if table_offset + 10 <= len(font):
-                return struct.unpack(">H", font[table_offset + 8:table_offset + 10])[0]
-            return None
+        if font[offset:offset + 4] == b"OS/2":
+            return struct.unpack(">I", font[offset + 8:offset + 12])[0]
         offset += 16
     return None
+
+
+def read_fs_type(font: bytes) -> int | None:
+    table = _os2_offset(font)
+    if table is None or table + 10 > len(font):
+        return None
+    return struct.unpack(">H", font[table + 8:table + 10])[0]
+
+
+def font_descriptor(font: bytes) -> str:
+    """The `<w:font>` descriptor children (panose1/charset/family/pitch/sig).
+
+    Word will only use an embedded face once it knows which charset the face
+    serves: without `w:charset` it ignores the embedded font entirely and falls
+    back to a system font. Verified against Word: embedding 仿宋 under a name
+    that is not installed renders as SimSun/雅黑 when the descriptor is absent,
+    and as `___WRD_EMBED_SUB_*` (i.e. the embedded face) once it is present.
+    Returns "" when the OS/2 table cannot be read — the font is still embedded,
+    just without the hint.
+    """
+    table = _os2_offset(font)
+    if table is None or table + 86 > len(font):
+        return ""
+    panose = "".join(f"{b:02X}" for b in font[table + 32:table + 42])
+    usb = struct.unpack(">IIII", font[table + 42:table + 58])
+    version = struct.unpack(">H", font[table:table + 2])[0]
+    csb = struct.unpack(">II", font[table + 78:table + 86]) if version >= 1 else (0, 0)
+    charset = "00"
+    for mask, value in _CODEPAGE_CHARSETS:
+        if csb[0] & mask:
+            charset = value
+            break
+    return (
+        f'<w:panose1 w:val="{panose}"/>'
+        f'<w:charset w:val="{charset}"/>'
+        '<w:family w:val="auto"/><w:pitch w:val="variable"/>'
+        f'<w:sig w:usb0="{usb[0]:08X}" w:usb1="{usb[1]:08X}" '
+        f'w:usb2="{usb[2]:08X}" w:usb3="{usb[3]:08X}" '
+        f'w:csb0="{csb[0]:08X}" w:csb1="{csb[1]:08X}"/>'
+    )
 
 
 def is_embeddable(fs_type: int | None) -> bool:
@@ -116,13 +163,19 @@ def _enable_font_embedding(settings: str) -> str:
     return re.sub(r"(<w:settings[^>]*>)", r"\1" + flags, settings, count=1)
 
 
-def _font_table_entries(existing: str, embeds: list[tuple[str, str, str]]) -> str:
+def _font_table_entries(existing: str, embeds: list[tuple[str, str, str, str]]) -> str:
+    """Append a <w:font> for each (name, rel_id, guid, descriptor).
+
+    The descriptor must precede <w:embedRegular> (CT_Font element order) and is
+    what makes Word actually use the embedded face — see ``font_descriptor``.
+    """
     additions: list[str] = []
-    for name, rel_id, guid in embeds:
+    for name, rel_id, guid, descriptor in embeds:
         if f'w:name="{name}"' in existing:
             continue
         additions.append(
             f'<w:font w:name="{name}">'
+            f"{descriptor}"
             f'<w:embedRegular r:id="{rel_id}" w:fontKey="{guid}"/>'
             f"</w:font>"
         )
@@ -158,7 +211,7 @@ def embed_fonts_into_docx(
 
     embedded: list[dict] = []
     skipped: list[dict] = []
-    embeds: list[tuple[str, str, str]] = []
+    embeds: list[tuple[str, str, str, str]] = []
     rels: list[tuple[str, str]] = []
     index = 0
     for name, ttf_path in fonts.items():
@@ -176,7 +229,7 @@ def embed_fonts_into_docx(
         rel_id = f"rIdEmbed{index}"
         odttf = f"font{index}.odttf"
         parts[f"word/fonts/{odttf}"] = obfuscate(raw, guid)
-        embeds.append((name, rel_id, guid))
+        embeds.append((name, rel_id, guid, font_descriptor(raw)))
         rels.append((rel_id, odttf))
         embedded.append({"font": name, "part": f"word/fonts/{odttf}",
                          "fs_type": fs_type, "font_key": guid})
@@ -202,6 +255,32 @@ def embed_fonts_into_docx(
             "docx": str(out_path)}
 
 
+_FONT_BLOCK = re.compile(r'<w:font\s+w:name="([^"]+)"\s*>(.*?)</w:font>', re.S)
+_EMBED_REGULAR = re.compile(r"<w:embedRegular\b([^>]*)/>")
+
+
+def embedded_font_entries(font_table: str) -> list[tuple[str, str, str]]:
+    """(font name, relationship id, font key) for every embedded regular face.
+
+    Parses per <w:font> block rather than assuming <w:embedRegular> follows the
+    opening tag immediately: a real fontTable carries panose/charset/family/
+    pitch/sig in between, and the attributes may appear in any order (Word also
+    writes w:subsetted). A stricter pattern silently finds nothing — which would
+    report a perfectly good file, including Word's own, as unverified.
+    """
+    entries: list[tuple[str, str, str]] = []
+    for name, block in _FONT_BLOCK.findall(font_table):
+        match = _EMBED_REGULAR.search(block)
+        if not match:
+            continue
+        attrs = match.group(1)
+        rel_id = re.search(r'r:id="([^"]+)"', attrs)
+        guid = re.search(r'w:fontKey="([^"]+)"', attrs)
+        if rel_id and guid:
+            entries.append((name, rel_id.group(1), guid.group(1)))
+    return entries
+
+
 def verify_embedded_fonts(docx_path: Path) -> dict:
     docx_path = Path(docx_path)
     with zipfile.ZipFile(docx_path) as archive:
@@ -214,9 +293,7 @@ def verify_embedded_fonts(docx_path: Path) -> dict:
                     if "word/settings.xml" in names else "")
         results: list[dict] = []
         rel_targets = dict(re.findall(r'Id="([^"]+)"[^>]*Target="fonts/([^"]+)"', rels))
-        for name, rel_id, guid in re.findall(
-                r'<w:font w:name="([^"]+)">\s*<w:embedRegular '
-                r'r:id="([^"]+)" w:fontKey="([^"]+)"', font_table):
+        for name, rel_id, guid in embedded_font_entries(font_table):
             target = rel_targets.get(rel_id)
             entry = {"font": name, "part": f"word/fonts/{target}" if target else None}
             if not target or f"word/fonts/{target}" not in names:
