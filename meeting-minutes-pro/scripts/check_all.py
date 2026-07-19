@@ -43,17 +43,9 @@ def normalized_lines(text: str) -> list[str]:
     return lines
 
 
-def compare_line_lists(docx_lines: list[str], txt_lines: list[str]) -> dict:
-    """Paragraph-level equality; a single extra DOCX line right after the
-    title is exempted (the optional centred subtitle is not in the txt)."""
-    if docx_lines == txt_lines:
-        return {"matches": True, "note": ""}
-    if (len(docx_lines) == len(txt_lines) + 1
-            and docx_lines[:1] == txt_lines[:1]
-            and docx_lines[2:] == txt_lines[1:]):
-        return {"matches": True, "note": "DOCX 含副标题行（已豁免）"}
+def _first_diff(docx_lines: list[str], expected: list[str]) -> dict:
     for position, (docx_line, txt_line) in enumerate(
-            zip(docx_lines, txt_lines), start=1):
+            zip(docx_lines, expected), start=1):
         if docx_line != txt_line:
             return {
                 "matches": False,
@@ -62,8 +54,31 @@ def compare_line_lists(docx_lines: list[str], txt_lines: list[str]) -> dict:
             }
     return {
         "matches": False,
-        "note": f"段落数不一致：DOCX {len(docx_lines)} 段，文本 {len(txt_lines)} 段",
+        "note": f"段落数不一致：DOCX {len(docx_lines)} 段，预期 {len(expected)} 段",
     }
+
+
+def compare_line_lists(docx_lines: list[str], txt_lines: list[str],
+                       subtitle: str | None = None) -> dict:
+    """Paragraph-level equality between the DOCX and the minutes text.
+
+    The optional centred subtitle is not part of the text file. When the caller
+    passes ``--subtitle`` its exact placement (right after the title) is
+    verified; otherwise a single extra DOCX line after the title is exempted as
+    a best-effort fallback."""
+    if subtitle:
+        subtitle_norm = re.sub(r"[\s　]+", "", subtitle)
+        expected = txt_lines[:1] + [subtitle_norm] + txt_lines[1:]
+        if docx_lines == expected:
+            return {"matches": True, "note": "DOCX 含副标题行（已按 --subtitle 核对）"}
+        return _first_diff(docx_lines, expected)
+    if docx_lines == txt_lines:
+        return {"matches": True, "note": ""}
+    if (len(docx_lines) == len(txt_lines) + 1
+            and docx_lines[:1] == txt_lines[:1]
+            and docx_lines[2:] == txt_lines[1:]):
+        return {"matches": True, "note": "DOCX 含副标题行（未传 --subtitle，已按单行豁免）"}
+    return _first_diff(docx_lines, txt_lines)
 
 
 def docx_text_lines(path: Path) -> list[str] | None:
@@ -75,6 +90,18 @@ def docx_text_lines(path: Path) -> list[str] | None:
         return None
     document = Document(str(path))
     return normalized_lines("\n".join(p.text for p in document.paragraphs))
+
+
+def check_docx_style_report(path: Path) -> dict:
+    """Run the style readback (fonts/sizes/weights vs the spec) on the DOCX.
+    Returns {ok, problems} or an unavailable note when python-docx is missing."""
+    try:
+        sys.path.insert(0, str(SCRIPTS_DIR))
+        from docx_style_check import check_docx_style
+    except ImportError:
+        return {"ok": None, "note": "python-docx 不可用；请用运行时 Python 执行本脚本"}
+    problems = check_docx_style(path)
+    return {"ok": not problems, "problems": problems[:20]}
 
 
 def resolve_transcript(transcript: Path) -> tuple[Path, Path]:
@@ -129,6 +156,9 @@ def main() -> int:
                         help="forwarded to fact_check")
     parser.add_argument("--docx", type=Path, default=None,
                         help="generated DOCX to verify against the minutes text")
+    parser.add_argument("--subtitle", default=None,
+                        help="生成 DOCX 时用过的副标题；传入后精确核对其位置，"
+                             "不再走单行豁免")
     parser.add_argument("--summary", type=Path, default=None,
                         help="summary JSON path (default: checks-summary.json "
                              "next to the minutes)")
@@ -233,8 +263,13 @@ def main() -> int:
                 txt_lines = normalized_lines(
                     args.minutes.read_text(encoding="utf-8-sig")
                 )
-                docx_entry["text_check"] = compare_line_lists(docx_lines, txt_lines)
+                docx_entry["text_check"] = compare_line_lists(
+                    docx_lines, txt_lines, args.subtitle)
                 if not docx_entry["text_check"]["matches"]:
+                    failed = True
+                style = check_docx_style_report(args.docx)
+                docx_entry["style_check"] = style
+                if style.get("ok") is False:
                     failed = True
         deliverable["docx"] = docx_entry
 
@@ -273,6 +308,16 @@ def main() -> int:
         print(f"[{'通过' if docx_ok else '未通过'}] docx_text"
               + (f"（{text_check.get('note') or docx_state.get('note', '')}）"
                  if not docx_ok else ""))
+        style_check = docx_state.get("style_check")
+        if style_check:
+            style_ok = style_check.get("ok")
+            state = "通过" if style_ok else ("跳过" if style_ok is None else "未通过")
+            detail = ""
+            if style_ok is False:
+                detail = f"（{'；'.join(style_check.get('problems', [])[:3])}）"
+            elif style_ok is None:
+                detail = f"（{style_check.get('note', '')}）"
+            print(f"[{state}] docx_style{detail}")
     print(f"校验汇总已写入：{summary_path}")
     print(f"总体：{'全部通过' if not failed else '存在未通过项，逐项处理后重跑'}")
     return 0 if not failed else 1

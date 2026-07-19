@@ -12,7 +12,7 @@
 | 长音频工程化 | 静音切块＋断点续传；`--sample 60` 中段试转并预估整段耗时；`--enhance` 降噪；`--diarize --speakers N` 说话人分离 |
 | 双引擎定向复核 | `refine_transcript.py` 自动挑出含数字、日期、术语、提问的高风险片段，用第二引擎重转并按金额/百分比/日期/否定词/术语五类比对，分歧片段必须回听；数字比对顺序敏感防张冠李戴，`--budget-minutes` 风险预算适配低配机器（最高风险片段必选），分歧片段自动剪出回听音频；分歧默认经增强重转仲裁分高低回听优先级，`--voter sensevoice` 启用 SenseVoice 第三引擎三取二投票 |
 | 固定纪要结构 | 材料中只要存在问答，固定输出"**完整总结概述＋完整问答纪要**"，不交付纯 QA，不用摘要吞并问答 |
-| 四重交付校验 | 格式校验（quality_check）→ 分窗覆盖率审计（audit_coverage）→ 问答对账（qa_reconcile）→ 逐数字事实核对（fact_check），全部通过才允许生成 DOCX；`check_all.py` 一键编排并落盘 `checks-summary.json` 审计记录，`--docx` 回读比对 DOCX 内容与纪要文本逐段一致；口语数字（三成/三个点/千分之五）自动归一核对，支持机构自定义禁词（`glossary/banned-phrases.txt`）；答复数字逐组对账防漏写，语境绑定评分防移用，跨校验器信号叠加提示整段遗漏 |
+| 四重交付校验 | 格式校验（quality_check）→ 分窗覆盖率审计（audit_coverage）→ 问答对账（qa_reconcile）→ 逐数字事实核对（fact_check），全部通过才允许生成 DOCX；`check_all.py` 一键编排并落盘 `checks-summary.json` 审计记录，`--docx` 回读比对 DOCX 内容与纪要文本逐段一致、并逐段核验 run 字体/字号/加粗符合规约（样式回归无需渲染即拦截）；口语数字（三成/三个点/千分之五）自动归一核对，支持机构自定义禁词（`glossary/banned-phrases.txt`）；答复数字逐组对账防漏写，语境绑定评分防移用，跨校验器信号叠加提示整段遗漏 |
 | 硬件自动分档 | `bootstrap_runtime.py --check` 纯标准库探测内存/CUDA 显存/磁盘，输出 T0–T3 档位与复核策略建议：低配自动走轻量策略，高配解锁 1.7B 模型与三取二投票；任何档位都能完成完整交付 |
 | 公文版式 DOCX | 方正小标宋/黑体/楷体_GB2312/仿宋_GB2312 固定版式，生成后自动把可嵌入的 GB2312 字体嵌入 DOCX（未装字体的机器也忠实呈现），再渲染 PDF 逐页检查字体替换与分页，仅交付 DOCX |
 | 术语库复用 | `glossary/<项目名>.txt` 按项目沉淀人名、简称、专业术语，跨会议自动复用（仅本地）；`glossary/industry/` 内置低空经济、商业航天行业术语库，随技能分发；上传 BP、会议笔记等资料时仅提取术语，不将资料内容写入纪要 |
@@ -35,7 +35,7 @@
 | --- | --- |
 | 大标题 | 二号方正小标宋简体，居中 |
 | 一级/二级/三级标题 | 三号黑体 / 三号楷体_GB2312 加粗 / 三号仿宋_GB2312 加粗 |
-| 正文与问答 | 三号仿宋_GB2312，首行空两字，固定行距 28 磅 |
+| 正文与问答 | 三号仿宋_GB2312，首行空两字（字符单位 `firstLineChars`，随字号自适应），固定行距 28 磅 |
 | **西文字母与阿拉伯数字** | **Times New Roman**，字号随所在文字（DOCX 自动分段设置；`5G`、`A4`、`Qwen3`、`2024-2025`、`GB/T` 等整体走西文字体，不再把字母留在中文字体里） |
 | 页码 | 页脚 `-1-` 格式，三号仿宋_GB2312，奇偶页不同（奇右偶左）；页眉不设内容 |
 | 字体嵌入 | 生成后自动将 fsType 允许的 GB2312 字体嵌入 DOCX（方正小标宋 fsType 受限，与 PDF 中走轮廓一致，不嵌入） |
@@ -60,9 +60,10 @@ python scripts/fact_check.py 会议纪要.txt --transcript out/录音.txt --show
 
 # 4. 生成并渲染检查 DOCX（create_minutes 自动嵌入可嵌入字体；--no-embed 关闭）
 <runtime-python> scripts/font_preflight.py --check
-<runtime-python> scripts/create_minutes_docx.py --input 会议纪要.txt --output 会议纪要.docx --mode qa-summary
-<runtime-python> scripts/embed_fonts.py --docx 会议纪要.docx --verify   # 可选：核对已嵌入字体
-<runtime-python> scripts/render_docx.py --input 会议纪要.docx
+<runtime-python> scripts/create_minutes_docx.py --input 会议纪要.txt --output 会议纪要.docx --subtitle 综合办公室 --mode qa-summary
+<runtime-python> scripts/embed_fonts.py --docx 会议纪要.docx --verify        # 可选：核对已嵌入字体
+<runtime-python> scripts/render_docx.py --input 会议纪要.docx                # 报告字体替换 + 页码奇右偶左自动核验
+<runtime-python> scripts/check_all.py 会议纪要.txt --transcript out/录音.json --docx 会议纪要.docx --subtitle 综合办公室 --mode qa-summary
 ```
 
 在 Claude 等智能体中装载技能后，直接上传录音或转录稿说"整理成正式会议纪要"即可，技能自动完成前置信息采集→转写→起草→校验→DOCX 全流程。
@@ -73,11 +74,11 @@ python scripts/fact_check.py 会议纪要.txt --transcript out/录音.txt --show
 meeting-minutes-pro/
   SKILL.md                     触发与执行逻辑
   references/                  版式规范、运行环境、平台安装说明
-  scripts/                     转写、复核、四重校验、DOCX 生成/字体嵌入/渲染检查（版式规约集中在 format_spec.py）
+  scripts/                     转写、复核、四重校验、DOCX 生成/字体嵌入/样式回读/渲染检查（版式规约集中在 format_spec.py）
   glossary/                    按项目维护的热词术语库（仅本地）＋ industry/ 行业术语库（随库分发）
   assets/fonts/                方正小标宋简体、楷体_GB2312、仿宋_GB2312
   assets/templates/            公司格式样例
-  tests/                       校验、规划与排版层逻辑回归测试（162 项）
+  tests/                       校验、规划与排版层逻辑回归测试（173 项）
 ```
 
 ## 隐私

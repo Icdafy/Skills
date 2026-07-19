@@ -131,6 +131,15 @@ class PageLayoutTests(unittest.TestCase):
         self.assertEqual(para.paragraph_format.line_spacing_rule, WD_LINE_SPACING.EXACTLY)
         self.assertAlmostEqual(para.paragraph_format.line_spacing, Pt(28))
 
+    def test_first_line_indent_is_character_based(self) -> None:
+        # #5: two-character indent via w:firstLineChars (scales with font size),
+        # with the absolute w:firstLine kept as a fallback.
+        doc = Document()
+        CM.add_content_paragraph(doc, "　　正文一段。")
+        ind = doc.paragraphs[-1]._p.pPr.find(qn("w:ind"))
+        self.assertEqual(ind.get(qn("w:firstLineChars")), "200")
+        self.assertIsNotNone(ind.get(qn("w:firstLine")))
+
 
 if __name__ == "__main__":
     unittest.main()

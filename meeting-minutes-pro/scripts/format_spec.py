@@ -89,9 +89,12 @@ TITLE_LINE_SPACING = 30
 SUBTITLE_LINE_SPACING = 28
 BODY_LINE_SPACING = 28
 
-# --- First-line indent (pt) ------------------------------------------------
-# Two full-width characters at the body size. Kept as an explicit measure so
-# the plain-text "　　" prefix is never emitted as literal spaces in the DOCX.
+# --- First-line indent -----------------------------------------------------
+# Two full-width characters. Expressed primarily in character units
+# (w:firstLineChars = 200) so the indent tracks the font size the way a real
+# 公文 template does; FIRST_LINE_INDENT_PT stays as an absolute fallback for
+# renderers that ignore the character measure.
+FIRST_LINE_INDENT_CHARS = 2
 FIRST_LINE_INDENT_PT = 32.4
 
 # --- Page geometry (cm) — A4 portrait, GB/T 9704 margins ------------------

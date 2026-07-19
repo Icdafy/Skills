@@ -38,6 +38,21 @@ class CompareLineListsTests(unittest.TestCase):
         self.assertTrue(result["matches"])
         self.assertIn("副标题", result["note"])
 
+    def test_known_subtitle_verified_exactly(self) -> None:
+        result = CHECK_ALL.compare_line_lists(
+            ["标题", "投资部", "正文"], ["标题", "正文"], "投资部"
+        )
+        self.assertTrue(result["matches"])
+        self.assertIn("已按 --subtitle 核对", result["note"])
+
+    def test_wrong_subtitle_is_flagged(self) -> None:
+        # The old blanket exemption accepted any extra line; a known subtitle is
+        # now checked precisely, so a mismatched subtitle fails.
+        result = CHECK_ALL.compare_line_lists(
+            ["标题", "投资部", "正文"], ["标题", "正文"], "综合办公室"
+        )
+        self.assertFalse(result["matches"])
+
     def test_diverging_paragraph_reported(self) -> None:
         result = CHECK_ALL.compare_line_lists(
             ["标题", "营收3000万元"], ["标题", "营收3500万元"]
