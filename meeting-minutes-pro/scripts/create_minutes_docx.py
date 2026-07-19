@@ -28,6 +28,7 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     BODY_SIZE,
     BOTTOM_MARGIN_CM,
     FANGSONG_FONT,
+    FIRST_LINE_INDENT_CHARS,
     FIRST_LINE_INDENT_PT,
     INDENT,
     KAI_FONT,
@@ -97,9 +98,18 @@ def set_exact_line_spacing(paragraph, points: float) -> None:
     paragraph.paragraph_format.space_after = Pt(0)
 
 
+def set_first_line_indent(paragraph) -> None:
+    """Indent the first line by two characters. w:firstLineChars scales with the
+    font size (the public-document convention); the absolute w:firstLine is kept
+    as a fallback for renderers that ignore the character measure."""
+    paragraph.paragraph_format.first_line_indent = Pt(FIRST_LINE_INDENT_PT)
+    indent = paragraph._p.get_or_add_pPr().get_or_add_ind()
+    indent.set(qn("w:firstLineChars"), str(FIRST_LINE_INDENT_CHARS * 100))
+
+
 def set_body_layout(paragraph) -> None:
     paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    paragraph.paragraph_format.first_line_indent = Pt(FIRST_LINE_INDENT_PT)
+    set_first_line_indent(paragraph)
     paragraph.paragraph_format.widow_control = True
     set_exact_line_spacing(paragraph, BODY_LINE_SPACING)
 

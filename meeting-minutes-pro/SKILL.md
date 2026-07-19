@@ -189,12 +189,12 @@ python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目
 <runtime-python> <skill-dir>/scripts/render_docx.py --input "会议纪要.docx"
 ```
 
-逐页检查生成的 PDF：字体替换（结果中 `missing_required_fonts` 或 `substituted_fonts` 非空即不得交付；标题方正小标宋因许可禁止嵌入、以轮廓输出属正常，须目检字形）、标题偏移、段落截断、异常分页和页码位置均需修正后再次生成并渲染。检查全部通过后删除该 PDF，仅交付 DOCX。本机既无 Microsoft Word 也无 LibreOffice 时，向用户说明无法本机渲染，请用户自行打开 DOCX 核对版式。
+逐页检查生成的 PDF：字体替换（结果中 `missing_required_fonts` 或 `substituted_fonts` 非空即不得交付；标题方正小标宋因许可禁止嵌入、以轮廓输出属正常，须目检字形）、标题偏移、段落截断和异常分页均需修正后再次生成并渲染。页码位置（奇数页居右、偶数页居左）已由 `render_docx.py` 自动核验，结果 JSON 的 `page_number_check.ok` 为 `false` 即位置有误，须修正。检查全部通过后删除该 PDF，仅交付 DOCX。本机既无 Microsoft Word 也无 LibreOffice 时，向用户说明无法本机渲染，请用户自行打开 DOCX 核对版式。
 
-DOCX 生成后用运行时 Python 追加内容回读比对——逐段核验 DOCX 文本与通过校验的纪要文本一致（忽略空白，副标题行豁免），段落丢失、内容错位或 DOCX 旧于纪要文本均拦截：
+DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段核验 DOCX 文本与通过校验的纪要文本一致（忽略空白），并逐段核验各 run 的字体、字号、加粗符合规约（样式回归无需渲染即被拦截）；段落丢失、内容错位、样式漂移或 DOCX 旧于纪要文本均拦截。生成 DOCX 时用过 `--subtitle` 的，这里传入相同的 `--subtitle`，副标题位置将被精确核对（不传则按单行豁免）：
 
 ```powershell
-<runtime-python> <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目录>/<文件名>.json --ledger coverage.txt --mode qa-summary --docx 会议纪要.docx
+<runtime-python> <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目录>/<文件名>.json --ledger coverage.txt --mode qa-summary --docx 会议纪要.docx --subtitle "综合办公室"
 ```
 
 ## 转录与隐私规则
@@ -215,16 +215,17 @@ DOCX 生成后用运行时 Python 追加内容回读比对——逐段核验 DOC
 - `scripts/refine_transcript.py`：双引擎定向复核——自动挑出含数字、日期、术语、提问的高风险片段，仅对这些片段用 Qwen3-ASR 重转并按金额/百分比/日期/否定词/术语五类比对，输出分歧报告；数字比对顺序敏感（防同组数字张冠李戴），`--budget-minutes` 按风险分优先复核关键片段（最高风险片段必选），分歧与待复核片段自动剪出回听音频（`--no-audio` 关闭）；分歧默认经增强重转仲裁分出回听高低优先级，`--voter sensevoice` 启用第三引擎三取二投票。
 - `scripts/install_skill.py`：安装和分发技能。
 - `scripts/requirements-runtime.txt`、`requirements-funasr.txt`、`requirements-qwen.txt`：基础与分引擎运行依赖。
-- `scripts/check_all.py`：一键校验编排器——依次执行四项校验并落盘 `checks-summary.json`（各关结果＋全部放行记录＋归档验收）；`--docx` 追加 DOCX 内容回读比对（逐段一致、副标题豁免、新旧校验）。
+- `scripts/check_all.py`：一键校验编排器——依次执行四项校验并落盘 `checks-summary.json`（各关结果＋全部放行记录＋归档验收）；`--docx` 追加 DOCX 内容回读（逐段一致）与样式回读（字体/字号/加粗符合规约）比对及新旧校验，`--subtitle` 传入后精确核对副标题位置（不传则单行豁免）。
 - `scripts/quality_check.py`：检查缩进、标题层级、访谈基本信息顺序、访谈对象括注、问答配对、问答组间空行、半角标点混用和疑似重复问答，并硬性拦截“待核实/待核验/待落实”“以××为准”“需重点关注”等核验提示句、指导性表述和总结概述中的风险类板块；支持 `glossary/banned-phrases.txt` 机构自定义禁词（`--allow-line` 放行转录稿真实谈及的内容）。
 - `scripts/audit_coverage.py`：分窗覆盖率审计——生成逐窗判定清单模板（含数字、疑似提问、术语提示）并机械校验每个时间窗都有“纳入/省略”判定，数字密集窗口不得静默省略；纳入位置须对应纪要真实标题，全部同位置时提示疑似机械填写；“数字未现于纪要”与“窗口内提问未对上问答”两个信号叠加时升级为强警告（疑似整段遗漏）。
 - `scripts/qa_reconcile.py`：从转录稿检测疑似提问，与纪要问答逐条对账，防止问答遗漏或虚构；短问题自动抬高匹配门槛防静默漏配，`--show-matches` 输出完整对账映射供正向浏览；对已匹配的问答执行答案实质对账——答复窗口内说过的显著数字未进入纪要对应问答组即告警。
 - `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比、月份日期、二〇二五式年份，以及三成/三个点/千分之五等口语形态），`--show-matches` 输出转录稿侧依据上下文并按语境绑定分排序——纪要语境与依据语境相似度低的数字标记“疑似移用”置顶，`--glossary` 给出热词改写提示，并支持双转录稿交叉核验（含数字顺序比对）。
 - `tests/`：以上校验与规划逻辑的回归测试（quality_check、fact_check、audit_coverage、qa_reconcile、refine_transcript、transcribe 辅助函数）。
 - `scripts/format_spec.py`：排版规约的唯一真源——层级识别正则、角色→字体/字号/加粗映射、西文段规则、页面几何与字体清单；`quality_check.py`（校验）、`create_minutes_docx.py`（渲染）、`render_docx.py`、`font_preflight.py`、`embed_fonts.py` 全部从此导入，校验与渲染判定不会漂移。
-- `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX（版式取自 `format_spec.py`），并默认将可嵌入的随附字体嵌入 DOCX（`--no-embed` 关闭）。
+- `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX（版式取自 `format_spec.py`，首行缩进用字符单位 `w:firstLineChars` 随字号自适应），并默认将可嵌入的随附字体嵌入 DOCX（`--no-embed` 关闭）。
 - `scripts/embed_fonts.py`：按 ECMA-376 混淆字体机制把 fsType 允许的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使其在未装字体的机器上忠实呈现（渲染器无关，不依赖 Word/LibreOffice）；`--verify` 反混淆各嵌入部件并校验为有效字体；方正小标宋 fsType 受限，不嵌入。
-- `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，用于交付前逐页检查。
+- `scripts/docx_style_check.py`：交付时 DOCX 样式回读——逐段依 `format_spec` 重新推导应有字体/字号/加粗并核对各 run，不渲染即可拦截样式回归；已并入 `check_all.py --docx`。
+- `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，并用文字坐标自动核验页码奇右偶左（`page_number_check`），用于交付前逐页检查。
 - `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装随技能提供的字体。
 - `glossary/`：按项目或公司维护的热词术语文件，跨会议复用（仅本地，不入库）；`glossary/industry/`：随技能分发的行业术语库（低空经济、商业航天），供相关行业会议挑选热词并作规范写法参照。
 - `assets/fonts/`：方正小标宋简体、楷体_GB2312、仿宋_GB2312 字体文件。

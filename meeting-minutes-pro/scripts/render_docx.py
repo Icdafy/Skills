@@ -131,6 +131,71 @@ def inspect_pdf(pdf: Path) -> tuple[int, list[str]]:
         return pages, fonts_found
 
 
+# Footer glyphs are dashes and digits only (`-1-`); CJK body text never matches.
+_FOOTER_TOKEN = re.compile(r"^[-‐-―\d\s]+$")
+
+
+def is_footer_token(text: str) -> bool:
+    return bool(text.strip()) and _FOOTER_TOKEN.match(text) is not None
+
+
+def page_side(xs: list[float], width: float) -> str | None:
+    """Which side of the page the footer glyphs (x positions) sit on."""
+    if not xs:
+        return None
+    return "right" if (min(xs) + max(xs)) / 2 > width / 2 else "left"
+
+
+def expected_side(page_number: int) -> str:
+    """1-indexed: odd pages carry the number on the right, even on the left."""
+    return "right" if page_number % 2 == 1 else "left"
+
+
+def page_number_sides(pdf: Path) -> dict:
+    """Confirm the page-number footer sits on the right of odd pages and the
+    left of even pages. Best-effort: returns ``available: False`` when pypdf is
+    missing or no footer glyphs can be located, so it never blocks a render."""
+    try:
+        from pypdf import PdfReader
+    except ImportError:
+        return {"available": False, "reason": "pypdf 不可用，页码位置需人工核对"}
+
+    reader = PdfReader(str(pdf))
+    pages_report: list[dict] = []
+    for index, page in enumerate(reader.pages, start=1):
+        try:
+            width = float(page.mediabox.width)
+            height = float(page.mediabox.height)
+        except (TypeError, ValueError):
+            continue
+        xs: list[float] = []
+
+        def visitor(text, cm, tm, font_dict, font_size, _xs=xs, _h=height):
+            # The footer sits in a low band above the page edge (~y 40 for A4).
+            # The lower bound skips pypdf's matrix-less artefacts (wrapped runs
+            # reported at x=y=0).
+            if is_footer_token(text) and 1 < tm[5] < _h * 0.11:
+                _xs.append(float(tm[4]))
+
+        try:
+            page.extract_text(visitor_text=visitor)
+        except Exception:  # noqa: BLE001 - a parse hiccup must not fail the render
+            pass
+        want = expected_side(index)
+        detected = page_side(xs, width)
+        entry = {"page": index, "expected": want, "detected": detected}
+        if detected is not None:
+            entry["ok"] = detected == want
+        pages_report.append(entry)
+
+    detected = [p for p in pages_report if p.get("detected")]
+    return {
+        "available": True,
+        "ok": all(p["ok"] for p in detected) if detected else None,
+        "pages": pages_report,
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True, help="DOCX file to render")
@@ -166,6 +231,14 @@ def main() -> int:
         name for name in bare_names
         if name in SUBSTITUTE_ALERTS or name.startswith("KSOF")
     )
+    page_numbers = page_number_sides(pdf)
+    page_number_note = ""
+    if page_numbers.get("ok") is False:
+        wrong = "、".join(
+            f"第 {p['page']} 页（实为{p['detected']}，应为{p['expected']}）"
+            for p in page_numbers["pages"] if p.get("ok") is False
+        )
+        page_number_note = f" 页码位置异常：{wrong}，需修正后重新生成。"
     print(json.dumps({
         "ok": True,
         "renderer": renderer,
@@ -174,9 +247,12 @@ def main() -> int:
         "embedded_fonts": fonts,
         "missing_required_fonts": missing_markers,
         "substituted_fonts": substituted,
-        "note": "逐页检查 PDF：标题、缩进、分页、页码位置；"
+        "page_number_check": page_numbers,
+        "note": "逐页检查 PDF：标题、缩进、分页；"
                 "missing_required_fonts 或 substituted_fonts 非空说明发生了字体替换，不得交付。"
-                "标题字体方正小标宋许可禁止嵌入，PDF 中以轮廓输出属正常，须目检标题字形是否为小标宋。",
+                "页码奇右偶左已自动核验（page_number_check.ok 为 false 即位置有误）。"
+                "标题字体方正小标宋许可禁止嵌入，PDF 中以轮廓输出属正常，须目检标题字形是否为小标宋。"
+                + page_number_note,
     }, ensure_ascii=False, indent=2))
     return 0
 
