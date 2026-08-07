@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """One-command pre-delivery gate for the minutes.
 
-Runs the four checks in order (quality_check -> audit_coverage ->
+Runs the four checks in order (quality_check -> strict audit_coverage ->
 qa_reconcile -> fact_check), optionally verifies that the generated DOCX
 carries exactly the validated text (paragraph-by-paragraph, whitespace
 ignored, one subtitle line exempted), audits the deliverable folder, and
@@ -154,6 +154,10 @@ def main() -> int:
                         metavar="编号", help="forwarded to qa_reconcile")
     parser.add_argument("--allow", action="append", default=[],
                         help="forwarded to fact_check")
+    parser.add_argument("--allow-missing-number", action="append", default=[],
+                        metavar="窗口|原文数字|原因",
+                        help="forwarded to audit_coverage; every quantitative omission "
+                             "must be individually reasoned")
     parser.add_argument("--docx", type=Path, default=None,
                         help="generated DOCX to verify against the minutes text")
     parser.add_argument("--subtitle", default=None,
@@ -197,7 +201,10 @@ def main() -> int:
             [str(SCRIPTS_DIR / "audit_coverage.py"),
              "--transcript", str(structured),
              "--ledger", str(args.ledger),
-             "--minutes", str(args.minutes)] if args.ledger else None,
+             "--minutes", str(args.minutes), "--strict-numbers"]
+            + [part for value in args.allow_missing_number
+               for part in ("--allow-missing-number", value)]
+            if args.ledger else None,
             "未提供 --ledger（覆盖率清单）",
         ),
         (
@@ -286,6 +293,7 @@ def main() -> int:
             "allow_line": sorted(args.allow_line),
             "skip": sorted(args.skip),
             "allow": list(args.allow),
+            "allow_missing_number": list(args.allow_missing_number),
             "note": "放行理由须在对话中向用户说明；此处仅存审计痕迹。",
         },
         "deliverable": deliverable,
