@@ -21,6 +21,13 @@ script turns that honor-system step into a checked artifact:
    two or more salient numbers, or when time ranges were tampered with.
    Warns when an included window's numbers never surface in the minutes.
 
+Use --strict-numbers for high-stakes interviews. In strict mode every salient
+number in an included window must reach the minutes, and a window carrying any
+number cannot be omitted. A number may be deliberately waived only with a
+reasoned --allow-missing-number "窗口|原文数字|原因" entry (for example, an
+explicitly corrected slip of the tongue). This closes the old loophole where
+one retained number allowed the rest of a number-dense window to disappear.
+
 Transcripts without timestamps fall back to fixed-size character blocks.
 """
 
@@ -211,10 +218,14 @@ def validate(
     mode: str,
     ledger_path: Path,
     minutes_path: Path,
+    *,
+    strict_numbers: bool = False,
+    allowed_missing_numbers: dict[tuple[int, str], str] | None = None,
 ) -> int:
     errors: list[str] = []
     warnings: list[str] = []
     entries: dict[int, tuple[str, str, str]] = {}
+    allowed_missing_numbers = allowed_missing_numbers or {}
     for line_number, line in enumerate(
         ledger_path.read_text(encoding="utf-8-sig").splitlines(), start=1
     ):
@@ -236,6 +247,15 @@ def validate(
         errors.append(f"窗口 {index} 缺少判定。")
     for index in sorted(set(entries) - expected):
         errors.append(f"窗口 {index} 不在转录稿的窗口范围内（共 {len(windows)} 个）。")
+    available_number_keys = {
+        (window.index, raw) for window in windows for raw in window.numbers
+    }
+    for (index, raw), _reason in allowed_missing_numbers.items():
+        if (index, raw) not in available_number_keys:
+            errors.append(
+                f"数字放行项“{index}|{raw}”无法对应覆盖清单中的原文数字；"
+                "请使用模板中显示的窗口编号和原文写法。"
+            )
 
     minutes_raw = minutes_path.read_text(encoding="utf-8-sig")
     minutes_text = fact_check.normalize(minutes_raw)
@@ -299,7 +319,17 @@ def validate(
             if not question_reaches_minutes(sentence)
         ]
         if decision == "省略":
-            if len(window.numbers) >= 2:
+            unwaived = [
+                raw for raw in window.numbers
+                if (window.index, raw) not in allowed_missing_numbers
+            ]
+            if strict_numbers and unwaived:
+                errors.append(
+                    f"窗口 {window.index}（{window.label}）含量化事实"
+                    f"（{'、'.join(unwaived)}）却被判定省略；严格数字模式要求逐项纳入，"
+                    "或仅对明确口误、更正、重复及非实质编号使用 --allow-missing-number 并写明理由。"
+                )
+            elif len(window.numbers) >= 2:
                 errors.append(
                     f"窗口 {window.index}（{window.label}）含 {len(window.numbers)} 项数字事实"
                     f"（{'、'.join(window.numbers[:4])}…）却被判定省略，必须纳入或逐项说明。"
@@ -314,12 +344,29 @@ def validate(
                     f"「{unmatched_questions[0][:24]}」未在纪要问答中找到对应，请确认省略合理。"
                 )
         elif decision == "纳入" and window.numbers:
-            hit = any(
-                token.raw in minutes_text
-                or (token.kind, round(token.value, 6)) in minutes_values
-                for token in window.number_tokens
-            ) or any(raw in minutes_text for raw in window.numbers)
-            if not hit and unmatched_questions:
+            token_hits: dict[str, bool] = {}
+            for raw in window.numbers:
+                matching = [token for token in window.number_tokens if token.raw == raw]
+                token_hits[raw] = (
+                    raw in minutes_text
+                    or any(
+                        (token.kind, round(token.value, 6)) in minutes_values
+                        for token in matching
+                    )
+                )
+            missing = [raw for raw, hit in token_hits.items() if not hit]
+            unwaived = [
+                raw for raw in missing
+                if (window.index, raw) not in allowed_missing_numbers
+            ]
+            hit = not missing
+            if strict_numbers and unwaived:
+                errors.append(
+                    f"窗口 {window.index}（{window.label}）判定纳入，但量化事实"
+                    f"（{'、'.join(unwaived)}）未进入纪要；严格数字模式不允许以窗口内"
+                    "其他数字代替。请补入数字及其对象、单位和限定条件，或对可省略项显式放行。"
+                )
+            elif not hit and unmatched_questions:
                 # 两个弱信号叠加（数字未现＋提问未对上）＝该段大概率整体遗漏。
                 warnings.append(
                     f"强警告：窗口 {window.index}（{window.label}）判定纳入，但其数字"
@@ -347,6 +394,24 @@ def validate(
     return 0
 
 
+def parse_allowed_missing_numbers(values: list[str]) -> dict[tuple[int, str], str]:
+    """Parse repeated ``window|raw number|reason`` waivers.
+
+    The raw spelling is intentional: it makes every omission auditable and
+    prevents a broad value-only waiver from hiding the same number elsewhere.
+    """
+    result: dict[tuple[int, str], str] = {}
+    for value in values:
+        parts = [part.strip() for part in value.split("|", 2)]
+        if len(parts) != 3 or not parts[0].isdigit() or not parts[1] or not parts[2]:
+            raise ValueError(
+                f"无法解析 --allow-missing-number：{value!r}；"
+                "格式应为“窗口编号|转录稿中的原文数字|具体原因”。"
+            )
+        result[(int(parts[0]), parts[1])] = parts[2]
+    return result
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
@@ -364,6 +429,12 @@ def main() -> int:
                         help="hotword file whose terms are hinted per window; may be repeated")
     parser.add_argument("--term", action="append", default=[],
                         help="a single hotword term for window hints; may be repeated")
+    parser.add_argument("--strict-numbers", action="store_true",
+                        help="require every salient number in each included window to appear "
+                             "in the minutes; any numbered omitted window fails")
+    parser.add_argument("--allow-missing-number", action="append", default=[],
+                        metavar="窗口|原文数字|原因",
+                        help="explicitly waive one strict-mode omission; may be repeated")
     args = parser.parse_args()
 
     if not args.transcript.is_file():
@@ -387,7 +458,15 @@ def main() -> int:
         parser.error(f"找不到覆盖率清单：{args.ledger}")
     if not args.minutes.is_file():
         parser.error(f"找不到纪要文件：{args.minutes}")
-    return validate(windows, mode, args.ledger, args.minutes)
+    try:
+        allowed_missing = parse_allowed_missing_numbers(args.allow_missing_number)
+    except ValueError as exc:
+        parser.error(str(exc))
+    return validate(
+        windows, mode, args.ledger, args.minutes,
+        strict_numbers=args.strict_numbers,
+        allowed_missing_numbers=allowed_missing,
+    )
 
 
 if __name__ == "__main__":
