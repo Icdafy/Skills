@@ -64,10 +64,14 @@ class AuditCoverageTests(unittest.TestCase):
         path.write_text("\n".join(lines), encoding="utf-8")
         return path
 
-    def validate(self, ledger: Path, minutes: Path) -> tuple[int, str]:
+    def validate(self, ledger: Path, minutes: Path, *, strict: bool = False,
+                 allowed: dict[tuple[int, str], str] | None = None) -> tuple[int, str]:
         buffer = io.StringIO()
         with contextlib.redirect_stdout(buffer):
-            code = AUDIT.validate(self.windows(), "time", ledger, minutes)
+            code = AUDIT.validate(
+                self.windows(), "time", ledger, minutes,
+                strict_numbers=strict, allowed_missing_numbers=allowed,
+            )
         return code, buffer.getvalue()
 
     def test_windows_and_template(self) -> None:
@@ -147,6 +151,95 @@ class AuditCoverageTests(unittest.TestCase):
         self.assertEqual(code, 0)
         self.assertIn("警告", output)
         self.assertIn("均未出现在纪要中", output)
+
+    def test_strict_mode_fails_when_only_one_of_two_numbers_survives(self) -> None:
+        minutes = self.write_minutes(
+            "一、完整总结概述",
+            "公司去年营收3000万元。",
+        )
+        ledger = self.write_ledger(
+            "窗口 1（00:00–05:00）：纳入 总结一",
+            "窗口 2（05:00–10:00）：省略 寒暄",
+            "窗口 3（10:00–15:00）：纳入 总结一",
+        )
+        code, output = self.validate(ledger, minutes, strict=True)
+        self.assertEqual(code, 1)
+        self.assertIn("30%", output)
+        self.assertIn("不允许以窗口内其他数字代替", output)
+
+    def test_strict_mode_requires_reasoned_per_number_waiver(self) -> None:
+        minutes = self.write_minutes(
+            "一、完整总结概述",
+            "公司去年营收3000万元，计划3月15日交付，产能爬坡到每月500台。",
+        )
+        ledger = self.write_ledger(
+            "窗口 1（00:00–05:00）：纳入 总结一",
+            "窗口 2（05:00–10:00）：省略 寒暄",
+            "窗口 3（10:00–15:00）：纳入 总结一",
+        )
+        code, output = self.validate(
+            ledger, minutes, strict=True,
+            allowed={(1, "30%"): "说话人随后明确更正，属废弃口径"},
+        )
+        self.assertEqual(code, 0, output)
+
+    def test_allow_missing_number_parser_requires_reason(self) -> None:
+        parsed = AUDIT.parse_allowed_missing_numbers(["1|30%|随后明确更正"])
+        self.assertEqual(parsed[(1, "30%")], "随后明确更正")
+        with self.assertRaises(ValueError):
+            AUDIT.parse_allowed_missing_numbers(["1|30%"])
+
+    def test_unknown_number_waiver_fails(self) -> None:
+        minutes = self.write_minutes(
+            "一、完整总结概述",
+            "公司去年营收3000万元，毛利率约30%，计划3月15日交付，产能每月500台。",
+        )
+        ledger = self.write_ledger(
+            "窗口 1（00:00–05:00）：纳入 总结",
+            "窗口 2（05:00–10:00）：省略 寒暄",
+            "窗口 3（10:00–15:00）：纳入 总结",
+        )
+        code, output = self.validate(
+            ledger, minutes, strict=True,
+            allowed={(1, "不存在的数字"): "测试"},
+        )
+        self.assertEqual(code, 1)
+        self.assertIn("无法对应覆盖清单", output)
+
+    def test_strict_mode_blocks_dense_product_metrics_regression(self) -> None:
+        """Regression for investment interviews where one retained market-size
+        figure previously let prices, ratios, accuracy and cost comparisons
+        disappear from the same window."""
+        dense = self.root / "dense.json"
+        dense.write_text(json.dumps({"text": "", "timestamps": [
+            stamp(
+                "行业预计5万颗卫星中60%搭载光学载荷，对应500亿元市场；"
+                "定制机型单价200至300万元，标准化机型80万元。",
+                10.0, 25.0,
+            ),
+            stamp(
+                "元器件国产化率95%以上，测温精度正负0.05摄氏度；"
+                "国内发射成本每公斤7000至8000美元，国外为1300美元。",
+                30.0, 45.0,
+            ),
+        ]}, ensure_ascii=False), encoding="utf-8")
+        windows, mode = AUDIT.build_windows(dense, 300.0, 1500)
+        minutes = self.write_minutes(
+            "一、完整总结概述",
+            "受访人表示相关光学载荷对应约500亿元市场。",
+        )
+        ledger = self.write_ledger("窗口 1（00:00–00:45）：纳入 总结")
+        buffer = io.StringIO()
+        with contextlib.redirect_stdout(buffer):
+            code = AUDIT.validate(
+                windows, mode, ledger, minutes, strict_numbers=True,
+            )
+        output = buffer.getvalue()
+        self.assertEqual(code, 1)
+        self.assertIn("60%", output)
+        self.assertIn("95%", output)
+        self.assertIn("0.05", output)
+        self.assertIn("不允许以窗口内其他数字代替", output)
 
     def test_implausible_position_fails(self) -> None:
         minutes = self.write_minutes(
