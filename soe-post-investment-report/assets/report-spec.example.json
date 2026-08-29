@@ -1,0 +1,860 @@
+{
+  "schema_version": "1.0",
+  "template_only": true,
+  "layout": {
+    "page_width_cm": 21.0,
+    "page_height_cm": 29.7,
+    "top_margin_cm": 3.7,
+    "bottom_margin_cm": 3.5,
+    "left_margin_cm": 2.8,
+    "right_margin_cm": 2.6,
+    "header_distance_cm": 1.5,
+    "footer_distance_cm": 1.75,
+    "source": "sanitized source-derived template contract"
+  },
+  "document": {
+    "company": "示例城市建设控股有限公司",
+    "report_year": "2025",
+    "cutoff_date": "2025年12月31日",
+    "document_number": "示例控股字〔2026〕1号",
+    "fixed_main_headings": [
+      "一、年度股权投资完成总体情况",
+      "（一）存续基金",
+      "（二）新设基金",
+      "（三）参股公司",
+      "（四）SPV项目",
+      "二、重大投资项目进展情况"
+    ],
+    "source_fixed_main_headings": [
+      "一、年度股权投资完成总体情况",
+      "（一）存续基金",
+      "（二）新设基金",
+      "（三）参股公司",
+      "（四）SPV项目",
+      "二、重大投资项目进展情况"
+    ],
+    "heading_contract_source": "Sanitized source-derived template heading sequence for this synthetic reference.",
+    "heading_change_authorized": false,
+    "heading_change_note": "No structural heading change; the public reference uses a generic SPV slot instead of a real project name.",
+    "signer": "签发人：〔示例〕",
+    "recipient": "国资监管部门：",
+    "legal_basis": "依据国有企业投资监督管理有关规定，现将公司2025年度股权投资项目投后管理情况报告如下：",
+    "issuer": "示例城市建设控股有限公司",
+    "issue_date": "2026年3月31日",
+    "contact_name": "",
+    "contact_phone": ""
+  },
+  "sources": [
+    {
+      "source_id": "S01",
+      "project_ids": ["FUND-001", "FUND-002"],
+      "filename": "〔合成示例〕基金年度投后报告.xlsx",
+      "period": "截至2025年12月31日",
+      "document_date": "2026年1月31日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic management report",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S02",
+      "project_ids": ["EQUITY-001"],
+      "filename": "〔合成示例〕示例科技年度资料包.pdf",
+      "period": "2025年度",
+      "document_date": "2026年2月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic management package",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S03",
+      "project_ids": ["EQUITY-002"],
+      "filename": "〔合成示例〕智能装备经营及项目台账.xlsx",
+      "period": "截至2025年12月31日",
+      "document_date": "2026年1月20日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic operating ledger",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S04",
+      "project_ids": ["SPV-001"],
+      "filename": "〔合成示例〕SPV资产回收及治理台账.xlsx",
+      "period": "截至2025年12月31日",
+      "document_date": "2026年2月5日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic asset-recovery ledger",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S05",
+      "project_ids": ["portfolio"],
+      "filename": "〔合成示例〕年度投后管理计划及事项台账.docx",
+      "period": "2025年度及下一年度安排",
+      "document_date": "2026年2月28日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic approved management plan",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    }
+  ],
+  "project_registry": [
+    {
+      "project_id": "FUND-001",
+      "official_name": "示例产业基金",
+      "category": "存续基金",
+      "status": "存续",
+      "investment_entity": "示例城市建设控股有限公司",
+      "commitment": "1000万元",
+      "paid_in": "1000万元",
+      "interest": "10%",
+      "reporting_period": "截至2025年12月31日",
+      "attachment_id": "A1",
+      "change_flag": "quantitative-refresh"
+    },
+    {
+      "project_id": "FUND-002",
+      "official_name": "示例科创基金",
+      "category": "新设基金",
+      "status": "已设立",
+      "investment_entity": "示例城市建设控股有限公司",
+      "commitment": "500万元",
+      "paid_in": "250万元",
+      "interest": "5%",
+      "reporting_period": "截至2025年12月31日",
+      "attachment_id": "A1",
+      "change_flag": "new"
+    },
+    {
+      "project_id": "EQUITY-001",
+      "official_name": "示例科技有限公司",
+      "category": "参股公司",
+      "status": "在投",
+      "investment_entity": "示例城市建设控股有限公司",
+      "commitment": "800万元",
+      "paid_in": "800万元",
+      "interest": "8%",
+      "reporting_period": "截至2025年12月31日",
+      "attachment_id": "A2",
+      "change_flag": "risk-changed"
+    },
+    {
+      "project_id": "EQUITY-002",
+      "official_name": "示例智能装备有限公司",
+      "category": "参股公司",
+      "status": "在投",
+      "investment_entity": "示例城市建设控股有限公司",
+      "commitment": "600万元",
+      "paid_in": "600万元",
+      "interest": "12%",
+      "reporting_period": "截至2025年12月31日",
+      "attachment_id": "A3",
+      "change_flag": "quantitative-refresh"
+    },
+    {
+      "project_id": "SPV-001",
+      "official_name": "示例协同发展合伙企业（有限合伙）",
+      "category": "SPV项目",
+      "status": "存续",
+      "investment_entity": "示例城市建设控股有限公司",
+      "commitment": "300万元",
+      "paid_in": "300万元",
+      "interest": "30%",
+      "reporting_period": "截至2025年12月31日",
+      "attachment_id": "A4",
+      "change_flag": "unchanged"
+    }
+  ],
+  "fact_ledger": [
+    {
+      "fact_id": "FACT-001",
+      "project_id": "FUND-001",
+      "metric": "存续基金出资、份额及项目数量快照",
+      "assertions": [
+        "截至2025年12月31日，公司存续基金1支",
+        "为示例产业基金",
+        "认缴及实缴出资均为1000万元",
+        "持有10%的合伙份额",
+        "已完成对5个项目的投资",
+        "新增投资1个、退出项目1个",
+        "存续投资项目经营情况总体稳定",
+        "公司按季度跟踪基金投资进度、估值变化及退出安排",
+        "示例产业基金|1000|1000|10%|存续",
+        "公司按协议获取基金定期报告，跟踪投资、估值、退出和风险事项"
+      ],
+      "value": "cutoff_date=2025-12-31; portfolio_active_funds=1; commitment=1000; paid_in=1000; interest=10%; invested_projects=5; new_projects=1; exited_projects=1",
+      "unit": "日期/支/万元/%/个",
+      "period": "截至2025年12月31日",
+      "scope": "本公司持有的示例产业基金及其投资组合",
+      "source_id": "S01",
+      "locator": "基金概况!B2:H2（截止日、存续基金数、认缴、实缴、份额、累计投资项目数）；项目台账!状态汇总（新增1个、退出1个）",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source snapshot; project counts are a status-count cross-check of the synthetic project ledger.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-002",
+      "project_id": "FUND-001",
+      "metric": "基金规模、投资成本、回收及净资产快照",
+      "assertions": [
+        "实缴规模为1亿元",
+        "投资成本合计8200万元",
+        "已回收本金及收益1460万元",
+        "期末基金净资产为1.08亿元",
+        "重点核查资金使用、重大事项决策和风险处置情况",
+        "通过合伙人会议履行出资人职责"
+      ],
+      "value": "fund_paid_in=1.00; investment_cost=8200; recovered_principal_and_income=1460; net_assets=1.08",
+      "unit": "亿元/万元/万元/亿元",
+      "period": "截至2025年12月31日",
+      "scope": "示例产业基金整体",
+      "source_id": "S01",
+      "locator": "基金财务概览!B6:E6（实缴规模1.00亿元、投资成本8200万元、累计回收1460万元、净资产1.08亿元）",
+      "status": "confirmed",
+      "formula": "Direct transcription; unit-normalization cross-check: 1.00亿元=10000万元 and 1.08亿元=10800万元.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-003",
+      "project_id": "FUND-002",
+      "metric": "新设基金设立、出资及投资状态快照",
+      "assertions": [
+        "公司新设示例科创基金",
+        "示例科创基金重点关注先进制造、数字基础设施和绿色低碳领域",
+        "认缴出资500万元",
+        "已实缴250万元",
+        "基金已完成工商设立、合伙协议签署及首期出资，投资期、管理费、决策机制和关联交易管理按协议执行",
+        "报告期内完成项目储备和初步论证",
+        "尚未开展对外投资",
+        "加强项目来源、投资节奏和资金使用计划管理",
+        "在提交投资决策前完整披露关联关系、估值依据和退出安排",
+        "示例科创基金|500|250|5%|已设立",
+        "审议年度报告、估值和分配事项",
+        "通过合伙人会议履行出资人职责"
+      ],
+      "value": "commitment=500; paid_in=250; interest=5%; external_investments=0",
+      "unit": "万元/万元/%/个",
+      "period": "2025年度（截至2025年12月31日）",
+      "scope": "本公司持有的示例科创基金",
+      "source_id": "S01",
+      "locator": "新设基金!B3:F3（设立状态、认缴500万元、实缴250万元、持有份额5%、对外投资项目数0）",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source snapshot.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-004",
+      "project_id": "EQUITY-001",
+      "metric": "持股及年度财务快照",
+      "assertions": [
+        "投资800万元",
+        "持股8%",
+        "截至2025年12月31日",
+        "资产总额4200万元",
+        "净资产1850万元",
+        "2025年度实现营业收入2350万元",
+        "净利润135万元",
+        "分别较上年增长11.90%和12.50%",
+        "营业收入"
+      ],
+      "value": "investment=800; interest=8%; cutoff_date=2025-12-31; total_assets=4200; net_assets=1850; revenue_2025=2350; net_profit_2025=135; revenue_yoy=11.90%; net_profit_yoy=12.50%",
+      "unit": "万元/%/日期/万元/万元/万元/万元/%/%",
+      "period": "截至2025年12月31日及2025年度",
+      "scope": "本公司投资口径及示例科技有限公司合并口径",
+      "source_id": "S02",
+      "locator": "投资情况表第1行（投资额、持股比例）；年度财务报表第2—3页（资产、净资产、收入、净利润）；同比分析表第1—2行（11.90%、12.50%）",
+      "status": "confirmed",
+      "formula": "Direct source values; percentage cross-checks: (2350-2100)/2100=11.90% and (135-120)/120=12.50% after rounding to two decimals.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-005",
+      "project_id": "EQUITY-001",
+      "metric": "新增合同、研发投入及应收账款快照",
+      "assertions": [
+        "新增合同金额980万元",
+        "研发投入占营业收入的9.20%",
+        "期末应收账款为920万元",
+        "较期初增加240万元",
+        "经营性现金流承压",
+        "企业围绕核心软件和设备产品持续拓展客户",
+        "示例科技有限公司围绕核心产品持续拓展客户",
+        "回款进度对企业现金流影响较大",
+        "主要风险为应收账款回收周期延长",
+        "公司已要求企业按客户、合同和账龄建立回款台账",
+        "受部分客户结算周期延长影响，期末应收账款余额上升",
+        "公司已推动企业建立客户回款台账并按月报告"
+      ],
+      "value": "new_contract_value=980; R&D_as_revenue=9.20%; ending_receivables=920; receivables_increase=240",
+      "unit": "万元/%/万元/万元",
+      "period": "2025年度及截至2025年12月31日",
+      "scope": "示例科技有限公司合并口径",
+      "source_id": "S02",
+      "locator": "经营台账第5页（新增合同金额980万元）；研发明细第7页（研发投入占比9.20%）；财务报表附注第12页（期末应收920万元、较期初增加240万元）",
+      "status": "confirmed",
+      "formula": "Direct source values; receivables cross-check: 920-680=240万元.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-006",
+      "project_id": "EQUITY-001",
+      "metric": "年度公司治理会议数量",
+      "assertions": [
+        "完成2次股东会和3次董事会",
+        "未发生影响公司股东权益的异常表决",
+        "依法参加2次股东会并跟踪3次董事会",
+        "公司持续跟踪预算执行、融资安排和投资协议约定事项"
+      ],
+      "value": "shareholders_meetings=2; board_meetings=3",
+      "unit": "次/次",
+      "period": "2025年度",
+      "scope": "示例科技有限公司",
+      "source_id": "S02",
+      "locator": "治理会议清单第1—5行（股东会2次、董事会3次）",
+      "status": "confirmed",
+      "formula": "Count of meeting records by meeting type in the synthetic governance register.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-007",
+      "project_id": "EQUITY-002",
+      "metric": "持股、年度财务及预算完成快照",
+      "assertions": [
+        "投资600万元",
+        "持股12%",
+        "资产总额1680万元",
+        "净资产910万元",
+        "2025年度实现营业收入1280万元",
+        "净利润64万元",
+        "完成年度收入预算的91.43%",
+        "按月跟踪预算偏差及现金余额",
+        "根据投资协议约定，企业下一年度需达到相应经营指标",
+        "如触及协议约定的保护性条款，将及时履行内部决策程序"
+      ],
+      "value": "investment=600; interest=12%; cutoff_date=2025-12-31; total_assets=1680; net_assets=910; revenue_2025=1280; net_profit_2025=64; annual_revenue_budget=1400; budget_completion=91.43%",
+      "unit": "万元/%/日期/万元/万元/万元/万元/万元/%",
+      "period": "截至2025年12月31日及2025年度",
+      "scope": "本公司投资口径及示例智能装备有限公司口径",
+      "source_id": "S03",
+      "locator": "投资概况!B2:C2（投资额、持股比例）；财务快照!B5:E5（资产、净资产、收入、净利润）；预算执行!B3:D3（收入预算1400万元、实际1280万元、完成率91.43%）",
+      "status": "confirmed",
+      "formula": "Direct source values; budget completion cross-check: 1280/1400×100%=91.43% after rounding to two decimals.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-008",
+      "project_id": "EQUITY-002",
+      "metric": "在执行合同及知识产权快照",
+      "assertions": [
+        "共有9个在执行合同",
+        "合同总额1560万元",
+        "6个项目已完成交付或验收",
+        "3个项目处于安装调试阶段",
+        "授权专利14项",
+        "新增3项",
+        "细化订单转化、项目验收和回款计划",
+        "受个别项目验收进度影响，部分收入未在报告期内确认",
+        "与主营产品相关的知识产权权属清晰",
+        "未发现需要在主报告中单列披露的其他重大事项"
+      ],
+      "value": "active_contracts=9; contract_total=1560; delivered_or_accepted=6; installation_or_commissioning=3; authorized_patents=14; new_patents=3",
+      "unit": "个/万元/个/个/项/项",
+      "period": "2025年度（截至2025年12月31日）",
+      "scope": "示例智能装备有限公司",
+      "source_id": "S03",
+      "locator": "合同台账!A2:H10（在执行9个、合计1560万元，其中交付或验收6个、安装调试3个）；知识产权!B2:D2（授权14项、本期新增3项）",
+      "status": "confirmed",
+      "formula": "Status-count cross-check: 6+3=9 active contracts; contract amount and patent counts are direct source values.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-009",
+      "project_id": "SPV-001",
+      "metric": "SPV出资、份额及新增投资状态",
+      "assertions": [
+        "实缴出资300万元",
+        "示例协同发展合伙企业（有限合伙）处于存续期",
+        "持有30%的合伙份额",
+        "未新增对外投资",
+        "报告期内未新增投资",
+        "主要债权逐项建立投后台账",
+        "合伙企业按约定开展存量资产管理、债权回收和收益分配准备工作",
+        "合伙企业按合伙协议召开合伙人会议并报告存量资产管理事项"
+      ],
+      "value": "paid_in=300; interest=30%; new_external_investments=0",
+      "unit": "万元/%/个",
+      "period": "2025年度（截至2025年12月31日）",
+      "scope": "本公司持有的示例协同发展合伙企业（有限合伙）",
+      "source_id": "S04",
+      "locator": "合伙人权益!B2:D2（实缴300万元、份额30%）；投资变动!B2（新增投资0个）",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source snapshot.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-010",
+      "project_id": "SPV-001",
+      "metric": "SPV账面资产及累计回收快照",
+      "assertions": [
+        "账面资产余额1120万元",
+        "累计回收款项180万元",
+        "尚未达到协议约定的分配条件",
+        "处置周期延长及回收金额不确定风险",
+        "累计回收180万元",
+        "期末账面资产1120万元",
+        "公司通过合伙人会议持续跟踪资产处置、诉讼执行和合作方履约情况，并要求执行事务合伙人按季度提供回收明细和费用清单",
+        "结合债务人偿付能力和司法进展更新预计回收时间",
+        "示例协同发展合伙企业围绕存量债权持续推进协商、诉讼和执行工作",
+        "部分债权受抵质押物处置程序和债务人偿付能力影响，实际回收时间仍存在不确定性",
+        "公司持续跟踪资产处置、收益分配和合作方履约情况"
+      ],
+      "value": "book_assets=1120; cumulative_recovery=180; cutoff_date=2025-12-31",
+      "unit": "万元/万元/日期",
+      "period": "截至2025年12月31日",
+      "scope": "示例协同发展合伙企业（有限合伙）",
+      "source_id": "S04",
+      "locator": "资产回收!B6:D6（账面资产1120万元、报告期累计回收180万元、截止日2025-12-31）",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source snapshot.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-011",
+      "project_id": "EQUITY-001",
+      "metric": "应收账款账龄及客户集中度快照",
+      "assertions": [
+        "账龄一年以内应收账款占比为78%",
+        "前五名客户应收账款占比为62%"
+      ],
+      "value": "cutoff_date=2025-12-31; receivables_within_one_year=78%; top_five_customer_receivables=62%",
+      "unit": "日期/%/%",
+      "period": "截至2025年12月31日",
+      "scope": "示例科技有限公司应收账款余额",
+      "source_id": "S02",
+      "locator": "应收账款账龄及客户集中度表第1行、合计行（1年以内占比78%、前五名客户占比62%）",
+      "status": "confirmed",
+      "formula": "Ratios are confirmed synthetic source values; recompute as relevant balance divided by total ending receivables before real use.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-012",
+      "project_id": "FUND-001",
+      "metric": "年度退出项目及回收收益快照",
+      "assertions": [
+        "完成1个项目退出",
+        "示例产业基金已进入投后管理阶段",
+        "回收本金600万元",
+        "投资收益160万元",
+        "其余项目拟通过股权转让、并购整合或协议约定方式择机退出"
+      ],
+      "value": "exited_projects=1; recovered_principal=600; investment_income=160",
+      "unit": "个/万元/万元",
+      "period": "2025年度",
+      "scope": "示例产业基金",
+      "source_id": "S01",
+      "locator": "退出台账!B2:D2（退出项目1个、回收本金600万元、投资收益160万元）",
+      "status": "confirmed",
+      "formula": "Direct transcription; cross-check against FACT-001 exited_projects=1 and FACT-002 cumulative recovery snapshot.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-013",
+      "project_id": "EQUITY-001",
+      "metric": "两年度经营财务指标对比",
+      "assertions": [
+        "营业收入2350万元",
+        "营业收入保持增长",
+        "净利润135万元",
+        "应收账款为920万元",
+        "2024年度|2025年度",
+        "营业收入|2100|2350|核心客户订单增加",
+        "净利润|120|135|毛利改善",
+        "应收账款|680|920|结算周期延长"
+      ],
+      "value": "revenue_2024=2100; revenue_2025=2350; net_profit_2024=120; net_profit_2025=135; receivables_2024=680; receivables_2025=920",
+      "unit": "万元/万元/万元/万元/万元/万元",
+      "period": "2024年度与2025年度（应收账款为各年末）",
+      "scope": "示例科技有限公司合并口径",
+      "source_id": "S02",
+      "locator": "年度财务指标对比表第1—3行（营业收入2100/2350、净利润120/135、应收账款680/920）",
+      "status": "confirmed",
+      "formula": "Direct source values; cross-checks: 2350-2100=250, 135-120=15, and 920-680=240万元.",
+      "destination": "both",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-014",
+      "project_id": "EQUITY-001",
+      "metric": "应收回款措施、坏账披露及回购条款状态",
+      "assertions": [
+        "公司已督促企业压实回款责任，按客户形成台账并明确责任人和预计回款日期",
+        "将回款完成情况纳入月度投后跟踪",
+        "对逾期项目，企业正在通过对账确认、分期回收和合同约定措施推进处置",
+        "未形成需要单项重大披露的坏账损失",
+        "截至报告期末，尚未发生触发投资协议约定回购条款的事项",
+        "必要时依法依约采取股东权利保护措施",
+        "公司将持续关注经营现金流、主要客户集中度、应收账款减值及融资安排"
+      ],
+      "value": "receivables_action=monthly customer ledger and staged collection; material_bad_debt_disclosure=none; repurchase_trigger=none",
+      "unit": "文本/状态",
+      "period": "截至2025年12月31日",
+      "scope": "示例科技有限公司投后管理事项",
+      "source_id": "S02",
+      "locator": "投后事项台账第2—4项（回款措施、重大坏账披露、回购条款触发状态）",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic post-investment action register.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-015",
+      "project_id": "FUND-001",
+      "metric": "退出路径、估值及交易对手风险跟踪措施",
+      "assertions": [
+        "管理人正结合被投企业经营情况研究分阶段退出方案",
+        "逐项目明确估值依据、预计退出路径、时间安排和最低回收目标",
+        "对退出周期延长、估值下调及交易对手履约风险形成专项说明",
+        "在合伙人会议上持续跟踪"
+      ],
+      "value": "exit_plan=project-by-project path and timetable; valuation_risk=special explanation required; counterparty_risk=partner-meeting follow-up",
+      "unit": "文本/状态",
+      "period": "2025年度及下一年度安排",
+      "scope": "示例产业基金退出管理",
+      "source_id": "S01",
+      "locator": "退出工作计划第3—5项（退出路径、估值依据、交易对手风险）",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic fund exit plan.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-016",
+      "project_id": "portfolio",
+      "metric": "下一年度投后管理总体安排",
+      "assertions": [
+        "持续做好项目分类管理、风险监测和退出推动工作",
+        "及时履行重大事项报告程序，切实维护国有出资权益",
+        "公司将围绕投资协议约定和年度投后管理计划"
+      ],
+      "value": "plan=project classification, risk monitoring, exit promotion and material-event reporting",
+      "unit": "文本",
+      "period": "下一年度",
+      "scope": "全部股权投资项目",
+      "source_id": "S05",
+      "locator": "年度投后管理计划“下一步工作安排”第1段",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic approved annual post-investment plan.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    }
+  ],
+  "main_blocks": [
+    {
+      "type": "h1",
+      "text": "一、年度股权投资完成总体情况"
+    },
+    {
+      "type": "h2",
+      "text": "（一）存续基金"
+    },
+    {
+      "type": "p",
+      "text": "截至2025年12月31日，公司存续基金1支，为示例产业基金。公司认缴及实缴出资均为1000万元，持有10%的合伙份额。基金已完成对5个项目的投资，报告期内新增投资1个、退出项目1个，存续投资项目经营情况总体稳定。",
+      "fact_ids": ["FACT-001"]
+    },
+    {
+      "type": "p",
+      "text": "截至报告期末，示例产业基金实缴规模为1亿元，投资成本合计8200万元，已回收本金及收益1460万元，期末基金净资产为1.08亿元。上述数据为本通用模板的合成示例，正式报告应以基金管理人出具的最新报告和经确认的财务数据为准。",
+      "fact_ids": ["FACT-002"]
+    },
+    {
+      "type": "p",
+      "text": "公司按季度跟踪基金投资进度、估值变化及退出安排，重点核查资金使用、重大事项决策和风险处置情况，并通过合伙人会议审议年度报告、估值和分配事项。基金详细情况见附件1。",
+      "fact_ids": ["FACT-001", "FACT-002", "FACT-003"]
+    },
+    {
+      "type": "h2",
+      "text": "（二）新设基金"
+    },
+    {
+      "type": "p",
+      "text": "报告期内，公司新设示例科创基金，认缴出资500万元，截至期末已实缴250万元。基金已完成工商设立、合伙协议签署及首期出资，投资期、管理费、决策机制和关联交易管理按协议执行。",
+      "fact_ids": ["FACT-003"]
+    },
+    {
+      "type": "p",
+      "text": "示例科创基金重点关注先进制造、数字基础设施和绿色低碳领域，报告期内完成项目储备和初步论证，尚未开展对外投资。公司已要求管理人加强项目来源、投资节奏和资金使用计划管理，在提交投资决策前完整披露关联关系、估值依据和退出安排。",
+      "fact_ids": ["FACT-003"]
+    },
+    {
+      "type": "h2",
+      "text": "（三）参股公司"
+    },
+    {
+      "type": "h3",
+      "text": "1.示例科技有限公司"
+    },
+    {
+      "type": "p",
+      "text": "公司对示例科技有限公司投资800万元，持股8%。截至2025年12月31日，企业资产总额4200万元、净资产1850万元；2025年度实现营业收入2350万元、净利润135万元，营业收入和净利润分别较上年增长11.90%和12.50%。",
+      "fact_ids": ["FACT-004", "FACT-013"]
+    },
+    {
+      "type": "p",
+      "text": "企业围绕核心软件和设备产品持续拓展客户，报告期内新增合同金额980万元，研发投入占营业收入的9.20%。受部分客户结算周期延长影响，期末应收账款为920万元，较期初增加240万元，经营性现金流承压。公司已要求企业按客户、合同和账龄建立回款台账。",
+      "fact_ids": ["FACT-005", "FACT-013"]
+    },
+    {
+      "type": "p",
+      "text": "报告期内，企业完成2次股东会和3次董事会审议事项，未发生影响公司股东权益的异常表决。公司持续跟踪预算执行、融资安排和投资协议约定事项，具体治理、经营、财务及风险情况见附件2。",
+      "fact_ids": ["FACT-006"]
+    },
+    {
+      "type": "h3",
+      "text": "2.示例智能装备有限公司"
+    },
+    {
+      "type": "p",
+      "text": "公司对示例智能装备有限公司投资600万元，持股12%。截至报告期末，企业资产总额1680万元、净资产910万元；2025年度实现营业收入1280万元、净利润64万元，完成年度收入预算的91.43%。",
+      "fact_ids": ["FACT-007"]
+    },
+    {
+      "type": "p",
+      "text": "企业报告期内共有9个在执行合同，合同总额1560万元，其中6个项目已完成交付或验收，3个项目处于安装调试阶段。受个别项目验收进度影响，部分收入未在报告期内确认。企业现有授权专利14项，报告期内新增3项，与主营产品相关的知识产权权属清晰。",
+      "fact_ids": ["FACT-008"]
+    },
+    {
+      "type": "p",
+      "text": "根据投资协议约定，企业下一年度需达到相应经营指标。公司已督促企业细化订单转化、项目验收和回款计划，并按月跟踪预算偏差及现金余额；如触及协议约定的保护性条款，将及时履行内部决策程序。具体情况见附件3。",
+      "fact_ids": ["FACT-007", "FACT-008"]
+    },
+    {
+      "type": "h2",
+      "text": "（四）SPV项目"
+    },
+    {
+      "type": "p",
+      "text": "示例协同发展合伙企业（有限合伙）处于存续期，公司实缴出资300万元，持有30%的合伙份额。报告期内未新增对外投资，合伙企业按约定开展存量资产管理、债权回收和收益分配准备工作。",
+      "fact_ids": ["FACT-009"]
+    },
+    {
+      "type": "p",
+      "text": "截至报告期末，合伙企业账面资产余额1120万元，报告期内累计回收款项180万元，尚未达到协议约定的分配条件。公司通过合伙人会议持续跟踪资产处置、诉讼执行和合作方履约情况，并要求执行事务合伙人按季度提供回收明细和费用清单。",
+      "fact_ids": ["FACT-010"]
+    },
+    {
+      "type": "p",
+      "text": "公司已对主要债权逐项建立投后台账，结合债务人偿付能力和司法进展更新预计回收时间，重点关注处置周期延长及回收金额不确定风险。SPV项目治理、资产及回收情况见附件4。",
+      "fact_ids": ["FACT-009", "FACT-010"]
+    },
+    {
+      "type": "h1",
+      "text": "二、重大投资项目进展情况"
+    },
+    {
+      "type": "h2",
+      "text": "（一）示例科技有限公司经营及回款情况"
+    },
+    {
+      "type": "p",
+      "text": "报告期内，示例科技有限公司围绕核心产品持续拓展客户，营业收入保持增长。受部分客户结算周期延长影响，期末应收账款余额上升。其中，账龄一年以内应收账款占比为78%，前五名客户应收账款占比为62%，回款进度对企业现金流影响较大。",
+      "fact_ids": ["FACT-005", "FACT-011", "FACT-013"]
+    },
+    {
+      "type": "p",
+      "text": "公司已督促企业压实回款责任，按客户形成台账并明确责任人和预计回款日期，将回款完成情况纳入月度投后跟踪。对逾期项目，企业正在通过对账确认、分期回收和合同约定措施推进处置；截至报告期末，未形成需要单项重大披露的坏账损失。",
+      "fact_ids": ["FACT-014"]
+    },
+    {
+      "type": "p",
+      "text": "截至报告期末，尚未发生触发投资协议约定回购条款的事项。公司将持续关注经营现金流、主要客户集中度、应收账款减值及融资安排，必要时依法依约采取股东权利保护措施。",
+      "fact_ids": ["FACT-014"]
+    },
+    {
+      "type": "h2",
+      "text": "（二）示例产业基金退出安排"
+    },
+    {
+      "type": "p",
+      "text": "示例产业基金已进入投后管理阶段，管理人正结合被投企业经营情况研究分阶段退出方案。报告期内完成1个项目退出，回收本金600万元、投资收益160万元；其余项目拟通过股权转让、并购整合或协议约定方式择机退出。",
+      "fact_ids": ["FACT-012", "FACT-015"]
+    },
+    {
+      "type": "p",
+      "text": "公司已要求管理人逐项目明确估值依据、预计退出路径、时间安排和最低回收目标，对退出周期延长、估值下调及交易对手履约风险形成专项说明，并在合伙人会议上持续跟踪。",
+      "fact_ids": ["FACT-015"]
+    },
+    {
+      "type": "h2",
+      "text": "（三）SPV项目资产回收情况"
+    },
+    {
+      "type": "p",
+      "text": "报告期内，示例协同发展合伙企业围绕存量债权持续推进协商、诉讼和执行工作，累计回收180万元。部分债权受抵质押物处置程序和债务人偿付能力影响，实际回收时间仍存在不确定性。",
+      "fact_ids": ["FACT-010"]
+    },
+    {
+      "type": "p",
+      "text": "下一步，公司将围绕投资协议约定和年度投后管理计划，持续做好项目分类管理、风险监测和退出推动工作，及时履行重大事项报告程序，切实维护国有出资权益。",
+      "fact_ids": ["FACT-016"]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "A1",
+      "number": 1,
+      "title": "股权投资基金投后管理报告",
+      "blocks": [
+        {
+          "type": "h1",
+          "text": "一、基金总体情况"
+        },
+        {
+          "type": "tnote",
+          "text": "单位：万元",
+          "align": "right",
+          "evidence_exempt_reason": "unit-label"
+        },
+        {
+          "type": "table",
+          "header": ["基金名称", "认缴出资", "实缴出资", "持有份额", "状态"],
+          "rows": [
+            ["示例产业基金", "1000", "1000", "10%", "存续"],
+            ["示例科创基金", "500", "250", "5%", "已设立"]
+          ],
+          "row_fact_ids": [
+            ["FACT-001"],
+            ["FACT-003"]
+          ],
+          "widths": [4, 2, 2, 2, 2],
+          "fact_ids": ["FACT-001", "FACT-003"]
+        },
+        {
+          "type": "h1",
+          "text": "二、投后管理情况"
+        },
+        {
+          "type": "p",
+          "text": "公司按协议获取基金定期报告，跟踪投资、估值、退出和风险事项，并通过合伙人会议履行出资人职责。",
+          "fact_ids": ["FACT-001", "FACT-002", "FACT-003"]
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "number": 2,
+      "title": "示例科技有限公司投后管理报告",
+      "blocks": [
+        {
+          "type": "h1",
+          "text": "一、公司治理情况"
+        },
+        {
+          "type": "p",
+          "text": "报告期内，公司依法参加2次股东会并跟踪3次董事会决议执行情况。",
+          "fact_ids": ["FACT-006"]
+        },
+        {
+          "type": "h1",
+          "text": "二、经营及财务情况"
+        },
+        {
+          "type": "tnote",
+          "text": "单位：万元",
+          "align": "right",
+          "evidence_exempt_reason": "unit-label"
+        },
+        {
+          "type": "table",
+          "header": ["指标", "2024年度", "2025年度", "变动说明"],
+          "rows": [
+            ["营业收入", "2100", "2350", "核心客户订单增加"],
+            ["净利润", "120", "135", "毛利改善"],
+            ["应收账款", "680", "920", "结算周期延长"]
+          ],
+          "row_fact_ids": [
+            ["FACT-013"],
+            ["FACT-013"],
+            ["FACT-013"]
+          ],
+          "widths": [2, 2, 2, 4],
+          "fact_ids": ["FACT-004", "FACT-013"]
+        },
+        {
+          "type": "h1",
+          "text": "三、主要风险及措施"
+        },
+        {
+          "type": "p",
+          "text": "主要风险为应收账款回收周期延长，期末应收账款为920万元。公司已推动企业建立客户回款台账并按月报告。",
+          "fact_ids": ["FACT-005"]
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "number": 3,
+      "title": "示例智能装备有限公司投后管理报告",
+      "blocks": [
+        {
+          "type": "h1",
+          "text": "一、项目总体情况"
+        },
+        {
+          "type": "p",
+          "text": "公司对示例智能装备有限公司投资600万元，持股12%。本附件使用合成示例数据展示可复用结构，正式报告应依据项目资料替换。",
+          "fact_ids": ["FACT-007"]
+        },
+        {
+          "type": "h1",
+          "text": "二、投后管理结论"
+        },
+        {
+          "type": "p",
+          "text": "报告期内共有9个在执行合同，现有授权专利14项，未发现需要在主报告中单列披露的其他重大事项。",
+          "fact_ids": ["FACT-008"]
+        }
+      ]
+    },
+    {
+      "id": "A4",
+      "number": 4,
+      "title": "SPV项目投后管理报告",
+      "blocks": [
+        {
+          "type": "h1",
+          "text": "一、合伙企业治理情况"
+        },
+        {
+          "type": "p",
+          "text": "公司实缴出资300万元、持有30%的合伙份额，合伙企业按合伙协议召开合伙人会议并报告存量资产管理事项。",
+          "fact_ids": ["FACT-009"]
+        },
+        {
+          "type": "h1",
+          "text": "二、收益回收及风险情况"
+        },
+        {
+          "type": "p",
+          "text": "报告期内未新增投资；期末账面资产1120万元，累计回收180万元。公司持续跟踪资产处置、收益分配和合作方履约情况。",
+          "fact_ids": ["FACT-009", "FACT-010"]
+        }
+      ]
+    }
+  ]
+}
