@@ -1,4 +1,4 @@
 interface:
   display_name: "国企股权投资投后报告"
   short_description: "基于项目资料更新国企股权投资投后报告并生成正式DOCX"
-  default_prompt: "Use $soe-post-investment-report to update a Chinese SOE equity-investment post-investment report from the supplied project files. Begin with its mandatory four-question change-control gate, preserve the fixed main-body framework and source-derived layout, reconcile every material fact, and keep the main body within the page limit."
+  default_prompt: "使用 $soe-post-investment-report，根据所提供的项目资料更新中文国企股权投资项目投后情况报告。首先严格提出四项变更确认问题；随后保持正文固定框架和来源派生版式，逐项核对重要事实，以正式国企书面上行文口吻成文，并将正文控制在规定页数内。"

@@ -19,6 +19,7 @@ from zipfile import ZipFile
 
 try:
     from docx import Document
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.oxml.table import CT_Tbl
     from docx.oxml.ns import qn
     from docx.oxml.text.paragraph import CT_P
@@ -111,6 +112,7 @@ TEMPLATE_TYPOGRAPHY = {
     "tnote": ("仿宋_GB2312", 10.5, False, 18.0),
     "footer": ("宋体", 14.0, False, None),
 }
+DEFAULT_WESTERN_FONT = "Times New Roman"
 
 
 @dataclass
@@ -1534,21 +1536,27 @@ def _format_property_candidates(doc: Document, paragraph: Paragraph, run: Run) -
 
 def _effective_run_format(
     doc: Document, paragraph: Paragraph, run: Run
-) -> tuple[str, float | None, bool, str | None]:
-    font = ""
+) -> tuple[str, str, float | None, bool, str | None]:
+    east_asia_font = ""
+    western_font = ""
     size: float | None = None
     bold: bool | None = None
     color: str | None = None
     for properties in _format_property_candidates(doc, paragraph, run):
-        if not font:
+        if not east_asia_font or not western_font:
             fonts = properties.find(qn("w:rFonts"))
             if fonts is not None:
-                font = str(
-                    fonts.get(qn("w:eastAsia"))
-                    or fonts.get(qn("w:ascii"))
-                    or fonts.get(qn("w:hAnsi"))
-                    or ""
-                )
+                if not east_asia_font:
+                    east_asia_font = str(
+                        fonts.get(qn("w:eastAsia"))
+                        or ""
+                    )
+                if not western_font:
+                    western_font = str(
+                        fonts.get(qn("w:ascii"))
+                        or fonts.get(qn("w:hAnsi"))
+                        or ""
+                    )
         if size is None:
             size_element = properties.find(qn("w:sz"))
             if size_element is not None:
@@ -1569,7 +1577,7 @@ def _effective_run_format(
             color_element = properties.find(qn("w:color"))
             if color_element is not None:
                 color = str(color_element.get(qn("w:val")) or "").upper() or None
-    return font, size, bool(bold), color
+    return east_asia_font, western_font, size, bool(bold), color
 
 
 def _effective_line_spacing_pt(doc: Document, paragraph: Paragraph) -> tuple[float | None, str]:
@@ -1596,6 +1604,45 @@ def _effective_line_spacing_pt(doc: Document, paragraph: Paragraph) -> tuple[flo
     return None, ""
 
 
+def _effective_first_line_indent(
+    doc: Document, paragraph: Paragraph
+) -> tuple[float | None, str]:
+    """Return the effective indent value and its OOXML unit contract."""
+
+    candidates: list[Any] = []
+    if paragraph._p.pPr is not None:
+        candidates.append(paragraph._p.pPr)
+    paragraph_style = getattr(paragraph, "style", None)
+    if paragraph_style is not None and getattr(paragraph_style, "element", None) is not None:
+        if paragraph_style.element.pPr is not None:
+            candidates.append(paragraph_style.element.pPr)
+    normal = doc.styles["Normal"]
+    if normal.element.pPr is not None:
+        candidates.append(normal.element.pPr)
+
+    for properties in candidates:
+        indent = properties.find(qn("w:ind"))
+        if indent is None:
+            continue
+        chars = indent.get(qn("w:firstLineChars"))
+        points = indent.get(qn("w:firstLine"))
+        hanging = indent.get(qn("w:hanging")) or indent.get(qn("w:hangingChars"))
+        if chars is not None:
+            try:
+                value = int(chars) / 100
+            except (TypeError, ValueError):
+                return None, "invalid-character"
+            return value, "mixed" if points is not None or hanging is not None else "character"
+        if points is not None:
+            try:
+                return int(points) / 20, "point"
+            except (TypeError, ValueError):
+                return None, "invalid-point"
+        if hanging is not None:
+            return None, "hanging"
+    return None, "missing"
+
+
 def _validate_paragraph_typography(
     doc: Document,
     paragraph: Paragraph,
@@ -1607,6 +1654,8 @@ def _validate_paragraph_typography(
     size_override: float | None = None,
     bold_override: bool | None = None,
     line_override: float | None = None,
+    western_override: str = DEFAULT_WESTERN_FONT,
+    first_line_chars_override: float | None = None,
 ) -> None:
     expected_font, expected_size, expected_bold, expected_line = TEMPLATE_TYPOGRAPHY[kind]
     if font_override is not None:
@@ -1622,10 +1671,17 @@ def _validate_paragraph_typography(
         findings.error(f"DOCX typography check found no visible run for {label}")
         return
     for run in runs:
-        font, size, bold, _color = _effective_run_format(doc, paragraph, run)
-        if font != expected_font:
+        east_asia_font, western_font, size, bold, _color = _effective_run_format(
+            doc, paragraph, run
+        )
+        if east_asia_font != expected_font:
             findings.error(
-                f"DOCX {label} uses East Asian font {font or '<missing>'}; expected {expected_font}"
+                f"DOCX {label} uses East Asian font {east_asia_font or '<missing>'}; expected {expected_font}"
+            )
+        if western_font != western_override:
+            findings.error(
+                f"DOCX {label} uses Western font {western_font or '<missing>'}; "
+                f"expected {western_override}"
             )
         if size is None or abs(size - expected_size) > 0.1:
             actual_size = "<missing>" if size is None else f"{size:g} pt"
@@ -1640,6 +1696,18 @@ def _validate_paragraph_typography(
             actual_line = "<missing>" if line_pt is None else f"{line_pt:g} pt/{line_rule or '<missing>'}"
             findings.error(
                 f"DOCX {label} line spacing is {actual_line}; expected exactly {expected_line:g} pt"
+            )
+    if first_line_chars_override is not None:
+        indent_value, indent_unit = _effective_first_line_indent(doc, paragraph)
+        if (
+            indent_unit != "character"
+            or indent_value is None
+            or abs(indent_value - first_line_chars_override) > 0.01
+        ):
+            actual_indent = "<missing>" if indent_value is None else f"{indent_value:g}"
+            findings.error(
+                f"DOCX {label} first-line indent is {actual_indent}/{indent_unit}; "
+                f"expected {first_line_chars_override:g} characters via w:firstLineChars"
             )
 
 
@@ -1678,7 +1746,9 @@ def validate_docx_typography(
             fit_text = properties.find(qn("w:fitText")) if properties is not None else None
             width_value = width.get(qn("w:val")) if width is not None else None
             fit_value = fit_text.get(qn("w:val")) if fit_text is not None else None
-            _font, _size, _bold, color = _effective_run_format(doc, redhead, run)
+            _east_asia, _western, _size, _bold, color = _effective_run_format(
+                doc, redhead, run
+            )
             if color != "FF0000":
                 findings.error(f"DOCX red-head issuer color is {color or '<missing>'}; expected FF0000")
             if width_value != "37" or fit_value != "8195":
@@ -1697,7 +1767,11 @@ def validate_docx_typography(
 
     envelope_paragraphs: list[tuple[str, str, dict[str, Any]]] = [
         ("recipient", str(metadata.get("recipient") or "").strip(), {}),
-        ("opening basis", str(metadata.get("legal_basis") or "").strip(), {}),
+        (
+            "opening basis",
+            str(metadata.get("legal_basis") or "").strip(),
+            {"first_line_chars_override": 2.0},
+        ),
         ("issuer signature", str(metadata.get("issuer") or company).strip(), {}),
         ("issue date", str(metadata.get("issue_date") or "").strip(), {}),
     ]
@@ -1707,7 +1781,7 @@ def validate_docx_typography(
             (
                 "attachment list item 1",
                 f"附件：1.{attachments[0].get('title', '')}",
-                {},
+                {"first_line_chars_override": 2.0},
             )
         )
         envelope_paragraphs.extend(
@@ -1815,6 +1889,8 @@ def validate_docx_typography(
                 label=f"spec block {block_number}",
                 kind="p",
                 findings=findings,
+                bold_override=True,
+                first_line_chars_override=2.0,
             )
             continue
         _validate_paragraph_typography(
@@ -1823,6 +1899,7 @@ def validate_docx_typography(
             label=f"spec block {block_number}",
             kind=expected_kind,
             findings=findings,
+            first_line_chars_override=(2.0 if kind in {"h1", "h2", "h3", "h4", "p"} else None),
         )
 
     table_blocks = [
@@ -1872,27 +1949,75 @@ def validate_docx_typography(
                         bold_override=row_number == 0,
                     )
 
-    page_field_runs: list[tuple[Paragraph, Run]] = []
-    for section in doc.sections:
-        for footer in (section.footer, section.even_page_footer):
+    footer_contracts = (
+        ("odd", "right", WD_ALIGN_PARAGRAPH.RIGHT, lambda section: section.footer),
+        ("even", "left", WD_ALIGN_PARAGRAPH.LEFT, lambda section: section.even_page_footer),
+    )
+    page_field_count = 0
+    for section_number, section in enumerate(doc.sections, start=1):
+        for footer_name, edge_name, expected_alignment, resolve_footer in footer_contracts:
+            footer = resolve_footer(section)
+            page_paragraphs: list[Paragraph] = []
             for paragraph in footer.paragraphs:
+                paragraph_has_page = False
                 for run_element in paragraph._p.findall(qn("w:r")):
                     instruction = "".join(
-                        str(item.text or "") for item in run_element.findall(qn("w:instrText"))
+                        str(item.text or "")
+                        for item in run_element.findall(qn("w:instrText"))
+                    )
+                    visible = "".join(
+                        str(item.text or "") for item in run_element.findall(qn("w:t"))
                     )
                     if re.search(r"\bPAGE\b", instruction):
-                        page_field_runs.append((paragraph, Run(run_element, paragraph)))
-    if not page_field_runs:
-        findings.error("DOCX typography check found no PAGE field run in odd/even footers")
-    for paragraph, run in page_field_runs:
-        font, size, bold, _color = _effective_run_format(doc, paragraph, run)
-        expected_font, expected_size, expected_bold, _line = TEMPLATE_TYPOGRAPHY["footer"]
-        if font != expected_font or size is None or abs(size - expected_size) > 0.1 or bold != expected_bold:
-            findings.error(
-                f"DOCX page-number field typography is {font or '<missing>'}/"
-                f"{('<missing>' if size is None else f'{size:g} pt')}/bold={str(bold).lower()}; "
-                f"expected {expected_font}/{expected_size:g} pt/bold={str(expected_bold).lower()}"
+                        paragraph_has_page = True
+                        page_field_count += 1
+                    if not visible and not instruction:
+                        continue
+                    run = Run(run_element, paragraph)
+                    east_asia, western, size, bold, _color = _effective_run_format(
+                        doc, paragraph, run
+                    )
+                    expected_font, expected_size, expected_bold, _line = TEMPLATE_TYPOGRAPHY[
+                        "footer"
+                    ]
+                    if (
+                        east_asia != expected_font
+                        or western != expected_font
+                        or size is None
+                        or abs(size - expected_size) > 0.1
+                        or bold != expected_bold
+                    ):
+                        findings.error(
+                            f"DOCX section {section_number} {footer_name}-page footer run typography "
+                            f"is {east_asia or '<missing>'}/{western or '<missing>'}/"
+                            f"{('<missing>' if size is None else f'{size:g} pt')}/"
+                            f"bold={str(bold).lower()}; expected {expected_font}/{expected_font}/"
+                            f"{expected_size:g} pt/bold={str(expected_bold).lower()}"
+                        )
+                if paragraph_has_page:
+                    page_paragraphs.append(paragraph)
+            if len(page_paragraphs) != 1:
+                findings.error(
+                    f"DOCX section {section_number} {footer_name}-page footer must contain "
+                    f"exactly one PAGE field; found {len(page_paragraphs)}"
+                )
+                continue
+            page_paragraph = page_paragraphs[0]
+            if page_paragraph.alignment != expected_alignment:
+                findings.error(
+                    f"DOCX section {section_number} {footer_name}-page footer is not aligned "
+                    f"to the outside {edge_name} edge"
+                )
+            visible_text = "".join(
+                str(item.text or "") for item in page_paragraph._p.findall(".//" + qn("w:t"))
             )
+            if visible_text != "- 1 -":
+                findings.error(
+                    f"DOCX section {section_number} {footer_name}-page footer format is "
+                    f"{visible_text!r}; expected '- 1 -'"
+                )
+    if page_field_count == 0:
+        findings.error("DOCX typography check found no PAGE field run in odd/even footers")
 
 
 def validate_docx(
@@ -2080,6 +2205,29 @@ def validate_docx(
             findings.error(
                 "DOCX contains external relationships: " + "; ".join(external_relationships[:10])
             )
+
+        header_parts = sorted(
+            name
+            for name in names
+            if name.startswith("word/header") and name.endswith(".xml")
+        )
+        for header_name in header_parts:
+            try:
+                header_root = ET.fromstring(archive.read(header_name))
+            except ET.ParseError:
+                findings.error(f"DOCX header part could not be parsed: {header_name}")
+                continue
+            header_text = "".join(
+                str(node.text or "") for node in header_root.iter(qn("w:t"))
+            ).strip()
+            has_visual_content = any(
+                header_root.find(".//" + qn(tag)) is not None
+                for tag in ("w:drawing", "w:pict", "w:object", "w:fldChar")
+            )
+            if header_text or has_visual_content:
+                findings.error(
+                    f"DOCX header must contain no content: {header_name}"
+                )
 
         footer_xml = "".join(
             archive.read(name).decode("utf-8", errors="ignore")

@@ -1,87 +1,101 @@
-# Quality gates
+# 质量门禁
 
-All blocking gates must pass before delivery.
+正式交付前，所有阻断项必须通过。
 
-## A. Scope and evidence
+## A. 范围与证据
 
-- [ ] The user answered all four mandatory change-control questions.
-- [ ] Reporting year and cut-off date are explicit.
-- [ ] Every source is inventoried and mapped to a project or portfolio scope.
-- [ ] The canonical project registry reflects additions, removals, renames, exits, and category changes.
-- [ ] Every material number and conclusion has a fact-ledger locator.
-- [ ] Every fact has a non-empty list of atomic exact-match `assertions`.
-- [ ] Every substantive block that references a fact contains at least one assertion for that fact; numeric and status conclusions are covered by matching assertions.
-- [ ] Every non-structural sentence and comma-level factual clause overlaps at least one assertion from a fact referenced by its block, followed by human clause review for unmatched extra wording.
-- [ ] Numeric table rows use `row_fact_ids`, and each row consumes only facts whose assertions support that row.
-- [ ] Material conflicts are resolved or explicitly held for user decision.
-- [ ] Calculated facts retain formula, inputs, units, and rounding.
+- [ ] 用户已经直接回答四项强制变更确认。
+- [ ] 报告年度和数据截止日期明确。
+- [ ] 每份来源均已盘点并映射到项目或组合范围。
+- [ ] 唯一项目名册反映新增、移除、更名、退出和类别变化。
+- [ ] 每个重要数字和结论都有事实台账定位。
+- [ ] 每项事实均有非空的原子化精确匹配 `assertions` 列表。
+- [ ] 每个引用事实的实质性文本块至少命中该事实的一条断言，数值和状态结论均有对应断言。
+- [ ] 每个非结构性句子和逗号级事实分句至少命中其文本块所引用事实的一条断言，并已人工检查命中短语之外的附加措辞。
+- [ ] 数值表格每行均设置 `row_fact_ids`，且只消费断言能够支撑该行的事实。
+- [ ] 重大冲突已解决，或明确保留给用户决定。
+- [ ] 计算事实保留公式、输入、单位和舍入规则。
 
-## B. Main-body structure
+## B. 正文结构
 
-- [ ] The title year matches the reporting period.
-- [ ] The recipient and opening basis are present.
-- [ ] `一、年度股权投资完成总体情况` occurs exactly once.
-- [ ] `二、重大投资项目进展情况` occurs exactly once.
-- [ ] Category and project numbering is consecutive.
-- [ ] No exact or normalized heading is duplicated within the same scope.
-- [ ] No empty heading remains.
-- [ ] The attachment list matches the generated attachments exactly.
-- [ ] Issuer and date are present; contact details are included only when required.
+- [ ] 标题年度与报告期间一致。
+- [ ] 主送单位和开头依据齐全。
+- [ ] `一、年度股权投资完成总体情况` 只出现一次。
+- [ ] `二、重大投资项目进展情况` 只出现一次。
+- [ ] 类别和项目序号连续。
+- [ ] 同一范围内不存在完全相同或规范化后相同的标题。
+- [ ] 不存在空标题。
+- [ ] 附件目录与实际生成附件完全一致。
+- [ ] 发文单位和日期齐全；联系人只在确有需要时保留。
 
-## C. Cross-document reconciliation
+## C. 跨材料勾稽
 
-- [ ] Project count and official names agree across body, registry, and attachments.
-- [ ] Investment, paid-in, ownership, recovery, valuation, revenue, profit, net assets, budget, and dividends agree after unit and scope normalization.
-- [ ] Current-period and cumulative figures are not mixed.
-- [ ] Parent-only and consolidated figures are not mixed.
-- [ ] Blank values have not been converted to zero.
-- [ ] Narrative claims do not overstate the supporting table or source.
-- [ ] Risks, trigger events, and remediation status are current as of the cut-off date.
+- [ ] 项目数量和正式名称在正文、项目名册和附件间一致。
+- [ ] 投资、实缴、持股、回收、估值、营业收入、利润、净资产、预算和分红在单位与口径统一后相符。
+- [ ] 本期数与累计数没有混用。
+- [ ] 母公司口径与合并口径没有混用。
+- [ ] 空白值没有被转成零。
+- [ ] 文字结论没有超过表格或来源能够支撑的程度。
+- [ ] 风险、触发事项和整改状态更新至数据截止日期。
 
-## D. Language and compression
+## D. 上行文语言与篇幅
 
-- [ ] The report is formal, restrained, and suitable for upward reporting.
-- [ ] Conclusions precede detail.
-- [ ] Unsupported promotional language is removed.
-- [ ] Long histories, inventories, and full tables are in attachments.
-- [ ] The main body is normally 5–6 pages and never exceeds 10 pages.
-- [ ] Typography and margins were not reduced to meet the page budget.
+- [ ] 报告为正式、客观、克制的国企书面上行文。
+- [ ] 按“依据和目的—总体结论—项目变化及关键数据—风险与管理措施—下一步安排”组织。
+- [ ] 结论在前、事实随后。
+- [ ] 不使用无依据宣传语言，不回避风险。
+- [ ] 不向上级单位发出命令，不在报告中夹带请示或审批请求。
+- [ ] 问答、访谈和口语材料已改写为正式书面正文，并保留事实依据。
+- [ ] 冗长沿革、清单和完整表格已经移入附件。
+- [ ] 正文通常为 5—6 页，且绝不超过 10 页。
+- [ ] 未通过缩小字号、行距或页边距控制页数。
 
-## E. DOCX structure
+## E. DOCX 结构与固定版式
 
-- [ ] All eight required page width, height, margin, header-distance, and footer-distance values are recorded under spec `layout`.
-- [ ] The first DOCX section geometry matches the spec `layout`; A4 portrait and source-derived margins are correct.
-- [ ] Every additional or mixed section is inspected manually; the bundled validator warning is recorded and no whole-document geometry-certification claim is made.
-- [ ] Title, body, four heading levels, tables, and page numbers use the specified styles.
-- [ ] Odd/even page numbers sit on the outside edge.
-- [ ] Each attachment begins on a new page.
-- [ ] Table header rows repeat across pages.
-- [ ] Required fonts are installed; the certified source-template path uses the exact recorded families rather than an unvalidated substitution.
-- [ ] No macros, external templates, source attachments, or hidden project files are embedded.
+- [ ] 规格 `layout` 记录页面宽高、四边页距、页眉距和页脚距共八项属性。
+- [ ] 第一个 DOCX 节与 `layout` 一致，使用 A4 纵向及来源派生页边距。
+- [ ] 所有附加或混合节均已人工检查；已记录内置校验器警告，且未声称整份文件几何参数均已认证。
+- [ ] 大标题为二号方正小标宋简体、居中。
+- [ ] 一级标题为三号黑体；二级标题为三号楷体_GB2312 加粗；三级标题为三号仿宋_GB2312 加粗。
+- [ ] 正文及问答为三号仿宋_GB2312，固定行距 28 磅。
+- [ ] 正文和正文标题使用字符单位 `w:firstLineChars=200` 首行空两字，不是固定 32 磅点值缩进。
+- [ ] 西文字母与阿拉伯数字为 Times New Roman，字号和字重随所在文字；页码按页码例外使用宋体。
+- [ ] 页眉不含文字、域、图片或其他可见内容。
+- [ ] 页码为 `- 1 -` 形式、四号宋体，奇数页右侧、偶数页左侧。
+- [ ] 每个附件另起一页。
+- [ ] 表头跨页重复，表格行尽量不拆分。
+- [ ] 最终出文机器已安装准确授权字体，未使用未经校验的替代字体冒充正式成品。
+- [ ] 文档不含宏、外部模板、来源附件或隐藏项目文件。
 
-## F. Rendered-page inspection
+## F. 渲染页面检查
 
-Inspect every page image, not a sample. Page PNG generation may be omitted for an intermediate draft, but `--png-dir` output and full-page visual inspection are mandatory for final certification. Preserved text boxes and pictures are not automatically understood or fact-reconciled by the helpers.
+必须检查每一张页面图片，不能抽样。中间草稿可省略逐页 PNG，最终认证必须使用 `--png-dir` 生成并检查全部页面。辅助脚本不会自动理解或勾稽保留文本框和图片的语义。
 
-- [ ] No text, table, rule, footer, or page number is clipped or outside the printable area.
-- [ ] No overlapping objects or corrupted glyphs appear.
-- [ ] No heading is stranded at the bottom of a page.
-- [ ] No unintended blank page appears.
-- [ ] Tables remain readable and do not lose headers at page breaks.
-- [ ] Red-head first-page elements and rule align correctly.
-- [ ] Attachment title and first content remain together.
-- [ ] Main-body and total page counts are recorded.
-- [ ] A standalone `附件1` page label establishes the main-body boundary; without it, the current validator does not certify the 10-page ceiling.
+- [ ] 文字、表格、分隔线、页脚和页码均未裁切或越出可打印区域。
+- [ ] 不存在对象重叠或字形损坏。
+- [ ] 标题未孤立在页末。
+- [ ] 不存在意外空白页。
+- [ ] 表格可读，跨页时表头不丢失。
+- [ ] 首屏红头和分隔线对齐正确。
+- [ ] 附件标题与首段内容保持在一起。
+- [ ] 已记录正文页数和总页数。
+- [ ] 独立 `附件1` 标签建立正文边界；缺少该边界时，现行校验器不能认证正文 10 页上限。
 
-## G. Public-repository safety
+## G. 公开仓库安全
 
-- [ ] Synthetic or sanitized examples contain no real project facts.
-- [ ] Names, signatures, phone numbers, IDs, bank details, addresses, and non-public financials are absent.
-- [ ] No licensed font binary is added without redistribution authority.
-- [ ] Source files are not nested or embedded in generated assets.
+- [ ] 合成或脱敏示例不含真实项目事实。
+- [ ] 不含真实姓名、签名、电话号码、证件、银行信息、地址和非公开财务数据。
+- [ ] 未经再分发许可不加入字体二进制。
+- [ ] 生成资产中不嵌套或嵌入来源文件。
 
-## Automated validator interpretation
+## 自动校验器的解释边界
 
-`scripts/validate_report.py` returns exit code 0 only when automated blocking checks pass. In addition to first-section geometry, it checks the source-template red head, title, document row, recipient/opening, body and heading typography, simple-table typography/header repetition/row splitting, closing envelope, odd/even PAGE-field typography, and render-manifest PNG signatures, dimensions, sequence, and hashes. This is the certified standard-template contract; a deliberately different typeface or richer layout must first be represented by a future validator contract and cannot be waved through as an undocumented substitution. Assertion matching is an exact short-phrase overlap check at block, sentence, comma-clause, and numeric-table-row levels (with layout whitespace and the optional `|` table-cell separator normalized); it does not authenticate the cited source, verify the locator, prove that the assertion is true, or prove that extra wording inside a matched clause is supported. The validator cannot replace clause-by-clause factual review or visual inspection. A warning is not automatically safe; document the decision. Use `--template-mode` only for the committed synthetic reference template, never for a final user report. The flag requires a supplied `--spec` with `template_only: true`, but those declarative values do not prove that arbitrary input is genuinely synthetic.
+`scripts/validate_report.py` 只有在自动阻断项全部通过时才返回退出码 0。除第一个节的页面几何外，它还检查来源模板红头、大标题、文号／签发人行、主送单位和开头、正文及标题层级字体、正文字符缩进、固定 28 磅行距、西文 Times New Roman、简单表格字体及跨页表头、落款组成、空白页眉、奇偶页外侧 `PAGE` 域的 `- 1 -` 格式与宋体字号，以及渲染清单中的 PNG 签名、尺寸、顺序和哈希。
 
-`--public-safe` and its deny-term options are heuristic package scans. A clean result is not an absolute guarantee that an artifact is public-safe, anonymous, licensed for redistribution, or free of confidential facts. Maintain a project-specific denylist and complete a human disclosure review before publication.
+这是标准模板认证契约。若有意采用不同字体或更复杂版式，必须先由未来版本的校验器契约明确表示，不能把未记录替代视为正式通过。
+
+断言匹配只进行文本块、句子、逗号级分句和数值表格行的精确短语重合检查，并规范化版式空白和可选的 `|` 单元格分隔符。它不认证来源、不核实定位、不证明断言真实，也不能证明命中短语之外的附加表述有依据。自动校验不能替代人工逐分句事实复核和逐页视觉检查。警告不当然代表安全，必须记录处理决定。
+
+`--template-mode` 只用于已提交的合成参考模板，不得用于最终用户报告。该标志要求规格中的 `template_only` 为 `true`，但声明字段不能证明任意输入确实是合成材料。
+
+`--public-safe` 及禁用词选项只是启发式包扫描。扫描通过不等于制品绝对匿名、保密、具备再分发许可或可安全公开。公开前须维护项目特定禁用词清单并完成人工披露复核。

@@ -47,7 +47,7 @@ FOOTER_PT = 14
 TITLE_LINE_PT = 30
 BODY_LINE_PT = 28
 TABLE_LINE_PT = 18
-TWO_CHARS_PT = 32
+TWO_CHARS_OOXML = 200
 CONTENT_DXA = 8844
 
 
@@ -120,7 +120,7 @@ def format_paragraph(
     *,
     align: Any = WD_ALIGN_PARAGRAPH.JUSTIFY,
     line_pt: float = BODY_LINE_PT,
-    first_indent_pt: float = TWO_CHARS_PT,
+    first_line_chars: int | None = TWO_CHARS_OOXML,
     left_indent_pt: float = 0,
     right_indent_pt: float = 0,
     before_pt: float = 0,
@@ -131,13 +131,24 @@ def format_paragraph(
     fmt = paragraph.paragraph_format
     fmt.line_spacing_rule = WD_LINE_SPACING.EXACTLY
     fmt.line_spacing = Pt(line_pt)
-    fmt.first_line_indent = Pt(first_indent_pt)
     fmt.left_indent = Pt(left_indent_pt)
     fmt.right_indent = Pt(right_indent_pt)
     fmt.space_before = Pt(before_pt)
     fmt.space_after = Pt(after_pt)
     fmt.keep_with_next = keep_with_next
     fmt.widow_control = True
+
+    # Use Word's character-based first-line indent so “首行空两字” follows the
+    # paragraph font size instead of being frozen at a 32 pt physical distance.
+    ppr = paragraph._p.get_or_add_pPr()
+    indent = ppr.find(qn("w:ind"))
+    if indent is None:
+        indent = OxmlElement("w:ind")
+        ppr.append(indent)
+    for attribute in ("firstLine", "firstLineChars", "hanging", "hangingChars"):
+        indent.attrib.pop(qn(f"w:{attribute}"), None)
+    if first_line_chars is not None:
+        indent.set(qn("w:firstLineChars"), str(first_line_chars))
 
 
 def set_outline_level(paragraph: Any, level: int) -> None:
@@ -158,7 +169,7 @@ def add_paragraph(
     bold: bool = False,
     align: Any = WD_ALIGN_PARAGRAPH.JUSTIFY,
     line_pt: float = BODY_LINE_PT,
-    first_indent_pt: float = TWO_CHARS_PT,
+    first_line_chars: int | None = TWO_CHARS_OOXML,
     left_indent_pt: float = 0,
     right_indent_pt: float = 0,
     before_pt: float = 0,
@@ -172,7 +183,7 @@ def add_paragraph(
         paragraph,
         align=align,
         line_pt=line_pt,
-        first_indent_pt=first_indent_pt,
+        first_line_chars=first_line_chars,
         left_indent_pt=left_indent_pt,
         right_indent_pt=right_indent_pt,
         before_pt=before_pt,
@@ -191,7 +202,7 @@ def add_page_field(paragraph: Any) -> None:
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.paragraph_format.line_spacing = Pt(FOOTER_PT)
 
-    left = paragraph.add_run("-")
+    left = paragraph.add_run("- ")
     set_font(left, FONT_SONG, FOOTER_PT, western=FONT_SONG)
 
     field = paragraph.add_run()
@@ -210,7 +221,7 @@ def add_page_field(paragraph: Any) -> None:
     for element in (begin, instruction, separate, result, end):
         field._r.append(element)
 
-    right = paragraph.add_run("-")
+    right = paragraph.add_run(" -")
     set_font(right, FONT_SONG, FOOTER_PT, western=FONT_SONG)
 
 
@@ -379,7 +390,7 @@ def add_table(doc: Document, block: dict[str, Any]) -> Any:
             _set_cell_width_pct(cell, percentages[column_index])
 
     spacer = doc.add_paragraph()
-    format_paragraph(spacer, first_indent_pt=0, line_pt=8, after_pt=0)
+    format_paragraph(spacer, first_line_chars=None, line_pt=8, after_pt=0)
     return table
 
 
@@ -412,7 +423,7 @@ def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
         paragraph,
         align=WD_ALIGN_PARAGRAPH.CENTER,
         line_pt=48,
-        first_indent_pt=0,
+        first_line_chars=None,
         before_pt=86,
         after_pt=20,
     )
@@ -448,7 +459,7 @@ def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
         title,
         align=WD_ALIGN_PARAGRAPH.CENTER,
         line_pt=TITLE_LINE_PT,
-        first_indent_pt=0,
+        first_line_chars=None,
         before_pt=24,
         after_pt=24,
         keep_with_next=True,
@@ -537,14 +548,14 @@ def render_blocks(doc: Document, blocks: Iterable[dict[str, Any]]) -> None:
                 size=TABLE_PT,
                 align=alignments.get(str(block.get("align") or "left"), WD_ALIGN_PARAGRAPH.LEFT),
                 line_pt=TABLE_LINE_PT,
-                first_indent_pt=0,
+                first_line_chars=None,
             )
         elif block_type == "table":
             add_table(doc, block)
         elif block_type == "pagebreak":
             doc.add_page_break()
         elif block_type == "blank":
-            add_paragraph(doc, "", first_indent_pt=0)
+            add_paragraph(doc, "", first_line_chars=None)
         else:
             raise ValueError(f"Unsupported block type: {block_type}")
 
@@ -552,21 +563,21 @@ def render_blocks(doc: Document, blocks: Iterable[dict[str, Any]]) -> None:
 def add_attachment_list(doc: Document, attachments: list[dict[str, Any]]) -> None:
     if not attachments:
         return
-    add_paragraph(doc, "", first_indent_pt=0)
+    add_paragraph(doc, "", first_line_chars=None)
     first = attachments[0]
     add_paragraph(doc, f"附件：1.{first.get('title', '')}")
     for number, attachment in enumerate(attachments[1:], start=2):
         add_paragraph(
             doc,
             f"{number}.{attachment.get('title', '')}",
-            first_indent_pt=0,
+            first_line_chars=None,
             left_indent_pt=80,
         )
 
 
 def add_signature(doc: Document, metadata: dict[str, Any]) -> None:
-    add_paragraph(doc, "", first_indent_pt=0)
-    add_paragraph(doc, "", first_indent_pt=0)
+    add_paragraph(doc, "", first_line_chars=None)
+    add_paragraph(doc, "", first_line_chars=None)
     issuer = str(metadata.get("issuer") or metadata.get("company") or "")
     issue_date = str(metadata.get("issue_date") or "")
     if issuer:
@@ -575,6 +586,7 @@ def add_signature(doc: Document, metadata: dict[str, Any]) -> None:
             issuer,
             align=WD_ALIGN_PARAGRAPH.RIGHT,
             right_indent_pt=64,
+            first_line_chars=None,
         )
     if issue_date:
         add_paragraph(
@@ -582,6 +594,7 @@ def add_signature(doc: Document, metadata: dict[str, Any]) -> None:
             issue_date,
             align=WD_ALIGN_PARAGRAPH.RIGHT,
             right_indent_pt=64,
+            first_line_chars=None,
         )
     contact_name = str(metadata.get("contact_name") or "").strip()
     contact_phone = str(metadata.get("contact_phone") or "").strip()
@@ -596,7 +609,7 @@ def add_signature(doc: Document, metadata: dict[str, Any]) -> None:
             f"（{'  '.join(parts)}）",
             font=FONT_KAITI,
             align=WD_ALIGN_PARAGRAPH.RIGHT,
-            first_indent_pt=0,
+            first_line_chars=None,
         )
 
 
@@ -606,7 +619,7 @@ def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: i
     add_paragraph(
         doc,
         f"附件{number}",
-        first_indent_pt=0,
+        first_line_chars=None,
         align=WD_ALIGN_PARAGRAPH.LEFT,
         keep_with_next=True,
     )
@@ -617,7 +630,7 @@ def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: i
         size=TITLE_PT,
         align=WD_ALIGN_PARAGRAPH.CENTER,
         line_pt=TITLE_LINE_PT,
-        first_indent_pt=0,
+        first_line_chars=None,
         after_pt=16,
         keep_with_next=True,
     )
@@ -634,7 +647,7 @@ def build_report(spec: dict[str, Any], output: Path, *, force: bool = False) -> 
     add_redhead(doc, metadata)
     recipient = str(metadata.get("recipient") or "")
     if recipient:
-        add_paragraph(doc, recipient, first_indent_pt=0, keep_with_next=True)
+        add_paragraph(doc, recipient, first_line_chars=None, keep_with_next=True)
     legal_basis = str(metadata.get("legal_basis") or "")
     if legal_basis:
         add_paragraph(doc, legal_basis)

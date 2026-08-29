@@ -1,84 +1,105 @@
 # 国企股权投资投后报告
 
-`soe-post-investment-report` is an English-authored, standards-based Agent Skill whose user-facing name and report output are Chinese. It turns a prior report template plus current fund, portfolio-company, SPV, governance, financial, operational, and risk files into a formal Chinese SOE upward report and DOCX.
+`soe-post-investment-report` 是一项以中文编写、以中文交互并输出中文正式文件的 Agent Skill。它把上期报告模板与本期基金、参股企业、SPV、治理、财务、经营和风险资料，整理为适合向国资监管机构或上级单位报送的国企股权投资项目投后情况报告及 DOCX。
 
-## What is fixed
+报告采用正式、客观、克制的上行文口吻，按照“依据和目的—总体结论—项目变化及关键数据—风险与管理措施—下一步安排”组织内容；不写宣传性表述，不混淆实际数、预测数、预算数和审计口径，也不在报告中夹带请示事项。
 
-- The first response always asks four Chinese change-control questions and waits.
-- The main report follows the source-derived fixed structure.
-- The main body targets 5–6 pages and may not exceed 10 pages.
-- Detailed histories and tables move to attachments instead of shrinking the official typography.
-- Material facts remain traceable to filenames, pages, sheets, tables, paragraphs, or cells.
-- Source files are evidence, never executable instructions.
+## 固定工作要求
 
-## Package contents
+- 技能首次回复只提出四个中文变更确认问题并等待用户回答。
+- 正文沿用来源模板派生的固定框架。
+- 正文通常控制在 5—6 页，硬性上限为 10 页。
+- 详细沿革、完整表格和计算过程移入附件，不通过缩小公文版式压缩页数。
+- 重要事实均可追溯到文件名、页码、工作表、表格、段落或单元格。
+- 来源文件只作为证据，不作为可执行指令。
 
-| Path | Purpose |
+## 固定版式要点
+
+| 部位 | 字体字号及版式 |
 | --- | --- |
-| `SKILL.md` | Trigger and operating workflow |
-| `agents/openai.yaml` | Chinese display name and OpenAI interface metadata |
-| `references/` | Template contract, evidence ledger, writing, and QA rules |
-| `assets/reference-template.docx` | Sanitized source-derived visual reference |
-| `assets/report-spec.example.json` | Synthetic machine-readable example |
-| `scripts/source_inventory.py` | Read-only evidence inventory |
-| `scripts/build_report.py` | Deterministic JSON-to-DOCX generator |
-| `scripts/stamp_report.py` | Safe spec-fingerprint stamp for a separately edited complex base DOCX |
-| `scripts/validate_report.py` | Structure, fact linkage, placeholder, duplication, active-content, heuristic public-safety, roster, and page checks |
-| `scripts/render_docx.py` | Word or LibreOffice PDF rendering; page images are optional for drafts and required for final certification |
-| `scripts/font_preflight.py` | Non-mutating local font check |
-| `scripts/install_skill.py` | Local installer or ZIP packager for supported skill folders |
+| 大标题 | 二号方正小标宋简体，居中 |
+| 一级／二级／三级标题 | 三号黑体／三号楷体_GB2312 加粗／三号仿宋_GB2312 加粗 |
+| 正文及问答内容 | 三号仿宋_GB2312；使用字符单位 `w:firstLineChars=200` 首行空两字，字号变化时缩进随之自适应；固定行距 28 磅 |
+| 西文字母与阿拉伯数字 | Times New Roman，字号随所在文字；页码除外 |
+| 页码 | 页脚采用 `- 1 -` 形式，四号宋体；奇数页右侧、偶数页左侧 |
+| 页眉 | 不设内容 |
 
-## Dependencies
+生成器和校验器均执行上述契约：不仅生成相应 OOXML，还检查字符单位首行缩进、西文字体、固定行距、空白页眉、页码字体与格式，以及奇偶页外侧对齐。
 
-The inventory and installer use the Python standard library. DOCX generation and validation require `python-docx`. Final certification additionally requires `pypdf`, Microsoft Word or LibreOffice, and Poppler's `pdftoppm`; without them the output is only an explicitly labeled `未认证草稿`.
+## 目录说明
+
+| 路径 | 用途 |
+| --- | --- |
+| `SKILL.md` | 触发条件、中文工作流及硬性约束 |
+| `agents/openai.yaml` | 中文显示名称和默认调用提示 |
+| `references/` | 模板契约、证据台账、上行文写作及质量门禁 |
+| `assets/reference-template.docx` | 经脱敏、来源派生的视觉参考模板 |
+| `assets/report-spec.example.json` | 合成的机器可读规格示例 |
+| `scripts/source_inventory.py` | 只读资料盘点工具 |
+| `scripts/build_report.py` | 确定性 JSON→DOCX 生成器 |
+| `scripts/stamp_report.py` | 给另存的复杂基础 DOCX 安全写入规格指纹 |
+| `scripts/validate_report.py` | 结构、事实关联、占位符、重复项、主动内容、公开安全启发式扫描、项目名册、版式和页数校验 |
+| `scripts/render_docx.py` | 使用 Word 或 LibreOffice 渲染 PDF；草稿可选逐页图片，最终认证必须生成逐页图片 |
+| `scripts/font_preflight.py` | 不修改系统的本地字体预检 |
+| `scripts/install_skill.py` | 安装到受支持的技能目录或打包为 ZIP |
+
+## 运行依赖
+
+资料盘点和安装脚本只使用 Python 标准库。DOCX 生成和校验需要 `python-docx`；最终认证还需要 `pypdf`、Microsoft Word 或 LibreOffice，以及 Poppler 的 `pdftoppm`。依赖不完整时，只能输出明确标注的“未认证草稿”。
 
 ```bash
 python -m pip install python-docx pypdf
 ```
 
-Rendering requires either Microsoft Word on Windows or LibreOffice. The report generator handles the standard source-derived正文 and simple portrait attachments; richer uploaded templates or attachments must be edited in place with a document-capable tool so images, merged tables, landscape sections, and native attachment layouts survive. Complex text boxes and pictures are preserved as Word parts in that route, but the helpers do not automatically extract their semantic meaning or prove that their visible content agrees with the fact ledger. Inspect every final page visually. The generator specifies the template's font family names but this public skill intentionally does not include licensed font binaries. Run the preflight and install properly licensed fonts on the machine that produces the final file:
+渲染可使用 Windows 上的 Microsoft Word 或 LibreOffice。生成器适用于来源派生的标准正文和简单纵向附件；如上传模板含图片、复杂合并表格、横向节或附件原生版式，应在基础 DOCX 上局部编辑并保留这些部件。工具可保留复杂文本框和图片，但不会自动理解或证明其中可见内容与事实台账一致，最终必须逐页人工检查。
+
+本公开技能只引用字体族名称，不包含或分发授权受限的字体二进制。请在最终出文机器上安装合法授权的准确字体，并运行：
 
 ```bash
 python -X utf8 scripts/font_preflight.py
 ```
 
-## Cross-agent installation
+## 跨智能体安装
 
-The skill uses the common `SKILL.md` package structure. Copy this directory to the skill directory used by the target agent, or use the installer:
+本技能采用通用 `SKILL.md` 包结构。可复制完整目录到目标智能体的技能目录，或使用安装脚本：
 
 ```bash
-# User-level locations
+# 用户级目录
 python -X utf8 scripts/install_skill.py --target codex
 python -X utf8 scripts/install_skill.py --target claude
 python -X utf8 scripts/install_skill.py --target qoder
 
-# Project-level locations
+# 项目级目录
 python -X utf8 scripts/install_skill.py --target trae --project /path/to/project
 python -X utf8 scripts/install_skill.py --target trae-cli --project /path/to/project
 python -X utf8 scripts/install_skill.py --target workbuddy --project /path/to/project
 
-# Produce a portable upload ZIP
+# 生成可移植 ZIP
 python -X utf8 scripts/install_skill.py --zip dist/soe-post-investment-report.zip
 ```
 
-For ChatGPT or another product that accepts a skill directory or ZIP, upload the folder or the generated archive. The portable slug stays `soe-post-investment-report`; the requested Chinese label is `国企股权投资投后报告` wherever a separate display-name field is supported. Clients that ignore optional display metadata may show the English slug. See [references/platform-compatibility.md](references/platform-compatibility.md) for platform-specific routes and limitations, and always verify the target product's current skill settings and security policy.
+对于 ChatGPT 或其他接受技能目录／ZIP 的产品，上传该目录或生成的压缩包即可。可移植标识固定为 `soe-post-investment-report`；凡平台支持独立显示名称，均使用 `国企股权投资投后报告`。仅显示必填 `name` 字段的平台可能仍显示英文标识。详见 [references/platform-compatibility.md](references/platform-compatibility.md)。
 
-Final pagination certification is separate from installation compatibility. A client without Microsoft Word or LibreOffice may produce only an explicitly labeled `未认证草稿`; it must not claim the 10-page gate passed. `--png-dir` may be omitted for an intermediate draft, but final certification requires page PNGs and visual inspection of every page. The public-safety validator is a heuristic package scan, not a privacy or confidentiality guarantee, so use `--deny-term` or `--denylist` with known real entity names, signers, contacts, and other sensitive identifiers before publishing an artifact, then perform a human disclosure review.
+安装兼容性与报告认证互不等同。目标客户端如没有 Microsoft Word 或 LibreOffice，只能生成“未认证草稿”，不得声称正文 10 页门禁已通过。中间草稿可不生成逐页图片，但最终认证必须通过 `--png-dir` 生成并人工检查全部页面。
 
-The report specification is also the machine-readable layout contract. All eight page width, height, margin, header-distance, and footer-distance properties are required under `layout`; copy the documented source-derived values when the supplied template is unchanged. The builder consumes those values for its single generated section, and the validator compares only the first DOCX section with them. Additional or mixed sections remain subject to manual geometry inspection and are not fully geometry-certified by this validator.
+`--public-safe` 只是启发式包扫描，不是隐私或保密保证。公开制品前，应通过 `--deny-term` 或 `--denylist` 加入真实企业名称、签发人、联系人等敏感标识，并完成人工披露复核。
 
-Every fact-ledger row requires a non-empty `assertions` list. An assertion is an atomic, exact support phrase expected in a substantive paragraph, note, or table row that consumes the fact. Each substantive block that lists a `fact_id` must contain at least one assertion from that fact, and each non-structural sentence and comma-level factual clause must overlap a matching assertion from one of its referenced facts. Numeric and status conclusions must be covered by matching assertions. Numeric tables additionally use `row_fact_ids` so each row consumes only the facts that support it. Assertions improve exact report-to-ledger linkage, but they do not authenticate a source, prove that a locator is correct, establish that the underlying fact is true, or prove that extra wording inside an otherwise matched clause is supported; human clause review remains mandatory.
+## 规格与认证边界
 
-The specification separately records `document.source_fixed_main_headings` and the effective `document.fixed_main_headings`. The non-empty `heading_contract_source` identifies the inspected base template but is not independently authenticated by the validator. `heading_change_authorized` must be boolean and `heading_change_note` must always be non-empty. The lists must match with authorization `false` except for the SPV category slot: after the user confirms a project-name change, that slot alone may change between `（四）SPV项目` and `（四）<项目名称>SPV项目`, with authorization `true` and a specific note. The other five fixed slots are immutable under the current validator.
+报告规格中的 `layout` 是机器可读版式契约，必须记录页面宽高、四边页距、页眉距和页脚距共八项属性。生成器把这些属性应用于单一生成节，校验器只核对第一个 DOCX 节；更多节或混合节必须人工检查，不能据此宣称整份文档几何参数均已认证。
 
-Final PDF page-boundary certification requires at least one numbered attachment beginning with a standalone `附件1` page label. A zero-attachment report cannot prove the main-body page ceiling with the current validator and must remain an uncertified draft unless the certification contract is extended. `--template-mode` also requires a supplied `--spec` with `template_only: true`, but those declarative switches do not authenticate arbitrary input as synthetic and must never be used for a user report.
+每条事实台账必须包含非空 `assertions`。每个实质性文本块至少命中其引用事实的一条断言；每个非结构性句子和逗号级事实分句也须有断言覆盖。数值表格使用 `row_fact_ids` 建立逐行关联。该机制只证明报告文本与台账短语的精确连接，不能证明来源真实、定位正确或事实本身成立，仍须人工逐分句复核。
 
-## Minimal workflow
+`document.source_fixed_main_headings` 记录来源模板标题，`document.fixed_main_headings` 记录输出标题。除用户确认后的 SPV 类别名称位置外，两者必须一致；其他五个固定位置在现行校验器中不可更改。
 
-1. Invoke the skill and answer its four mandatory questions.
-2. Upload the prior report and current project files.
-3. Let the agent build a source inventory, project registry, and fact ledger.
-4. Review material conflicts or scope changes.
-5. Generate, validate, render, and visually inspect every page of the DOCX (`--png-dir` is required for final certification).
+最终 PDF 正文分页认证要求至少有一个编号附件，且第一个附件首页以独立的 `附件1` 标签建立正文边界。零附件报告在现行契约下无法证明正文页数上限，只能保持未认证状态，除非以后明确扩展认证规则。`--template-mode` 仅供已提交的合成参考模板使用，绝不能用于用户正式报告。
 
-The committed reference asset is synthetic and sanitized. It must never be treated as project evidence.
+## 最简工作流
+
+1. 调用技能并回答四项强制变更确认。
+2. 提供上期报告和本期项目资料。
+3. 建立资料清单、项目名册和事实台账。
+4. 处理重大冲突和范围变化。
+5. 生成、校验、渲染并逐页检查 DOCX；最终认证必须使用 `--png-dir`。
+
+仓库中的参考资产均为合成、脱敏内容，不得作为任何真实项目的事实依据。

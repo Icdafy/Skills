@@ -1,100 +1,108 @@
-# Source-derived template contract
+# 来源派生模板契约
 
-This contract records the reusable layout and structure distilled from the supplied post-investment report template and its separate corporate-format reference. It deliberately excludes company-specific facts, signatures, phone numbers, and font binaries.
+本契约记录从用户提供的投后报告模板及企业公文格式参考中提炼出的可复用版式和结构。企业专属事实、签名、电话号码和字体二进制不属于本契约。
 
-## Document anatomy
+## 文档组成
 
-The source report contains a short main body followed by independently sized attachments. The reusable order is:
+来源报告由较短的正文和独立编排的附件构成，复用顺序如下：
 
-1. red-head issuer line;
-2. document number and signer row with a red lower rule;
-3. two-line report title;
-4. recipient and one-paragraph basis or opening;
-5. annual equity-investment overview;
-6. material project progress;
-7. attachment list;
-8. issuer, date, and optional contact line;
-9. numbered project attachments;
-10. optional distribution or edition note when the issuing organization requires it.
+1. 红色发文机关标志；
+2. 发文字号与签发人行，下设红色分隔线；
+3. 两行报告标题；
+4. 主送单位及一段依据或开头；
+5. 年度股权投资总体情况；
+6. 重大投资项目进展；
+7. 附件目录；
+8. 发文单位、成文日期和可选联系人；
+9. 编号项目附件；
+10. 发文单位有要求时设置分送或版记。
 
-The source main body occupies five pages. Treat 5–6 pages as the normal target, 10 pages as the hard ceiling, and attachment length as separate.
+来源正文为 5 页。正常目标为 5—6 页，10 页为硬性上限，附件页数另计。
 
-## Fixed main-body logic
+## 正文固定逻辑
 
-Preserve these first-level headings exactly. The current validator does not support changing them:
+以下一级标题必须逐字保留，现行校验器不支持变更：
 
 - `一、年度股权投资完成总体情况`
 - `二、重大投资项目进展情况`
 
-The first section always retains these fixed second-level headings:
+第一部分必须保留下列二级标题：
 
 - `（一）存续基金`
 - `（二）新设基金`
 - `（三）参股公司`
-- the source template's exact fourth SPV slot, for example `（四）SPV项目` or `（四）<项目名称>SPV项目`
+- 来源模板第四个 SPV 固定位置，例如 `（四）SPV项目` 或 `（四）<项目名称>SPV项目`
 
-Record the exact source sequence in `document.source_fixed_main_headings` and the output sequence in `document.fixed_main_headings`. Record a non-empty `document.heading_contract_source` describing the inspected base template; the validator only checks that this human provenance note exists and does not authenticate it against an original file. `document.heading_change_authorized` must be boolean and `document.heading_change_note` must always be non-empty. When the two lists match, authorization must be `false` and the note must say that no fixed-heading change occurred. Only the SPV category slot may differ after a later direct answer to the four-question gate confirms a project-name change; the output must remain `（四）SPV项目` or `（四）<项目名称>SPV项目`, authorization must be `true`, and the note must state the exact change. All other fixed slots remain immutable. Never generalize a source-specific SPV heading merely because the sanitized public example uses `（四）SPV项目`. When a fixed category has no project, retain the heading and state that no such project exists during the reporting year. Use third-level numbered project headings under a category when projects need separate statements. The project-specific second-level headings under the second first-level section may follow confirmed material changes; that section contains only material developments, not a second copy of the full registry. A request to change any other fixed heading requires a deliberate schema and validator update before generation; user authorization alone does not bypass the contract.
+将来源准确序列写入 `document.source_fixed_main_headings`，将输出序列写入 `document.fixed_main_headings`。`document.heading_contract_source` 必须非空，用于说明所检查的基础模板，但校验器不会自动核实该记录与原件是否一致。`document.heading_change_authorized` 必须是布尔值，`document.heading_change_note` 必须始终非空。
 
-## Page geometry
+两份标题列表一致时，授权值必须为 `false`，备注须说明未调整固定标题。只有 SPV 类别位置可以在用户后续直接回答四项确认并确认项目名称变化后调整；输出仍须符合 `（四）SPV项目` 或 `（四）<项目名称>SPV项目`，授权值为 `true`，备注写明具体变更。其他固定位置全部不可变。不得仅因公开脱敏示例使用 `（四）SPV项目`，就把来源模板中的特定项目名称通用化。
 
-Record all eight values under the report specification's required `layout` object. The builder applies them to its single generated section and the validator compares only `doc.sections[0]` against the recorded values. Final specifications may not omit the object or an individual property; copy the source-derived values below when the supplied template is unchanged. The helpers do not infer or semantically adopt arbitrary uploaded-document geometry. A richer base DOCX may preserve native additional or mixed sections, but the validator only warns that they exist and does not validate their per-section geometry. Inspect every such section manually and do not describe the whole document as geometry-certified by this contract.
+某固定类别没有项目时，保留标题并简要说明“本年度无……项目”。类别下可按需要设置项目三级标题。第二个一级部分下的项目二级标题可依据已确认的重大变化调整，但该部分只写重大进展，不重复完整项目名册。若要改变其他固定标题，必须先有意更新规格和校验器；仅有用户授权不能绕过当前契约。
 
-| Property | Value |
+## 页面几何
+
+报告规格的 `layout` 必须记录下列八个数值属性。生成器把这些数值应用于单一生成节，校验器只比较 `doc.sections[0]`。最终规格不得缺少 `layout` 或其中任一属性；上传模板未变化时使用下表数值。辅助脚本不会自动推断或采用任意上传文档的页面几何。
+
+复杂基础 DOCX 可以保留更多节或混合节，但校验器只会提示其存在，不会逐节认证。必须人工检查每个附加节，不得宣称整份文件均通过本契约的几何认证。
+
+| 属性 | 数值 |
 | --- | --- |
-| Paper | A4 portrait, 21.0 cm × 29.7 cm |
-| Top margin | 3.7 cm |
-| Bottom margin | 3.5 cm |
-| Left margin | 2.8 cm |
-| Right margin | 2.6 cm |
-| Header distance | 1.5 cm |
-| Footer distance | 1.75 cm |
-| Main title line spacing | exactly 30 pt |
-| Body line spacing | exactly 28 pt |
-| Normal first-line indent | 32 pt, approximately two Chinese characters at 16 pt |
+| 纸张 | A4 纵向，21.0 cm × 29.7 cm |
+| 上边距 | 3.7 cm |
+| 下边距 | 3.5 cm |
+| 左边距 | 2.8 cm |
+| 右边距 | 2.6 cm |
+| 页眉距 | 1.5 cm |
+| 页脚距 | 1.75 cm |
+| 大标题行距 | 固定 30 磅 |
+| 正文行距 | 固定 28 磅 |
+| 正文首行缩进 | 两个中文字符，OOXML 使用 `w:firstLineChars=200`，随所在字号自适应 |
 
-## Typography
+## 字体字号
 
-| Element | Chinese font | Size | Weight | Alignment |
+| 部位 | 中文字体 | 字号 | 字重 | 对齐及其他要求 |
 | --- | --- | --- | --- | --- |
-| Red-head issuer | 方正小标宋简体 | 68 pt OOXML master size (`w:sz=136`), source-compressed to approximately 36 pt visual height | bold | centered, red; one line with `w:w=37` and `w:fitText=8195` |
-| Main and attachment title | 方正小标宋简体 | 22 pt | regular | centered |
-| Recipient and body | 仿宋_GB2312 | 16 pt | regular | justified |
-| First-level heading `一、` | 黑体 | 16 pt | regular | justified, two-character indent |
-| Second-level heading `（一）` | 楷体_GB2312 | 16 pt | bold | justified, two-character indent |
-| Third-level heading `1.` | 仿宋_GB2312 | 16 pt | bold | justified, two-character indent |
-| Fourth-level heading `（1）` | 仿宋_GB2312 | 16 pt | regular | justified, two-character indent |
-| Table body | 仿宋_GB2312 | 10.5 pt default | regular | centered unless semantic alignment requires otherwise |
-| Page number | 宋体 | 14 pt | regular | outside edge on odd/even pages |
-| Latin and Arabic characters | Times New Roman | matching size | matching | inherited |
+| 红色发文机关标志 | 方正小标宋简体 | OOXML 主字号 68 pt（`w:sz=136`），经来源模板压缩后视觉高度约 36 pt | 加粗 | 居中、红色；单行，`w:w=37`、`w:fitText=8195` |
+| 大标题及附件标题 | 方正小标宋简体 | 二号，22 pt | 不加粗 | 居中 |
+| 主送单位、正文及问答内容 | 仿宋_GB2312 | 三号，16 pt | 不加粗 | 两端对齐；正文及问答首行空两字；固定行距 28 磅 |
+| 一级标题 `一、` | 黑体 | 三号，16 pt | 不额外加粗 | 两端对齐，首行空两字 |
+| 二级标题 `（一）` | 楷体_GB2312 | 三号，16 pt | 加粗 | 两端对齐，首行空两字 |
+| 三级标题 `1.` | 仿宋_GB2312 | 三号，16 pt | 加粗 | 两端对齐，首行空两字 |
+| 四级标题 `（1）` | 仿宋_GB2312 | 三号，16 pt | 不加粗 | 两端对齐，首行空两字 |
+| 表格正文 | 仿宋_GB2312 | 默认五号，10.5 pt | 不加粗 | 默认居中，语义需要时另行对齐 |
+| 页码 | 宋体 | 四号，14 pt | 不加粗 | 奇偶页外侧 |
+| 西文字母和阿拉伯数字 | Times New Roman | 与所在文字相同 | 与所在文字相同 | 继承所在段落；页码整体按宋体处理 |
 
-Do not reduce font size or line spacing to hit a page limit. Compress language and move detail to attachments.
+不得为了控制页数缩小字号或行距，应压缩语言并把明细移入附件。
 
-The red-head settings above intentionally reproduce the supplied DOCX's run properties rather than a nominal visual-size guess. Keep the issuer on one line and preserve the 68 pt master size, bold weight, character-width compression, and fit-text value together; changing only one of them causes visible template drift.
+红色发文机关标志参数用于精确重现来源 DOCX 的运行属性，而不是名义视觉字号猜测。必须同时保留 68 pt 主字号、加粗、字符宽度压缩和 `fitText` 数值，单改其中一项会造成明显漂移。
 
-## Tables
+## 表格
 
-- Fit tables to the content width and repeat the header row across pages.
-- Use thin neutral borders and avoid decorative colors unless the current supplied template uses them.
-- Keep units in a separate right-aligned note or in the table header.
-- Put dates, units, and scopes in labels so figures cannot be misread.
-- Prevent individual table rows from splitting when practical.
-- Use landscape sections only when the current uploaded template or the user explicitly requires them; the bundled validator does not certify their per-section geometry.
+- 表格适应正文版心，跨页时重复表头。
+- 使用细实线中性边框；除非当前模板已有设计，不使用装饰色。
+- 单位单列右对齐说明，或写入表头。
+- 日期、单位和口径写入标签，避免数值误读。
+- 在可行范围内禁止单行跨页拆分。
+- 只有当前上传模板或用户明确要求时才使用横向节；内置校验器不认证横向节的逐节几何。
 
-The bundled JSON builder covers the standard source-derived正文 and simple portrait tables only. If an uploaded template or attachment uses images, merged or nested tables, text boxes, independent headers/footers, landscape sections, or other richer Word parts, preserve the original DOCX as the base and update it in place with a document-capable tool. Do not rebuild or flatten those parts merely to fit the helper schema. Preservation is structural, not semantic extraction: the helpers do not automatically read, fact-link, or reconcile the visible meaning of complex text boxes or pictures. Inspect every rendered final page and manually reconcile any material content inside those objects.
+内置 JSON 生成器只覆盖标准正文和简单纵向表格。若上传模板或附件含图片、合并／嵌套表格、文本框、独立页眉页脚、横向节或其他复杂 Word 部件，应以原 DOCX 为基础局部更新，不得为适配简单规格而重建或扁平化。结构保留不等于语义提取；工具不会自动读取、建立事实关联或核对复杂文本框和图片的可见含义，最终必须逐页人工检查。
 
-## Page numbers and breaks
+## 页码、页眉与分页
 
-- Use outside page numbers on odd and even pages in the form `-1-`.
-- Begin each attachment on a new page.
-- Keep at least one numbered attachment with a standalone `附件1` page label when final main-body pagination must be certified by the bundled validator.
-- Keep an attachment title with its first substantive paragraph or table.
-- Avoid an isolated heading at the bottom of a page.
-- Do not insert manual page breaks merely to hide weak length control; use them only at semantic boundaries after rendering.
+- 页眉不设任何文字、域、图片、图形或其他可见内容。
+- 页码置于页脚，采用 `- 1 -`、`- 2 -` 形式，四号宋体。
+- 奇数页页码位于右侧，偶数页页码位于左侧，即始终位于装订后的外侧。
+- 每个附件另起一页。
+- 最终正文分页需要由内置校验器认证时，至少保留一个编号附件，并在其首页设置独立的 `附件1` 标签。
+- 附件标题与首段实质内容或首个表格保持在同一页。
+- 避免标题孤立在页末。
+- 不得通过任意手工分页掩盖篇幅失控；只在渲染后确认的语义边界设置分页。
 
-## Source-template anomaly converted to a QA rule
+## 由来源异常转化的质量规则
 
-The supplied source contains a duplicated project-category heading in the main body. It is not part of the reusable framework. Any exact or normalized duplicate heading must fail validation unless the two headings occur in different attachment scopes and are intentionally distinguished.
+来源模板正文中出现过重复的项目类别标题，该异常不属于复用框架。除非同名标题分别位于不同附件范围且有意区分，否则完全相同或规范化后相同的标题必须导致校验失败。
 
-## Font licensing and portability
+## 字体许可与可移植性
 
-The builder writes font family names into the DOCX. It does not bundle or embed font binaries. Use locally installed, properly licensed copies of the exact required families. A font substitution fails the current typography contract and cannot be converted into a certified final document merely by recording it or obtaining approval. Install the exact licensed font, deliver an explicitly uncertified draft, or deliberately extend the validator contract before final delivery.
+生成器只把字体族名称写入 DOCX，不打包或嵌入字体二进制。最终出文机器必须安装合法授权的准确字体。字体替换不符合当前字体契约，不能通过记录说明或临时授权将其变成认证成品。可选择安装准确的授权字体、交付明确标注的未认证草稿，或先有意扩展校验契约再交付。

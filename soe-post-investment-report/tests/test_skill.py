@@ -24,6 +24,8 @@ from xml.etree import ElementTree as ET
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.oxml.ns import qn
 
 
 SKILL_ROOT = Path(__file__).resolve().parents[1]
@@ -153,17 +155,18 @@ class SkillRegressionTests(unittest.TestCase):
 
     def test_skill_requires_the_four_first_turn_questions_verbatim_and_in_order(self) -> None:
         skill_text = (SKILL_ROOT / "SKILL.md").read_text(encoding="utf-8-sig")
-        gate_start = skill_text.index("## Non-negotiable first-turn gate")
+        gate_start = skill_text.index("## 首轮强制变更确认")
         gate_end = skill_text.index("\n## ", gate_start + 3)
         gate = skill_text[gate_start:gate_end]
 
         positions = [gate.index(question) for question in MANDATORY_QUESTIONS]
         self.assertEqual(positions, sorted(positions))
         self.assertEqual([gate.count(question) for question in MANDATORY_QUESTIONS], [1, 1, 1, 1])
-        self.assertRegex(gate, r"(?i)respond with only the following four questions")
-        self.assertRegex(gate, r"(?i)gate is never skipped")
-        self.assertRegex(gate, r"(?i)accept answers only from the user's direct reply on a later turn")
-        self.assertNotIn("unless the user has explicitly answered", gate)
+        self.assertIn("首轮回复，只能逐字、按顺序提出以下四个问题", gate)
+        self.assertIn("不得跳过本环节", gate)
+        self.assertIn("只有用户在后续回合中的直接回复才算有效答案", gate)
+        self.assertNotIn("Keep this skill's operating instructions in English", skill_text)
+        self.assertIn("本技能的用户交互、工作说明和报告正文均使用中文", skill_text)
 
     def test_openai_manifest_has_chinese_display_name(self) -> None:
         manifest = (SKILL_ROOT / "agents" / "openai.yaml").read_text(encoding="utf-8-sig")
@@ -236,6 +239,11 @@ class SkillRegressionTests(unittest.TestCase):
         document = Document(docx_path)
         self.assertEqual(len(document.sections), 1)
         section = document.sections[0]
+        self.assertEqual(section.footer.paragraphs[0].alignment, WD_ALIGN_PARAGRAPH.RIGHT)
+        self.assertEqual(
+            section.even_page_footer.paragraphs[0].alignment,
+            WD_ALIGN_PARAGRAPH.LEFT,
+        )
         expected_centimetres = {
             "page_width": 21.0,
             "page_height": 29.7,
@@ -258,11 +266,69 @@ class SkillRegressionTests(unittest.TestCase):
             self.assertGreaterEqual(len(footer_names), 2)
             footer_xml = "".join(package.read(name).decode("utf-8") for name in footer_names)
             self.assertGreaterEqual(footer_xml.count(" PAGE "), 2)
+            namespace = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+            for footer_name in footer_names:
+                footer_root = ET.fromstring(package.read(footer_name))
+                visible_page_number = "".join(
+                    node.text or "" for node in footer_root.findall(".//w:t", namespace)
+                )
+                self.assertEqual(visible_page_number, "- 1 -")
+                for run in footer_root.findall(".//w:r", namespace):
+                    text = "".join(node.text or "" for node in run.findall("w:t", namespace))
+                    instruction = "".join(
+                        node.text or "" for node in run.findall("w:instrText", namespace)
+                    )
+                    if not text and "PAGE" not in instruction:
+                        continue
+                    properties = run.find("w:rPr", namespace)
+                    self.assertIsNotNone(properties)
+                    fonts = properties.find("w:rFonts", namespace)
+                    self.assertIsNotNone(fonts)
+                    self.assertEqual(fonts.get(f"{{{namespace['w']}}}eastAsia"), "宋体")
+                    self.assertEqual(fonts.get(f"{{{namespace['w']}}}ascii"), "宋体")
+                    self.assertEqual(
+                        properties.find("w:sz", namespace).get(f"{{{namespace['w']}}}val"),
+                        "28",
+                    )
             settings_xml = package.read("word/settings.xml").decode("utf-8")
             self.assertIn("evenAndOddHeaders", settings_xml)
 
             document_root = ET.fromstring(package.read("word/document.xml"))
-            namespace = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+            header_names = sorted(
+                name for name in names if name.startswith("word/header") and name.endswith(".xml")
+            )
+            for header_name in header_names:
+                header_root = ET.fromstring(package.read(header_name))
+                self.assertFalse(
+                    "".join(node.text or "" for node in header_root.findall(".//w:t", namespace)).strip()
+                )
+                for tag in ("drawing", "pict", "object", "fldChar"):
+                    self.assertIsNone(header_root.find(f".//w:{tag}", namespace))
+
+            def text_of(paragraph: ET.Element) -> str:
+                return "".join(node.text or "" for node in paragraph.findall(".//w:t", namespace))
+
+            body_paragraph = next(
+                paragraph
+                for paragraph in document_root.findall(".//w:body/w:p", namespace)
+                if "认缴及实缴出资均为1000万元" in text_of(paragraph)
+            )
+            body_indent = body_paragraph.find("w:pPr/w:ind", namespace)
+            self.assertIsNotNone(body_indent)
+            self.assertEqual(
+                body_indent.get(f"{{{namespace['w']}}}firstLineChars"),
+                "200",
+            )
+            self.assertIsNone(body_indent.get(f"{{{namespace['w']}}}firstLine"))
+            spacing = body_paragraph.find("w:pPr/w:spacing", namespace)
+            self.assertEqual(spacing.get(f"{{{namespace['w']}}}line"), "560")
+            self.assertEqual(spacing.get(f"{{{namespace['w']}}}lineRule"), "exact")
+            for run in body_paragraph.findall("w:r", namespace):
+                fonts = run.find("w:rPr/w:rFonts", namespace)
+                self.assertEqual(fonts.get(f"{{{namespace['w']}}}eastAsia"), "仿宋_GB2312")
+                self.assertEqual(fonts.get(f"{{{namespace['w']}}}ascii"), "Times New Roman")
+                self.assertEqual(fonts.get(f"{{{namespace['w']}}}hAnsi"), "Times New Roman")
+
             redhead_runs = []
             for run in document_root.findall(".//w:r", namespace):
                 text = "".join(item.text or "" for item in run.findall(".//w:t", namespace))
@@ -344,6 +410,49 @@ class SkillRegressionTests(unittest.TestCase):
         self.assertIn("line spacing is 12 pt/exact; expected exactly 28 pt", result.stdout)
         self.assertIn("recipient uses size 5 pt; expected 16 pt", result.stdout)
         self.assertIn("table 1 row 1 cell 1 uses size 5 pt; expected 10.5 pt", result.stdout)
+
+    def test_docx_validator_enforces_character_indent_western_font_blank_header_and_page_number_format(
+        self,
+    ) -> None:
+        spec_path, valid_docx = self.build_docx()
+        document = Document(valid_docx)
+        body_paragraph = next(
+            paragraph
+            for paragraph in document.paragraphs
+            if "认缴及实缴出资均为1000万元" in paragraph.text
+        )
+        indent = body_paragraph._p.get_or_add_pPr().find(qn("w:ind"))
+        self.assertIsNotNone(indent)
+        indent.attrib.pop(qn("w:firstLineChars"), None)
+        indent.set(qn("w:firstLine"), "640")
+        for run in body_paragraph.runs:
+            fonts = run._element.get_or_add_rPr().get_or_add_rFonts()
+            fonts.set(qn("w:ascii"), "Arial")
+            fonts.set(qn("w:hAnsi"), "Arial")
+
+        section = document.sections[0]
+        section.header.paragraphs[0].text = "不应存在的页眉"
+        odd_footer = section.footer.paragraphs[0]
+        odd_footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
+        self.assertGreaterEqual(len(odd_footer.runs), 3)
+        odd_footer.runs[0].text = "-"
+        odd_footer.runs[-1].text = "-"
+
+        mutated_docx = self.work / "fixed-layout-drift.docx"
+        document.save(mutated_docx)
+        result = self.run_script(
+            "validate_report.py", "--spec", spec_path, "--docx", mutated_docx
+        )
+
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("uses Western font Arial; expected Times New Roman", result.stdout)
+        self.assertIn(
+            "first-line indent is 32/point; expected 2 characters via w:firstLineChars",
+            result.stdout,
+        )
+        self.assertIn("header must contain no content", result.stdout)
+        self.assertIn("odd-page footer is not aligned to the outside right edge", result.stdout)
+        self.assertIn("footer format is '-1-'; expected '- 1 -'", result.stdout)
 
     def test_validator_rejects_duplicate_main_heading(self) -> None:
         invalid = copy.deepcopy(self.spec)

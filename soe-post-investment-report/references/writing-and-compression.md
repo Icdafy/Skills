@@ -1,92 +1,120 @@
-# Writing and compression rules
+# 正式上行文写作与篇幅压缩规则
 
-## Audience and stance
+## 受文对象和行文立场
 
-Write for a supervising state-owned-assets authority or equivalent upper-level unit. Use formal, factual, restrained Chinese. The report informs and accounts for management work; it does not use marketing language, investment-promotion language, or an unnecessary request-for-approval ending.
+报告面向国资监管机构、主管部门或其他上级单位，属于陈述情况、反映问题和说明管理工作的报告型上行文。语言必须正式、客观、准确、克制，既如实反映进展，也不回避问题；不得写成市场宣传、招商推介、项目路演或请示审批材料。
 
-Prefer:
+基本逻辑为：
 
-- conclusion first, then evidence;
-- exact project names and cut-off dates;
-- concise descriptions of change, current condition, risk, action, and result;
-- balanced disclosure of progress and problems;
-- clear attribution such as `根据经审计财务报表` or `据企业提供的截至……运营数据` when useful.
+1. 说明报送依据、工作目的和数据截止日期；
+2. 先给出总体结论，再列项目构成和本期变化；
+3. 用可核验数字支撑经营、财务、治理和退出情况；
+4. 对重大风险写清现状、影响、已采取措施和下一步安排；
+5. 只报告需要上级知悉的信息，不向上级发出命令，也不在报告中暗含审批请求。
 
-Avoid:
+优先采用：
 
-- `行业领先`, `前景广阔`, `显著提升`, `全面赋能`, or similar claims without evidence;
-- hiding a risk behind euphemism;
-- blending forecasts with actual results;
-- copying long introductions, policies, resolutions, or business descriptions from source files;
-- repeating attachment tables in prose.
+- 结论在前、事实随后；
+- 项目法定全称和明确截止日期；
+- “变化—现状—风险—措施—结果／下一步”的短链条；
+- 对进展和问题作平衡披露；
+- 需要说明口径时使用“根据经审计财务报表”“据企业提供的截至……经营数据”等准确归因；
+- 使用“截至……”“报告期内……”“目前……”“下一步……”等时间和管理节点词。
 
-## Paragraph logic
+避免采用：
 
-For each category or project, use only the elements that matter:
+- 没有证据支撑的“行业领先”“前景广阔”“显著提升”“全面赋能”等宣传表述；
+- 用委婉词掩盖风险或把问题写成成绩；
+- 混写预测数和实际数、预算数和决算数、母公司口径和合并口径；
+- 大段照抄政策、决议、企业简介、业务介绍或历史沿革；
+- 在正文中重复附件表格；
+- 对上级单位使用“必须”“责成”“抓好落实”等下行文措辞；
+- 报告结尾使用“请予批复”等请示性表述。确需收束时使用“特此报告”。
 
-1. status at the reporting cut-off;
-2. current-period material change;
-3. one or more decision-relevant figures;
-4. material governance, operational, financial, or exit issue;
-5. action taken or next management step.
+## 总体段落的内容逻辑
 
-A useful project paragraph pattern is:
+第一部分先回答“本年度投了什么、存量怎样、发生哪些变化、总体风险如何”。建议按以下顺序写：
 
-`截至〔日期〕，〔项目当前状态〕。报告期内，〔发生的关键变化〕；〔关键指标及同比、预算或协议口径〕。目前主要存在〔风险或约束〕，公司已〔措施〕，下一步将〔可执行动作〕。`
+1. 数据截止日和统计口径；
+2. 项目总数、类别构成及与上期相比的新增、退出、更名、重分类；
+3. 投资、实缴、回收、收益等一至数项决策相关总量；
+4. 总体经营、财务、治理或退出判断；
+5. 需上级重点知悉的共性风险和投后管理安排。
 
-Do not force this pattern when there is no evidence for one of its parts.
+不要在开头堆砌项目逐项明细。总体结论中的项目数、金额和状态必须与项目名册及附件一致。
 
-## Main body versus attachments
+## 项目段落的内容逻辑
 
-Keep in the main body:
+每个类别或项目只选用有证据且有决策价值的要素：
 
-- current portfolio composition and major movements;
-- material investment, recovery, valuation, revenue, profit, and risk figures;
-- decisions or events that require supervisory awareness;
-- conclusions and next management actions.
+1. 截止报告时点的当前状态；
+2. 报告期内重大变化；
+3. 一项或数项关键数字；
+4. 重大治理、经营、财务或退出问题；
+5. 已采取措施和下一步管理动作。
 
-Move to attachments:
+可参考以下句式，但无证据的要素不得强行补写：
 
-- complete fund or company histories;
-- full partner, shareholder, or board-meeting inventories;
-- transaction, contract, customer, product, IP, or pipeline lists;
-- detailed financial statements and budget tables;
-- full governance records;
-- calculation schedules and supporting evidence.
+`截至〔日期〕，〔项目当前状态〕。报告期内，〔关键变化〕；〔关键指标及同比、预算或协议口径〕。目前主要存在〔风险或约束〕，公司已〔措施〕，下一步将〔可执行动作〕。`
 
-## Page-budget method
+涉及风险时，至少回答“风险是什么、影响到什么、目前处于何种状态、谁在采取什么措施、下一节点是什么”。只写“持续关注”“积极推进”而无对象、动作或时点，不构成有效管理表述。
 
-Use this order when the body exceeds six pages:
+## 问答材料转写规则
 
-1. remove duplicated history or background;
-2. replace long meeting narratives with one conclusion and an attachment reference;
-3. retain only latest, comparable, and decision-relevant metrics;
-4. combine unchanged projects into a concise portfolio statement when accurate;
-5. move complete tables and calculations to attachments;
-6. shorten basis language to one paragraph;
-7. remove statements that add no new fact or management implication.
+来源材料如为问答、访谈或项目回复，不得在正式报告中保留口语、问答标签和个人化表达。应将有依据的内容转写为三号仿宋_GB2312正文，使用 `w:firstLineChars=200` 首行空两字和固定 28 磅行距，并纳入相应项目的“现状—变化—风险—措施”逻辑。问答中的判断只有在能明确识别责任主体、口径、期间和来源时才能进入正文；其余保留在事实台账或附件说明中。
 
-Never achieve length control by reducing below the template's 16 pt body font, 28 pt body line spacing, or margins.
+## 正文与附件边界
 
-## Heading discipline
+正文保留：
 
-- Do not duplicate headings.
-- Keep numbering consecutive within each level.
-- Use official current project names consistently.
-- Do not leave a heading with no substantive text.
-- Do not promote minor project detail to a new main-body level merely to mirror a source file.
+- 当前项目组合及重大变化；
+- 重大投资、回收、估值、营业收入、利润和风险数字；
+- 需要上级知悉的决策、事件或异常；
+- 当前结论、已采取措施和下一步管理动作。
 
-## Missing information
+附件承载：
 
-Do not insert `待补充`, `XXX`, guessed values, or fabricated narrative into a final report. Keep missing items in the delivery note or fact ledger. If the user explicitly asks for a visible placeholder draft, use bracketed placeholders and label the document as a draft; the final validator must run without template mode.
+- 完整基金或企业沿革；
+- 全量合伙人、股东、董事会或会议清单；
+- 交易、合同、客户、产品、知识产权或储备项目清单；
+- 详细财务报表和预算表；
+- 完整治理记录；
+- 计算底稿和支撑证据。
 
-## Attachments
+## 页数超限时的压缩顺序
 
-Give each attachment a clear title tied to a project or evidence class. Common reusable attachment families are:
+正文超过 6 页时，按以下顺序处理：
 
-1. equity-investment fund post-investment management report;
-2. equity-company detailed post-investment report, including governance and financial tables;
-3. early-stage or technology-company report, including operations, IP, financing, and trigger risks;
-4. SPV report, including partner governance, recovery, operations, assets, and cooperation matters.
+1. 删除重复历史和背景；
+2. 把逐次会议叙述压缩为一个结论和一个附件引用；
+3. 只保留最新、可比较、与管理判断相关的指标；
+4. 在事实允许时，把无变化项目合并为简洁的组合陈述；
+5. 将完整表格和计算过程移入附件；
+6. 把依据性文字压缩为一段；
+7. 删除没有新增事实或管理含义的句子。
 
-Use only the families supported by the current project registry. The attachment list, numbering, titles, and generated attachment pages must match exactly.
+不得通过把正文缩小到 16 pt 以下、把固定行距降到 28 磅以下或收窄页边距来控制页数。
+
+## 标题纪律
+
+- 不得重复标题。
+- 同一层级序号必须连续。
+- 全文统一使用项目当前正式名称。
+- 标题后必须有实质内容。
+- 不得仅为照搬来源文件，把次要项目细节提升为新的正文层级。
+- 一级、二级、三级标题分别使用三号黑体、三号楷体_GB2312 加粗、三号仿宋_GB2312 加粗；标题段落同样使用字符单位首行空两字。
+
+## 信息缺失
+
+最终报告不得出现“待补充”“XXX”、猜测数值或编造叙述。缺失项留在交付说明或事实台账。用户明确要求可见占位草稿时，可使用方括号占位，但必须标明“草稿”；最终校验不得使用模板模式。
+
+## 附件组织
+
+附件标题应与项目或证据类别直接对应。常见可复用附件类型包括：
+
+1. 股权投资基金投后管理报告；
+2. 参股企业详细投后报告，含治理和财务表；
+3. 早期或科技企业投后报告，含经营、知识产权、融资和触发风险；
+4. SPV 投后报告，含合伙治理、回收、经营、资产和合作事项。
+
+只使用项目名册实际支持的附件类型。附件目录、编号、标题和实际生成的附件页面必须完全一致。
