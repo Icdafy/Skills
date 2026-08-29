@@ -28,7 +28,6 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     BODY_LINE_SPACING,
     BODY_SIZE,
     BOTTOM_MARGIN_CM,
-    FANGSONG_FONT,
     FIRST_LINE_INDENT_CHARS,
     FIRST_LINE_INDENT_PT,
     INDENT,
@@ -36,7 +35,10 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     LEFT_MARGIN_CM,
     NUMBER_FONT,
     PAGE_HEIGHT_CM,
+    PAGE_NUMBER_FONT,
+    PAGE_NUMBER_PREFIX,
     PAGE_NUMBER_SIZE,
+    PAGE_NUMBER_SUFFIX,
     PAGE_WIDTH_CM,
     RIGHT_MARGIN_CM,
     SUBTITLE_LINE_SPACING,
@@ -56,9 +58,8 @@ from embed_fonts import (  # noqa: E402
 from font_preflight import required_font_status  # noqa: E402
 from quality_check import validate  # noqa: E402
 
-# Page numbers follow the explicit footer rule: `-1-`, 三号 (16 pt),
-# 仿宋_GB2312 throughout, odd pages right / even pages left.
-PAGE_NUMBER_FONT = FANGSONG_FONT
+# Page-number text, face and size come from format_spec so the renderer and
+# delivery-time readback enforce the same explicit footer rule.
 
 
 def set_east_asia_font(run, font_name: str, size: float, bold: bool = False) -> None:
@@ -116,7 +117,7 @@ def set_body_layout(paragraph) -> None:
 
 
 def append_page_field(paragraph) -> None:
-    leading = paragraph.add_run("-")
+    leading = paragraph.add_run(PAGE_NUMBER_PREFIX)
     set_east_asia_font(leading, PAGE_NUMBER_FONT, PAGE_NUMBER_SIZE)
     field = OxmlElement("w:fldSimple")
     field.set(qn("w:instr"), "PAGE")
@@ -136,17 +137,24 @@ def append_page_field(paragraph) -> None:
     field_run.append(text)
     field.append(field_run)
     paragraph._p.append(field)
-    trailing = paragraph.add_run("-")
+    trailing = paragraph.add_run(PAGE_NUMBER_SUFFIX)
     set_east_asia_font(trailing, PAGE_NUMBER_FONT, PAGE_NUMBER_SIZE)
 
 
 def format_footer(footer, alignment: WD_ALIGN_PARAGRAPH) -> None:
     paragraph = footer.paragraphs[0]
+    paragraph.clear()
     paragraph.alignment = alignment
     paragraph.paragraph_format.space_before = Pt(0)
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.paragraph_format.line_spacing = 1.0
     append_page_field(paragraph)
+
+
+def clear_header(header) -> None:
+    """Keep the header part present but remove all visible header content."""
+    for paragraph in header.paragraphs:
+        paragraph.clear()
 
 
 def configure_document(document: Document) -> None:
@@ -159,6 +167,9 @@ def configure_document(document: Document) -> None:
     section.right_margin = Cm(RIGHT_MARGIN_CM)
     section.start_type = WD_SECTION_START.NEW_PAGE
     document.settings.odd_and_even_pages_header_footer = True
+    section.different_first_page_header_footer = False
+    clear_header(section.header)
+    clear_header(section.even_page_header)
     format_footer(section.footer, WD_ALIGN_PARAGRAPH.RIGHT)
     format_footer(section.even_page_footer, WD_ALIGN_PARAGRAPH.LEFT)
 

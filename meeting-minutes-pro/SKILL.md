@@ -200,7 +200,7 @@ python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目
   --mode qa-summary
 ```
 
-脚本会再次执行文本校验（文本校验用过 `--allow-line` 时此处传入相同参数），并依据公司样例设置 A4 页面、页边距、字体、字号、固定行距、两字缩进、全文西文字母与阿拉伯数字 Times New Roman（字号随所在文字，`5G`/`A4`/`Qwen3` 等西文段整体走西文字体）、问答组间空行，以及三号仿宋_GB2312 的 `-1-` 页码（奇偶页不同，奇数页居右、偶数页居左）。版式规约集中在 `scripts/format_spec.py`，与文本校验共用同一份层级与字体定义。生成后默认把 fsType 允许嵌入的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使文件在未安装这两款字体的机器上仍忠实呈现（`--no-embed` 关闭；方正小标宋因许可禁止嵌入，与其在 PDF 中走轮廓一致，自动跳过）；可用 `python <skill-dir>/scripts/embed_fonts.py --docx 会议纪要.docx --verify` 复核嵌入字体。生成后运行渲染检查：
+脚本会再次执行文本校验（文本校验用过 `--allow-line` 时此处传入相同参数），并依据公司样例设置 A4 页面、页边距、字体、字号、固定行距、两字缩进、全文西文字母与阿拉伯数字 Times New Roman（字号随所在文字，`5G`/`A4`/`Qwen3` 等西文段整体走西文字体）、问答组间空行，以及四号宋体的 `- 1 -` 页码（奇偶页不同，奇数页居右、偶数页居左，页眉不设内容）。版式规约集中在 `scripts/format_spec.py`，与文本校验共用同一份层级与字体定义。生成后默认把 fsType 允许嵌入的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使文件在未安装这两款字体的机器上仍忠实呈现（`--no-embed` 关闭；方正小标宋因许可禁止嵌入，与其在 PDF 中走轮廓一致，自动跳过）；可用 `python <skill-dir>/scripts/embed_fonts.py --docx 会议纪要.docx --verify` 复核嵌入字体。生成后运行渲染检查：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/render_docx.py --input "会议纪要.docx"
@@ -208,7 +208,7 @@ python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目
 
 逐页检查生成的 PDF：字体替换（结果中 `missing_required_fonts` 或 `substituted_fonts` 非空即不得交付；标题方正小标宋因许可禁止嵌入、以轮廓输出属正常，须目检字形）、标题偏移、段落截断和异常分页均需修正后再次生成并渲染。页码位置（奇数页居右、偶数页居左）已由 `render_docx.py` 自动核验，结果 JSON 的 `page_number_check.ok` 为 `false` 即位置有误，须修正。检查全部通过后删除该 PDF，仅交付 DOCX。本机既无 Microsoft Word 也无 LibreOffice 时，向用户说明无法本机渲染，请用户自行打开 DOCX 核对版式。
 
-DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段核验 DOCX 文本与通过校验的纪要文本一致（忽略空白），并逐段核验各 run 的字体、字号、加粗符合规约（样式回归无需渲染即被拦截）；段落丢失、内容错位、样式漂移或 DOCX 旧于纪要文本均拦截。生成 DOCX 时用过 `--subtitle` 的，这里传入相同的 `--subtitle`，副标题位置将被精确核对（不传则按单行豁免）：
+DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段核验 DOCX 文本与通过校验的纪要文本一致（忽略空白），逐段核验各 run 的字体、字号、加粗，并核验页眉为空、页脚 `- 1 -` PAGE 域为四号宋体且奇右偶左（样式回归无需渲染即被拦截）；段落丢失、内容错位、样式漂移或 DOCX 旧于纪要文本均拦截。生成 DOCX 时用过 `--subtitle` 的，这里传入相同的 `--subtitle`，副标题位置将被精确核对（不传则按单行豁免）：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目录>/<文件名>.json --ledger coverage.txt --mode qa-summary --docx 会议纪要.docx --subtitle "综合办公室"
@@ -242,7 +242,7 @@ DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段�
 - `scripts/format_spec.py`：排版规约的唯一真源——层级识别正则、角色→字体/字号/加粗映射、西文段规则、页面几何与字体清单；`quality_check.py`（校验）、`create_minutes_docx.py`（渲染）、`render_docx.py`、`font_preflight.py`、`embed_fonts.py` 全部从此导入，校验与渲染判定不会漂移。
 - `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX（版式取自 `format_spec.py`，首行缩进用字符单位 `w:firstLineChars` 随字号自适应），并默认将可嵌入的随附字体嵌入 DOCX（`--no-embed` 关闭）。
 - `scripts/embed_fonts.py`：按 ECMA-376 混淆字体机制把 fsType 允许的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使其在未装字体的机器上忠实呈现（渲染器无关，不依赖 Word/LibreOffice）；`--verify` 反混淆各嵌入部件并校验为有效字体；方正小标宋 fsType 受限，不嵌入。
-- `scripts/docx_style_check.py`：交付时 DOCX 样式回读——逐段依 `format_spec` 重新推导应有字体/字号/加粗并核对各 run，不渲染即可拦截样式回归；已并入 `check_all.py --docx`。
+- `scripts/docx_style_check.py`：交付时 DOCX 样式回读——逐段依 `format_spec` 重新推导应有字体/字号/加粗并核对各 run，同时机械核验页眉为空、页脚 PAGE 域格式、四号宋体和奇右偶左；不渲染即可拦截样式回归，已并入 `check_all.py --docx`。
 - `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，并用文字坐标自动核验页码奇右偶左（`page_number_check`），用于交付前逐页检查。
 - `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装随技能提供的字体。
 - `glossary/`：按项目或公司维护的热词术语文件，跨会议复用（仅本地，不入库）；`glossary/industry/`：随技能分发的行业术语库（低空经济、商业航天），供相关行业会议挑选热词并作规范写法参照。

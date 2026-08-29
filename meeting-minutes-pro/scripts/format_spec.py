@@ -30,8 +30,9 @@ INDENT = "　　"
 # must therefore write these exact strings as w:eastAsia.
 TITLE_FONT = "方正小标宋简体"   # 大标题：二号方正小标宋简体
 KAI_FONT = "楷体_GB2312"        # 二级标题（加粗）、副标题
-FANGSONG_FONT = "仿宋_GB2312"   # 正文、三/四级标题、页码
+FANGSONG_FONT = "仿宋_GB2312"   # 正文、三/四级标题
 HEI_FONT = "SimHei"             # 一级标题：三号黑体（SimHei 为系统字体，不入替换表）
+SONG_FONT = "宋体"               # 页码：四号宋体（SimSun）
 NUMBER_FONT = "Times New Roman"  # 西文字母与阿拉伯数字
 
 # --- Heading grammar: 一、/（一）/1./（1） ---------------------------------
@@ -82,7 +83,10 @@ WESTERN_SEGMENT = re.compile(r"[0-9A-Za-z]+(?:[.,\-/][0-9A-Za-z]+)*%?")
 TITLE_SIZE = 22          # 二号
 SUBTITLE_SIZE = 16       # 三号
 BODY_SIZE = 16           # 三号
-PAGE_NUMBER_SIZE = 16    # 三号
+PAGE_NUMBER_FONT = SONG_FONT
+PAGE_NUMBER_SIZE = 14    # 四号
+PAGE_NUMBER_PREFIX = "- "
+PAGE_NUMBER_SUFFIX = " -"
 
 # --- Exact line spacing (pt) ----------------------------------------------
 TITLE_LINE_SPACING = 30
@@ -151,6 +155,16 @@ FONT_CATALOG: tuple[dict[str, object], ...] = (
         "embeddable": True,   # fsType=0
         "pdf_marker": "FangSong_GB2312",
         "substitute_alert": "FangSong",
+    },
+    {
+        "family": "SimSun",
+        "run_name": SONG_FONT,
+        "aliases": ("SimSun", "宋体", "simsun.ttc"),
+        "asset": None,        # system font, not bundled
+        "registry_name": None,
+        "embeddable": False,
+        "pdf_marker": None,
+        "substitute_alert": None,
     },
     {
         "family": "SimHei",

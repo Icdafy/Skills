@@ -12,13 +12,13 @@
 ```
 规约层  format_spec.py
         └ 层级识别正则、角色→字体/字号/加粗、西文段规则、页面几何、
-          首行缩进（字符单位）、字体清单——唯一真源
+          页码格式与字体、首行缩进（字符单位）、字体清单——唯一真源
         └ 被 quality_check / create_minutes_docx / render_docx /
           font_preflight / embed_fonts / docx_style_check 全部 import
 渲染层  create_minutes_docx.py   文本 → DOCX（角色映射·西文段·字符缩进·QA 分隔）
 嵌入层  embed_fonts.py           ECMA-376 混淆嵌入 + 反混淆校验（fsType 闸门）
 验收层  quality_check.py         文本层：缩进/层级/标点/问答/禁词（面向「行」）
-        docx_style_check.py      样式层：逐段核验 run 字体/字号/加粗（不渲染）
+        docx_style_check.py      样式层：逐段核验 run，并核验空页眉与页码格式/字体/对齐（不渲染）
         render_docx.py           渲染层：字体替换 + 页码奇右偶左（PDF 坐标）
         check_all.py             一键编排：内容回读 + 样式回读 + 副标题精确核对 + 归档
 ```

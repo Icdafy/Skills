@@ -33,6 +33,7 @@ if HAS_DOCX:
 
 def _build(path: Path) -> "Document":
     document = Document()
+    CM.configure_document(document)
     CM.add_title(document, "某某公司访谈纪要")
     CM.add_content_paragraph(document, "　　一、完整总结概述")
     CM.add_content_paragraph(document, "　　（一）项目背景")
@@ -71,6 +72,33 @@ class StyleReadbackTests(unittest.TestCase):
             document.save(path)
             problems = DSC.check_docx_style(path)
             self.assertTrue(any("加粗" in p for p in problems))
+
+    def test_wrong_footer_font_is_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            document.sections[0].footer.paragraphs[0].runs[0].font.name = "仿宋_GB2312"
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("奇数页页脚" in p and "字体" in p for p in problems))
+
+    def test_unspaced_footer_format_is_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            document.sections[0].footer.paragraphs[0].runs[0].text = "-"
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("页码格式" in p and "- {PAGE} -" in p for p in problems))
+
+    def test_nonempty_header_is_flagged(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            document.sections[0].header.paragraphs[0].add_run("内部资料")
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("页眉应为空" in p for p in problems))
 
 
 if __name__ == "__main__":

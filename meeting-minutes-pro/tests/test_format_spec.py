@@ -69,6 +69,14 @@ class RoleMappingTests(unittest.TestCase):
         self.assertEqual(FS.paragraph_role("正文一段。"), ("body", FS.FANGSONG_FONT, False))
 
 
+class PageNumberSpecTests(unittest.TestCase):
+    def test_fourth_size_simsun_with_spaced_dashes(self) -> None:
+        self.assertEqual(FS.PAGE_NUMBER_FONT, "宋体")
+        self.assertEqual(FS.PAGE_NUMBER_FONT, FS.SONG_FONT)
+        self.assertEqual(FS.PAGE_NUMBER_SIZE, 14)
+        self.assertEqual((FS.PAGE_NUMBER_PREFIX, FS.PAGE_NUMBER_SUFFIX), ("- ", " -"))
+
+
 class FontCatalogueTests(unittest.TestCase):
     def test_embeddable_fonts_are_the_two_gb2312_faces(self) -> None:
         self.assertEqual(
@@ -79,6 +87,12 @@ class FontCatalogueTests(unittest.TestCase):
     def test_title_face_is_not_embeddable(self) -> None:
         title = next(e for e in FS.FONT_CATALOG if e["run_name"] == FS.TITLE_FONT)
         self.assertFalse(title["embeddable"])
+
+    def test_simsun_is_required_as_localised_system_font(self) -> None:
+        song = next(e for e in FS.FONT_CATALOG if e["run_name"] == FS.SONG_FONT)
+        self.assertEqual(song["family"], "SimSun")
+        self.assertIsNone(song["asset"])
+        self.assertFalse(song["embeddable"])
 
     def test_pdf_markers_and_alerts(self) -> None:
         self.assertEqual(FS.pdf_required_markers(), ("KaiTi_GB2312", "FangSong_GB2312"))

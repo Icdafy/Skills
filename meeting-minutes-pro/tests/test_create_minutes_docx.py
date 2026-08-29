@@ -13,7 +13,7 @@ from pathlib import Path
 try:
     import docx  # noqa: F401
     from docx import Document
-    from docx.enum.text import WD_LINE_SPACING
+    from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
     from docx.oxml.ns import qn
     from docx.shared import Cm, Pt
     HAS_DOCX = True
@@ -39,6 +39,20 @@ def _east_asia(run):
 def _runs(paragraph):
     return [(r.text, r.font.name, _east_asia(r), r.bold)
             for r in paragraph.runs if r.text]
+
+
+def _footer_pattern(paragraph):
+    parts = []
+    for child in paragraph._p:
+        if child.tag == qn("w:r"):
+            parts.append("".join(node.text or "" for node in child.iter(qn("w:t"))))
+        elif child.tag == qn("w:fldSimple"):
+            parts.append("{PAGE}" if child.get(qn("w:instr")) == "PAGE" else "{FIELD}")
+    return "".join(parts)
+
+
+def _part_text(part):
+    return "".join(node.text or "" for node in part._element.iter(qn("w:t")))
 
 
 @unittest.skipUnless(HAS_DOCX, "python-docx not installed")
@@ -120,8 +134,25 @@ class PageLayoutTests(unittest.TestCase):
         self.assertEqual(round(section.bottom_margin.cm, 1), 3.5)
         self.assertEqual(round(section.left_margin.cm, 1), 2.8)
         self.assertEqual(round(section.right_margin.cm, 1), 2.6)
-        self.assertIn("PAGE", section.footer.paragraphs[0]._p.xml)
-        self.assertIn("PAGE", section.even_page_footer.paragraphs[0]._p.xml)
+        self.assertTrue(doc.settings.odd_and_even_pages_header_footer)
+        self.assertFalse(section.different_first_page_header_footer)
+        self.assertEqual(section.footer.paragraphs[0].alignment, WD_ALIGN_PARAGRAPH.RIGHT)
+        self.assertEqual(
+            section.even_page_footer.paragraphs[0].alignment,
+            WD_ALIGN_PARAGRAPH.LEFT,
+        )
+        for footer in (section.footer, section.even_page_footer):
+            paragraph = footer.paragraphs[0]
+            self.assertEqual(_footer_pattern(paragraph), "- {PAGE} -")
+            for run in paragraph._p.iter(qn("w:r")):
+                properties = run.find(qn("w:rPr"))
+                fonts = properties.find(qn("w:rFonts"))
+                self.assertEqual(fonts.get(qn("w:ascii")), "宋体")
+                self.assertEqual(fonts.get(qn("w:hAnsi")), "宋体")
+                self.assertEqual(fonts.get(qn("w:eastAsia")), "宋体")
+                self.assertEqual(properties.find(qn("w:sz")).get(qn("w:val")), "28")
+        for header in (section.header, section.even_page_header, section.first_page_header):
+            self.assertEqual(_part_text(header).strip(), "")
 
     def test_qa_separator_is_blank_exact_spacing(self) -> None:
         doc = Document()

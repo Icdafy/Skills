@@ -17,7 +17,7 @@ SPEC.loader.exec_module(RD)
 
 class FooterTokenTests(unittest.TestCase):
     def test_dashes_and_digits_match(self) -> None:
-        for token in ("-1-", "-", "1", "12", " 2019", "- 3 -"):
+        for token in ("- 1 -", "-", "1", "12", " 2019", "- 3 -"):
             self.assertTrue(RD.is_footer_token(token), token)
 
     def test_letters_and_cjk_do_not_match(self) -> None:

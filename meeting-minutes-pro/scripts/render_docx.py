@@ -131,7 +131,7 @@ def inspect_pdf(pdf: Path) -> tuple[int, list[str]]:
         return pages, fonts_found
 
 
-# Footer glyphs are dashes and digits only (`-1-`); CJK body text never matches.
+# Footer glyphs are dashes, spaces and digits (`- 1 -`); CJK body text never matches.
 _FOOTER_TOKEN = re.compile(r"^[-‐-―\d\s]+$")
 
 
