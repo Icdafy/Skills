@@ -46,8 +46,8 @@ QA_SECTION_MARKERS = (
 )
 
 # 纪要本身已经承载该场访谈内容，正文不得反复添加泛化的发言主体或
-# “据其介绍/其表示”一类归因套话。固定基本信息字段“访谈对象：”单独
-# 豁免；正文命中后不可用 --allow-line 放行。
+# “据其介绍/其表示”“个人估计/判断/印象”一类归因套话。固定基本信息
+# 字段“访谈对象：”单独豁免；正文命中后不可用 --allow-line 放行。
 REDUNDANT_ATTRIBUTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (
         re.compile(
@@ -66,6 +66,15 @@ REDUNDANT_ATTRIBUTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (
         re.compile(r"(?:其|对方|本人)(?:表示|认为|介绍|判断|估计|提到|指出|透露|称)"),
         "“其表示/对方认为”类归因套话",
+    ),
+    (
+        re.compile(
+            r"(?:我|本人)?个人(?:的)?(?:初步|大致|主观)?"
+            r"(?:估计|判断|印象|认为|看法|观点|理解|感觉|推测|意见)|"
+            r"(?:我|本人)(?:的)?(?:初步|大致|主观)?"
+            r"(?:估计|判断|印象|看法|观点|理解|感觉|推测|意见)"
+        ),
+        "“个人估计/判断/印象”类归因套话",
     ),
 ]
 
@@ -251,8 +260,8 @@ def validate(
         for pattern, label in REDUNDANT_ATTRIBUTION_PATTERNS:
             if pattern.search(content):
                 errors.append(
-                    f"第 {line_number} 行出现冗余的受访归因表述（{label}）；"
-                    "请直接陈述实质内容。完整总结概述不得添加泛化主体前缀，"
+                    f"第 {line_number} 行出现冗余归因表述（{label}）；"
+                    "请删除归因外壳并完整保留后续实质内容。完整总结概述不得添加泛化主体前缀，"
                     "完整问答纪要的“答：”后应直接写答复；此规则不可用 "
                     "--allow-line 放行。"
                 )
@@ -455,6 +464,7 @@ def main() -> int:
     text = args.input.read_text(encoding="utf-8-sig")
     qa_pairs = len(re.findall(r"^\s*　　问：", text, re.MULTILINE))
     print("纪要文本校验通过。")
+    print("提示：冗余归因表述检查：0 处残留。")
     if allowed_lines:
         released = "、".join(str(number) for number in sorted(allowed_lines))
         print(f"提示：第 {released} 行的表述已按转录稿真实内容放行，交付前向用户说明。")

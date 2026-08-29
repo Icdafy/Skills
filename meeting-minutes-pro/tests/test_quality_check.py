@@ -3,9 +3,14 @@
 
 from __future__ import annotations
 
+import contextlib
 import importlib.util
+import io
+import sys
+import tempfile
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 SCRIPT = Path(__file__).parents[1] / "scripts" / "quality_check.py"
@@ -236,6 +241,12 @@ class QualityCheckTests(unittest.TestCase):
             "受访者认为，当前需求保持增长。",
             "据其自述，产品精度达到0.05摄氏度。",
             "对方表示，交付周期约为三个月。",
+            "个人估计，市场规模约为500亿元。",
+            "从个人判断来看，需求仍会增长。",
+            "个人的初步印象是技术路线较为成熟。",
+            "我个人认为，公司计划具备可行性。",
+            "我的判断是明年可以完成扩产。",
+            "我的印象是团队经验较为丰富。",
         )
         for phrase in phrases:
             with self.subTest(phrase=phrase):
@@ -244,7 +255,7 @@ class QualityCheckTests(unittest.TestCase):
                     "一、会议主要内容",
                     substantial_summary() + phrase,
                 )
-                self.assertTrue(any("冗余的受访归因表述" in error for error in errors))
+                self.assertTrue(any("冗余归因表述" in error for error in errors))
 
     def test_redundant_attribution_is_rejected_in_qa_answer(self) -> None:
         errors = self.errors(
@@ -255,7 +266,7 @@ class QualityCheckTests(unittest.TestCase):
             "问：公司计划何时扩产？",
             "答：受访人表示，公司计划明年扩产。",
         )
-        self.assertTrue(any("冗余的受访归因表述" in error for error in errors))
+        self.assertTrue(any("冗余归因表述" in error for error in errors))
 
     def test_redundant_interviewee_label_is_rejected_in_title(self) -> None:
         errors = self.errors(
@@ -264,7 +275,7 @@ class QualityCheckTests(unittest.TestCase):
             substantial_summary(),
             title="受访人访谈纪要",
         )
-        self.assertTrue(any("冗余的受访归因表述" in error for error in errors))
+        self.assertTrue(any("冗余归因表述" in error for error in errors))
 
     def test_allow_line_cannot_release_redundant_attribution(self) -> None:
         doc = document(
@@ -275,6 +286,24 @@ class QualityCheckTests(unittest.TestCase):
         )
         errors = QUALITY_CHECK.validate(doc, "auto", {4})
         self.assertTrue(any("不可用 --allow-line 放行" in error for error in errors))
+
+    def test_success_reports_zero_redundant_attribution_residuals(self) -> None:
+        text = "\n".join(
+            [
+                "项目会议纪要",
+                INDENT + "一、会议主要内容",
+                INDENT + substantial_summary(),
+            ]
+        )
+        with tempfile.TemporaryDirectory() as temp_dir:
+            minutes = Path(temp_dir) / "会议纪要.txt"
+            minutes.write_text(text, encoding="utf-8")
+            output = io.StringIO()
+            argv = ["quality_check.py", str(minutes), "--mode", "auto"]
+            with mock.patch.object(sys, "argv", argv), contextlib.redirect_stdout(output):
+                code = QUALITY_CHECK.main()
+        self.assertEqual(0, code)
+        self.assertIn("冗余归因表述检查：0 处残留", output.getvalue())
 
     def test_risk_section_in_summary_is_rejected(self) -> None:
         errors = self.errors(
