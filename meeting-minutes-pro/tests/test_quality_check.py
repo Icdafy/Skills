@@ -222,11 +222,59 @@ class QualityCheckTests(unittest.TestCase):
             "项目会议纪要",
             "一、会议主要内容",
             substantial_summary(),
-            "受访人表示，最终交付时间以合同约定为准。",
+            "会议明确，最终交付时间以合同约定为准。",
         )
         errors = QUALITY_CHECK.validate(doc, "auto")
         self.assertTrue(any("核验或指导类表述" in error for error in errors))
         self.assertEqual([], QUALITY_CHECK.validate(doc, "auto", {4}))
+
+    def test_redundant_interviewee_attributions_are_rejected(self) -> None:
+        phrases = (
+            "据受访人介绍，公司已完成样机测试。",
+            "据受访人个人估计，市场规模约为500亿元。",
+            "受访人表示，公司计划明年扩产。",
+            "受访者认为，当前需求保持增长。",
+            "据其自述，产品精度达到0.05摄氏度。",
+            "对方表示，交付周期约为三个月。",
+        )
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                errors = self.errors(
+                    "auto",
+                    "一、会议主要内容",
+                    substantial_summary() + phrase,
+                )
+                self.assertTrue(any("冗余的受访归因表述" in error for error in errors))
+
+    def test_redundant_attribution_is_rejected_in_qa_answer(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            substantial_summary(),
+            "二、完整问答纪要",
+            "问：公司计划何时扩产？",
+            "答：受访人表示，公司计划明年扩产。",
+        )
+        self.assertTrue(any("冗余的受访归因表述" in error for error in errors))
+
+    def test_redundant_interviewee_label_is_rejected_in_title(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、会议主要内容",
+            substantial_summary(),
+            title="受访人访谈纪要",
+        )
+        self.assertTrue(any("冗余的受访归因表述" in error for error in errors))
+
+    def test_allow_line_cannot_release_redundant_attribution(self) -> None:
+        doc = document(
+            "项目会议纪要",
+            "一、会议主要内容",
+            substantial_summary(),
+            "受访人表示，公司计划明年扩产。",
+        )
+        errors = QUALITY_CHECK.validate(doc, "auto", {4})
+        self.assertTrue(any("不可用 --allow-line 放行" in error for error in errors))
 
     def test_risk_section_in_summary_is_rejected(self) -> None:
         errors = self.errors(
@@ -285,7 +333,7 @@ class QualityCheckTests(unittest.TestCase):
             "auto",
             "一、会议主要内容",
             substantial_summary()
-            + "受访人表示，公司期待核心团队进一步扩充，员工现有待遇高于行业平均水平。",
+            + "公司期待核心团队进一步扩充，员工现有待遇高于行业平均水平。",
         )
         self.assertEqual([], errors)
 

@@ -45,6 +45,30 @@ QA_SECTION_MARKERS = (
     "问答环节",
 )
 
+# 纪要本身已经承载该场访谈内容，正文不得反复添加泛化的发言主体或
+# “据其介绍/其表示”一类归因套话。固定基本信息字段“访谈对象：”单独
+# 豁免；正文命中后不可用 --allow-line 放行。
+REDUNDANT_ATTRIBUTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (
+        re.compile(
+            r"受访人|受访者|被访人|被访者|被访谈人|被访谈者|被访谈对象|"
+            r"被采访人|被采访者|被采访对象|受访方|受访嘉宾|采访对象|访谈对象|"
+            r"回答者|回答方|答复人|答复方"
+        ),
+        "泛化的受访主体",
+    ),
+    (
+        re.compile(
+            r"据(?:其|对方|本人)(?:个人)?(?:介绍|表示|认为|判断|估计|自述|所述|说法)"
+        ),
+        "“据其介绍/自述/估计”类归因套话",
+    ),
+    (
+        re.compile(r"(?:其|对方|本人)(?:表示|认为|介绍|判断|估计|提到|指出|透露|称)"),
+        "“其表示/对方认为”类归因套话",
+    ),
+]
+
 # Detect prohibited paired conjunctions anywhere within the same sentence.
 CLAUSE = r"[^\r\n。！？!?]*?"
 CONTRAST_PATTERNS = [
@@ -59,7 +83,7 @@ CONTRAST_PATTERNS = [
 
 # 硬性禁用：记录人员附注式的“待核实/待核验/待落实”、以及主观判断和指导性
 # 表述。纪要只客观陈述会议内容；仅当相同表述确为转录稿中真实谈及的会议
-# 内容（如受访人自己说“以合同为准”）时，才可用 --allow-line <行号> 放行。
+# 内容（如原话确为“最终时间以合同约定为准”）时，才可用 --allow-line <行号> 放行。
 PENDING_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     # 负向断言排除“期待核心”“接待核心”“现有待遇”等正常词语的误中。
     (
@@ -217,6 +241,22 @@ def validate(
     document = "\n".join(lines)
     if any(pattern.search(document) for pattern in CONTRAST_PATTERNS):
         errors.append("存在禁用的对照式连词组合。")
+
+    # 泛化受访主体和归因套话在总结、问答及其他正文中一律禁止。此规则
+    # 不读取 allowed_lines，确保 --allow-line 无法绕过用户要求的硬约束。
+    for line_number, line in visible:
+        content = line.removeprefix(INDENT).strip()
+        if content.startswith(INTERVIEW_METADATA):
+            continue
+        for pattern, label in REDUNDANT_ATTRIBUTION_PATTERNS:
+            if pattern.search(content):
+                errors.append(
+                    f"第 {line_number} 行出现冗余的受访归因表述（{label}）；"
+                    "请直接陈述实质内容。完整总结概述不得添加泛化主体前缀，"
+                    "完整问答纪要的“答：”后应直接写答复；此规则不可用 "
+                    "--allow-line 放行。"
+                )
+                break
 
     # 更新规则：纪要只客观陈述会议内容，任何“待核实/待核验/待落实”“以……
     # 为准”“需重点关注”等核验提示句、主观判断和指导性意见一律禁止。
@@ -388,7 +428,10 @@ def main() -> int:
         action="append",
         default=[],
         metavar="行号",
-        help="放行该行的禁用核验/指导类表述；仅限转录稿中真实谈及的会议内容",
+        help=(
+            "放行该行的禁用核验/指导类表述；仅限转录稿中真实谈及的会议内容；"
+            "不适用于泛化受访主体和归因套话"
+        ),
     )
     args = parser.parse_args()
 

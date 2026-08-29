@@ -226,7 +226,7 @@ class AuditCoverageTests(unittest.TestCase):
         windows, mode = AUDIT.build_windows(dense, 300.0, 1500)
         minutes = self.write_minutes(
             "一、完整总结概述",
-            "受访人表示相关光学载荷对应约500亿元市场。",
+            "相关光学载荷对应约500亿元市场。",
         )
         ledger = self.write_ledger("窗口 1（00:00–00:45）：纳入 总结")
         buffer = io.StringIO()
