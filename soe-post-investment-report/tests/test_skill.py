@@ -1228,6 +1228,11 @@ class SkillRegressionTests(unittest.TestCase):
         """A cutoff after the signing date reports data that does not yet exist."""
 
         invalid = copy.deepcopy(self.spec)
+        invalid["document"]["report_year"] = "2026"
+        invalid["document"]["report_period"] = "上半年"
+        invalid["document"]["legal_basis"] = (
+            "依据国有企业投资监督管理有关规定，现将公司2026年上半年股权投资项目投后管理情况报告如下："
+        )
         invalid["document"]["cutoff_date"] = "2026年6月30日"
         invalid["document"]["issue_date"] = "2026年6月11日"
         result = self.run_script(
@@ -1256,7 +1261,7 @@ class SkillRegressionTests(unittest.TestCase):
             "validate_report.py", "--spec", self.write_spec(wrong_year, "wrong-basis-year.json")
         )
         self.assertNotEqual(year_result.returncode, 0, year_result.stdout)
-        self.assertIn("but document.report_year is", year_result.stdout)
+        self.assertIn("but the declared period is", year_result.stdout)
 
         early_print = copy.deepcopy(self.spec)
         early_print["document"]["print_date"] = "2026年1月5日"
@@ -1358,6 +1363,83 @@ class SkillRegressionTests(unittest.TestCase):
         )
         self.assertNotEqual(result.returncode, 0, result.stdout)
         self.assertIn("is missing fact_ids", result.stdout)
+
+    def test_report_period_must_be_closed_by_the_data_cutoff(self) -> None:
+        """A 年度 title over 半年度 data is the defect this gate exists to block."""
+
+        mislabelled = copy.deepcopy(self.spec)
+        mislabelled["document"]["report_year"] = "2026"
+        mislabelled["document"]["report_period"] = "年度"
+        mislabelled["document"]["cutoff_date"] = "2026年6月30日"
+        mislabelled["document"]["issue_date"] = "2026年7月10日"
+        mislabelled["document"]["print_date"] = "2026年7月10日"
+        mislabelled["document"]["legal_basis"] = (
+            "依据国有企业投资监督管理有关规定，现将公司2026年度股权投资项目投后管理情况报告如下："
+        )
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(mislabelled, "mislabelled-period.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("does not close document.report_period 2026年度", result.stdout)
+        self.assertIn("该截止日期对应的报告期间为 上半年、第二季度", result.stdout)
+
+    def test_report_period_must_be_declared_from_the_supported_set(self) -> None:
+        missing = copy.deepcopy(self.spec)
+        missing["document"].pop("report_period")
+        missing_result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(missing, "missing-period.json")
+        )
+        self.assertNotEqual(missing_result.returncode, 0, missing_result.stdout)
+        self.assertIn("Missing document.report_period", missing_result.stdout)
+
+        unknown = copy.deepcopy(self.spec)
+        unknown["document"]["report_period"] = "半年报"
+        unknown_result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(unknown, "unknown-period.json")
+        )
+        self.assertNotEqual(unknown_result.returncode, 0, unknown_result.stdout)
+        self.assertIn("document.report_period must be one of", unknown_result.stdout)
+
+    def test_half_year_period_drives_the_generated_title(self) -> None:
+        def reperiod(value):
+            if isinstance(value, str):
+                return (
+                    value.replace("2025年12月31日", "2026年6月30日")
+                    .replace("2025-12-31", "2026-06-30")
+                    .replace("2025年度", "2026年上半年")
+                    .replace("2025年", "2026年上半年")
+                )
+            if isinstance(value, list):
+                return [reperiod(item) for item in value]
+            if isinstance(value, dict):
+                return {key: reperiod(item) for key, item in value.items()}
+            return value
+
+        half_year = reperiod(copy.deepcopy(self.spec))
+        half_year["document"]["report_year"] = "2026"
+        half_year["document"]["report_period"] = "上半年"
+        half_year["document"]["cutoff_date"] = "2026年6月30日"
+        half_year["document"]["issue_date"] = "2026年7月10日"
+        half_year["document"]["print_date"] = "2026年7月10日"
+        half_year["document"]["legal_basis"] = (
+            "依据国有企业投资监督管理有关规定，现将公司2026年上半年股权投资项目投后管理情况报告如下："
+        )
+        spec_path, docx_path = self.build_docx(half_year, "half-year.docx")
+        document = Document(docx_path)
+        expected = f"{half_year['document']['company']}关于2026年上半年股权投资项目投后情况报告"
+        flatten = lambda value: re.sub(r"[\n\s]+", "", value)
+        titles = [
+            paragraph
+            for paragraph in document.paragraphs
+            if flatten(paragraph.text) == flatten(expected)
+        ]
+        self.assertEqual(len(titles), 1, [p.text for p in document.paragraphs[:6]])
+        full_text = flatten(" ".join(p.text for p in document.paragraphs))
+        self.assertNotIn(flatten("2026年度股权投资项目投后情况报告"), full_text)
+        result = self.run_script(
+            "validate_report.py", "--spec", spec_path, "--docx", docx_path
+        )
+        self.assertEqual(result.returncode, 0, result.stdout)
 
 
 if __name__ == "__main__":

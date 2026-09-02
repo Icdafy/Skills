@@ -263,7 +263,7 @@ def setup_document(doc: Document, layout: dict[str, Any] | None = None) -> None:
     fonts.set(qn("w:eastAsia"), FONT_BODY)
 
     doc.core_properties.language = "zh-CN"
-    doc.core_properties.subject = "年度股权投资项目投后情况报告"
+    doc.core_properties.subject = "股权投资项目投后情况报告"
 
 
 def _set_table_full_width(table: Any) -> None:
@@ -418,6 +418,18 @@ def _redhead_rule(cell: Any, *, red: str = "FF0000") -> None:
     bottom.set(qn("w:color"), red)
 
 
+def _period_label(metadata: dict[str, Any]) -> str:
+    """Build the title period phrase from the spec's declared reporting period.
+
+    The period table lives in validate_report.py, which owns the contract; it is
+    imported lazily to keep this module usable without loading the validator.
+    """
+
+    from validate_report import report_period_label
+
+    return report_period_label(metadata.get("report_year"), metadata.get("report_period"))
+
+
 def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
     company = str(metadata.get("company") or "〔公司全称〕")
     paragraph = doc.add_paragraph()
@@ -469,7 +481,7 @@ def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
     line1 = title.add_run(company)
     set_font(line1, FONT_TITLE, TITLE_PT)
     line1.add_break(WD_BREAK.LINE)
-    line2 = title.add_run(f"关于{metadata.get('report_year') or '〔年度〕'}年度股权投资项目投后情况报告")
+    line2 = title.add_run(f"关于{_period_label(metadata) or '〔报告期间〕'}股权投资项目投后情况报告")
     set_font(line2, FONT_TITLE, TITLE_PT)
 
 
@@ -725,7 +737,9 @@ def build_report(spec: dict[str, Any], output: Path, *, force: bool = False) -> 
     metadata = spec.get("document") or {}
     doc = Document()
     setup_document(doc, spec.get("layout") or {})
-    doc.core_properties.title = f"{metadata.get('company', '')}关于{metadata.get('report_year', '')}年度股权投资项目投后情况报告"
+    doc.core_properties.title = (
+        f"{metadata.get('company', '')}关于{_period_label(metadata)}股权投资项目投后情况报告"
+    )
     doc.core_properties.identifier = f"soe-post-investment-report:sha256:{spec_fingerprint(spec)}"
 
     add_redhead(doc, metadata)

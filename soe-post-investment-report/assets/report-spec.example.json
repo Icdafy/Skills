@@ -15,6 +15,7 @@
   "document": {
     "company": "示例城市建设控股有限公司",
     "report_year": "2025",
+    "report_period": "年度",
     "cutoff_date": "2025年12月31日",
     "document_number": "示例控股字〔2026〕1号",
     "fixed_main_headings": [

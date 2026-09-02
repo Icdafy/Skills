@@ -274,6 +274,48 @@ def validate_heading_contract_list(
     return headings
 
 
+# 报告期间：标题、开头依据和数据截止日期必须描述同一个期间。The label suffix is
+# appended to the four-digit year, and the period end is the only admissible
+# data cutoff for that period — a 年度 title over 6月30日 data is the defect this
+# table exists to block.
+REPORT_PERIODS: dict[str, tuple[str, tuple[int, int]]] = {
+    "年度": ("年度", (12, 31)),
+    "上半年": ("年上半年", (6, 30)),
+    "下半年": ("年下半年", (12, 31)),
+    "第一季度": ("年第一季度", (3, 31)),
+    "第二季度": ("年第二季度", (6, 30)),
+    "第三季度": ("年第三季度", (9, 30)),
+    "第四季度": ("年第四季度", (12, 31)),
+}
+REPORT_PERIOD_EXPRESSION = re.compile(r"20\d{2}年(?:度|上半年|下半年|第[一二三四]季度)")
+
+
+def report_period_label(report_year: Any, report_period: Any) -> str:
+    """Return the period phrase used in the title and the opening basis."""
+
+    year = str(report_year or "").strip()
+    period = str(report_period or "").strip()
+    suffix = REPORT_PERIODS.get(period, (None, None))[0]
+    if not year or suffix is None:
+        return ""
+    return f"{year}{suffix}"
+
+
+def report_title(company: Any, report_year: Any, report_period: Any) -> str:
+    label = report_period_label(report_year, report_period)
+    return f"{str(company or '').strip()}关于{label}股权投资项目投后情况报告"
+
+
+def periods_for_cutoff(cutoff: date) -> list[str]:
+    """Return every period whose end date equals this cutoff."""
+
+    return [
+        period
+        for period, (_suffix, end) in REPORT_PERIODS.items()
+        if end == (cutoff.month, cutoff.day)
+    ]
+
+
 CHINESE_DATE_PATTERN = re.compile(r"^(\d{4})年(\d{1,2})月(\d{1,2})日$")
 
 
@@ -327,19 +369,42 @@ def validate_document_dates(document: dict[str, Any], findings: Findings) -> Non
         )
 
     report_year = str(document.get("report_year") or "").strip()
-    if re.fullmatch(r"20\d{2}", report_year):
-        for key in ("legal_basis", "recipient"):
-            text = str(document.get(key) or "")
-            years = {match.group(1) for match in re.finditer(r"(20\d{2})年度", text)}
-            mismatched = sorted(years - {report_year})
-            if mismatched:
-                findings.error(
-                    f"document.{key} names 年度 {', '.join(mismatched)} but document.report_year is {report_year}"
-                )
-        if cutoff is not None and str(cutoff.year) != report_year:
-            findings.warning(
-                f"document.cutoff_date year {cutoff.year} differs from document.report_year {report_year}; "
-                "confirm the reporting period and the data cutoff are intended to differ"
+    report_period = str(document.get("report_period") or "").strip()
+    if report_period and report_period not in REPORT_PERIODS:
+        findings.error(
+            "document.report_period must be one of "
+            + "、".join(REPORT_PERIODS)
+            + f"; got {report_period}"
+        )
+        return
+    if not re.fullmatch(r"20\d{2}", report_year) or not report_period:
+        return
+
+    label = report_period_label(report_year, report_period)
+    period_month, period_day = REPORT_PERIODS[report_period][1]
+    if cutoff is not None:
+        expected_end = date(int(report_year), period_month, period_day)
+        if cutoff != expected_end:
+            admissible = periods_for_cutoff(cutoff)
+            hint = (
+                "；该截止日期对应的报告期间为 " + "、".join(admissible)
+                if admissible
+                else "；该截止日期不是任何标准报告期间的期末"
+            )
+            findings.error(
+                f"document.cutoff_date（{document.get('cutoff_date')}）does not close "
+                f"document.report_period {label}, which ends {expected_end.year}年"
+                f"{expected_end.month}月{expected_end.day}日{hint}"
+            )
+
+    for key in ("legal_basis", "recipient"):
+        text = str(document.get(key) or "")
+        mismatched = sorted(
+            {match.group(0) for match in REPORT_PERIOD_EXPRESSION.finditer(text)} - {label}
+        )
+        if mismatched:
+            findings.error(
+                f"document.{key} names 报告期间 {', '.join(mismatched)} but the declared period is {label}"
             )
 
 
@@ -1233,6 +1298,7 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
     for key in (
         "company",
         "report_year",
+        "report_period",
         "cutoff_date",
         "document_number",
         "recipient",
@@ -1248,6 +1314,10 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
     report_year = str(document.get("report_year") or "")
     if not re.fullmatch(r"20\d{2}", report_year):
         findings.error("document.report_year must be a four-digit year")
+    if str(document.get("report_period") or "").strip() not in REPORT_PERIODS:
+        findings.error(
+            "document.report_period must be one of " + "、".join(REPORT_PERIODS)
+        )
     validate_document_dates(document, findings)
     validate_imprint_metadata(document, findings)
     validate_official_style(spec, findings)
@@ -1661,6 +1731,7 @@ def validate_scoped_docx_content(
         document = expected_spec.get("document") or {}
         company = str(document.get("company") or "").strip()
         report_year = str(document.get("report_year") or "").strip()
+        report_period = str(document.get("report_period") or "").strip()
         document_number = str(document.get("document_number") or "").strip()
         signer = str(document.get("signer") or "").strip()
         recipient = str(document.get("recipient") or "").strip()
@@ -1670,7 +1741,7 @@ def validate_scoped_docx_content(
             normalized_item("table", [document_number, signer]),
             normalized_item(
                 "p",
-                [f"{company}关于{report_year}年度股权投资项目投后情况报告"],
+                [report_title(company, report_year, report_period)],
             ),
         ]
         expected_prefix.extend(
@@ -2016,7 +2087,7 @@ def validate_docx_typography(
                     "DOCX red-head issuer must preserve w:w=37 and w:fitText=8195"
                 )
 
-    title_text = f"{company}关于{year}年度股权投资项目投后情况报告"
+    title_text = report_title(company, year, metadata.get("report_period"))
     title_match = find_paragraph(title_text)
     if title_match is None:
         findings.error("DOCX typography check cannot locate the two-line main title")
@@ -2372,6 +2443,7 @@ def validate_docx(
         for key in (
             "company",
             "report_year",
+            "report_period",
             "cutoff_date",
             "document_number",
             "signer",
@@ -2611,6 +2683,7 @@ def validate_pdf(
         for key in (
             "company",
             "report_year",
+            "report_period",
             "cutoff_date",
             "document_number",
             "signer",
