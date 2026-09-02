@@ -11,6 +11,7 @@ import re
 import sys
 from collections import Counter
 from dataclasses import dataclass, field
+from datetime import date
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 from typing import Any, Iterable
@@ -40,23 +41,46 @@ def configure_utf8_stdio() -> None:
             pass
 
 
-REQUIRED_MAIN_HEADINGS = (
-    "一、年度股权投资完成总体情况",
+# The source template fixes the first-level headings and the first three
+# second-level categories.  The SPV block is a *repeating* slot: the proofed
+# source report carries two of them (（四）……SPV项目 and （五）……SPV项目), so the
+# contract accepts one or more consecutive SPV slots numbered from 四 onwards.
+FIXED_FIRST_H1 = "一、年度股权投资完成总体情况"
+FIXED_LEADING_H2 = (
     "（一）存续基金",
     "（二）新设基金",
     "（三）参股公司",
-    "（四）SPV项目",
-    "二、重大投资项目进展情况",
 )
-REQUIRED_MAIN_BLOCKS = (
-    ("h1", "一、年度股权投资完成总体情况"),
-    ("h2", "（一）存续基金"),
-    ("h2", "（二）新设基金"),
-    ("h2", "（三）参股公司"),
-    ("h2", "（四）SPV项目"),
-    ("h1", "二、重大投资项目进展情况"),
+FIXED_LAST_H1 = "二、重大投资项目进展情况"
+SPV_SLOT_ORDINALS = ("四", "五", "六", "七", "八", "九", "十")
+MIN_FIXED_MAIN_HEADINGS = len(FIXED_LEADING_H2) + 3
+MAX_FIXED_MAIN_HEADINGS = MIN_FIXED_MAIN_HEADINGS + len(SPV_SLOT_ORDINALS) - 1
+
+
+def spv_slot_pattern(ordinal: str) -> re.Pattern[str]:
+    """Match one SPV slot heading, with or without a project-specific name."""
+
+    return re.compile(rf"^（{ordinal}）(?:[^（）]+)?SPV项目$")
+
+
+def fixed_main_heading_kinds(count: int) -> tuple[str, ...]:
+    """Return the heading levels for a fixed contract of ``count`` headings."""
+
+    return ("h1",) + ("h2",) * (count - 2) + ("h1",)
+
+
+def default_fixed_main_headings(spv_slots: int = 1) -> tuple[str, ...]:
+    headings = [FIXED_FIRST_H1, *FIXED_LEADING_H2]
+    headings.extend(f"（{SPV_SLOT_ORDINALS[index]}）SPV项目" for index in range(spv_slots))
+    headings.append(FIXED_LAST_H1)
+    return tuple(headings)
+
+
+REQUIRED_MAIN_HEADINGS = default_fixed_main_headings()
+REQUIRED_MAIN_BLOCKS = tuple(
+    zip(fixed_main_heading_kinds(len(REQUIRED_MAIN_HEADINGS)), REQUIRED_MAIN_HEADINGS)
 )
-REQUIRED_MAIN_HEADING_KINDS = ("h1", "h2", "h2", "h2", "h2", "h1")
+REQUIRED_MAIN_HEADING_KINDS = fixed_main_heading_kinds(len(REQUIRED_MAIN_HEADINGS))
 PLACEHOLDER_PATTERNS = (
     # Chinese square brackets are also the correct punctuation for document
     # years (for example, 控股字〔2026〕1号). Flag only semantic placeholder
@@ -87,12 +111,9 @@ STATUS_CLAIM_PATTERN = re.compile(
 VALID_FACT_STATUSES = {"confirmed", "calculated", "conflicting", "stale", "missing"}
 VALID_FACT_DESTINATIONS = {"main body", "attachment", "both", "excluded", "pending user decision"}
 VALID_PROJECT_CATEGORIES = {"存续基金", "新设基金", "参股公司", "SPV项目"}
-BLOCK_TYPES = {"h1", "h2", "h3", "h4", "p", "tnote", "table", "pagebreak", "blank"}
-FIXED_CATEGORY_SECTIONS = (
-    ("（一）存续基金", "存续基金"),
-    ("（二）新设基金", "新设基金"),
-    ("（三）参股公司", "参股公司"),
-    ("（四）SPV项目", "SPV项目"),
+BLOCK_TYPES = {"h1", "h2", "h3", "h4", "p", "caption", "tnote", "table", "pagebreak", "blank"}
+FIXED_CATEGORY_SECTIONS = tuple(
+    zip(REQUIRED_MAIN_HEADINGS[1:-1], ("存续基金", "新设基金", "参股公司", "SPV项目"))
 )
 PUBLIC_PATTERNS = {
     "mobile phone number": re.compile(r"(?<!\d)1[3-9]\d{9}(?!\d)"),
@@ -109,8 +130,12 @@ TEMPLATE_TYPOGRAPHY = {
     "h3": ("仿宋_GB2312", 16.0, True, 28.0),
     "h4": ("仿宋_GB2312", 16.0, False, 28.0),
     "p": ("仿宋_GB2312", 16.0, False, 28.0),
+    # 表题 in the source template: 小四黑体, centered, on the 28 pt body grid.
+    "caption": ("黑体", 12.0, False, 28.0),
     "tnote": ("仿宋_GB2312", 10.5, False, 18.0),
     "footer": ("宋体", 14.0, False, None),
+    # 版记（印发机关和印发日期）: GB/T 9704-2012 prescribes 四号仿宋.
+    "imprint": ("仿宋_GB2312", 14.0, False, 28.0),
 }
 DEFAULT_WESTERN_FONT = "Times New Roman"
 
@@ -148,12 +173,58 @@ def required_main_blocks_from_document(document: dict[str, Any]) -> tuple[tuple[
     """Return the source-derived fixed heading contract declared by the spec."""
 
     values = document.get("fixed_main_headings")
-    if not isinstance(values, list) or len(values) != len(REQUIRED_MAIN_HEADING_KINDS):
+    if not isinstance(values, list) or not (
+        MIN_FIXED_MAIN_HEADINGS <= len(values) <= MAX_FIXED_MAIN_HEADINGS
+    ):
         return REQUIRED_MAIN_BLOCKS
     return tuple(
         (kind, str(text or "").strip())
-        for kind, text in zip(REQUIRED_MAIN_HEADING_KINDS, values)
+        for kind, text in zip(fixed_main_heading_kinds(len(values)), values)
     )
+
+
+def fixed_category_sections_from_document(
+    document: dict[str, Any],
+) -> tuple[tuple[str, str], ...]:
+    """Return (heading, category) pairs for every fixed category section."""
+
+    blocks = required_main_blocks_from_document(document)
+    sections = [
+        (text, category)
+        for (_kind, text), category in zip(blocks[1:4], ("存续基金", "新设基金", "参股公司"))
+    ]
+    sections.extend((text, "SPV项目") for _kind, text in blocks[4:-1])
+    return tuple(sections)
+
+
+def infer_fixed_main_blocks(
+    heading_entries: list[tuple[str, str]],
+) -> tuple[tuple[str, str], ...]:
+    """Infer the fixed contract from DOCX headings when no spec is supplied.
+
+    Without a specification there is no source snapshot to compare names against,
+    so only the *shape* can be certified: the three fixed categories, then one or
+    more consecutive SPV slots.  Slot names observed in the document are accepted
+    as-is; reconciling them with the source template still requires --spec.
+    """
+
+    section_one: list[str] = []
+    for kind, text in heading_entries:
+        normalized = normalize_heading(text)
+        if kind == "h1" and normalized == normalize_heading(FIXED_LAST_H1):
+            break
+        if kind == "h2":
+            section_one.append(normalized)
+    slots: list[str] = []
+    for offset, ordinal in enumerate(SPV_SLOT_ORDINALS):
+        index = len(FIXED_LEADING_H2) + offset
+        if index >= len(section_one) or not spv_slot_pattern(ordinal).fullmatch(section_one[index]):
+            break
+        slots.append(section_one[index])
+    if not slots:
+        return REQUIRED_MAIN_BLOCKS
+    headings = [FIXED_FIRST_H1, *FIXED_LEADING_H2, *slots, FIXED_LAST_H1]
+    return tuple(zip(fixed_main_heading_kinds(len(headings)), headings))
 
 
 def validate_heading_contract_list(
@@ -161,10 +232,20 @@ def validate_heading_contract_list(
     field_name: str,
     findings: Findings,
 ) -> list[str] | None:
-    """Validate one six-heading source/effective contract list."""
+    """Validate one source/effective fixed-heading contract list.
 
-    if not isinstance(values, list) or len(values) != len(REQUIRED_MAIN_HEADING_KINDS):
-        findings.error(f"document.{field_name} must contain exactly six headings")
+    The list is the first-level heading, the three fixed categories, one or more
+    consecutive SPV slots, and the closing first-level heading.
+    """
+
+    if not isinstance(values, list) or not (
+        MIN_FIXED_MAIN_HEADINGS <= len(values) <= MAX_FIXED_MAIN_HEADINGS
+    ):
+        findings.error(
+            f"document.{field_name} must contain between {MIN_FIXED_MAIN_HEADINGS} and "
+            f"{MAX_FIXED_MAIN_HEADINGS} headings (one first-level heading, 存续基金／新设基金／参股公司, "
+            "one or more SPV slots, and the closing first-level heading)"
+        )
         return None
     headings = [str(item or "").strip() for item in values]
     if any(not item for item in headings):
@@ -174,24 +255,175 @@ def validate_heading_contract_list(
     if len(normalized) != len(set(normalized)):
         findings.error(f"document.{field_name} must be unique after normalization")
 
-    invariant = {
-        0: "一、年度股权投资完成总体情况",
-        1: "（一）存续基金",
-        2: "（二）新设基金",
-        3: "（三）参股公司",
-        5: "二、重大投资项目进展情况",
-    }
+    invariant = {0: FIXED_FIRST_H1}
+    invariant.update({index + 1: text for index, text in enumerate(FIXED_LEADING_H2)})
+    invariant[len(normalized) - 1] = FIXED_LAST_H1
     for index, expected in invariant.items():
         if normalized[index] != normalize_heading(expected):
             findings.error(
                 f"document.{field_name}[{index}] must preserve the template heading: {expected}"
             )
-    if not re.fullmatch(r"（四）(?:[^（）]+)?SPV项目", normalized[4]):
-        findings.error(
-            f"document.{field_name}[4] must preserve the source SPV slot as "
-            "（四）SPV项目 or （四）<项目名称>SPV项目"
-        )
+    spv_headings = normalized[len(FIXED_LEADING_H2) + 1 : -1]
+    for offset, heading in enumerate(spv_headings):
+        ordinal = SPV_SLOT_ORDINALS[offset]
+        if not spv_slot_pattern(ordinal).fullmatch(heading):
+            findings.error(
+                f"document.{field_name}[{offset + len(FIXED_LEADING_H2) + 1}] must preserve the "
+                f"source SPV slot as （{ordinal}）SPV项目 or （{ordinal}）<项目名称>SPV项目"
+            )
     return headings
+
+
+CHINESE_DATE_PATTERN = re.compile(r"^(\d{4})年(\d{1,2})月(\d{1,2})日$")
+
+
+def parse_chinese_date(value: str) -> date | None:
+    """Parse the 公文 date form YYYY年M月D日; return None when it is not that form."""
+
+    match = CHINESE_DATE_PATTERN.fullmatch(re.sub(r"[\s\u3000]+", "", str(value or "")))
+    if match is None:
+        return None
+    try:
+        return date(int(match.group(1)), int(match.group(2)), int(match.group(3)))
+    except ValueError:
+        return None
+
+
+def validate_document_dates(document: dict[str, Any], findings: Findings) -> None:
+    """Keep 报告年度、数据截止日期、成文日期 and 印发日期 mutually consistent.
+
+    A cutoff later than the issue date would report data that does not yet exist
+    when the document is signed, so it is an error rather than a warning.
+    """
+
+    labels = {
+        "cutoff_date": "数据截止日期",
+        "issue_date": "成文日期",
+        "print_date": "印发日期",
+    }
+    parsed: dict[str, date] = {}
+    for key, label in labels.items():
+        raw = str(document.get(key) or "").strip()
+        if not raw:
+            continue
+        value = parse_chinese_date(raw)
+        if value is None:
+            findings.error(f"document.{key}（{label}）must use the 公文 form YYYY年M月D日: {raw}")
+            continue
+        parsed[key] = value
+
+    cutoff = parsed.get("cutoff_date")
+    issue = parsed.get("issue_date")
+    print_date = parsed.get("print_date")
+    if cutoff is not None and issue is not None and cutoff > issue:
+        findings.error(
+            "document.cutoff_date（数据截止日期）cannot be later than document.issue_date（成文日期）: "
+            f"{document.get('cutoff_date')} > {document.get('issue_date')}"
+        )
+    if print_date is not None and issue is not None and print_date < issue:
+        findings.error(
+            "document.print_date（印发日期）cannot be earlier than document.issue_date（成文日期）: "
+            f"{document.get('print_date')} < {document.get('issue_date')}"
+        )
+
+    report_year = str(document.get("report_year") or "").strip()
+    if re.fullmatch(r"20\d{2}", report_year):
+        for key in ("legal_basis", "recipient"):
+            text = str(document.get(key) or "")
+            years = {match.group(1) for match in re.finditer(r"(20\d{2})年度", text)}
+            mismatched = sorted(years - {report_year})
+            if mismatched:
+                findings.error(
+                    f"document.{key} names 年度 {', '.join(mismatched)} but document.report_year is {report_year}"
+                )
+        if cutoff is not None and str(cutoff.year) != report_year:
+            findings.warning(
+                f"document.cutoff_date year {cutoff.year} differs from document.report_year {report_year}; "
+                "confirm the reporting period and the data cutoff are intended to differ"
+            )
+
+
+OFFICIAL_STYLE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
+    (
+        re.compile(r"截止(?=\d{4}年|\d{1,2}月|目前|当前|报告期末|期末)"),
+        "公文表示时间点应使用“截至”，“截止”用于事项终止（如报名截止）",
+    ),
+    (
+        re.compile(r"[0-9A-Za-z%％】》）][ \t　]+[，。；：、％%）》】]"),
+        "数字或西文与其后的全角标点之间存在多余空格",
+    ),
+    (
+        re.compile(r"\d[ \t　]+[%％]"),
+        "数值与百分号之间存在多余空格",
+    ),
+    (
+        re.compile(r"[一-鿿][()]|[(][一-鿿]"),
+        "中文语境内混用半角圆括号，公文应使用全角（）",
+    ),
+    (
+        re.compile(r"[一-鿿][,;:!?]"),
+        "中文语境内混用半角标点，公文应使用全角标点",
+    ),
+)
+
+
+def iter_spec_texts(spec: dict[str, Any]) -> Iterable[tuple[str, str]]:
+    """Yield (location, text) for every author-written string in the spec."""
+
+    document = spec.get("document") or {}
+    for key in ("recipient", "legal_basis"):
+        value = str(document.get(key) or "").strip()
+        if value:
+            yield f"document.{key}", value
+    scopes: list[tuple[str, list[dict[str, Any]]]] = [
+        ("main body", spec.get("main_blocks") or [])
+    ]
+    scopes.extend(
+        (f"attachment {attachment.get('id')}", attachment.get("blocks") or [])
+        for attachment in spec.get("attachments") or []
+    )
+    for scope, blocks in scopes:
+        for index, block in enumerate(blocks, start=1):
+            text = str(block.get("text") or "").strip()
+            if text:
+                yield f"{scope} block {index}", text
+            for row_index, row in enumerate(block.get("rows") or [], start=1):
+                for cell in row:
+                    cell_text = str(cell or "").strip()
+                    if cell_text:
+                        yield f"{scope} block {index} row {row_index}", cell_text
+
+
+def validate_official_style(spec: dict[str, Any], findings: Findings) -> None:
+    """Report 公文 wording and punctuation slips as warnings.
+
+    These are heuristics: 截止 is correct for a deadline, and a half-width
+    bracket can be part of a legal name.  Every hit still needs a human decision.
+    """
+
+    reported: set[tuple[str, str]] = set()
+    for location, text in iter_spec_texts(spec):
+        for pattern, message in OFFICIAL_STYLE_RULES:
+            match = pattern.search(text)
+            if match is None:
+                continue
+            key = (location, message)
+            if key in reported:
+                continue
+            reported.add(key)
+            findings.warning(f"{location}: {message}（“{match.group(0).strip()}”）")
+
+
+def validate_imprint_metadata(document: dict[str, Any], findings: Findings) -> None:
+    """版记（印发机关和印发日期）is optional, but must be complete when used."""
+
+    printer = str(document.get("printer") or "").strip()
+    print_date = str(document.get("print_date") or "").strip()
+    if bool(printer) != bool(print_date):
+        findings.error(
+            "document.printer（印发机关）and document.print_date（印发日期）must be provided together "
+            "or both omitted"
+        )
 
 
 def validate_fixed_heading_contract(document: dict[str, Any], findings: Findings) -> None:
@@ -419,12 +651,16 @@ def validate_fixed_category_sections(
     main_blocks: list[dict[str, Any]],
     registry: list[dict[str, Any]],
     findings: Findings,
+    *,
+    fixed_sections: Iterable[tuple[str, str]] = FIXED_CATEGORY_SECTIONS,
 ) -> None:
     """Keep every fixed category section meaningful and consistent with its registry count."""
 
+    fixed_sections = tuple(fixed_sections)
+
     def fixed_section_for_heading(text: str) -> tuple[str, str] | None:
         normalized = normalize_heading(text)
-        for heading, category in FIXED_CATEGORY_SECTIONS:
+        for heading, category in fixed_sections:
             expected = normalize_heading(heading)
             ordinal = expected.split("）", 1)[0] + "）"
             if normalized == expected or (
@@ -447,7 +683,13 @@ def validate_fixed_category_sections(
             sections[active_category].append(block)
 
     registry_counts = Counter(str(project.get("category") or "").strip() for project in registry)
-    for heading, category in FIXED_CATEGORY_SECTIONS:
+    spv_slots = sum(1 for _heading, category in fixed_sections if category == "SPV项目")
+    if spv_slots > 1 and registry_counts["SPV项目"] < spv_slots:
+        findings.error(
+            f"The fixed framework declares {spv_slots} SPV slots, but project_registry lists only "
+            f"{registry_counts['SPV项目']} SPV项目 project(s); every named SPV slot needs its own registry row"
+        )
+    for heading, category in fixed_sections:
         if category not in sections:
             # The fixed-heading validator reports the missing or malformed heading.
             continue
@@ -472,7 +714,7 @@ def validate_fixed_category_sections(
                 block
                 for block in sections[category]
                 if str(block.get("type") or "").lower()
-                in {"p", "h3", "h4", "tnote", "table"}
+                in {"p", "h3", "h4", "caption", "tnote", "table"}
                 and block_text(block).strip()
             ]
             if not zero_statements:
@@ -1006,6 +1248,9 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
     report_year = str(document.get("report_year") or "")
     if not re.fullmatch(r"20\d{2}", report_year):
         findings.error("document.report_year must be a four-digit year")
+    validate_document_dates(document, findings)
+    validate_imprint_metadata(document, findings)
+    validate_official_style(spec, findings)
 
     main_blocks = spec.get("main_blocks") or []
     main_headings = block_headings(main_blocks)
@@ -1089,7 +1334,12 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
         if attachment_id and attachment_id not in valid_attachment_ids:
             findings.error(f"Project {project.get('project_id')} references missing attachment {attachment_id}")
 
-    validate_fixed_category_sections(main_blocks, registry, findings)
+    validate_fixed_category_sections(
+        main_blocks,
+        registry,
+        findings,
+        fixed_sections=fixed_category_sections_from_document(document),
+    )
 
     sources = spec.get("sources") or []
     valid_project_ids = set(project_ids) | {"portfolio"}
@@ -1269,7 +1519,7 @@ def expected_block_item(block: dict[str, Any]) -> str | None:
         cells = [str(item) for item in block.get("header") or []]
         cells.extend(str(item) for row in block.get("rows") or [] for item in row)
         return normalized_item("table", cells)
-    if block_type in {"h1", "h2", "h3", "h4", "p", "tnote"}:
+    if block_type in {"h1", "h2", "h3", "h4", "p", "caption", "tnote"}:
         text = str(block.get("text") or "").strip()
         return normalized_item("p", [text]) if text else None
     return None
@@ -1285,7 +1535,17 @@ def docx_scoped_items(
     scopes: dict[str, list[str]] = {"main body": []}
     current_scope = "main body"
     unexpected_labels: list[str] = []
-    for kind, value in iter_ordered_docx_items(doc):
+    items = list(iter_ordered_docx_items(doc))
+    # 版记（印发机关和印发日期）sits on the last page, after the final attachment.
+    # It belongs to no attachment scope, so peel it off before scope assignment.
+    document = expected_spec.get("document") or {}
+    printer = re.sub(r"[\s　]+", "", str(document.get("printer") or ""))
+    print_date = re.sub(r"[\s　]+", "", str(document.get("print_date") or ""))
+    if printer and print_date and items and items[-1][0] == "table":
+        tail = re.sub(r"[\s　]+", "", items[-1][1])
+        if tail == f"{printer}␟{print_date}印发":
+            items = items[:-1]
+    for kind, value in items:
         if kind == "p":
             compact = re.sub(r"[\s\u3000]+", "", value)
             match = re.fullmatch(r"附件(\d+)", compact)
@@ -1851,6 +2111,42 @@ def validate_docx_typography(
                 font_override="楷体_GB2312",
             )
 
+    printer = str(metadata.get("printer") or "").strip()
+    print_date = str(metadata.get("print_date") or "").strip()
+    if printer and print_date:
+        imprint_row = next(
+            (
+                table
+                for table in doc.tables
+                if len(table.rows) == 1
+                and len(table.columns) == 2
+                and normalize_assertion_text(table.cell(0, 0).text)
+                == normalize_assertion_text(printer)
+                and normalize_assertion_text(table.cell(0, 1).text)
+                == normalize_assertion_text(f"{print_date}印发")
+            ),
+            None,
+        )
+        if imprint_row is None:
+            findings.error(
+                "DOCX typography check cannot locate the 版记 印发机关／印发日期 row"
+            )
+        else:
+            _validate_paragraph_typography(
+                doc,
+                imprint_row.cell(0, 0).paragraphs[0],
+                label="imprint issuer",
+                kind="imprint",
+                findings=findings,
+            )
+            _validate_paragraph_typography(
+                doc,
+                imprint_row.cell(0, 1).paragraphs[0],
+                label="imprint date",
+                kind="imprint",
+                findings=findings,
+            )
+
     cursor = 0
     expected_blocks = list(expected_spec.get("main_blocks") or [])
     for attachment in attachments:
@@ -1871,7 +2167,7 @@ def validate_docx_typography(
     cursor = 0
     for block_number, block in enumerate(expected_blocks, start=1):
         kind = str(block.get("type") or "").lower()
-        if kind not in {"h1", "h2", "h3", "h4", "p", "tnote"}:
+        if kind not in {"h1", "h2", "h3", "h4", "p", "caption", "tnote"}:
             continue
         text = str(block.get("text") or "").strip()
         match = find_paragraph(text, cursor)
@@ -2085,6 +2381,8 @@ def validate_docx(
             "issue_date",
             "contact_name",
             "contact_phone",
+            "printer",
+            "print_date",
         ):
             value = str(document_metadata.get(key) or "").strip()
             if value and re.sub(r"[\s\u3000]+", "", value) not in normalized_doc_text:
@@ -2111,7 +2409,7 @@ def validate_docx(
             if block_type == "table":
                 values = [str(item) for item in block.get("header") or []]
                 values.extend(str(item) for row in block.get("rows") or [] for item in row)
-            elif block_type in {"h1", "h2", "h3", "h4", "p", "tnote"}:
+            elif block_type in {"h1", "h2", "h3", "h4", "p", "caption", "tnote"}:
                 values = [str(block.get("text") or "")]
             else:
                 values = []
@@ -2141,7 +2439,7 @@ def validate_docx(
     docx_required_blocks = (
         required_main_blocks_from_document(expected_spec.get("document") or {})
         if expected_spec is not None
-        else REQUIRED_MAIN_BLOCKS
+        else infer_fixed_main_blocks(main_heading_entries)
     )
     validate_required_heading_sequence(
         main_heading_entries,
@@ -2322,6 +2620,8 @@ def validate_pdf(
             "issue_date",
             "contact_name",
             "contact_phone",
+            "printer",
+            "print_date",
         ):
             value = str(document_metadata.get(key) or "").strip()
             if value and re.sub(r"[\s\u3000]+", "", value) not in normalized_pdf_text:
@@ -2338,7 +2638,7 @@ def validate_pdf(
                 if block_type == "table":
                     values = [str(item) for item in block.get("header") or []]
                     values.extend(str(item) for row in block.get("rows") or [] for item in row)
-                elif block_type in {"h1", "h2", "h3", "h4", "p", "tnote"}:
+                elif block_type in {"h1", "h2", "h3", "h4", "p", "caption", "tnote"}:
                     values = [str(block.get("text") or "")]
                 else:
                     values = []

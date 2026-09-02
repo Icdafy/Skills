@@ -37,14 +37,13 @@ MANDATORY_QUESTIONS = (
     "有无需要着重修改的地方？",
     "其他提示？",
 )
-REQUIRED_MAIN_HEADINGS = (
-    "一、年度股权投资完成总体情况",
-    "（一）存续基金",
-    "（二）新设基金",
-    "（三）参股公司",
-    "（四）SPV项目",
-    "二、重大投资项目进展情况",
-)
+# The fixed framework keeps two first-level headings and three named categories,
+# but the SPV block repeats: the checked-in example mirrors the source report and
+# carries two named SPV slots.  Derive the contract from the example so the suite
+# follows the shipped spec instead of a stale copy of it.
+EXAMPLE_DOCUMENT = json.loads(EXAMPLE_SPEC.read_text(encoding="utf-8-sig"))["document"]
+REQUIRED_MAIN_HEADINGS = tuple(EXAMPLE_DOCUMENT["fixed_main_headings"])
+SPV_SLOT_HEADINGS = tuple(REQUIRED_MAIN_HEADINGS[4:-1])
 
 
 def production_spec_from_example() -> dict:
@@ -95,6 +94,8 @@ class SkillRegressionTests(unittest.TestCase):
         self.work = Path(self._temporary_directory.name)
         self.example_spec = json.loads(EXAMPLE_SPEC.read_text(encoding="utf-8-sig"))
         self.spec = production_spec_from_example()
+        self.production_fixed_headings = tuple(self.spec["document"]["fixed_main_headings"])
+        self.production_spv_headings = tuple(self.production_fixed_headings[4:-1])
 
     def tearDown(self) -> None:
         self._temporary_directory.cleanup()
@@ -195,7 +196,8 @@ class SkillRegressionTests(unittest.TestCase):
 
         accepted = self.run_script("validate_report.py", "--spec", example_path, "--template-mode")
         self.assertEqual(accepted.returncode, 0, accepted.stdout)
-        self.assertIn("16 fact rows, 16 referenced fact rows", accepted.stdout)
+        fact_rows = len(self.example_spec["fact_ledger"])
+        self.assertIn(f"{fact_rows} fact rows, {fact_rows} referenced fact rows", accepted.stdout)
 
         production_path = self.write_spec(production_spec_from_example(), "production.json")
         production_template_mode = self.run_script(
@@ -231,7 +233,7 @@ class SkillRegressionTests(unittest.TestCase):
         self.assertIn("Summary: 0 error(s)", result.stdout)
 
         text = "\n".join(paragraph.text for paragraph in Document(docx_path).paragraphs)
-        for heading in REQUIRED_MAIN_HEADINGS:
+        for heading in self.production_fixed_headings:
             self.assertEqual(text.count(heading), 1)
 
     def test_generated_docx_uses_source_derived_a4_page_system_and_page_fields(self) -> None:
@@ -479,7 +481,9 @@ class SkillRegressionTests(unittest.TestCase):
 
         renamed = copy.deepcopy(self.spec)
         next(
-            block for block in renamed["main_blocks"] if block.get("text") == "（四）SPV项目"
+            block
+            for block in renamed["main_blocks"]
+            if block.get("text") == self.production_spv_headings[0]
         )["text"] = "（四）特殊目的载体项目"
         cases["renamed"] = renamed
 
@@ -523,9 +527,10 @@ class SkillRegressionTests(unittest.TestCase):
 
     def test_heading_contract_requires_recorded_authorization_for_source_change(self) -> None:
         changed = copy.deepcopy(self.spec)
+        original_slot = self.production_spv_headings[0]
         changed["document"]["fixed_main_headings"][4] = "（四）甲银行SPV项目"
         next(
-            block for block in changed["main_blocks"] if block.get("text") == "（四）SPV项目"
+            block for block in changed["main_blocks"] if block.get("text") == original_slot
         )["text"] = "（四）甲银行SPV项目"
 
         unauthorized_path = self.write_spec(changed, "unauthorized-heading-change.json")
@@ -567,11 +572,15 @@ class SkillRegressionTests(unittest.TestCase):
             empty_result.stdout,
         )
 
+        first_slot = self.production_spv_headings[0]
+        spv_project_count = sum(
+            1 for project in self.spec["project_registry"] if project["category"] == "SPV項目".replace("項", "项")
+        )
+
         zero_without_declaration = copy.deepcopy(self.spec)
-        next(
-            project for project in zero_without_declaration["project_registry"]
-            if project["category"] == "SPV项目"
-        )["category"] = "参股公司"
+        for project in zero_without_declaration["project_registry"]:
+            if project["category"] == "SPV项目":
+                project["category"] = "参股公司"
         missing_result = self.run_script(
             "validate_report.py",
             "--spec",
@@ -579,14 +588,14 @@ class SkillRegressionTests(unittest.TestCase):
         )
         self.assertNotEqual(missing_result.returncode, 0, missing_result.stdout)
         self.assertIn(
-            "Registry has no SPV项目 projects; section （四）SPV项目 must explicitly state 本年度无SPV项目",
+            f"Registry has no SPV项目 projects; section {first_slot} must explicitly state 本年度无SPV项目",
             missing_result.stdout,
         )
 
         populated_with_only_zero_declaration = copy.deepcopy(self.spec)
         replace_section(
             populated_with_only_zero_declaration,
-            "（四）SPV项目",
+            first_slot,
             [{"type": "p", "text": "本年度无SPV项目。"}],
         )
         populated_result = self.run_script(
@@ -596,7 +605,8 @@ class SkillRegressionTests(unittest.TestCase):
         )
         self.assertNotEqual(populated_result.returncode, 0, populated_result.stdout)
         self.assertIn(
-            "Registry has 1 SPV项目 project(s), but section （四）SPV项目 contains a zero-project declaration",
+            f"Registry has {spv_project_count} SPV项目 project(s), but section {first_slot} "
+            "contains a zero-project declaration",
             populated_result.stdout,
         )
 
@@ -604,7 +614,7 @@ class SkillRegressionTests(unittest.TestCase):
         section_start = next(
             index
             for index, block in enumerate(mixed_zero["main_blocks"])
-            if block.get("text") == "（四）SPV项目"
+            if block.get("text") == first_slot
         )
         mixed_zero["main_blocks"].insert(
             section_start + 1,
@@ -617,16 +627,35 @@ class SkillRegressionTests(unittest.TestCase):
         self.assertIn("may contain only explicit zero-project paragraph(s)", mixed_result.stdout)
 
         declared_zero = copy.deepcopy(zero_without_declaration)
-        replace_section(
-            declared_zero,
-            "（四）SPV项目",
-            [{"type": "p", "text": "本年度无SPV项目。"}],
-        )
+        for slot in self.production_spv_headings:
+            replace_section(declared_zero, slot, [{"type": "p", "text": "本年度无SPV项目。"}])
         declared_result = self.run_script(
             "validate_report.py", "--spec", self.write_spec(declared_zero, "declared-zero.json")
         )
         self.assertNotIn("Registry has no SPV项目 projects", declared_result.stdout)
-        self.assertNotIn("section （四）SPV项目 contains a zero-project declaration", declared_result.stdout)
+        self.assertNotIn(
+            f"section {first_slot} contains a zero-project declaration", declared_result.stdout
+        )
+
+    def test_validator_requires_one_registry_row_per_named_spv_slot(self) -> None:
+        """Two named SPV slots cannot be backed by a single registry project."""
+
+        self.assertGreater(len(self.production_spv_headings), 1)
+        thin_registry = copy.deepcopy(self.spec)
+        removed = next(
+            project
+            for project in reversed(thin_registry["project_registry"])
+            if project["category"] == "SPV项目"
+        )
+        removed["category"] = "参股公司"
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(thin_registry, "thin-spv-registry.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn(
+            f"The fixed framework declares {len(self.production_spv_headings)} SPV slots",
+            result.stdout,
+        )
 
     def test_docx_validator_rejects_reordered_fixed_headings(self) -> None:
         from lxml import etree
@@ -1194,6 +1223,141 @@ class SkillRegressionTests(unittest.TestCase):
             backup_root / "soe-post-investment-report.backup-20260829T123456Z-1",
         )
         self.assertEqual(candidate.parent, backup_root)
+
+    def test_validator_rejects_cutoff_later_than_issue_date(self) -> None:
+        """A cutoff after the signing date reports data that does not yet exist."""
+
+        invalid = copy.deepcopy(self.spec)
+        invalid["document"]["cutoff_date"] = "2026年6月30日"
+        invalid["document"]["issue_date"] = "2026年6月11日"
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(invalid, "late-cutoff.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn(
+            "document.cutoff_date（数据截止日期）cannot be later than document.issue_date（成文日期）",
+            result.stdout,
+        )
+
+    def test_validator_rejects_malformed_and_inconsistent_document_dates(self) -> None:
+        malformed = copy.deepcopy(self.spec)
+        malformed["document"]["cutoff_date"] = "2025-12-31"
+        malformed_result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(malformed, "malformed-date.json")
+        )
+        self.assertNotEqual(malformed_result.returncode, 0, malformed_result.stdout)
+        self.assertIn("must use the 公文 form YYYY年M月D日", malformed_result.stdout)
+
+        wrong_year = copy.deepcopy(self.spec)
+        wrong_year["document"]["legal_basis"] = (
+            "依据国有企业投资监督管理有关规定，现将公司2024年度股权投资项目投后管理情况报告如下："
+        )
+        year_result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(wrong_year, "wrong-basis-year.json")
+        )
+        self.assertNotEqual(year_result.returncode, 0, year_result.stdout)
+        self.assertIn("but document.report_year is", year_result.stdout)
+
+        early_print = copy.deepcopy(self.spec)
+        early_print["document"]["print_date"] = "2026年1月5日"
+        print_result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(early_print, "early-print-date.json")
+        )
+        self.assertNotEqual(print_result.returncode, 0, print_result.stdout)
+        self.assertIn("cannot be earlier than document.issue_date", print_result.stdout)
+
+    def test_validator_requires_complete_imprint_pair(self) -> None:
+        half = copy.deepcopy(self.spec)
+        half["document"]["print_date"] = ""
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(half, "half-imprint.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn(
+            "document.printer（印发机关）and document.print_date（印发日期）must be provided together",
+            result.stdout,
+        )
+
+    def test_generated_docx_carries_the_imprint_block(self) -> None:
+        _, docx_path = self.build_docx()
+        document = Document(docx_path)
+        printer = self.spec["document"]["printer"]
+        print_date = self.spec["document"]["print_date"]
+        imprint = [
+            table
+            for table in document.tables
+            if len(table.rows) == 1
+            and len(table.columns) == 2
+            and table.cell(0, 0).text.strip() == printer
+            and table.cell(0, 1).text.strip() == f"{print_date}印发"
+        ]
+        self.assertEqual(len(imprint), 1)
+        run = next(
+            item
+            for item in imprint[0].cell(0, 0).paragraphs[0].runs
+            if item.text.strip()
+        )
+        self.assertEqual(
+            run._element.rPr.rFonts.get(qn("w:eastAsia")), "仿宋_GB2312"
+        )
+        self.assertAlmostEqual(run.font.size.pt, 14.0)
+
+    def test_official_style_warnings_flag_source_template_slips(self) -> None:
+        sloppy = copy.deepcopy(self.spec)
+        sloppy["main_blocks"][2]["text"] = (
+            "截止2025年12月31日，基金实缴规模为1亿元，投资成本合计8200万元，同比增长7.07% ，"
+            "已回收本金及收益1460万元，期末基金净资产为1.08亿元。"
+        )
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(sloppy, "sloppy-style.json")
+        )
+        self.assertIn("公文表示时间点应使用“截至”", result.stdout)
+        self.assertIn("数字或西文与其后的全角标点之间存在多余空格", result.stdout)
+
+    def test_fixed_heading_contract_accepts_only_consecutive_spv_slots(self) -> None:
+        gap = copy.deepcopy(self.spec)
+        headings = list(gap["document"]["fixed_main_headings"])
+        headings[5] = "（六）甲专项债权SPV项目"
+        gap["document"]["fixed_main_headings"] = headings
+        gap["document"]["source_fixed_main_headings"] = list(headings)
+        for block in gap["main_blocks"]:
+            if block.get("text") == self.production_spv_headings[1]:
+                block["text"] = "（六）甲专项债权SPV项目"
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(gap, "nonconsecutive-spv.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("must preserve the source SPV slot as （五）", result.stdout)
+
+    def test_table_caption_block_uses_source_caption_typography(self) -> None:
+        _, docx_path = self.build_docx()
+        document = Document(docx_path)
+        caption_texts = [
+            block["text"]
+            for attachment in self.spec["attachments"]
+            for block in attachment.get("blocks") or []
+            if block.get("type") == "caption"
+        ]
+        self.assertTrue(caption_texts)
+        for caption in caption_texts:
+            paragraph = next(
+                item for item in document.paragraphs if item.text.strip() == caption
+            )
+            self.assertEqual(paragraph.alignment, WD_ALIGN_PARAGRAPH.CENTER)
+            run = next(item for item in paragraph.runs if item.text.strip())
+            self.assertEqual(run._element.rPr.rFonts.get(qn("w:eastAsia")), "黑体")
+            self.assertAlmostEqual(run.font.size.pt, 12.0)
+
+        wrong = copy.deepcopy(self.spec)
+        for attachment in wrong["attachments"]:
+            for block in attachment.get("blocks") or []:
+                if block.get("type") == "caption":
+                    block["type"] = "p"
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(wrong, "wrong-caption.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("is missing fact_ids", result.stdout)
 
 
 if __name__ == "__main__":

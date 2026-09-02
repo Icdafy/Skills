@@ -44,6 +44,8 @@ REDHEAD_PT = 68
 BODY_PT = 16
 TABLE_PT = 10.5
 FOOTER_PT = 14
+IMPRINT_PT = 14
+CAPTION_PT = 12
 TITLE_LINE_PT = 30
 BODY_LINE_PT = 28
 TABLE_LINE_PT = 18
@@ -541,6 +543,16 @@ def render_blocks(doc: Document, blocks: Iterable[dict[str, Any]]) -> None:
                 bold=bool(block.get("bold")),
                 align=alignments.get(str(block.get("align") or "justify"), WD_ALIGN_PARAGRAPH.JUSTIFY),
             )
+        elif block_type == "caption":
+            add_paragraph(
+                doc,
+                str(block.get("text") or ""),
+                font=FONT_HEITI,
+                size=CAPTION_PT,
+                align=WD_ALIGN_PARAGRAPH.CENTER,
+                first_line_chars=None,
+                keep_with_next=True,
+            )
         elif block_type == "tnote":
             add_paragraph(
                 doc,
@@ -613,6 +625,78 @@ def add_signature(doc: Document, metadata: dict[str, Any]) -> None:
         )
 
 
+def _display_units(text: str) -> float:
+    """Approximate rendered width in em: CJK glyphs are full width, others half."""
+
+    return sum(1.0 if ord(character) > 0x2E7F else 0.5 for character in text)
+
+
+def _imprint_rule(cell: Any) -> None:
+    """版记 uses a plain rule above and below the 印发机关／印发日期 row."""
+
+    props = cell._tc.get_or_add_tcPr()
+    borders = props.find(qn("w:tcBorders"))
+    if borders is None:
+        borders = OxmlElement("w:tcBorders")
+        props.append(borders)
+    for edge_name in ("left", "right", "insideH", "insideV"):
+        edge = borders.find(qn(f"w:{edge_name}"))
+        if edge is None:
+            edge = OxmlElement(f"w:{edge_name}")
+            borders.append(edge)
+        edge.set(qn("w:val"), "nil")
+    for edge_name in ("top", "bottom"):
+        edge = borders.find(qn(f"w:{edge_name}"))
+        if edge is None:
+            edge = OxmlElement(f"w:{edge_name}")
+            borders.append(edge)
+        edge.set(qn("w:val"), "single")
+        edge.set(qn("w:sz"), "12")
+        edge.set(qn("w:space"), "0")
+        edge.set(qn("w:color"), "auto")
+
+
+def add_imprint(doc: Document, metadata: dict[str, Any]) -> None:
+    """Render 版记（印发机关和印发日期）on the last page, per GB/T 9704-2012.
+
+    Both fields are optional; the validator requires them to be supplied
+    together, so an incomplete pair renders nothing here.
+    """
+
+    printer = str(metadata.get("printer") or "").strip()
+    print_date = str(metadata.get("print_date") or "").strip()
+    if not printer or not print_date:
+        return
+    add_paragraph(doc, "", first_line_chars=None)
+    add_paragraph(doc, "", first_line_chars=None)
+    table = doc.add_table(rows=1, cols=2)
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    _set_table_full_width(table)
+    left, right = table.rows[0].cells
+    # Split the row by rendered width so a long 印发机关 name keeps one line.
+    date_text = f"{print_date}印发"
+    left_units = _display_units(printer)
+    right_units = _display_units(date_text)
+    total_units = left_units + right_units or 1
+    left_pct = min(3500, max(1500, round(5000 * left_units / total_units)))
+    for cell, width in ((left, left_pct), (right, 5000 - left_pct)):
+        cell.text = ""
+        cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+        _imprint_rule(cell)
+        _set_cell_width_pct(cell, width)
+        _set_cell_margins(cell, top=40, start=70, bottom=40, end=70)
+
+    left_p = left.paragraphs[0]
+    left_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
+    left_p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
+    set_font(left_p.add_run(printer), FONT_BODY, IMPRINT_PT)
+
+    right_p = right.paragraphs[0]
+    right_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
+    right_p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
+    set_font(right_p.add_run(date_text), FONT_BODY, IMPRINT_PT)
+
+
 def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: int) -> None:
     doc.add_page_break()
     number = attachment.get("number") or fallback_number
@@ -659,6 +743,8 @@ def build_report(spec: dict[str, Any], output: Path, *, force: bool = False) -> 
 
     for index, attachment in enumerate(attachments, start=1):
         add_attachment(doc, attachment, index)
+
+    add_imprint(doc, metadata)
 
     output = output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
