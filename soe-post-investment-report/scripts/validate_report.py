@@ -41,11 +41,59 @@ def configure_utf8_stdio() -> None:
             pass
 
 
-# The source template fixes the first-level headings and the first three
-# second-level categories.  The SPV block is a *repeating* slot: the proofed
-# source report carries two of them (（四）……SPV项目 and （五）……SPV项目), so the
-# contract accepts one or more consecutive SPV slots numbered from 四 onwards.
-FIXED_FIRST_H1 = "一、年度股权投资完成总体情况"
+# 报告期间：标题、开头依据和数据截止日期必须描述同一个期间。The label suffix is
+# appended to the four-digit year, and the period end is the only admissible
+# data cutoff for that period — a 年度 title over 6月30日 data is the defect this
+# table exists to block.
+REPORT_PERIODS: dict[str, tuple[str, tuple[int, int]]] = {
+    "年度": ("年度", (12, 31)),
+    "上半年": ("年上半年", (6, 30)),
+    "下半年": ("年下半年", (12, 31)),
+    "第一季度": ("年第一季度", (3, 31)),
+    "第二季度": ("年第二季度", (6, 30)),
+    "第三季度": ("年第三季度", (9, 30)),
+    "第四季度": ("年第四季度", (12, 31)),
+}
+REPORT_PERIOD_EXPRESSION = re.compile(r"20\d{2}年(?:度|上半年|下半年|第[一二三四]季度)")
+
+
+def report_period_label(report_year: Any, report_period: Any) -> str:
+    """Return the period phrase used in the title and the opening basis."""
+
+    year = str(report_year or "").strip()
+    period = str(report_period or "").strip()
+    suffix = REPORT_PERIODS.get(period, (None, None))[0]
+    if not year or suffix is None:
+        return ""
+    return f"{year}{suffix}"
+
+
+def report_title(company: Any, report_year: Any, report_period: Any) -> str:
+    label = report_period_label(report_year, report_period)
+    return f"{str(company or '').strip()}关于{label}股权投资项目投后情况报告"
+
+
+def periods_for_cutoff(cutoff: date) -> list[str]:
+    """Return every period whose end date equals this cutoff."""
+
+    return [
+        period
+        for period, (_suffix, end) in REPORT_PERIODS.items()
+        if end == (cutoff.month, cutoff.day)
+    ]
+
+
+# The framework fixes the three category headings and the closing first-level
+# heading.  Two positions track the report itself: the opening first-level
+# heading carries the reporting period ("一、上半年股权投资完成总体情况" in a
+# half-year report), and the SPV block is a *repeating* slot — the proofed source
+# report carries two of them (（四）……SPV项目 and （五）……SPV项目), so the contract
+# accepts one or more consecutive SPV slots numbered from 四 onwards.
+FIRST_H1_TEMPLATE = "一、{period}股权投资完成总体情况"
+FIRST_H1_PATTERN = re.compile(
+    r"^一、(" + "|".join(REPORT_PERIODS) + r")股权投资完成总体情况$"
+)
+DEFAULT_REPORT_PERIOD = "年度"
 FIXED_LEADING_H2 = (
     "（一）存续基金",
     "（二）新设基金",
@@ -55,6 +103,22 @@ FIXED_LAST_H1 = "二、重大投资项目进展情况"
 SPV_SLOT_ORDINALS = ("四", "五", "六", "七", "八", "九", "十")
 MIN_FIXED_MAIN_HEADINGS = len(FIXED_LEADING_H2) + 3
 MAX_FIXED_MAIN_HEADINGS = MIN_FIXED_MAIN_HEADINGS + len(SPV_SLOT_ORDINALS) - 1
+
+
+def first_h1_for_period(report_period: Any) -> str:
+    """The opening first-level heading names the reporting period."""
+
+    period = str(report_period or "").strip()
+    if period not in REPORT_PERIODS:
+        period = DEFAULT_REPORT_PERIOD
+    return FIRST_H1_TEMPLATE.format(period=period)
+
+
+def period_of_first_h1(heading: str) -> str | None:
+    """Return the period named by a first-level heading, or None if malformed."""
+
+    match = FIRST_H1_PATTERN.fullmatch(normalize_heading(heading))
+    return match.group(1) if match else None
 
 
 def spv_slot_pattern(ordinal: str) -> re.Pattern[str]:
@@ -69,8 +133,10 @@ def fixed_main_heading_kinds(count: int) -> tuple[str, ...]:
     return ("h1",) + ("h2",) * (count - 2) + ("h1",)
 
 
-def default_fixed_main_headings(spv_slots: int = 1) -> tuple[str, ...]:
-    headings = [FIXED_FIRST_H1, *FIXED_LEADING_H2]
+def default_fixed_main_headings(
+    spv_slots: int = 1, report_period: Any = DEFAULT_REPORT_PERIOD
+) -> tuple[str, ...]:
+    headings = [first_h1_for_period(report_period), *FIXED_LEADING_H2]
     headings.extend(f"（{SPV_SLOT_ORDINALS[index]}）SPV项目" for index in range(spv_slots))
     headings.append(FIXED_LAST_H1)
     return tuple(headings)
@@ -209,10 +275,13 @@ def infer_fixed_main_blocks(
     """
 
     section_one: list[str] = []
+    first_h1 = first_h1_for_period(DEFAULT_REPORT_PERIOD)
     for kind, text in heading_entries:
         normalized = normalize_heading(text)
         if kind == "h1" and normalized == normalize_heading(FIXED_LAST_H1):
             break
+        if kind == "h1" and period_of_first_h1(normalized) and not section_one:
+            first_h1 = normalized
         if kind == "h2":
             section_one.append(normalized)
     slots: list[str] = []
@@ -223,7 +292,7 @@ def infer_fixed_main_blocks(
         slots.append(section_one[index])
     if not slots:
         return REQUIRED_MAIN_BLOCKS
-    headings = [FIXED_FIRST_H1, *FIXED_LEADING_H2, *slots, FIXED_LAST_H1]
+    headings = [first_h1, *FIXED_LEADING_H2, *slots, FIXED_LAST_H1]
     return tuple(zip(fixed_main_heading_kinds(len(headings)), headings))
 
 
@@ -231,6 +300,8 @@ def validate_heading_contract_list(
     values: Any,
     field_name: str,
     findings: Findings,
+    *,
+    expected_period: str | None = None,
 ) -> list[str] | None:
     """Validate one source/effective fixed-heading contract list.
 
@@ -255,14 +326,29 @@ def validate_heading_contract_list(
     if len(normalized) != len(set(normalized)):
         findings.error(f"document.{field_name} must be unique after normalization")
 
-    invariant = {0: FIXED_FIRST_H1}
-    invariant.update({index + 1: text for index, text in enumerate(FIXED_LEADING_H2)})
+    invariant = {index + 1: text for index, text in enumerate(FIXED_LEADING_H2)}
     invariant[len(normalized) - 1] = FIXED_LAST_H1
     for index, expected in invariant.items():
         if normalized[index] != normalize_heading(expected):
             findings.error(
                 f"document.{field_name}[{index}] must preserve the template heading: {expected}"
             )
+
+    # The opening first-level heading names the reporting period.  A source
+    # snapshot may legitimately name the previous period; the effective list
+    # must name the period this report declares.
+    observed_period = period_of_first_h1(normalized[0])
+    if observed_period is None:
+        findings.error(
+            f"document.{field_name}[0] must read 一、<报告期间>股权投资完成总体情况 with 报告期间 in "
+            + "、".join(REPORT_PERIODS)
+            + f"; got {headings[0]}"
+        )
+    elif expected_period is not None and observed_period != expected_period:
+        findings.error(
+            f"document.{field_name}[0] names 报告期间 {observed_period} but document.report_period "
+            f"is {expected_period}; expected {first_h1_for_period(expected_period)}"
+        )
     spv_headings = normalized[len(FIXED_LEADING_H2) + 1 : -1]
     for offset, heading in enumerate(spv_headings):
         ordinal = SPV_SLOT_ORDINALS[offset]
@@ -272,48 +358,6 @@ def validate_heading_contract_list(
                 f"source SPV slot as （{ordinal}）SPV项目 or （{ordinal}）<项目名称>SPV项目"
             )
     return headings
-
-
-# 报告期间：标题、开头依据和数据截止日期必须描述同一个期间。The label suffix is
-# appended to the four-digit year, and the period end is the only admissible
-# data cutoff for that period — a 年度 title over 6月30日 data is the defect this
-# table exists to block.
-REPORT_PERIODS: dict[str, tuple[str, tuple[int, int]]] = {
-    "年度": ("年度", (12, 31)),
-    "上半年": ("年上半年", (6, 30)),
-    "下半年": ("年下半年", (12, 31)),
-    "第一季度": ("年第一季度", (3, 31)),
-    "第二季度": ("年第二季度", (6, 30)),
-    "第三季度": ("年第三季度", (9, 30)),
-    "第四季度": ("年第四季度", (12, 31)),
-}
-REPORT_PERIOD_EXPRESSION = re.compile(r"20\d{2}年(?:度|上半年|下半年|第[一二三四]季度)")
-
-
-def report_period_label(report_year: Any, report_period: Any) -> str:
-    """Return the period phrase used in the title and the opening basis."""
-
-    year = str(report_year or "").strip()
-    period = str(report_period or "").strip()
-    suffix = REPORT_PERIODS.get(period, (None, None))[0]
-    if not year or suffix is None:
-        return ""
-    return f"{year}{suffix}"
-
-
-def report_title(company: Any, report_year: Any, report_period: Any) -> str:
-    label = report_period_label(report_year, report_period)
-    return f"{str(company or '').strip()}关于{label}股权投资项目投后情况报告"
-
-
-def periods_for_cutoff(cutoff: date) -> list[str]:
-    """Return every period whose end date equals this cutoff."""
-
-    return [
-        period
-        for period, (_suffix, end) in REPORT_PERIODS.items()
-        if end == (cutoff.month, cutoff.day)
-    ]
 
 
 CHINESE_DATE_PATTERN = re.compile(r"^(\d{4})年(\d{1,2})月(\d{1,2})日$")
@@ -494,6 +538,7 @@ def validate_imprint_metadata(document: dict[str, Any], findings: Findings) -> N
 def validate_fixed_heading_contract(document: dict[str, Any], findings: Findings) -> None:
     """Lock effective headings to the source snapshot unless change was authorized."""
 
+    report_period = str(document.get("report_period") or "").strip() or None
     source_headings = validate_heading_contract_list(
         document.get("source_fixed_main_headings"),
         "source_fixed_main_headings",
@@ -503,10 +548,19 @@ def validate_fixed_heading_contract(document: dict[str, Any], findings: Findings
         document.get("fixed_main_headings"),
         "fixed_main_headings",
         findings,
+        expected_period=report_period if report_period in REPORT_PERIODS else None,
     )
     if source_headings is None or effective_headings is None:
         return
-    changed = source_headings != effective_headings
+
+    # The opening heading's period word follows document.report_period the same
+    # way the title does, so a source snapshot taken from another period is not a
+    # discretionary heading change.  Compare everything else literally.
+    comparable_source = list(source_headings)
+    comparable_effective = list(effective_headings)
+    if period_of_first_h1(comparable_source[0]) and period_of_first_h1(comparable_effective[0]):
+        comparable_source[0] = comparable_effective[0] = ""
+    changed = comparable_source != comparable_effective
     authorized = document.get("heading_change_authorized")
     if not isinstance(authorized, bool):
         findings.error("document.heading_change_authorized must be true or false")

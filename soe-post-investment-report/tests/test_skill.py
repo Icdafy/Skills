@@ -1424,6 +1424,12 @@ class SkillRegressionTests(unittest.TestCase):
         half_year["document"]["legal_basis"] = (
             "依据国有企业投资监督管理有关规定，现将公司2026年上半年股权投资项目投后管理情况报告如下："
         )
+        period_h1 = "一、上半年股权投资完成总体情况"
+        source_h1 = half_year["document"]["fixed_main_headings"][0]
+        half_year["document"]["fixed_main_headings"][0] = period_h1
+        for block in half_year["main_blocks"]:
+            if block.get("text") == source_h1:
+                block["text"] = period_h1
         spec_path, docx_path = self.build_docx(half_year, "half-year.docx")
         document = Document(docx_path)
         expected = f"{half_year['document']['company']}关于2026年上半年股权投资项目投后情况报告"
@@ -1436,10 +1442,44 @@ class SkillRegressionTests(unittest.TestCase):
         self.assertEqual(len(titles), 1, [p.text for p in document.paragraphs[:6]])
         full_text = flatten(" ".join(p.text for p in document.paragraphs))
         self.assertNotIn(flatten("2026年度股权投资项目投后情况报告"), full_text)
+        # The opening first-level heading tracks the period alongside the title,
+        # and the source snapshot still names 年度 without needing authorization.
+        self.assertIn(flatten(period_h1), full_text)
+        self.assertNotIn(flatten("一、年度股权投资完成总体情况"), full_text)
+        self.assertFalse(half_year["document"]["heading_change_authorized"])
         result = self.run_script(
             "validate_report.py", "--spec", spec_path, "--docx", docx_path
         )
         self.assertEqual(result.returncode, 0, result.stdout)
+
+    def test_first_heading_must_name_the_declared_period(self) -> None:
+        stale = copy.deepcopy(self.spec)
+        stale["document"]["report_year"] = "2026"
+        stale["document"]["report_period"] = "第三季度"
+        stale["document"]["cutoff_date"] = "2026年9月30日"
+        stale["document"]["issue_date"] = "2026年10月15日"
+        stale["document"]["print_date"] = "2026年10月15日"
+        stale["document"]["legal_basis"] = (
+            "依据国有企业投资监督管理有关规定，现将公司2026年第三季度股权投资项目投后管理情况报告如下："
+        )
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(stale, "stale-period-heading.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn(
+            "names 报告期间 年度 but document.report_period is 第三季度", result.stdout
+        )
+        self.assertIn("expected 一、第三季度股权投资完成总体情况", result.stdout)
+
+        malformed = copy.deepcopy(self.spec)
+        malformed["document"]["fixed_main_headings"][0] = "一、股权投资完成总体情况"
+        malformed_result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(malformed, "malformed-first-h1.json")
+        )
+        self.assertNotEqual(malformed_result.returncode, 0, malformed_result.stdout)
+        self.assertIn(
+            "must read 一、<报告期间>股权投资完成总体情况", malformed_result.stdout
+        )
 
 
 if __name__ == "__main__":
