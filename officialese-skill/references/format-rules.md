@@ -39,10 +39,10 @@ Use this order for a standard notice-style document:
 4. One blank line before recipient/body.
 5. Recipient line ending with `：`.
 6. Body paragraphs.
-7. Attachment line, if any.
-8. Two blank lines before signature.
-9. Issuing unit, right aligned and right-indented about 4 Chinese characters.
-10. Date below signature.
+7. One blank line, then the 附件说明 block, if any.
+8. Two blank lines before the signature.
+9. Issuing unit, right aligned with a 4-character right indent.
+10. Date on the line below, centered on the issuing unit.
 
 When the user asks for plain text rather than DOCX, preserve the same order. Main title/subtitle are not indented; body paragraphs and numbered headings begin with two full-width spaces `　　`.
 
@@ -67,25 +67,53 @@ When the user asks for plain text rather than DOCX, preserve the same order. Mai
 - 平行文: usually uses 函, 商请, 函询, 函告, or coordination wording between equal or unrelated units.
 - If the user only needs body text and does not request a full red-head document, do not invent 份号、密级、紧急程度、版记 or 印章 information.
 
-## Attachments
+## Attachments（附件说明）
 
-- Write `附件：行文规范性格式模板` when there is one attachment.
-- For multiple attachments, use:
-  - `附件：1.XXXXX`
-  - `      2.XXXXX`
-- Do not add book-title marks around attachment names.
-- Do not add punctuation after attachment names.
-- If attachments have serial numbers in the attachment body, use Arabic numerals, e.g. `附件1.XXX`.
-- The word `附件：` is preceded by a 2-character indent.
+Detect this automatically. Whenever the document ships something alongside the body — the user writes 附件/附后/附表/附图/随文报送/见附件/一并印发, hands over a list of attached items, or the source text already carries a 附件 line — lay out the block below without being asked, and normalize an existing 附件 line that does not match it.
 
-## Date, Signature, and Page Numbers
+The character unit is the body size: 三号 = 16 pt per full-width character.
 
-- Leave two blank lines before the unit name/date block when the body ends.
-- Unit name is right aligned, visually leaving about 4 Chinese characters on the right.
-- Date uses Chinese date format: `2026年6月8日`; align it under the issuing unit rather than centering it independently.
-- Page numbers are placed on the outside edge for odd/even pages where possible, with odd/even pages different.
-- Page number format is `-1-`, `-2-`, etc.
-- A seal/signature page must contain at least two lines of正文. Do not create a page headed only by `（此页无正文）`.
+- The block goes after the last body paragraph, separated by one blank line, and before the 发文机关署名.
+- `附件：` starts 2 characters in, the same as a body first-line indent. Never 顶格.
+- One attachment: `附件：XXXXX`, no serial number.
+- Two or more: number them with Arabic numerals `1.` `2.` `3.`. The first rides on the `附件：` line; each later one starts its own paragraph indented 5 characters so its serial sits directly under `1.`.
+- Hanging indent, never 定格. When a name overruns the line, the continuation lines align with the start of that attachment's own name — not with the left margin, and not with the serial number:
+
+```
+　　附件：1.西安未央城市建设集团有限公司公文行文
+　　　　　　规范性格式模板
+　　　　　2.西安未央城市建设集团有限公司公文用纸、
+　　　　　　字体字号及页边距对照表
+```
+
+Column 1 is the left margin; `附件：` occupies columns 3–5, the serial column 6, and every name — first line and continuation alike — starts at column 7.
+
+- Word indents that produce it:
+  - Single attachment: left indent 5 chars (2 + `附件：`3), first line −3 chars.
+  - Numbered first item: left indent 6 chars (2 + 3 + `1.`1), first line −4 chars.
+  - Numbered later items: left indent 6 chars, first line −1 char.
+  - A serial wider than one character (`10.` and up) shifts only that item's own name column; every item still hangs under itself.
+- Names take no 书名号 and no trailing punctuation. Strip `《》` and any trailing 。；，、 carried in from the source.
+- Do not repeat `附件：` on the continuation items.
+- If the attachment body itself carries a serial, write it as `附件1.XXX`.
+
+## 发文机关署名、成文日期与页码
+
+- Leave two blank lines between the end of the body (or of the 附件说明) and the signature block.
+- 发文机关署名: right aligned, right indent exactly 4 characters (64 pt).
+- 成文日期: the line directly below the signature, centered on the signature — the date's midpoint sits on the signature's midpoint.
+- Build the date line by boxing it over the signature's own span and centering inside that box: right indent 4 characters (same as the signature), left indent = 版心宽 − 4 characters − 署名宽, alignment centered. Do not derive a right indent from an estimated date width — Word's 中西文自动间距 widens `2026年6月8日` past its character count and the date drifts off center.
+- If the date is as wide as or wider than the signature, or there is no signature, fall back to right aligned with a 4-character right indent.
+- Date format: `2026年6月8日`, Arabic numerals, no leading zeros.
+
+```
+                         西安未央城市建设集团有限公司····    ← 右空 4 字
+                              2026年6月8日                  ← 与署名同心
+```
+
+- Page numbers are placed on the outside edge, odd and even pages different.
+- Page number format is `-1-`, `-2-`, in 四号宋体.
+- A seal/signature page must contain at least two lines of 正文. Do not create a page headed only by `（此页无正文）`.
 
 ## Punctuation and Typography
 
@@ -106,4 +134,9 @@ When the user asks for plain text rather than DOCX, preserve the same order. Mai
 - Third-level headings are 三号仿宋_GB2312, bold.
 - Fourth-level headings are 三号仿宋_GB2312, not bold.
 - All body paragraphs and body headings have a two-character first-line indent.
-- Attachments, signature, date, and page numbers follow the rules above.
+- `附件：` starts 2 characters in; multiple attachments are numbered `1.` `2.`, with later serials at 5 characters.
+- Every attachment name that wraps hangs under its own first-line name column, not at the margin.
+- Attachment names carry no 书名号 and no trailing punctuation.
+- Two blank lines precede the signature; the issuing unit is right-indented 4 characters.
+- The date sits directly below the issuing unit and is centered on it.
+- Page numbers follow the rules above.

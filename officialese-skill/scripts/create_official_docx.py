@@ -5,7 +5,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
+import unicodedata
 from pathlib import Path
 
 from docx import Document
@@ -34,8 +36,19 @@ BODY_SIZE = 16  # 三号
 PAGE_NUMBER_SIZE = 14  # 四号
 BODY_LINE_PT = 28
 TITLE_LINE_PT = 30
+# 版式以「字」为单位：一个全角汉字宽 = 正文字号 = 三号 16 磅。
+CHAR_PT = BODY_SIZE
 TWO_CHAR_INDENT_PT = BODY_SIZE * 2
 SIGNATURE_RIGHT_INDENT_PT = BODY_SIZE * 4
+
+PAGE_WIDTH_CM = 21.0
+LEFT_MARGIN_CM = 2.8
+RIGHT_MARGIN_CM = 2.6
+TEXT_WIDTH_PT = Cm(PAGE_WIDTH_CM - LEFT_MARGIN_CM - RIGHT_MARGIN_CM).pt  # 版心宽 ≈ 442.2 磅
+
+ATTACHMENT_LABEL = "附件："
+ATTACHMENT_LABEL_CHARS = 3.0   # 「附件：」占 3 个字
+ATTACHMENT_START_CHARS = 2.0   # 附件说明起行左空 2 字，与正文一致
 
 STYLE_TITLE = "Official Title"
 STYLE_SUBTITLE = "Official Subtitle"
@@ -87,7 +100,7 @@ def set_paragraph_format(
     line_pt: int = BODY_LINE_PT,
     first_indent: bool = True,
     alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
-    right_indent_pt: int = 0,
+    right_indent_pt: float = 0,
 ) -> None:
     fmt = paragraph.paragraph_format
     fmt.line_spacing_rule = WD_LINE_SPACING.EXACTLY
@@ -158,7 +171,7 @@ def add_text_paragraph(
     style: str = STYLE_BODY,
     first_indent: bool = True,
     alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
-    right_indent_pt: int = 0,
+    right_indent_pt: float = 0,
 ) -> None:
     p = doc.add_paragraph(style=style)
     set_paragraph_format(
@@ -186,6 +199,56 @@ def add_center_line(doc: Document, text: str, font: str, size: int, style: str, 
 def add_blank_line(doc: Document, line_pt: int = BODY_LINE_PT) -> None:
     p = doc.add_paragraph(style=STYLE_BODY)
     set_paragraph_format(p, line_pt=line_pt, first_indent=False)
+
+
+def display_width(text: str) -> float:
+    """文本宽度，单位为「字」：全角字符计 1，半角字符（阿拉伯数字、西文、
+    半角点号）计 0.5。附件悬挂缩进与成文日期居中都按这个尺子算。"""
+    width = 0.0
+    for ch in text:
+        width += 1.0 if unicodedata.east_asian_width(ch) in ("W", "F", "A") else 0.5
+    return width
+
+
+def add_hanging_paragraph(
+    doc: Document,
+    text: str,
+    *,
+    left_chars: float,
+    first_line_chars: float,
+    font: str = BODY_FONT,
+    bold: bool = False,
+    style: str = STYLE_BODY,
+    line_pt: int = BODY_LINE_PT,
+):
+    """悬挂缩进段落：首行从 ``first_line_chars`` 字处起排，回行后统一落在
+    ``left_chars`` 字处。附件说明靠它实现「转行与首行名称对齐」。"""
+    p = doc.add_paragraph(style=style)
+    fmt = p.paragraph_format
+    fmt.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    fmt.line_spacing = Pt(line_pt)
+    fmt.space_before = Pt(0)
+    fmt.space_after = Pt(0)
+    fmt.right_indent = Pt(0)
+    fmt.left_indent = Pt(left_chars * CHAR_PT)
+    fmt.first_line_indent = Pt((first_line_chars - left_chars) * CHAR_PT)
+    p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+    run = p.add_run(text)
+    set_run_font(run, font, BODY_SIZE, bold)
+    return p
+
+
+def normalize_attachment_name(name: str) -> str:
+    """附件名称不加书名号，后不加标点符号；顺带去掉调用方可能重复写入的
+    「附件：」前缀和序号。"""
+    cleaned = str(name).strip()
+    while cleaned.startswith(ATTACHMENT_LABEL) or cleaned.startswith("附件:"):
+        cleaned = cleaned.split("：", 1)[-1].split(":", 1)[-1].strip()
+    cleaned = re.sub(r"^\d+\s*[.、．]\s*", "", cleaned)
+    cleaned = cleaned.rstrip("。；;，,、.")
+    if cleaned.startswith("《") and cleaned.endswith("》"):
+        cleaned = cleaned[1:-1].strip().rstrip("。；;，,、.")
+    return cleaned
 
 
 def add_page_field(paragraph) -> None:
@@ -269,42 +332,100 @@ def add_sections(doc: Document, sections: list[dict]) -> None:
 
 
 def add_attachments(doc: Document, attachments: list[str]) -> None:
-    if not attachments:
+    """附件说明。版式取自 assets/templates/文件字体格式.doc：
+
+    - 「附件：」左空 2 字起排，与正文首行缩进齐；
+    - 多个附件用阿拉伯数字序号，第 2 条起左空 5 字，序号与首条的「1.」对齐；
+    - 每条名称回行时不顶格，悬挂对齐到本条名称的起始位置（首条为左空 6 字）；
+    - 名称不加书名号，后不加标点符号。
+    """
+    names = [normalize_attachment_name(a) for a in attachments if str(a).strip()]
+    if not names:
         return
     add_blank_line(doc)
-    if len(attachments) == 1:
-        add_text_paragraph(doc, f"附件：{attachments[0]}")
+
+    if len(names) == 1:
+        # 「附件：」占 3 字，名称从第 5 字起排，回行悬挂在同一列。
+        name_col = ATTACHMENT_START_CHARS + ATTACHMENT_LABEL_CHARS
+        add_hanging_paragraph(
+            doc,
+            f"{ATTACHMENT_LABEL}{names[0]}",
+            left_chars=name_col,
+            first_line_chars=ATTACHMENT_START_CHARS,
+        )
         return
 
-    add_text_paragraph(doc, f"附件：1.{attachments[0]}")
-    for idx, attachment in enumerate(attachments[1:], start=2):
-        p = doc.add_paragraph(style=STYLE_BODY)
-        set_paragraph_format(p, first_indent=False)
-        p.paragraph_format.left_indent = Pt(TWO_CHAR_INDENT_PT + BODY_SIZE * 3)
-        run = p.add_run(f"{idx}.{attachment}")
-        set_run_font(run, BODY_FONT, BODY_SIZE)
+    for idx, name in enumerate(names, start=1):
+        serial = f"{idx}."
+        serial_chars = display_width(serial)
+        if idx == 1:
+            # 首条与「附件：」同行：名称列 = 2 + 3 + 序号宽（常见为 6 字）。
+            name_col = ATTACHMENT_START_CHARS + ATTACHMENT_LABEL_CHARS + serial_chars
+            first_line_chars = ATTACHMENT_START_CHARS
+            text = f"{ATTACHMENT_LABEL}{serial}{name}"
+        else:
+            # 后续各条序号左空 5 字，与首条序号对齐；名称列随本条序号宽度走。
+            first_line_chars = ATTACHMENT_START_CHARS + ATTACHMENT_LABEL_CHARS
+            name_col = first_line_chars + serial_chars
+            text = f"{serial}{name}"
+        add_hanging_paragraph(
+            doc,
+            text,
+            left_chars=name_col,
+            first_line_chars=first_line_chars,
+        )
+
+
+def add_date_line(doc: Document, date: str, issuer: str | None) -> None:
+    """成文日期排在单位名称正下方一行的正中间。
+
+    做法不是按字数估算日期宽度再右空若干字——日期里「2026年6月8日」这类中西
+    文混排会被 Word 的中西文自动间距撑宽，估算必偏。改为把日期段落的左右缩进
+    卡在单位名称占位的两端（右空 4 字，左缩进 = 版心宽 - 4 字 - 署名宽），再让
+    Word 在这个盒子里居中：无论日期实际排多宽，都与署名同心。
+    """
+    right_pt = float(SIGNATURE_RIGHT_INDENT_PT)
+    issuer_pt = display_width(issuer) * CHAR_PT if issuer else 0.0
+    # 署名太短（撑不下日期）或没有署名时，退回 GB/T 9704 的右空 4 字。
+    if not issuer or display_width(date) >= display_width(issuer):
+        add_text_paragraph(
+            doc,
+            date,
+            first_indent=False,
+            alignment=WD_ALIGN_PARAGRAPH.RIGHT,
+            right_indent_pt=right_pt,
+        )
+        return
+
+    p = doc.add_paragraph(style=STYLE_BODY)
+    set_paragraph_format(
+        p,
+        first_indent=False,
+        alignment=WD_ALIGN_PARAGRAPH.CENTER,
+        right_indent_pt=right_pt,
+    )
+    p.paragraph_format.left_indent = Pt(max(0.0, TEXT_WIDTH_PT - right_pt - issuer_pt))
+    run = p.add_run(date)
+    set_run_font(run, BODY_FONT, BODY_SIZE)
 
 
 def add_signature_block(doc: Document, issuer: str | None, date: str | None) -> None:
     if not issuer and not date:
         return
 
+    # 正文（或附件说明）之后空两行，再排发文机关署名与成文日期。
     add_blank_line(doc)
     add_blank_line(doc)
     if issuer:
         add_text_paragraph(
             doc,
             issuer,
+            first_indent=False,
             alignment=WD_ALIGN_PARAGRAPH.RIGHT,
             right_indent_pt=SIGNATURE_RIGHT_INDENT_PT,
         )
     if date:
-        add_text_paragraph(
-            doc,
-            date,
-            alignment=WD_ALIGN_PARAGRAPH.RIGHT,
-            right_indent_pt=SIGNATURE_RIGHT_INDENT_PT,
-        )
+        add_date_line(doc, date, issuer)
 
 
 def build_docx(data: dict, output: Path) -> None:

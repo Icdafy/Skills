@@ -18,9 +18,10 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 3. When the task is to draft or polish text, output the document content directly in the detected tone. Do not preface the answer with a long explanation of the detection unless the user asks for analysis.
 4. Draft in formal, concise official language: state the basis, purpose, matter, requirements, responsible parties, and timing.
 5. Apply the format rules in `references/format-rules.md`.
-6. Use wording patterns in `references/writing-patterns.md` when the task is drafting, polishing, or converting informal text into officialese.
-7. For Word output, use the fonts in `assets/fonts/` and the sample template in `assets/templates/文件字体格式.doc`.
-8. For a quick DOCX draft, run `scripts/create_official_docx.py`, then inspect and fine-tune in Word when strict page-number placement or legacy `.doc` compatibility is required.
+6. Detect attachments without being asked. If the document ships anything alongside the body — the user writes 附件/附后/附表/附图/随文报送/见附件/一并印发, hands over a list of attached items, or the source already carries a 附件 line — lay out the 附件说明 block per `references/format-rules.md`, and silently normalize an existing 附件 line that does not match: 2-character start, Arabic serials from `1.`, later serials at 5 characters, each name hanging under its own name column when it wraps, no 书名号, no trailing punctuation. Then set the 发文机关署名 two blank lines below it, right-indented 4 characters, with the 成文日期 on the next line centered on the signature. Do not stop to ask whether to apply this.
+7. Use wording patterns in `references/writing-patterns.md` when the task is drafting, polishing, or converting informal text into officialese.
+8. For Word output, use the fonts in `assets/fonts/` and the sample template in `assets/templates/文件字体格式.doc`.
+9. For a quick DOCX draft, run `scripts/create_official_docx.py`, then inspect and fine-tune in Word when strict page-number placement or legacy `.doc` compatibility is required.
 
 ## Required Format Priorities
 
@@ -35,6 +36,8 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 - Third-level heading `1.xxxx`: 三号仿宋_GB2312, bold.
 - Fourth-level heading `（1）xxxx`: 三号仿宋_GB2312, not bold.
 - Body paragraphs and numbered headings must start with a two-Chinese-character first-line indent. In plain-text output, prefix them with two full-width spaces `　　`; in DOCX output, use Word first-line indent.
+- 附件说明 starts 2 characters in, uses Arabic serials for two or more attachments, and hangs each wrapped name under that attachment's own name column instead of returning to the margin. Names carry no 书名号 and no trailing punctuation.
+- 发文机关署名 sits two blank lines below the body or 附件说明, right-indented 4 characters; 成文日期 goes on the next line, centered on the signature.
 - Keep titles short and literal. Put explanatory content in the body, not the title.
 - Do not use casual, promotional, or emotional wording.
 - Check the final file visually for font fallback, page margins, fixed line spacing, attachment labels, seal/signature area, and page numbers.
@@ -47,5 +50,5 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 - `assets/fonts/楷体_GB2312.ttf`: subtitle and second-level heading font.
 - `assets/fonts/simfang.ttf`: 仿宋_GB2312 body font.
 - `assets/templates/文件字体格式.doc`: original uploaded format sample.
-- `scripts/create_official_docx.py`: deterministic starter DOCX generator. Latin letters and Arabic numerals are set in Times New Roman while CJK keeps its Chinese face — both in the same run, via `w:rFonts` (ascii/hAnsi = Times, eastAsia = 中文字体), so no run splitting is needed. The page number is the one exception: it stays entirely 宋体, per GB/T 9704（页码用四号半角宋体阿拉伯数字）. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails.
+- `scripts/create_official_docx.py`: deterministic starter DOCX generator. Latin letters and Arabic numerals are set in Times New Roman while CJK keeps its Chinese face — both in the same run, via `w:rFonts` (ascii/hAnsi = Times, eastAsia = 中文字体), so no run splitting is needed. The page number is the one exception: it stays entirely 宋体, per GB/T 9704（页码用四号半角宋体阿拉伯数字）. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails. `--attachment` builds the 附件说明 block with the hanging indents described above, and `--issuer`/`--date` emit the 4-character-indented signature with the date centered on it.
 - `scripts/embed_fonts.py`: font embedder used by the generator; run `python scripts/embed_fonts.py --docx out.docx --verify` to re-check an existing file.
