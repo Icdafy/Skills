@@ -11,7 +11,7 @@ of the cost of transcribing everything twice.
         --output-dir <dir> [--glossary 术语.txt] [--context "人名 术语"]
 
 Segments are selected when a sentence carries salient numbers, dates,
-glossary terms, or question marks (or everything with --all). Adjacent risky
+glossary terms, or question marks (or independent full-media windows with --all). Adjacent risky
 sentences merge into clips with padding for context. Per-clip checkpoints
 make interrupted runs resumable; rerun the identical command to continue.
 
@@ -58,6 +58,7 @@ if str(SCRIPT_DIR) not in sys.path:
 
 import fact_check  # noqa: E402
 import transcribe  # noqa: E402
+from run_state import atomic_json, fingerprint, read_checkpoint, enable_offline, local_model, covered_seconds, file_hash
 
 NEGATIONS = ("没有", "不能", "不可", "禁止", "未", "无法", "取消", "终止", "暂停")
 # Sentences carrying commitments or hard limits: mis-heard numbers here hurt the
@@ -103,9 +104,7 @@ def number_map(text: str) -> dict[tuple, str]:
             continue
         # 以“年”结尾的日期（二〇二三年）和三成/个点等口语百分比由中文写成，
         # salient() 提不出 digits，需单独放行——它们与金额同为复核重点。
-        if not (fact_check.salient(token.raw)
-                or token.kind in ("month", "day", "percent")
-                or token.raw.endswith("年")):
+        if not fact_check.quantitative(token):
             continue
         result.setdefault((token.kind, round(token.value, 6)), token.raw)
     return result
@@ -124,9 +123,7 @@ def ordered_values(text: str) -> list[tuple]:
     for token in fact_check.extract_tokens(fact_check.normalize(text), body_only=False):
         if token.value is None:
             continue
-        if not (fact_check.salient(token.raw)
-                or token.kind in ("month", "day", "percent")
-                or token.raw.endswith("年")):
+        if not fact_check.quantitative(token):
             continue
         key = (token.kind, round(token.value, 6))
         if key in seen:
@@ -199,6 +196,32 @@ def compare_texts(funasr_text: str, qwen_text: str, terms: list[str]) -> list[di
                 "funasr_only": [item[2] for item in left_seq],
                 "qwen_only": [item[2] for item in right_seq],
             })
+    left_tokens = [t for t in fact_check.extract_tokens(fact_check.normalize(funasr_text), body_only=False) if fact_check.quantitative(t)]
+    right_tokens = [t for t in fact_check.extract_tokens(fact_check.normalize(qwen_text), body_only=False) if fact_check.quantitative(t)]
+    for ltoken, rtoken in zip(left_tokens, right_tokens):
+        if (ltoken.kind == rtoken.kind and ltoken.value == rtoken.value
+                and ltoken.unit and rtoken.unit and ltoken.unit != rtoken.unit):
+            conflicts.append({"category": "单位", "funasr_only": [ltoken.raw + ltoken.unit],
+                              "qwen_only": [rtoken.raw + rtoken.unit]})
+    def occurrence_count(text):
+        identities = set()
+        for clause in re.split(r"[，,。；;！!?？]", fact_check.normalize(text)):
+            tokens = [t for t in fact_check.extract_tokens(clause, body_only=False) if fact_check.quantitative(t)]
+            anchor = clause
+            for token in tokens:
+                anchor = anchor.replace(token.raw, "")
+            anchor = re.sub(r"对|嗯|是的|\s", "", anchor)
+            for token in tokens:
+                identities.add((token.kind, token.value, anchor))
+        return len(identities)
+    if occurrence_count(funasr_text) != occurrence_count(qwen_text) and not any(c["category"] == "数字" for c in conflicts):
+        conflicts.append({"category": "事实实例数量", "funasr_only": [str(occurrence_count(funasr_text))],
+                          "qwen_only": [str(occurrence_count(qwen_text))]})
+    qualifiers = ("预计", "约", "以上", "以下", "不含", "至少", "最多", "去年", "今年", "明年", "已实现", "未实现")
+    lscope = [q for q in qualifiers if q in funasr_text]
+    rscope = [q for q in qualifiers if q in qwen_text]
+    if lscope != rscope and (left_tokens or right_tokens):
+        conflicts.append({"category": "时间或限定词", "funasr_only": lscope, "qwen_only": rscope})
     return conflicts
 
 
@@ -238,6 +261,22 @@ def plan_clips(
     max_clip: float,
     duration: float,
 ) -> list[Clip]:
+    if duration <= 0 or max_clip <= 0 or pad < 0 or merge_gap < 0:
+        raise ValueError("duration/max-clip must be positive; pad/merge-gap must be non-negative")
+    if select_all:
+        # Plan from the media timeline, never from the primary ASR's omissions.
+        clips = []
+        cursor = 0.0
+        while cursor < duration:
+            end = min(duration, cursor + max_clip)
+            start = max(0.0, cursor - pad)
+            stop = min(duration, end + pad)
+            text = "".join(str(x["text"]).strip() for x in stamps
+                           if float(x.get("start", 0)) < stop and float(x.get("end", 0)) > start)
+            clips.append(Clip(len(clips) + 1, start, stop, ("all",), text,
+                              score=clip_risk_score(text, terms)))
+            cursor = end
+        return clips
     ranges: list[tuple[float, float, set[str]]] = []
     for item in stamps:
         text = str(item["text"]).strip()
@@ -348,9 +387,9 @@ def write_report(
     review = [c for c in clips if c.status == "review"]
     skipped = [c for c in clips if c.status == "skipped"]
     reviewed = [c for c in clips if c.status != "skipped"]
-    covered = sum(c.end - c.start for c in reviewed)
+    covered = covered_seconds([(c.start, c.end) for c in reviewed])
     lines = [
-        "# 定向复核报告",
+        "# 双引擎复核报告",
         "",
         f"- 主转录稿：`{transcript.name}`（FunASR）",
         f"- 复核引擎：`{model_name}`",
@@ -377,8 +416,8 @@ def write_report(
         lines.append(f"- 回听音频：分歧与待复核片段已剪出至 `{Path(audio_dir).name}/`，逐条点开即听。")
     lines += [
         "",
-        "双引擎一致的数字可视为可靠依据；下列分歧片段写入纪要前必须回听录音确认，",
-        "无法确认的数字改用转录稿原文并在对话中向用户说明，不在纪要中标注“待核”。",
+        "一致仅表示已实现的比较项未发现差异，不证明事实或录音绝对准确；分歧须实际回听裁决。",
+        "无法辨识的数字保留可确认部分并就地括注；裁决在 review.json 留痕，不将 ASR 猜测当作事实。",
         "低优先级分歧＝第三份证据支持主稿口径，仍须回听，但可排在高优先级之后处理。",
         "",
     ]
@@ -452,14 +491,15 @@ def main() -> int:
     parser.add_argument("--term", action="append", default=[])
     parser.add_argument("--context", default="", help="extra recognition context for Qwen3-ASR")
     parser.add_argument("--model", default=transcribe.QWEN_MODEL_DEFAULT)
-    parser.add_argument("--language", default="Chinese")
+    parser.add_argument("--language", default="auto")
+    parser.add_argument("--offline", action="store_true")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda", "mps"], default="auto")
     parser.add_argument("--max-new-tokens", type=int, default=None)
     parser.add_argument("--pad", type=float, default=DEFAULT_PAD_SECONDS)
     parser.add_argument("--merge-gap", type=float, default=DEFAULT_MERGE_GAP_SECONDS)
     parser.add_argument("--max-clip", type=float, default=DEFAULT_MAX_CLIP_SECONDS)
     parser.add_argument("--all", action="store_true",
-                        help="re-transcribe every segment (full dual-engine pass)")
+                        help="re-transcribe the full source media timeline, including primary ASR gaps")
     parser.add_argument("--budget-minutes", type=float, default=None,
                         help="review time budget: clips are ranked by risk score "
                              "and reviewed highest-first until the budget is spent; "
@@ -478,6 +518,10 @@ def main() -> int:
     parser.add_argument("--no-resume", action="store_true")
     args = parser.parse_args()
 
+    if args.all and args.budget_minutes is not None:
+        parser.error("--all 不允许 --budget-minutes 缩减覆盖")
+    if args.offline:
+        enable_offline()
     if args.budget_minutes is not None and args.budget_minutes <= 0:
         parser.error("--budget-minutes 必须为正数")
 
@@ -494,10 +538,15 @@ def main() -> int:
         item for item in payload.get("timestamps") or []
         if str(item.get("text", "")).strip()
     ]
-    if not stamps:
+    if not stamps and not args.all:
         parser.error("转录 JSON 不含句级时间戳；请以 --diarize 或 --timestamps 重新转录。")
-    duration = float(payload.get("duration_seconds")
-                     or max(float(item.get("end", 0.0)) for item in stamps))
+    duration = transcribe.media_duration(args.source)
+    if duration is None or duration <= 0:
+        parser.error("无法读取源媒体总时长，不能核验复核覆盖范围")
+    if payload.get("is_partial") or payload.get("clip_start_seconds", 0):
+        parser.error("不可把样本或裁剪转录当作全片主稿，请提供完整录音转录")
+    if payload.get("source_sha256") and payload["source_sha256"] != file_hash(args.source):
+        parser.error("主稿与源媒体哈希不一致")
     terms = fact_check.collect_terms(args.glossary, args.term)
 
     clips = plan_clips(
@@ -508,6 +557,8 @@ def main() -> int:
         max_clip=args.max_clip,
         duration=duration,
     )
+    if payload.get("engine") == "qwen":
+        parser.error("主稿已由 Qwen 生成；本复核器不能把同族模型重转称为独立双引擎复核。请使用另一适用引擎独立转录并人工核验。")
     if not clips:
         print(json.dumps({"ok": True, "clips": 0,
                           "note": "未发现需要复核的高风险片段"}, ensure_ascii=False))
@@ -530,7 +581,7 @@ def main() -> int:
                  "preview": c.funasr_text[:40]}
                 for c in clips
             ],
-            "covered_seconds": round(sum(c.end - c.start for c in selected), 1),
+            "covered_seconds": round(covered_seconds([(c.start, c.end) for c in selected]), 1),
             "skipped_clips": len(skipped),
             "total_seconds": round(duration, 1),
         }, ensure_ascii=False, indent=2))
@@ -555,9 +606,10 @@ def main() -> int:
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     device, dtype = transcribe.choose_device(torch, args.device)
+    identity = fingerprint(args.source, {**vars(args), "transcript_sha256": file_hash(args.transcript), "terms": terms, "checkpoint_schema": 1, "output_dir": None, "budget_minutes": None, "no_resume": False})
     max_clip_seconds = max(c.end - c.start for c in clips)
     model = Qwen3ASRModel.from_pretrained(
-        args.model,
+        local_model(args.model, "hf", args.offline),
         dtype=dtype,
         device_map=device,
         max_inference_batch_size=1,
@@ -579,8 +631,9 @@ def main() -> int:
             return 1
         transcribe.progress({"stage": "load", "engine": "sensevoice"})
         voter_model = FunASRAutoModel(
-            model=SENSEVOICE_MODEL,
-            vad_model="fsmn-vad",
+            model=local_model(SENSEVOICE_MODEL, "ms", args.offline),
+            check_latest=False,
+            vad_model=local_model("fsmn-vad", "ms", args.offline),
             vad_kwargs={"max_single_segment_time": 30000},
             device=transcribe.funasr_device(args.device),
             disable_update=True,
@@ -590,10 +643,8 @@ def main() -> int:
     def voter_transcribe(clip: Clip, temp_dir: str) -> str:
         checkpoint = checkpoint_dir / f"clip_{clip.index:04d}.voter.json"
         if not args.no_resume and checkpoint.is_file():
-            cached = json.loads(checkpoint.read_text(encoding="utf-8"))
-            if (cached.get("model") == SENSEVOICE_MODEL
-                    and abs(cached.get("start", -1) - clip.start) < 0.5
-                    and abs(cached.get("end", -1) - clip.end) < 0.5):
+            cached = read_checkpoint(checkpoint, identity + ":voter", clip.start, clip.end)
+            if cached is not None:
                 return str(cached.get("text", ""))
         voter_wav = Path(temp_dir) / f"clip_{clip.index:04d}.voter.wav"
         transcribe.prepare_wav(
@@ -604,12 +655,13 @@ def main() -> int:
             merge_vad=True, merge_length_s=15,
         )
         text = strip_sensevoice_tags(str(results[0].get("text", ""))) if results else ""
-        checkpoint.write_text(json.dumps({
+        atomic_json(checkpoint, {
+            "identity": identity + ":voter",
             "model": SENSEVOICE_MODEL,
             "start": clip.start,
             "end": clip.end,
             "text": text,
-        }, ensure_ascii=False), encoding="utf-8")
+        })
         return text
 
     started = time.monotonic()
@@ -618,10 +670,8 @@ def main() -> int:
             checkpoint = checkpoint_dir / f"clip_{clip.index:04d}.json"
             cached_text: str | None = None
             if not args.no_resume and checkpoint.is_file():
-                cached = json.loads(checkpoint.read_text(encoding="utf-8"))
-                if (cached.get("model") == args.model
-                        and abs(cached.get("start", -1) - clip.start) < 0.5
-                        and abs(cached.get("end", -1) - clip.end) < 0.5):
+                cached = read_checkpoint(checkpoint, identity, clip.start, clip.end)
+                if cached is not None:
                     cached_text = str(cached.get("text", ""))
             if cached_text is None:
                 clip_wav = Path(temp_dir) / f"clip_{clip.index:04d}.wav"
@@ -634,12 +684,13 @@ def main() -> int:
                     return_time_stamps=False,
                 )
                 cached_text = str(results[0].text).strip() if results else ""
-                checkpoint.write_text(json.dumps({
+                atomic_json(checkpoint, {
+                    "identity": identity,
                     "model": args.model,
                     "start": clip.start,
                     "end": clip.end,
                     "text": cached_text,
-                }, ensure_ascii=False), encoding="utf-8")
+                })
             clip.qwen_text = cached_text
             if not clip.qwen_text:
                 clip.status = "review"
@@ -692,7 +743,14 @@ def main() -> int:
     report_json = output_dir / f"{stem}.refine.json"
     report_md = output_dir / f"{stem}.refine.md"
     report_json.write_text(json.dumps({
-        "schema_version": 2,
+        "schema_version": 3,
+        "source_sha256": file_hash(args.source),
+        "transcript_sha256": file_hash(args.transcript),
+        "review_mode": "all" if args.all else "targeted",
+        "duration_seconds": duration,
+        "covered_seconds": covered_seconds([(c.start, c.end) for c in selected]),
+        "primary_engine": payload.get("engine", "unknown"),
+        "primary_model": payload.get("model", "unknown"),
         "created_at": datetime.now(timezone.utc).isoformat(),
         "transcript": str(args.transcript),
         "source": str(args.source),
@@ -734,7 +792,7 @@ def main() -> int:
         "voter": args.voter,
         "budget_minutes": args.budget_minutes,
         "review_audio_dir": audio_dir,
-        "covered_seconds": round(sum(c.end - c.start for c in selected), 1),
+        "covered_seconds": round(covered_seconds([(c.start, c.end) for c in selected]), 1),
         "total_seconds": round(duration, 1),
         "elapsed_seconds": round(time.monotonic() - started, 1),
         "outputs": {"json": str(report_json), "md": str(report_md)},

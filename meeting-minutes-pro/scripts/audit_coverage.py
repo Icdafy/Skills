@@ -86,16 +86,8 @@ class Window:
         self.label = label
         self.text = text
         tokens = fact_check.extract_tokens(fact_check.normalize(text), body_only=False)
-        seen: dict[str, None] = {}
-        for token in tokens:
-            if (fact_check.salient(token.raw)
-                    or token.kind in ("month", "day", "percent")):
-                seen.setdefault(token.raw)
-        self.numbers = list(seen)
-        self.number_tokens = [
-            token for token in tokens
-            if token.raw in seen and token.value is not None
-        ]
+        self.number_tokens = [token for token in tokens if fact_check.quantitative(token)]
+        self.numbers = [token.raw for token in self.number_tokens]
         sentences = [part.strip() for part in qa_reconcile.SENTENCE_SPLIT.split(text)
                      if part.strip()]
         self.question_sentences = [sentence for sentence in sentences
@@ -184,6 +176,8 @@ def text_windows(text: str, chars_per_window: int,
 def build_windows(path: Path, window_seconds: float, chars_per_window: int,
                   terms: tuple[str, ...] | list[str] = ()) -> tuple[list[Window], str]:
     stamps, text = load_transcript(path)
+    if window_seconds <= 0 or chars_per_window <= 0:
+        raise SystemExit("窗口大小必须为正数")
     if stamps:
         return time_windows(stamps, window_seconds, terms), "time"
     if not text.strip():
@@ -249,7 +243,16 @@ def validate(
         errors.append(f"窗口 {index} 不在转录稿的窗口范围内（共 {len(windows)} 个）。")
     available_number_keys = {
         (window.index, raw) for window in windows for raw in window.numbers
-    }
+    } | {(window.index, f"N{i}") for window in windows
+         for i in range(1, len(window.number_tokens) + 1)}
+    for window in windows:
+        for raw in set(window.numbers):
+            if window.numbers.count(raw) > 1 and (window.index, raw) in allowed_missing_numbers:
+                errors.append(f"窗口 {window.index} 的数字 {raw} 有多个事实实例；请用 N序号逐项放行。")
+
+    def waived(window, ordinal, raw):
+        return ((window.index, f"N{ordinal}") in allowed_missing_numbers
+                or (window.numbers.count(raw) == 1 and (window.index, raw) in allowed_missing_numbers))
     for (index, raw), _reason in allowed_missing_numbers.items():
         if (index, raw) not in available_number_keys:
             errors.append(
@@ -290,6 +293,8 @@ def validate(
         if window.index not in entries:
             continue
         label, decision, remark = entries[window.index]
+        if mode == "text" and label != window.label:
+            errors.append(f"窗口 {window.index} 的字符范围与转录稿不符。")
         if mode == "time":
             parts = re.split(r"[–—~-]", label)
             starts = parse_time(parts[0].strip()) if parts else None
@@ -320,8 +325,8 @@ def validate(
         ]
         if decision == "省略":
             unwaived = [
-                raw for raw in window.numbers
-                if (window.index, raw) not in allowed_missing_numbers
+                raw for i, raw in enumerate(window.numbers, 1)
+                if not waived(window, i, raw)
             ]
             if strict_numbers and unwaived:
                 errors.append(
@@ -329,12 +334,12 @@ def validate(
                     f"（{'、'.join(unwaived)}）却被判定省略；严格数字模式要求逐项纳入，"
                     "或仅对明确口误、更正、重复及非实质编号使用 --allow-missing-number 并写明理由。"
                 )
-            elif len(window.numbers) >= 2:
+            elif not strict_numbers and len(window.numbers) >= 2:
                 errors.append(
                     f"窗口 {window.index}（{window.label}）含 {len(window.numbers)} 项数字事实"
                     f"（{'、'.join(window.numbers[:4])}…）却被判定省略，必须纳入或逐项说明。"
                 )
-            elif len(window.numbers) == 1:
+            elif not strict_numbers and len(window.numbers) == 1:
                 warnings.append(
                     f"窗口 {window.index} 被省略但含数字「{window.numbers[0]}」，请再次确认。"
                 )
@@ -344,21 +349,10 @@ def validate(
                     f"「{unmatched_questions[0][:24]}」未在纪要问答中找到对应，请确认省略合理。"
                 )
         elif decision == "纳入" and window.numbers:
-            token_hits: dict[str, bool] = {}
-            for raw in window.numbers:
-                matching = [token for token in window.number_tokens if token.raw == raw]
-                token_hits[raw] = (
-                    raw in minutes_text
-                    or any(
-                        (token.kind, round(token.value, 6)) in minutes_values
-                        for token in matching
-                    )
-                )
-            missing = [raw for raw, hit in token_hits.items() if not hit]
-            unwaived = [
-                raw for raw in missing
-                if (window.index, raw) not in allowed_missing_numbers
-            ]
+            assignments = fact_check.match_occurrences(window.number_tokens, minutes_tokens)
+            missing = [raw for raw, matched in zip(window.numbers, assignments) if matched is None]
+            unwaived = [raw for i, (raw, matched) in enumerate(zip(window.numbers, assignments), 1)
+                       if matched is None and not waived(window, i, raw)]
             hit = not missing
             if strict_numbers and unwaived:
                 errors.append(

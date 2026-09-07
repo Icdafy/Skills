@@ -148,13 +148,13 @@ class ColloquialPercentTests(unittest.TestCase):
         code, _ = run_verify(minutes_doc("毛利率约35%。"), "毛利率三成半左右")
         self.assertEqual(code, 0)
 
-    def test_ge_dian_matches_written_percent(self) -> None:
+    def test_ge_dian_requires_explicit_resolution(self) -> None:
         code, _ = run_verify(minutes_doc("费用率上升3%。"), "费用率涨了3个点")
-        self.assertEqual(code, 0)
+        self.assertEqual(code, 1)
 
-    def test_cn_ge_dian_matches_written_percent(self) -> None:
+    def test_cn_ge_dian_requires_explicit_resolution(self) -> None:
         code, _ = run_verify(minutes_doc("费用率上升3%。"), "费用率涨了三个点")
-        self.assertEqual(code, 0)
+        self.assertEqual(code, 1)
 
     def test_qianfenzhi_matches_written_percent(self) -> None:
         code, _ = run_verify(minutes_doc("不良率为0.5%。"), "不良率控制在千分之五")

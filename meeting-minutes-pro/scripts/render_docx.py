@@ -17,10 +17,11 @@ import re
 import shutil
 import subprocess
 import sys
+from run_state import atomic_json, file_hash
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from format_spec import pdf_required_markers, pdf_substitute_alerts  # noqa: E402
+from format_spec import FONT_CATALOG, pdf_required_markers, pdf_substitute_alerts  # noqa: E402
 
 # PostScript names as they appear inside the exported PDF. 方正小标宋 is not
 # listed: its license flag (fsType=2) forbids embedding, so Word outputs the
@@ -33,20 +34,39 @@ REQUIRED_FONT_MARKERS = pdf_required_markers()  # ("KaiTi_GB2312", "FangSong_GB2
 SUBSTITUTE_ALERTS = pdf_substitute_alerts()  # ("KaiTi", "FangSong")
 
 
+def used_font_markers(docx: Path) -> tuple[str, ...]:
+    """Require only faces actually used by visible runs in this document."""
+    from docx import Document
+    from docx.oxml.ns import qn
+    document = Document(str(docx))
+    used = set()
+    for run in document.element.iter(qn('w:r')):
+        if not ''.join(x.text or '' for x in run.iter(qn('w:t'))).strip():
+            continue
+        props = run.find(qn('w:rPr'))
+        fonts = None if props is None else props.find(qn('w:rFonts'))
+        if fonts is not None:
+            used.update(fonts.get(qn('w:' + key)) for key in ('ascii', 'hAnsi', 'eastAsia'))
+    return tuple(str(row['pdf_marker']) for row in FONT_CATALOG
+                 if row['pdf_marker'] and row['run_name'] in used)
+
+
 def render_with_word(docx: Path, pdf: Path) -> bool:
     if sys.platform != "win32":
         return False
     # Word occasionally drops the RPC channel on Quit after a successful
     # conversion, so Quit failures are tolerated and success is judged by
     # whether the PDF file was produced.
+    docx_literal = str(docx).replace("'", "''")
+    pdf_literal = str(pdf).replace("'", "''")
     script = f"""
 $ErrorActionPreference = 'Stop'
 $word = New-Object -ComObject Word.Application
 $word.Visible = $false
 $word.DisplayAlerts = 0
 try {{
-  $doc = $word.Documents.Open('{docx}', $false, $true)
-  $doc.SaveAs2('{pdf}', 17)
+  $doc = $word.Documents.Open('{docx_literal}', $false, $true)
+  $doc.SaveAs2('{pdf_literal}', 17)
   $doc.Close($false)
 }} finally {{
   try {{ $word.Quit() }} catch {{}}
@@ -216,7 +236,7 @@ def page_number_sides(pdf: Path) -> dict:
     detected_pages = [p for p in pages_report if p.get("detected")]
     return {
         "available": True,
-        "ok": all(p["ok"] for p in detected_pages) if detected_pages else None,
+        "ok": all(p.get("ok") is True for p in pages_report) if pages_report else None,
         "pages": pages_report,
     }
 
@@ -224,6 +244,7 @@ def page_number_sides(pdf: Path) -> dict:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--input", type=Path, required=True, help="DOCX file to render")
+    parser.add_argument("--report", type=Path, help="JSON evidence (default: <stem>.render.json)")
     parser.add_argument("--output", type=Path, default=None,
                         help="destination PDF (default: alongside the DOCX)")
     args = parser.parse_args()
@@ -250,7 +271,8 @@ def main() -> int:
 
     pages, fonts = inspect_pdf(pdf)
     fonts_blob = " ".join(fonts)
-    missing_markers = [m for m in REQUIRED_FONT_MARKERS if m.casefold() not in fonts_blob.casefold()]
+    required_markers = used_font_markers(docx)
+    missing_markers = [m for m in required_markers if m.casefold() not in fonts_blob.casefold()]
     bare_names = {font.split("+")[-1] for font in fonts}
     substituted = sorted(
         name for name in bare_names
@@ -264,12 +286,15 @@ def main() -> int:
             for p in page_numbers["pages"] if p.get("ok") is False
         )
         page_number_note = f" 页码位置异常：{wrong}，需修正后重新生成。"
-    print(json.dumps({
-        "ok": True,
+    result = {
+        "ok": not missing_markers and not substituted and page_numbers.get("ok") is True,
+        "docx_sha256": file_hash(docx),
+        "pdf_sha256": file_hash(pdf),
         "renderer": renderer,
         "pdf": str(pdf),
         "pages": pages,
         "embedded_fonts": fonts,
+        "required_fonts_for_document": required_markers,
         "missing_required_fonts": missing_markers,
         "substituted_fonts": substituted,
         "page_number_check": page_numbers,
@@ -278,8 +303,10 @@ def main() -> int:
                 "页码奇右偶左已自动核验（page_number_check.ok 为 false 即位置有误）。"
                 "标题字体方正小标宋许可禁止嵌入，PDF 中以轮廓输出属正常，须目检标题字形是否为小标宋。"
                 + page_number_note,
-    }, ensure_ascii=False, indent=2))
-    return 0
+    }
+    atomic_json(args.report or docx.with_suffix(".render.json"), result)
+    print(json.dumps(result, ensure_ascii=False, indent=2))
+    return 0 if result["ok"] else 1
 
 
 if __name__ == "__main__":

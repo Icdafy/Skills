@@ -38,6 +38,8 @@ import tempfile
 import time
 import wave
 
+from run_state import atomic_json, fingerprint, read_checkpoint, enable_offline, local_model, file_hash
+
 
 QWEN_MODEL_DEFAULT = "Qwen/Qwen3-ASR-0.6B"
 ALIGNER_DEFAULT = "Qwen/Qwen3-ForcedAligner-0.6B"
@@ -260,8 +262,9 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
             "then invoke this script with the reported runtime Python"
         ) from exc
 
+    identity = fingerprint(wav_path, {**vars(args), "checkpoint_schema": 1})
     device, dtype = choose_device(torch, args.device)
-    model_name = args.model or QWEN_MODEL_DEFAULT
+    model_name = local_model(args.model or QWEN_MODEL_DEFAULT, "hf", args.offline)
     single_pass = duration <= QWEN_SINGLE_PASS_SECONDS or args.clip_duration is not None
     if single_pass:
         chunks = [(0.0, duration)]
@@ -283,7 +286,7 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
         "max_new_tokens": args.max_new_tokens or auto_max_new_tokens(max_chunk),
     }
     if args.timestamps:
-        model_kwargs["forced_aligner"] = args.aligner
+        model_kwargs["forced_aligner"] = local_model(args.aligner, "hf", args.offline)
         model_kwargs["forced_aligner_kwargs"] = {"dtype": dtype, "device_map": device}
     model = Qwen3ASRModel.from_pretrained(model_name, **model_kwargs)
     language_arg = None if args.language.lower() in {"auto", "none", ""} else args.language
@@ -298,10 +301,8 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
         for index, (start, end) in enumerate(chunks, start=1):
             checkpoint = checkpoint_dir / f"chunk_{index:04d}.json"
             if not single_pass and not args.no_resume and checkpoint.is_file():
-                cached = json.loads(checkpoint.read_text(encoding="utf-8"))
-                if (cached.get("engine", "qwen") == "qwen"
-                        and abs(cached.get("start", -1) - start) < 0.5
-                        and abs(cached.get("end", -1) - end) < 0.5):
+                cached = read_checkpoint(checkpoint, identity, start, end)
+                if cached is not None:
                     texts.append(cached["text"])
                     stamps.extend(Stamp(**item) for item in cached.get("stamps", []))
                     if cached.get("language"):
@@ -336,14 +337,15 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
             texts.append(chunk_text)
             stamps.extend(chunk_stamps)
             if not single_pass:
-                checkpoint.write_text(json.dumps({
+                atomic_json(checkpoint, {
+                    "identity": identity,
                     "engine": "qwen",
                     "start": start,
                     "end": end,
                     "language": detected_language,
                     "text": chunk_text,
                     "stamps": [asdict(x) for x in chunk_stamps],
-                }, ensure_ascii=False), encoding="utf-8")
+                })
             progress({"stage": "chunk", "index": index, "total": len(chunks), "cached": False})
 
     return TranscribeResult(
@@ -379,6 +381,7 @@ def run_funasr(
             "then invoke this script with the reported runtime Python"
         ) from exc
 
+    identity = fingerprint(wav_path, {**vars(args), "checkpoint_schema": 1})
     device = funasr_device(args.device)
     want_sentences = args.timestamps or args.diarize
     # cam++ clusters speakers per generate() call, so diarized recordings keep
@@ -405,10 +408,11 @@ def run_funasr(
         checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     model_kwargs = {
-        "model": args.model or FUNASR_MODEL_DEFAULT,
-        "vad_model": FUNASR_VAD_DEFAULT,
+        "model": local_model(args.model or FUNASR_MODEL_DEFAULT, "ms", args.offline),
+        "vad_model": local_model(FUNASR_VAD_DEFAULT, "ms", args.offline),
         "vad_kwargs": {"max_single_segment_time": 30000},
-        "punc_model": FUNASR_PUNC_DEFAULT,
+        "punc_model": local_model(FUNASR_PUNC_DEFAULT, "ms", args.offline),
+        "check_latest": False,
         "device": device,
         "disable_update": True,
         "disable_pbar": True,
@@ -416,7 +420,7 @@ def run_funasr(
     if want_sentences:
         # Sentence-level segments come from the speaker pipeline; speaker labels
         # are only surfaced when --diarize was requested.
-        model_kwargs["spk_model"] = FUNASR_SPK_DEFAULT
+        model_kwargs["spk_model"] = local_model(FUNASR_SPK_DEFAULT, "ms", args.offline)
     progress({"stage": "load", "engine": "funasr", "device": device})
     model = AutoModel(**model_kwargs)
 
@@ -426,10 +430,8 @@ def run_funasr(
         for index, (start, end) in enumerate(chunks, start=1):
             checkpoint = checkpoint_dir / f"chunk_{index:04d}.json"
             if not single_pass and not args.no_resume and checkpoint.is_file():
-                cached = json.loads(checkpoint.read_text(encoding="utf-8"))
-                if (cached.get("engine") == "funasr"
-                        and abs(cached.get("start", -1) - start) < 0.5
-                        and abs(cached.get("end", -1) - end) < 0.5):
+                cached = read_checkpoint(checkpoint, identity, start, end)
+                if cached is not None:
                     texts.append(cached["text"])
                     stamps.extend(Stamp(**item) for item in cached.get("stamps", []))
                     progress({"stage": "chunk", "index": index, "total": len(chunks), "cached": True})
@@ -469,13 +471,14 @@ def run_funasr(
             texts.append(chunk_text)
             stamps.extend(chunk_stamps)
             if not single_pass:
-                checkpoint.write_text(json.dumps({
+                atomic_json(checkpoint, {
+                    "identity": identity,
                     "engine": "funasr",
                     "start": start,
                     "end": end,
                     "text": chunk_text,
                     "stamps": [asdict(x) for x in chunk_stamps],
-                }, ensure_ascii=False), encoding="utf-8")
+                })
                 progress({"stage": "chunk", "index": index, "total": len(chunks), "cached": False})
 
     return TranscribeResult(
@@ -631,10 +634,11 @@ def main() -> int:
             print(json.dumps({"ok": False, "error": "--speakers requires --diarize"}, ensure_ascii=False))
             return 2
     if args.offline:
-        os.environ["HF_HUB_OFFLINE"] = "1"
-        os.environ["TRANSFORMERS_OFFLINE"] = "1"
+        enable_offline()
 
     full_duration = media_duration(source)
+    if args.clip_start < 0 or (args.clip_duration is not None and args.clip_duration <= 0):
+        raise SystemExit("clip start must be non-negative and duration must be positive")
     if args.sample is not None:
         if args.sample <= 0:
             print(json.dumps({"ok": False, "error": "--sample must be positive"}, ensure_ascii=False))
@@ -674,6 +678,10 @@ def main() -> int:
             elapsed = time.monotonic() - started
             realtime_factor = round(elapsed / duration, 3) if duration else None
             extra = {
+                "source_sha256": file_hash(source),
+                "clip_start_seconds": args.clip_start,
+                "is_partial": sampled or args.clip_start > 0,
+                "recognition_config": {k: v for k, v in vars(args).items() if k not in ("input", "output_dir")},
                 "elapsed_seconds": round(elapsed, 1),
                 "realtime_factor": realtime_factor,
             }

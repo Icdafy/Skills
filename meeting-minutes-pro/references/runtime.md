@@ -1,5 +1,7 @@
 # Runtime and quality reference
 
+复核等级、人工裁决和交付验收统一遵循 [evidence-and-release.md](evidence-and-release.md)。硬件建议不得覆盖内容风险要求。
+
 ## Engines
 
 Two local engines share one isolated runtime. Select with `transcribe.py --engine`; install with `bootstrap_runtime.py --install --engine funasr|qwen|all`.
@@ -13,7 +15,7 @@ Two local engines share one isolated runtime. Select with `transcribe.py --engin
 | 说话人分离 | `--diarize`（cam++）；已知参会人数时加 `--speakers N`（传入 preset_spk_num）提高聚类稳定性 | 不支持 |
 | 热词/上下文 | `--context` 作为热词（hotword） | `--context` 作为上下文提示 |
 | 架构与速度 | 非自回归 Paraformer，CPU 上速度快 | 自回归解码，CPU 上长录音耗时明显 |
-| 适用 | 中文及中英混杂的会议、访谈、路演 | 纯外语、粤语等方言、多语言混合（52 种语言） |
+| 适用 | 中文及中英混杂的会议、访谈、路演 | 纯外语、粤语等方言、多语言混合（30种语言和22种中文方言） |
 
 ## Downloads and caching
 
@@ -21,11 +23,11 @@ The first setup requires a system Python 3.10 or newer and installs an isolated 
 
 The first funasr transcription downloads the Paraformer pipeline models (~1 GB total) from ModelScope. The first qwen transcription downloads `Qwen/Qwen3-ASR-0.6B` from Hugging Face; timestamp mode also downloads `Qwen/Qwen3-ForcedAligner-0.6B`. The skill package contains no model weights and no API credential.
 
-After dependencies and weights are cached, pass `--offline` to reject Hugging Face network access; funasr's `disable_update` is always set and cached ModelScope models are reused without network. Users in mainland China may also pre-download the Qwen models from ModelScope and pass the local model directory with `--model`.
+Both transcription and review accept `--offline`. Cached model aliases are resolved with local-only lookup; missing caches fail without downloading. The CLI guards Python networking, including ModelScope calls, for that process. It is not an OS firewall or a guarantee about native extensions; strict isolation requires running with network access disabled at OS level. Qwen model paths can be supplied with `--model`.
 
 ## Hardware
 
-`bootstrap_runtime.py --check` probes RAM, CUDA VRAM (via nvidia-smi), CPU cores, and free disk with the standard library only, and reports an advisory tier that drives how deep the dual-engine assurance goes. No tier blocks delivery — lower tiers only shorten the double-checked portion:
+`bootstrap_runtime.py --check` probes RAM, CUDA VRAM (via nvidia-smi), CPU cores, and free disk with the standard library only, and reports an advisory tier that drives how deep the dual-engine assurance goes. Hardware affects execution time and model size; it never automatically shortens the required coverage for high-risk recordings. The following budget suggestions apply only to standard-assurance meetings:
 
 | Tier | 判定 | 双引擎策略建议 |
 | --- | --- | --- |
@@ -45,11 +47,11 @@ With the qwen engine, use the 0.6B model on general laptops. When CUDA with ampl
 
 ## Accuracy
 
-Use `--context` for company names, people's names, abbreviations, technical vocabulary, and exact number spellings that may occur; reuse and extend the per-project files under `glossary/`. Context is a recognition hint, not text that must appear; keep it short and relevant. For known Chinese recordings on the qwen engine, also specify `--language Chinese`.
+Use `--context` for company names, people's names, abbreviations, technical vocabulary, only; reuse and extend the per-project files under `glossary/`. Context is a recognition hint, not text that must appear; keep it short and relevant. For known Chinese recordings on the qwen engine, also specify `--language Chinese`.
 
 Run `--sample 60` before an important long recording: the probe is taken from the middle of the audio (openings are greetings and mic checks), and the result JSON reports the measured realtime factor plus an estimated full-run duration — quote that estimate to the user before starting the long run. Use `--enhance` for noisy, quiet, or far-field audio (loudness normalization plus light denoising). If names or numbers remain uncertain, preserve the raw output and list the uncertainty instead of guessing.
 
-For number-critical recordings, the default assurance step is targeted dual-engine review: after the funasr master transcript, run `refine_transcript.py` to re-transcribe only the risky segments (numbers, dates, glossary terms, questions) with Qwen3-ASR and compare them category by category (amounts, percentages, dates, negation words, glossary terms). Figures the two engines agree on are strong evidence; figures they disagree on must be re-listened to before entering the minutes — 待核 annotations are not allowed in the deliverable, so unresolved figures fall back to the raw transcript wording and are reported to the user in conversation. This typically covers 10–30% of the audio, so it stays practical on CPU-only machines. On weaker machines, pass `--budget-minutes` to review the highest-risk clips (amounts and percentages in commitment-like sentences rank first) within a fixed time budget; the top-risk clip is always reviewed, and skipped clips are listed in the report as single-engine-only. Number comparison is order-sensitive: identical figures attached in a different order raise a 数字顺序 conflict. Conflict and review clips are exported as individual wav files under `<stem>.review-clips/` so re-listening is click-to-play rather than scrubbing the full recording (`--no-audio` disables). Conflicts are triaged with a third piece of evidence: by default an enhanced-audio (denoised) Qwen re-pass (`--no-arbitrate` disables), or with `--voter sensevoice` a 2-of-3 vote by SenseVoiceSmall — a third independent model family that runs inside the already-installed funasr package (first use downloads the model from ModelScope with user permission). A verdict backing the master transcript downgrades the conflict to low re-listen priority; a verdict backing the reviewer flags the master transcript itself as suspect. Verdicts never auto-clear a conflict — every conflict still requires a human ear. When ample GPU is available and assurance requirements are extreme, transcribing everything with both engines and running `fact_check.py --compare` remains the exhaustive option.
+For number-critical recordings, use full independent review (`--all`): clips cover the source media timeline, including gaps in the primary transcript. Budget truncation is rejected in this mode. Standard-assurance meetings may use targeted review and an explicitly disclosed audio-minute budget. `--voter sensevoice` or enhanced-audio Qwen re-passes only adjust review priority; they never resolve a conflict automatically. Record actual listening decisions in the version-bound review ledger. Same-family Qwen re-passes are not independent dual-engine evidence. The comparison detects selected numeric, unit, negation and qualifier differences; it is not a semantic or accuracy guarantee.
 
 Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说话人2…; it does not know real names. Pass the participant count confirmed during 前置信息采集 via `--speakers N`. Map labels to the confirmed participant list, and keep the numeric labels when unsure. Overlapping speech, clipped microphones, background music, and distant voices still require human review.
 
@@ -61,7 +63,7 @@ Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说�
 - Out of memory: disable `--timestamps` (qwen), close other applications, use `--device cpu`, and process a shorter clip.
 - MPS or GPU operator failure: retry with `--device cpu`.
 - Interrupted long transcription (either engine): rerun the identical command; completed chunks under `<输出目录>/<文件名>.chunks/` are reused automatically. Pass `--no-resume` to force a clean retranscription. Diarized funasr runs are single-pass and restart from the beginning — quote the ETA from the `--sample` probe up front.
-- Interrupted targeted review: rerun the identical `refine_transcript.py` command; finished clips under `<输出目录>/<文件名>.refine-chunks/` are reused.
+- Interrupted targeted review: rerun the identical `refine_transcript.py` command; finished clips under `<输出目录>/<文件名>.refine-chunks/` are reused only when the source and recognition configuration fingerprints match; old or damaged checkpoints are recomputed.
 - Media decoding failure: confirm the source file is complete and readable. The skill uses the FFmpeg binary bundled by `imageio-ffmpeg`.
 
 ## Upstream

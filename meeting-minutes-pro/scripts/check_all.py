@@ -1,22 +1,11 @@
 #!/usr/bin/env python3
-"""One-command pre-delivery gate for the minutes.
+"""Draft checks and version-bound release validation for meeting minutes.
 
-Runs the four checks in order (quality_check -> strict audit_coverage ->
-qa_reconcile -> fact_check), optionally verifies that the generated DOCX
-carries exactly the validated text (paragraph-by-paragraph, whitespace
-ignored, one subtitle line exempted), audits the deliverable folder, and
-writes an auditable checks-summary.json next to the minutes: every check's
-result plus every waiver used (--allow-line / --skip / --allow), so the
-release trail lives in the archive instead of only in the conversation.
-
-    check_all.py 会议纪要.txt --transcript <输出目录>/<文件名>.json \
-        --ledger coverage.txt [--glossary 术语.txt] [--mode qa-summary]
-    # after the DOCX exists, rerun with --docx 会议纪要.docx
-
-Each sub-check keeps its own exit semantics; this orchestrator fails when
-any of them fails. Pass --fail-fast to stop at the first failure. The DOCX
-text check needs python-docx (present in the skill runtime); when missing
-it is reported as unavailable rather than silently skipped.
+Always supply --ledger. Draft checks may exit successfully with needs_review;
+only --stage release plus a completed --review, verified DOCX and render report
+can yield release_ready=true. --make-review writes pending occurrence/finding
+rows without confirming them. See references/evidence-and-release.md for the
+recording, revision and human-review evidence required for release.
 """
 
 from __future__ import annotations
@@ -29,6 +18,9 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+
+import review_gate
+from run_state import atomic_json, file_hash
 
 SCRIPTS_DIR = Path(__file__).resolve().parent
 
@@ -131,7 +123,7 @@ def run_check(name: str, argv: list[str]) -> dict:
 
 
 def skipped_check(name: str, reason: str) -> dict:
-    return {"name": name, "command": "", "exit_code": None, "passed": True,
+    return {"name": name, "command": "", "exit_code": None, "passed": False,
             "skipped": True, "reason": reason, "stdout": "", "stderr": ""}
 
 
@@ -166,6 +158,16 @@ def main() -> int:
     parser.add_argument("--summary", type=Path, default=None,
                         help="summary JSON path (default: checks-summary.json "
                              "next to the minutes)")
+    parser.add_argument("--stage", choices=("draft", "release"), default="draft")
+    parser.add_argument("--source-kind", choices=("audio", "transcript", "notes"), default="transcript")
+    parser.add_argument("--assurance", choices=("standard", "high"), default="standard")
+    parser.add_argument("--source", type=Path)
+    parser.add_argument("--raw-transcript", type=Path)
+    parser.add_argument("--refine-report", type=Path)
+    parser.add_argument("--revisions", type=Path)
+    parser.add_argument("--render-report", type=Path)
+    parser.add_argument("--review", type=Path, help="version-bound human review JSON")
+    parser.add_argument("--make-review", type=Path, help="write pending review template; never auto-confirms")
     parser.add_argument("--fail-fast", action="store_true",
                         help="stop at the first failing check")
     args = parser.parse_args()
@@ -225,8 +227,11 @@ def main() -> int:
         ),
     ]
 
+    consistency_errors = review_gate.transcript_consistency(structured, transcript_txt)
+    if not args.ledger or not args.ledger.is_file():
+        consistency_errors.append("缺少有效 --ledger；覆盖率审计不能按通过处理。")
     checks: list[dict] = []
-    failed = False
+    failed = bool(consistency_errors)
     for name, argv, skip_reason in plan:
         if argv is None:
             checks.append(skipped_check(name, skip_reason))
@@ -244,8 +249,7 @@ def main() -> int:
         "transcript_structured": str(structured),
         "transcript_txt_present": transcript_txt.is_file(),
         "ledger_present": bool(args.ledger and args.ledger.is_file()),
-        "refine_report_present":
-            (structured.parent / f"{structured.stem}.refine.md").is_file(),
+        "refine_report_present": bool(args.refine_report and args.refine_report.is_file()),
     }
     if args.docx is not None:
         docx_entry: dict = {"path": str(args.docx), "present": args.docx.is_file()}
@@ -272,35 +276,93 @@ def main() -> int:
                 )
                 docx_entry["text_check"] = compare_line_lists(
                     docx_lines, txt_lines, args.subtitle)
+                if args.stage == 'release' and args.subtitle is None and docx_lines != txt_lines:
+                    docx_entry['text_check'] = {'matches': False, 'note': '正式验收不豁免未知副标题，请明确传入 --subtitle。'}
                 if not docx_entry["text_check"]["matches"]:
                     failed = True
                 style = check_docx_style_report(args.docx)
                 docx_entry["style_check"] = style
-                if style.get("ok") is False:
+                if style.get("ok") is not True:
                     failed = True
         deliverable["docx"] = docx_entry
 
+    waivers = {"allow_line": sorted(args.allow_line), "skip": sorted(args.skip),
+               "allow": list(args.allow), "allow_missing_number": list(args.allow_missing_number)}
+    findings = list(review_gate.check_findings(checks, waivers))
+    evidence_errors = list(consistency_errors)
+    if args.source_kind == "audio":
+        audio_errors, audio_findings = review_gate.audio_evidence(
+            args.source, structured, args.raw_transcript, args.refine_report,
+            args.revisions, args.assurance)
+        evidence_errors.extend(audio_errors)
+        findings.extend(audio_findings)
+    elif args.assurance == "high":
+        evidence_errors.append("无录音材料不能声明高风险录音全量核验；请按 transcript/notes 普通材料审计。")
+    if args.stage == "release":
+        evidence_errors.extend(review_gate.validate_render(args.render_report, args.docx))
+    paths = {"minutes": args.minutes, "transcript": structured, "transcript_txt": transcript_txt,
+             "ledger": args.ledger, "docx": args.docx, "source": args.source,
+             "raw_transcript": args.raw_transcript, "refine_report": args.refine_report,
+             "revisions": args.revisions, "render_report": args.render_report}
+    paths.update({f"glossary_{i}": path for i, path in enumerate(args.glossary)})
+    policy = {"source_kind": args.source_kind, "assurance": args.assurance,
+              "mode": args.mode, "subtitle": args.subtitle, "waivers": waivers,
+              "terms": args.term,
+              "validators": {path.name: file_hash(path) for path in sorted(SCRIPTS_DIR.glob("*.py"))}}
+    expected_review = review_gate.build_review(review_gate.input_bindings(paths), policy,
+                                               review_gate.fact_rows(structured), findings)
+    if args.make_review:
+        if args.make_review.exists():
+            parser.error("复核模板已存在；请使用新文件名，避免覆盖既有裁决记录。")
+        atomic_json(args.make_review, expected_review)
+    review_errors = []
+    if args.review:
+        if not args.review.is_file():
+            review_errors.append("找不到人工复核清单。")
+        else:
+            review_errors = review_gate.validate_review(review_gate.read_json(args.review), expected_review, args.minutes)
+    elif expected_review["facts"] or findings or args.stage == "release":
+        review_errors.append("尚未提交 --review：事实实例、警告和人工裁决尚未归档。")
+    # Omission decisions must agree with the exact occurrence waiver used by the numeric gate.
+    if args.review and args.review.is_file():
+        reviewed = review_gate.read_json(args.review)
+        omissions = [row for row in reviewed.get("facts", []) if row.get("decision") == "omit"]
+        for row in omissions:
+            window, ordinal = row.get("id", "W0-N0").split("-")
+            prefixes = (f"{window[1:]}|{ordinal}|", f"{window[1:]}|{row.get('raw')}|")
+            if not any(value.startswith(prefixes) for value in args.allow_missing_number):
+                review_errors.append(f"{row['id']} 的省略未对应 --allow-missing-number 放行记录。")
+    failed = failed or bool(evidence_errors)
+    release_ready = args.stage == "release" and not failed and not review_errors
+    overall_state = "failed" if failed else ("needs_review" if review_errors else ("release_ready" if release_ready else "checks_passed"))
     summary_path = args.summary or (args.minutes.parent / "checks-summary.json")
     summary = {
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at": datetime.now(timezone.utc).isoformat(),
         "minutes": str(args.minutes),
         "transcript": str(args.transcript),
         "mode": args.mode,
-        "all_passed": not failed,
+        "all_passed": not failed and not review_errors,
+        "checks_passed": not failed,
+        "release_ready": release_ready,
+        "status": overall_state,
+        "stage": args.stage,
+        "inputs": expected_review["inputs"],
+        "evidence_errors": evidence_errors,
+        "review_errors": review_errors,
+        "review_sha256": file_hash(args.review) if args.review and args.review.is_file() else None,
+        "review_path": str(args.review) if args.review else None,
         "checks": checks,
         "waivers": {
             "allow_line": sorted(args.allow_line),
             "skip": sorted(args.skip),
             "allow": list(args.allow),
             "allow_missing_number": list(args.allow_missing_number),
-            "note": "放行理由须在对话中向用户说明；此处仅存审计痕迹。",
+            "note": "放行理由须在绑定版本的 review.json 中记录，并在对话中说明。",
         },
         "deliverable": deliverable,
     }
-    summary_path.write_text(
-        json.dumps(summary, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    atomic_json(summary_path, summary)
 
     for check in checks:
         if check["skipped"]:
@@ -327,8 +389,10 @@ def main() -> int:
                 detail = f"（{style_check.get('note', '')}）"
             print(f"[{state}] docx_style{detail}")
     print(f"校验汇总已写入：{summary_path}")
-    print(f"总体：{'全部通过' if not failed else '存在未通过项，逐项处理后重跑'}")
-    return 0 if not failed else 1
+    for error in evidence_errors + review_errors:
+        print(f"- {error}")
+    print(f"总体状态：{overall_state}；正式交付可用：{release_ready}")
+    return 1 if failed or (args.stage == "release" and review_errors) else 0
 
 
 if __name__ == "__main__":

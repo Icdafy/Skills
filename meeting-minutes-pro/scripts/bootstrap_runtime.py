@@ -33,16 +33,18 @@ ENGINE_MODULES = {"funasr": "funasr", "qwen": "qwen_asr"}
 # degrades gracefully — no tier ever blocks producing the minutes; it only
 # changes how deep the dual-engine assurance goes and how long it takes.
 TIER_ADVICE = {
-    "T0": "仅用 funasr 引擎完成主转录；确需双引擎复核时加 --budget-minutes 10 "
+    "T0": "普通保障会议可仅用 funasr 引擎完成主转录；确需双引擎复核时加 --budget-minutes 10 "
           "严控重转耗时，避免 qwen 引擎的 --timestamps（对齐模型内存占用高）。",
-    "T1": "默认档：funasr 主转录＋refine_transcript.py 定向复核（Qwen3-ASR-0.6B）；"
+    "T1": "普通保障会议默认档：funasr 主转录＋refine_transcript.py 定向复核（Qwen3-ASR-0.6B）；"
           "录音很长时加 --budget-minutes 控制复核耗时。",
     "T2": "可在征得用户同意后改用 --model Qwen/Qwen3-ASR-1.7B，扩大复核覆盖，"
           "或启用 --voter sensevoice 第三引擎三取二投票。",
-    "T3": "可全量双引擎转录（refine_transcript.py --all 或 fact_check.py --compare），"
+    "T3": "可较快执行全量双引擎转录（refine_transcript.py --all 或 fact_check.py --compare），"
           "并启用 --voter sensevoice 三取二投票获得最高保障。",
 }
 
+
+TIER_ADVICE = {key: value + " 高风险内容的全量复核要求不因硬件降低；预算仅适用于普通保障会议。" for key, value in TIER_ADVICE.items()}
 
 def total_ram_gb() -> float | None:
     """Physical RAM in GiB via stdlib only; None when undetectable."""

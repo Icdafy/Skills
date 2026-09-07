@@ -41,6 +41,7 @@ from dataclasses import dataclass
 from pathlib import Path
 import re
 import sys
+from format_spec import FIRST_LEVEL, SECOND_LEVEL, THIRD_LEVEL, FOURTH_LEVEL
 
 INDENT = "　　"
 METADATA_PREFIXES = (
@@ -58,17 +59,17 @@ SCALES = {
 }
 
 ARABIC_TOKEN = re.compile(
-    r"\d+(?:\.\d+)?(?:万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千)?(?:多|余)?(?:%|个百分点)?"
+    r"[+-]?\d+(?:\.\d+)?(?:万亿|千亿|百亿|十亿|千万|百万|十万|亿|万|千)?(?:多|余)?(?:%|个百分点)?"
 )
 CN_NUMBER_TOKEN = re.compile(
-    r"[零〇一二两三四五六七八九十百千]*[一二两三四五六七八九十百千](?:点[零一二三四五六七八九]+)?[万亿]+"
+    r"负?[零〇一二两三四五六七八九十百千]*[一二两三四五六七八九十百千](?:点[零一二三四五六七八九]+)?[万亿]+"
 )
 PERCENT_CN_TOKEN = re.compile(
-    r"百分之[零〇一二两三四五六七八九十百点]+|[零〇一二两三四五六七八九十百]+(?:点[零一二三四五六七八九]+)?个百分点"
+    r"负?百分之负?[零〇一二两三四五六七八九十百点]+|负?[零〇一二两三四五六七八九十百]+(?:点[零一二三四五六七八九]+)?个百分点"
 )
 # Transcript-side colloquial percent forms (recognition targets only — the
 # minutes side writes the normalized form): 三成==30%、三成半==35%、
-# 3个点/三个点==3%、千分之五==0.5%、万分之五==0.05%. The 成 pattern excludes
+# 3个点/三个点需裁决、千分之五==0.5%、万分之五==0.05%. The 成 pattern excludes
 # common non-numeric continuations (成员/成本/成立…) via lookahead.
 CN_CHENG_TOKEN = re.compile(r"[一二两三四五六七八九十]成[半多]?(?![员本立效品色果])")
 POINT_TOKEN = re.compile(r"(?:\d+(?:\.\d+)?|[一二两三四五六七八九十半]{1,3})个点")
@@ -91,7 +92,7 @@ DATE_TOKEN = re.compile(
     r"(?:(?P<day>3[01]|[12]?\d|[一二三四五六七八九十]{1,3})[日号])?"
 )
 CN_YEAR_TOKEN = re.compile(r"[零〇一二三四五六七八九]{2,4}年")
-HEADING_MARK = re.compile(r"^(?:[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|（\d+）)")
+HEADING_MARK = re.compile("|".join(p.pattern for p in (FIRST_LEVEL, SECOND_LEVEL, THIRD_LEVEL, FOURTH_LEVEL)))
 
 
 @dataclass
@@ -101,9 +102,11 @@ class Token:
     value: float | None
     line_number: int
     context: str
+    unit: str = ""
+    offset: int = 0
 
 
-FULLWIDTH_MAP = str.maketrans("０１２３４５６７８９．％", "0123456789.%")
+FULLWIDTH_MAP = str.maketrans("０１２３４５６７８９．％－＋", "0123456789.%-+")
 
 # 语境绑定：纪要侧数字上下文与转录稿依据上下文的 bigram 相似度低于该值时，
 # 标记“疑似移用”（数字存在但可能安到了无关表述上），供人工优先确认。
@@ -132,7 +135,8 @@ def normalize(text: str) -> str:
     # Deliberately narrow: full-width digits/percent only. NFKC would also
     # rewrite the ideographic-space indent and full-width colons, breaking
     # metadata-line detection.
-    text = text.translate(FULLWIDTH_MAP).replace("﹪", "%")
+    text = text.translate(FULLWIDTH_MAP).replace("﹪", "%").replace("−", "-")
+    text = re.sub(r"负(?=\d)", "-", text)
     # Drop thousands separators inside digit groups: 1,234,567 -> 1234567
     text = re.sub(r"(?<=\d)[,，](?=\d{3})", "", text)
     return text
@@ -165,6 +169,9 @@ def parse_cn_int(text: str) -> float | None:
 
 def parse_cn_number(text: str) -> float | None:
     """Parse Chinese numerals incl. decimals and trailing scales (三点五亿)."""
+    if text.startswith("负"):
+        value = parse_cn_number(text[1:])
+        return -value if value is not None else None
     multiplier = 1.0
     while text and text[-1] in CN_BIG:
         multiplier *= CN_BIG[text[-1]]
@@ -183,9 +190,9 @@ def parse_cn_number(text: str) -> float | None:
 
 
 def parse_arabic(raw: str) -> tuple[float | None, str]:
-    kind = "percent" if raw.endswith(("%", "个百分点")) else "value"
+    kind = "percentage_point" if raw.endswith("个百分点") else ("percent" if raw.endswith("%") else "value")
     body = raw.removesuffix("个百分点").rstrip("%").replace("多", "").replace("余", "")
-    match = re.match(r"(\d+(?:\.\d+)?)(.*)", body)
+    match = re.match(r"([+-]?\d+(?:\.\d+)?)(.*)", body)
     if not match:
         return None, kind
     value = float(match.group(1))
@@ -218,6 +225,53 @@ def _parse_date_component(text: str) -> float | None:
     if text.isdigit():
         return float(text)
     return parse_cn_int(text)
+
+
+# Units are recorded independently of the raw numeric spelling, so 万/亿
+# equivalence remains possible while 元/美元 and 家/台 cannot silently match.
+UNIT_PATTERN = r"(?:人民币|美元|美金|欧元|港元|港币|日元|英镑|摄氏度|毫米|厘米|公里|千米|公斤|千克|毫秒|分钟|小时|微米|纳米|个月|元|家|台|人|年|天|日|月|秒|米|吨|颗|套|件|个|倍|栋)"
+UNIT_RE = re.compile(UNIT_PATTERN)
+CN_QUANTITY_TOKEN = re.compile(r"负?[零〇一二两三四五六七八九十百千]+(?:点[零一二三四五六七八九]+)?(?=" + UNIT_PATTERN + r")")
+
+
+def quantity_unit(text: str, start: int, end: int) -> str:
+    match = UNIT_RE.match(text[end:])
+    unit = match.group() if match else ""
+    if not unit:
+        prefix = re.search(r"(人民币|美元|美金|欧元|港元|港币|日元|英镑)\s*$", text[:start])
+        unit = prefix.group(1) if prefix else ""
+    return {"元": "CNY", "人民币": "CNY", "美元": "USD", "美金": "USD",
+            "欧元": "EUR", "港币": "HKD", "港元": "HKD", "日元": "JPY",
+            "英镑": "GBP", "公斤": "千克", "个月": "月"}.get(unit, unit)
+
+
+def quantitative(token: Token) -> bool:
+    return token.value is not None and bool(token.unit or salient(token.raw)
+        or token.kind in ("month", "day", "percent", "percentage_point", "ambiguous_point")
+        or token.raw.endswith("年"))
+
+
+def tokens_match(left: Token, right: Token) -> bool:
+    return (left.value is not None and right.value is not None
+            and left.kind == right.kind and values_match(left.value, right.value)
+            and (not left.unit or not right.unit or left.unit == right.unit))
+
+
+def match_occurrences(source: list[Token], target: list[Token]) -> list[int | None]:
+    """One target occurrence cannot cover two source facts in a window.
+
+    Prefer the closest context among type-compatible values. This is a lexical
+    aid only: subject/time/conditions still require recorded occurrence review.
+    """
+    used: set[int] = set()
+    matches = []
+    for token in source:
+        candidates = [i for i, other in enumerate(target) if i not in used and tokens_match(token, other)]
+        best = max(candidates, key=lambda i: context_binding(token.context, target[i].context, token.raw), default=None)
+        matches.append(best)
+        if best is not None:
+            used.add(best)
+    return matches
 
 
 def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
@@ -267,7 +321,7 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
                                      context=_context_of(searchable, match.start(), match.end())))
 
         spans: list[tuple[int, int, str]] = []
-        patterns = [ARABIC_TOKEN, CN_NUMBER_TOKEN, PERCENT_CN_TOKEN]
+        patterns = [ARABIC_TOKEN, CN_NUMBER_TOKEN, PERCENT_CN_TOKEN, CN_QUANTITY_TOKEN]
         if not body_only:
             # Colloquial percent forms claim their spans before the generic
             # patterns split them (3个点 must not decay into a bare 3).
@@ -285,7 +339,7 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
         for start, end, raw in sorted(spans):
             if body_only and "待核" in searchable[end:end + 8]:
                 continue
-            if raw.startswith("百分之"):
+            if raw.startswith(("百分之", "负百分之")):
                 value = parse_cn_percent(raw)
                 kind = "percent"
             elif raw.startswith(("千分之", "万分之")):
@@ -293,22 +347,26 @@ def extract_tokens(text: str, *, body_only: bool) -> list[Token]:
                 kind = "percent"
             elif raw.endswith("个点"):
                 value = parse_point(raw)
-                kind = "percent"
+                kind = "ambiguous_point"
             elif CN_CHENG_TOKEN.fullmatch(raw):
                 value = parse_cheng(raw)
                 kind = "percent"
-            elif raw.endswith("个百分点") and not raw[0].isdigit():
+            elif raw.endswith("个百分点") and not (raw[0].isdigit() or raw[0] in "+-"):
                 value = parse_cn_number(raw.removesuffix("个百分点"))
-                kind = "percent"
-            elif raw[0].isdigit():
-                if body_only and not salient(raw):
+                kind = "percentage_point"
+            elif raw[0].isdigit() or raw[0] in "+-":
+                if body_only and not salient(raw) and not quantity_unit(searchable, start, end):
                     continue
                 value, kind = parse_arabic(raw)
             else:
                 value = parse_cn_number(raw)
                 kind = "value"
+            # Adjacent Chinese small numerals such as 两三年 are approximate,
+            # not the integer 23; leave their wording to the occurrence review.
+            if raw in ("两三", "一两", "三四", "四五", "五六", "六七", "七八", "八九"):
+                continue
             tokens.append(Token(raw=raw, kind=kind, value=value,
-                                line_number=line_number,
+                                line_number=line_number, unit=quantity_unit(searchable, start, end), offset=start,
                                 context=_context_of(searchable, start, end)))
         tokens.extend(date_tokens)
     return tokens
@@ -322,7 +380,7 @@ def parse_cn_fraction(raw: str) -> float | None:
 
 
 def parse_point(raw: str) -> float | None:
-    """Colloquial X个点 as a percent value (三个点 == 3%)."""
+    """Parse the magnitude of ambiguous X个点; caller preserves its own kind."""
     body = raw.removesuffix("个点")
     if not body:
         return None
@@ -347,6 +405,10 @@ def parse_cheng(raw: str) -> float | None:
 
 
 def parse_cn_percent(raw: str) -> float | None:
+    negative = raw.startswith("负") or "之负" in raw
+    if negative:
+        value = parse_cn_percent(raw.replace("负", ""))
+        return -value if value is not None else None
     body = raw.removeprefix("百分之")
     if "点" in body:
         head, _, tail = body.partition("点")
@@ -398,31 +460,10 @@ def verify(
         checked += 1
         if token.raw in allowed:
             continue
-        # Purely numeric tokens must match on digit boundaries: "3000" is not
-        # allowed to ride on "13000". Tokens carrying a unit or % may match as
-        # plain substrings.
-        evidence: str | None = None
-        if re.fullmatch(r"\d+(?:\.\d+)?", token.raw):
-            found = re.search(rf"(?<![\d.]){re.escape(token.raw)}(?![\d.])", transcript_blob)
-            if found:
-                evidence = blob_context(found.start(), len(token.raw))
-        else:
-            position = transcript_blob.find(token.raw)
-            if position >= 0:
-                evidence = blob_context(position, len(token.raw))
-            else:
-                digits = re.sub(r"%|个百分点|[万亿千多余]", "", token.raw)
-                if re.fullmatch(r"\d+(?:\.\d+)?", digits):
-                    found = re.search(
-                        rf"(?<![\d.]){re.escape(digits)}(?![\d.])", transcript_blob
-                    )
-                    if found:
-                        evidence = blob_context(found.start(), len(digits))
-        if evidence is None and token.value is not None:
-            for candidate in transcript_value_tokens:
-                if candidate.kind == token.kind and values_match(candidate.value, token.value):
-                    evidence = candidate.context.replace("\n", " ")
-                    break
+        candidates = [candidate for candidate in transcript_value_tokens
+                      if tokens_match(token, candidate)]
+        best = max(candidates, key=lambda x: context_binding(token.context, x.context, token.raw), default=None)
+        evidence = best.context if best is not None else None
         if evidence is None:
             unmatched.append(token)
         else:
@@ -479,8 +520,7 @@ def compare(path_a: Path, path_b: Path) -> int:
         return [
             token for token in extract_tokens(text, body_only=False)
             if token.value is not None and (
-                token.kind in ("month", "day") or salient(token.raw)
-                or token.raw.endswith("年")
+                quantitative(token)
             )
         ]
 
@@ -517,7 +557,14 @@ def compare(path_a: Path, path_b: Path) -> int:
             print(f"- {path_a.name}：{'、'.join(raw for _, raw in order_a)}")
             print(f"- {path_b.name}：{'、'.join(raw for _, raw in order_b)}")
             return 1
-        print("两份转录稿的数字完全一致。")
+        from refine_transcript import compare_texts
+        differences = compare_texts(path_a.read_text(encoding="utf-8-sig"), path_b.read_text(encoding="utf-8-sig"), [])
+        if differences:
+            print("数值相同但存在单位、限定词或事实实例差异，须回听确认：")
+            for difference in differences:
+                print(f"- {difference['category']}：{difference['funasr_only']} / {difference['qwen_only']}")
+            return 1
+        print("两份转录稿的数值及已实现比较项未发现差异，仍须核对语义。")
         return 0
     for name, only in ((path_a.name, only_a), (path_b.name, only_b)):
         if only:

@@ -36,8 +36,8 @@ class QuestionDetectionTests(unittest.TestCase):
         self.assertFalse(QA.is_question("是吧？"))
         self.assertFalse(QA.is_question("嗯对，是吧"))
 
-    def test_short_text_rejected(self) -> None:
-        self.assertFalse(QA.is_question("多少？"))
+    def test_short_explicit_question_kept(self) -> None:
+        self.assertTrue(QA.is_question("多少？"))
 
     def test_adjacent_questions_same_speaker_merge(self) -> None:
         stamps = [

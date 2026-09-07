@@ -39,7 +39,7 @@ if str(SCRIPT_DIR) not in sys.path:
 import fact_check  # noqa: E402
 
 INDENT = "　　"
-HEADING_MARK = re.compile(r"^(?:[一二三四五六七八九十]+、|（[一二三四五六七八九十]+）|\d+\.|（\d+）)")
+HEADING_MARK = fact_check.HEADING_MARK
 QUESTION_MARK = re.compile(r"[？?]")
 INTERROGATIVES = re.compile(
     r"多少|什么|怎么|如何|为什么|为啥|是否|能不能|会不会|有没有|可不可以|"
@@ -65,7 +65,7 @@ class Candidate:
 def is_question(text: str) -> bool:
     stripped = text.strip()
     bare = re.sub(r"[\s。！？!?；;，,]+$", "", stripped)
-    if len(bare) < 6:
+    if len(bare) < 2:
         return False
     if any(bare.endswith(filler) for filler in FILLERS) and len(bare) < 12:
         return False
@@ -156,11 +156,7 @@ def _salient_tokens(text: str) -> list:
     return [
         token for token in fact_check.extract_tokens(
             fact_check.normalize(text), body_only=False)
-        if token.value is not None and (
-            fact_check.salient(token.raw)
-            or token.kind in ("month", "day", "percent")
-            or token.raw.endswith("年")
-        )
+        if fact_check.quantitative(token)
     ]
 
 
@@ -194,18 +190,10 @@ def answer_number_gaps(
             continue
         group_text = group_by_question.get(question, "")
         group_norm = fact_check.normalize(group_text)
-        group_values = {
-            (token.kind, round(token.value, 6))
-            for token in fact_check.extract_tokens(group_norm, body_only=False)
-            if token.value is not None
-        }
-        missing: list[str] = []
-        for token in _salient_tokens(answer_text):
-            key = (token.kind, round(token.value, 6))
-            if key in group_values or token.raw in group_norm:
-                continue
-            if token.raw not in missing:
-                missing.append(token.raw)
+        group_tokens = fact_check.extract_tokens(group_norm, body_only=False)
+        answer_tokens = _salient_tokens(answer_text)
+        assignments = fact_check.match_occurrences(answer_tokens, group_tokens)
+        missing = [token.raw for token, target in zip(answer_tokens, assignments) if target is None]
         if missing:
             gaps.append((index, question, missing))
     return gaps
@@ -307,6 +295,8 @@ def main() -> int:
     questions = [question for question, _ in groups]
     print(f"转录稿检测到疑似提问 {len(candidates)} 个；纪要包含问答 {len(questions)} 组。")
 
+    if not candidates and questions:
+        print("警告：纪要包含问答，但转录稿未检测到提问，须人工确认来源。")
     if not candidates:
         print("未检测到疑似提问；如访谈确有问答，请人工复核转录稿。")
         return 0
@@ -314,6 +304,11 @@ def main() -> int:
     suspected, orphaned, matched = reconcile(
         candidates, questions, args.min_similarity, args.skip
     )
+    from collections import Counter
+    duplicate_matches = Counter(item[2] for item in matched)
+    for question, count in duplicate_matches.items():
+        if count > 1:
+            print(f"警告：{count} 个原始提问匹配同一纪要问题「{question}」，须逐项确认追问及答复未被合并遗漏。")
     if args.show_matches and matched:
         print("对账映射（转录疑似提问 ↔ 纪要问答，请正向浏览确认指向未变）：")
         for index, candidate, question, score in matched:

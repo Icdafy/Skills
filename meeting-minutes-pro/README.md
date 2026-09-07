@@ -1,90 +1,55 @@
-# meeting-minutes-pro — 本地转写＋正式会议纪要一体化技能
+# meeting-minutes-pro
 
-在**用户本机**将中文、方言、英文或多语言的会议录音/视频转成文字（录音不出本机），再把转录稿、访谈记录、尽调问答、路演记录炼成**客观、书面化、公文版式**的正式会议纪要，最终交付通过逐项校验的 DOCX。
+在用户本机转录会议音视频，并依据录音或用户指定的文字材料生成客观、书面化、公文版式的会议纪要。默认中文转录使用 FunASR，外语、方言和多语言场景使用 Qwen3-ASR。含明确问答时保留“完整总结概述＋完整问答”，正式纪要默认交付 DOCX。
 
-供纪要使用者回答一个问题：**这场会议/访谈到底谈了什么——不掺任何记录人员的判断、建议和"待核实"。**
+## 可靠性与适用边界
 
-## 核心能力
+- 有录音时，BP、辅助笔记等只用于规范术语；仅提供文字材料时按 transcript/notes 模式处理，不声称经过录音核验。
+- 高风险录音的独立复核覆盖源音频完整时间轴，包括主稿没有识别内容的区间；禁止预算截断。硬件建议不能降低保障要求。
+- 严格数字审计按实例匹配，保留带单位的小数字、中文年份、正负号及币种，区分百分比和百分点；对象、时间、限定条件仍须逐事实语义核对。
+- 短问题保留为候选；多个提问匹配同一纪要问题时提示逐项检查追问与答复。
+- 检查点绑定实际音频及识别配置，模型、热词、语言、增强和时间戳设置变化后不复用旧结果。
+- `checks_passed` 是程序检查结果；`release_ready` 才是该版本完成证据、人工裁决和版式验收的状态。双引擎一致不保证录音绝对准确。
 
-| 能力 | 说明 |
-| --- | --- |
-| 双引擎本地转写 | 默认 FunASR Paraformer（中文/中英混杂，数小时长音频、句级时间戳、热词、说话人分离）；纯外语、粤语等方言或多语言用 Qwen3-ASR（52 种语言） |
-| 长音频工程化 | 静音切块＋断点续传；`--sample 60` 中段试转并预估整段耗时；`--enhance` 降噪；`--diarize --speakers N` 说话人分离 |
-| 双引擎定向复核 | `refine_transcript.py` 自动挑出含数字、日期、术语、提问的高风险片段，用第二引擎重转并按金额/百分比/日期/否定词/术语五类比对，分歧片段必须回听；数字比对顺序敏感防张冠李戴，`--budget-minutes` 风险预算适配低配机器（最高风险片段必选），分歧片段自动剪出回听音频；分歧默认经增强重转仲裁分高低回听优先级，`--voter sensevoice` 启用 SenseVoice 第三引擎三取二投票 |
-| 固定纪要结构 | 材料中只要存在问答，固定输出"**完整总结概述＋完整问答纪要**"，不交付纯 QA，不用摘要吞并问答 |
-| 四重交付校验 | 格式校验（quality_check）→ 分窗覆盖率审计（audit_coverage）→ 问答对账（qa_reconcile）→ 逐数字事实核对（fact_check），全部通过才允许生成 DOCX；`check_all.py` 一键编排并落盘 `checks-summary.json` 审计记录，`--docx` 回读比对 DOCX 内容与纪要文本逐段一致，逐段核验 run 字体/字号/加粗，并机械核验页眉为空及页码格式、字体与奇偶页对齐（样式回归无需渲染即拦截）；口语数字（三成/三个点/千分之五）自动归一核对，支持机构自定义禁词（`glossary/banned-phrases.txt`）；答复数字逐组对账防漏写，语境绑定评分防移用，跨校验器信号叠加提示整段遗漏 |
-| 硬件自动分档 | `bootstrap_runtime.py --check` 纯标准库探测内存/CUDA 显存/磁盘，输出 T0–T3 档位与复核策略建议：低配自动走轻量策略，高配解锁 1.7B 模型与三取二投票；任何档位都能完成完整交付 |
-| 公文版式 DOCX | 方正小标宋/黑体/楷体_GB2312/仿宋_GB2312/宋体固定版式，生成后自动把可嵌入的 GB2312 字体嵌入 DOCX（未装字体的机器也忠实呈现），再渲染 PDF 逐页检查字体替换与分页，仅交付 DOCX |
-| 术语库复用 | `glossary/<项目名>.txt` 按项目沉淀人名、简称、专业术语，跨会议自动复用（仅本地）；`glossary/industry/` 内置低空经济、商业航天行业术语库，随技能分发；上传 BP、会议笔记等资料时仅提取术语，不将资料内容写入纪要 |
+## 工作流程
 
-## 内容硬性规则（quality_check.py 机械拦截）
+1. 读取 [SKILL.md](SKILL.md)，确定输入类型、会议信息及风险等级。
+2. 用运行时 Python 执行 `scripts/bootstrap_runtime.py --check`；模型缺失时在已有授权范围内安装。
+3. 试转样本、完整转录，适用时执行全量或定向独立复核；保留原始稿，修订另存并记录依据。
+4. 起草完整纪要，填写覆盖清单并运行 `check_all.py --ledger ...`。修复数字遗漏、问答错误和格式问题。
+5. 生成 DOCX、渲染并逐页检查。用 `--make-review` 生成版本绑定的事实与警告清单，完成实际裁决。
+6. 使用相同输入执行 `check_all.py --stage release --review ... --render-report ...`；以 `release_ready: true` 作为正式验收结果。
 
-纪要**只客观陈述会议访谈内容**，以下规则违反即校验失败：
+完整命令、复核 JSON 字段及状态语义见 [证据链与交付验收](references/evidence-and-release.md)。不要把旧版只运行四个子脚本或只回读 DOCX 的命令当成正式验收。
 
-1. **禁核验提示句**——全文任何位置不得出现"待核实/待核验/待落实/（待核）/需结合××资料进一步核实/该口径反映××但需××核实/以××为准"等表述。唯一例外：转录稿中真实谈及的核验事项，用 `--allow-line <行号>` 放行并向用户说明。
-2. **禁判断与指导**——不基于纪要内容自行判断、评价、推论；不写"下一步应……""建议关注……"类指导意见；段落末尾不加记录人员的点评或展望。
-3. **总结概述不设风险板块**——"完整总结概述"中不得出现"主要风险""待核实事项""后续需重点关注"类板块标题。
-4. **访谈对象括注**——人名后的职务、单位或补充说明一律写入（）内，如"张某某（某某公司总经理）"。
-5. **录音不清晰括注**——无法辨识的内容在正文对应位置以"（该处录音不清晰，无法辨识）"括注说明，不写在段落末尾。
-6. **问答组间空一行**——连续多组问答之间空一行（DOCX 同步渲染间隔）；问答按主题归类为二级标题，紧随标题的首组问答前不空行。
-7. 无法核实的信息保留转录稿原文，问题**在对话中向用户说明**，一律不写入纪要正文。
+## 模型与环境
 
-## 固定版式要点
+FunASR 提供中文及中英混合转录、热词、句级时间戳和可选说话人分离。Qwen3-ASR 支持30种语言及22种中文方言；其强制对齐模型支持11种语言，转录支持范围不等于对齐支持范围。
 
-| 部位 | 字体字号 |
-| --- | --- |
-| 大标题 | 二号方正小标宋简体，居中 |
-| 一级/二级/三级标题 | 三号黑体 / 三号楷体_GB2312 加粗 / 三号仿宋_GB2312 加粗 |
-| 正文与问答 | 三号仿宋_GB2312，首行空两字（字符单位 `firstLineChars`，随字号自适应），固定行距 28 磅 |
-| **西文字母与阿拉伯数字** | **Times New Roman**，字号随所在文字（DOCX 自动分段设置；`5G`、`A4`、`Qwen3`、`2024-2025`、`GB/T` 等整体走西文字体，不再把字母留在中文字体里） |
-| 页码 | 页脚 `- 1 -` 格式，四号宋体，奇偶页不同（奇右偶左）；页眉不设内容 |
-| 字体嵌入 | 生成后自动将 fsType 允许的 GB2312 字体嵌入 DOCX（方正小标宋 fsType 受限，与 PDF 中走轮廓一致，不嵌入） |
+主转录和复核均可用 `--offline` 解析本地模型缓存并阻止进程内 Python 网络连接；缺缓存时报错。它不是系统防火墙，严格隔离应在操作系统层断网后运行。具体环境、硬件与故障处理见 [运行参考](references/runtime.md)。
 
-## 使用流程
+Qwen 主稿再次由 Qwen 重转不计作独立双引擎；当前自动复核器支持 FunASR 主稿→Qwen 复核。没有适用独立引擎时须说明限制，不能填写虚假的高保障状态。
+
+## 版式与归档
+
+纯文本是纪要内容基准，DOCX 按 [固定版式](references/format-and-output.md) 生成；`format_spec.py` 统一层级、字体和页面规约。保留内容与样式回读、字体嵌入和逐页渲染检查。PDF 中只要求实际使用的相应字体，不因文档未使用某种标题而误报缺字体。
+
+每场会议独立归档原始转录、适用的修订稿与修订记录、复核报告、覆盖清单、`review.json`、`checks-summary.json`、渲染 JSON 和纪要。渲染 PDF 完成检查后可删除；用户索要时保留。
+
+## 安装、更新与隐私
+
+安装命令：`python scripts/install_skill.py --target codex`；其他目标支持 claude、workbuddy、all。覆盖更新加 `--force`，仅覆盖公共技能文件，保留目标项目术语与机构禁词；不会删除整个目标目录。旧版无指纹 ASR 检查点自动重算，旧版复核报告须按新版重新生成。
+
+`glossary/industry/` 是公共行业术语库；`glossary/` 根下项目术语和 `banned-phrases.txt` 是用户数据。安装复制与 Git 发布默认排除私有数据。对目录手工打包时也必须排除这些文件，不得仅依赖 `.gitignore`。不把模型、录音、转录稿、项目数据或本机路径补丁上传到技能仓库。
+
+跨平台说明见 [安装参考](references/platforms.md)。从已使用目录分发前按公共文件清单核对；本地环境可能另有平台兼容修复，不随技能复制。
+
+## 验证
 
 ```powershell
-# 1. 检查/安装本地运行环境（首次需网络下载许可）
-python scripts/bootstrap_runtime.py --check
-python scripts/bootstrap_runtime.py --install --engine funasr
-
-# 2. 转写（先试转样本，再完整转写）
-<runtime-python> scripts/transcribe.py --input 录音.mp3 --output-dir out --sample 60
-<runtime-python> scripts/transcribe.py --input 录音.mp3 --output-dir out --diarize --speakers 3 --context "人名 公司名 术语"
-
-# 3. 起草纪要后依次校验
-python scripts/audit_coverage.py --transcript out/录音.json --make-template coverage.txt
-python scripts/audit_coverage.py --transcript out/录音.json --ledger coverage.txt --minutes 会议纪要.txt
-python scripts/quality_check.py 会议纪要.txt --mode qa-summary
-python scripts/qa_reconcile.py 会议纪要.txt --transcript out/录音.json
-python scripts/fact_check.py 会议纪要.txt --transcript out/录音.txt --show-matches
-
-# 4. 生成并渲染检查 DOCX（create_minutes 自动嵌入可嵌入字体；--no-embed 关闭）
-<runtime-python> scripts/font_preflight.py --check
-<runtime-python> scripts/create_minutes_docx.py --input 会议纪要.txt --output 会议纪要.docx --subtitle 综合办公室 --mode qa-summary
-<runtime-python> scripts/embed_fonts.py --docx 会议纪要.docx --verify        # 可选：核对已嵌入字体
-<runtime-python> scripts/render_docx.py --input 会议纪要.docx                # 报告字体替换 + 页码奇右偶左自动核验
-<runtime-python> scripts/check_all.py 会议纪要.txt --transcript out/录音.json --docx 会议纪要.docx --subtitle 综合办公室 --mode qa-summary
+<runtime-python> -B -m unittest discover -s tests
 ```
 
-在 Claude 等智能体中装载技能后，直接上传录音或转录稿说"整理成正式会议纪要"即可，技能自动完成前置信息采集→转写→起草→校验→DOCX 全流程。
+测试包括转录辅助函数、断点恢复、全量覆盖、数字与问答反例、版本绑定证据、私有术语保留、DOCX 内容/样式和渲染检查。模拟测试不代表真实录音识别准确率；更换依赖或模型后需在本地重新验证加载及样例推理。
 
-## 目录结构
-
-```
-meeting-minutes-pro/
-  SKILL.md                     触发与执行逻辑
-  references/                  版式规范、架构说明（含 IR 决策与触发条件）、运行环境、平台安装说明
-  scripts/                     转写、复核、四重校验、DOCX 生成/字体嵌入/样式回读/渲染检查（版式规约集中在 format_spec.py）
-  glossary/                    按项目维护的热词术语库（仅本地）＋ industry/ 行业术语库（随库分发）
-  assets/fonts/                方正小标宋简体、楷体_GB2312、仿宋_GB2312
-  assets/templates/            公司格式样例
-  tests/                       校验、规划与排版层逻辑回归测试（198 项）
-```
-
-## 隐私
-
-转写全程本地执行：不上传录音、不静默切换云端接口；模型缓存后可 `--offline` 完全离线运行。
-
-## License
-
-见 [LICENSE](LICENSE)。
+排版分层及暂不引入系统级文档模型的理由见 [架构说明](references/architecture.md)。

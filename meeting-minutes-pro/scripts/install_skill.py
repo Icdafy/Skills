@@ -40,7 +40,31 @@ def parse_args() -> argparse.Namespace:
 
 
 def ignore(_directory: str, names: list[str]) -> set[str]:
-    return {name for name in names if name in {"__pycache__", ".DS_Store"} or name.endswith(".pyc")}
+    private = set(names) - {"README.md", "industry"} if Path(_directory).name == "glossary" else set()
+    return private | {name for name in names if name in {"__pycache__", ".DS_Store", ".git"}
+                      or name.endswith(".pyc") or (Path(_directory) / name).is_symlink()}
+
+
+def install_to(source: Path, destination: Path, force: bool = False) -> str:
+    source = source.resolve()
+    resolved = destination.resolve()
+    if source == resolved:
+        return "already installed; source and destination are identical"
+    if source in resolved.parents or resolved in source.parents:
+        raise ValueError("安装源和目标不能互相包含")
+    if destination.is_symlink() or (destination.exists() and not destination.is_dir()):
+        raise ValueError("目标必须为真实目录，不覆盖文件或符号链接")
+    if destination.exists() and not force:
+        return "exists; use --force"
+    # No whole-directory deletion: project glossaries and banned phrases are
+    # user data. Refuse destination links so updates cannot escape the target.
+    if destination.exists():
+        for path in destination.rglob("*"):
+            if path.is_symlink():
+                raise ValueError(f"目标内含符号链接，需先明确处理：{path}")
+    destination.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(source, destination, dirs_exist_ok=True, ignore=ignore)
+    return "installed; local user data preserved"
 
 
 def main() -> int:
@@ -52,23 +76,7 @@ def main() -> int:
         destination = destinations()[target]
         status = "planned" if args.dry_run else "installed"
         if not args.dry_run:
-            destination.parent.mkdir(parents=True, exist_ok=True)
-            if destination.resolve() == SKILL_DIR.resolve():
-                results.append({
-                    "target": target,
-                    "path": str(destination),
-                    "status": "already installed; source and destination are identical",
-                })
-                continue
-            if destination.exists() or destination.is_symlink():
-                if not args.force:
-                    results.append({"target": target, "path": str(destination), "status": "exists; use --force"})
-                    continue
-                if destination.is_symlink() or destination.is_file():
-                    destination.unlink()
-                else:
-                    shutil.rmtree(destination)
-            shutil.copytree(SKILL_DIR, destination, ignore=ignore)
+            status = install_to(SKILL_DIR, destination, args.force)
         results.append({"target": target, "path": str(destination), "status": status})
     print(json.dumps({"skill": SKILL_NAME, "results": results}, ensure_ascii=False, indent=2))
     return 0
