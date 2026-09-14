@@ -28,7 +28,7 @@ KAITI_FONT = "楷体_GB2312"
 HEITI_FONT = "黑体"
 SONGTI_FONT = "宋体"
 # 西文字母与阿拉伯数字统一 Times New Roman；中文走 eastAsia，Word 在同一 run 内
-# 按字符类型自动分派，无需拆分 run。页码是例外，见 add_page_field。
+# 按字符类型自动分派。括号片段整体用楷体，页码整体用宋体。
 WESTERN_FONT = "Times New Roman"
 
 TITLE_SIZE = 22  # 二号
@@ -94,6 +94,38 @@ def set_style_font(style, font_name: str, size_pt: int, bold: bool = False,
     set_east_asia_font(style, font_name, western_font)
 
 
+def add_formatted_text(paragraph, text: str, font: str, size: int,
+                       bold: bool = False) -> None:
+    """成对中英文圆括号及其内容（含嵌套）统一三号楷体，保留原文和加粗。
+
+    西文和数字也使用楷体；未配对的括号保持原格式，不影响后续正文。
+    """
+    stack = []
+    spans = []
+    pairs = {"）": "（", ")": "("}
+    for index, char in enumerate(text):
+        if char in "（(":
+            stack.append((char, index))
+        elif char in pairs and stack and stack[-1][0] == pairs[char]:
+            _, start = stack.pop()
+            spans.append((start, index + 1))
+    merged = []
+    for start, end in sorted(spans):
+        if merged and start <= merged[-1][1]:
+            merged[-1] = (merged[-1][0], max(merged[-1][1], end))
+        else:
+            merged.append((start, end))
+    cursor = 0
+    for start, end in merged:
+        if cursor < start:
+            set_run_font(paragraph.add_run(text[cursor:start]), font, size, bold)
+        set_run_font(paragraph.add_run(text[start:end]), KAITI_FONT, BODY_SIZE,
+                     bold, western_font=KAITI_FONT)
+        cursor = end
+    if cursor < len(text):
+        set_run_font(paragraph.add_run(text[cursor:]), font, size, bold)
+
+
 def set_paragraph_format(
     paragraph,
     *,
@@ -151,7 +183,7 @@ def configure_styles(doc: Document) -> None:
         STYLE_SUBTITLE,
         KAITI_FONT,
         BODY_SIZE,
-        line_pt=BODY_LINE_PT,
+        line_pt=TITLE_LINE_PT,
         first_indent=False,
         alignment=WD_ALIGN_PARAGRAPH.CENTER,
     )
@@ -180,20 +212,18 @@ def add_text_paragraph(
         alignment=alignment,
         right_indent_pt=right_indent_pt,
     )
-    run = p.add_run(text)
-    set_run_font(run, font, BODY_SIZE, bold)
+    add_formatted_text(p, text, font, BODY_SIZE, bold)
 
 
 def add_center_line(doc: Document, text: str, font: str, size: int, style: str, bold: bool = False) -> None:
     p = doc.add_paragraph(style=style)
     set_paragraph_format(
         p,
-        line_pt=TITLE_LINE_PT if size == TITLE_SIZE else BODY_LINE_PT,
+        line_pt=TITLE_LINE_PT,
         first_indent=False,
         alignment=WD_ALIGN_PARAGRAPH.CENTER,
     )
-    run = p.add_run(text)
-    set_run_font(run, font, size, bold)
+    add_formatted_text(p, text, font, size, bold)
 
 
 def add_blank_line(doc: Document, line_pt: int = BODY_LINE_PT) -> None:
@@ -233,8 +263,7 @@ def add_hanging_paragraph(
     fmt.left_indent = Pt(left_chars * CHAR_PT)
     fmt.first_line_indent = Pt((first_line_chars - left_chars) * CHAR_PT)
     p.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
-    run = p.add_run(text)
-    set_run_font(run, font, BODY_SIZE, bold)
+    add_formatted_text(p, text, font, BODY_SIZE, bold)
     return p
 
 
@@ -242,18 +271,18 @@ def normalize_attachment_name(name: str) -> str:
     """附件名称不加书名号，后不加标点符号；顺带去掉调用方可能重复写入的
     「附件：」前缀和序号。"""
     cleaned = str(name).strip()
-    while cleaned.startswith(ATTACHMENT_LABEL) or cleaned.startswith("附件:"):
-        cleaned = cleaned.split("：", 1)[-1].split(":", 1)[-1].strip()
-    cleaned = re.sub(r"^\d+\s*[.、．]\s*", "", cleaned)
-    cleaned = cleaned.rstrip("。；;，,、.")
-    if cleaned.startswith("《") and cleaned.endswith("》"):
-        cleaned = cleaned[1:-1].strip().rstrip("。；;，,、.")
-    return cleaned
+    serial = r"(?:\d+|[一二三四五六七八九十百零〇两]+)"
+    # 仅识别明确的附件标签或带分隔符的序号，保留名称中的年份、数字。
+    cleaned = re.sub(rf"^附件\s*(?:[:：]\s*|{serial}\s*[.、．:：]\s*)",
+                     "", cleaned)
+    cleaned = re.sub(rf"^(?:{serial}\s*[.、．:：]|[（(]{serial}[）)])\s*",
+                     "", cleaned)
+    cleaned = cleaned.replace("《", "").replace("》", "")
+    return cleaned.strip().rstrip("。；;，,、.．：:！!？?… \t\r\n")
 
 
 def add_page_field(paragraph) -> None:
-    # 页码整体走宋体（含阿拉伯数字），依 GB/T 9704「页码用四号半角宋体阿拉伯
-    # 数字」；这是全文西文走 Times New Roman 的唯一例外。
+    # 整个 -1-（左右短横线、PAGE 域及显示数字）均为四号宋体。
     run = paragraph.add_run("-")
     set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
 
@@ -339,7 +368,7 @@ def add_attachments(doc: Document, attachments: list[str]) -> None:
     - 每条名称回行时不顶格，悬挂对齐到本条名称的起始位置（首条为左空 6 字）；
     - 名称不加书名号，后不加标点符号。
     """
-    names = [normalize_attachment_name(a) for a in attachments if str(a).strip()]
+    names = [name for a in attachments if (name := normalize_attachment_name(a))]
     if not names:
         return
     add_blank_line(doc)
@@ -405,8 +434,7 @@ def add_date_line(doc: Document, date: str, issuer: str | None) -> None:
         right_indent_pt=right_pt,
     )
     p.paragraph_format.left_indent = Pt(max(0.0, TEXT_WIDTH_PT - right_pt - issuer_pt))
-    run = p.add_run(date)
-    set_run_font(run, BODY_FONT, BODY_SIZE)
+    add_formatted_text(p, date, BODY_FONT, BODY_SIZE)
 
 
 def add_signature_block(doc: Document, issuer: str | None, date: str | None) -> None:

@@ -1,16 +1,17 @@
 # 国企中文公文格式规则
 
 These rules are extracted from `assets/templates/文件字体格式.doc`, the uploaded fonts, and the company onboarding training PDF section on 公文格式.
+The explicit rules in this file take precedence over the original sample where they differ.
 
 ## Page Setup
 
 - Paper: A4 portrait.
 - Margins: top 3.7 cm, bottom 3.5 cm, left 2.8 cm, right 2.6 cm.
-- Title line spacing: fixed 30 pt.
-- Body line spacing: fixed 28 pt.
+- Title line spacing (main title, subtitle and issuing-unit title line): exactly 30 pt.
+- Body line spacing, including numbered headings: exactly 28 pt.
 - Body paragraphs: justified alignment, first-line indent 2 Chinese characters.
 - Numbered headings inside the body also use a first-line indent of 2 Chinese characters.
-- Adjust margins and line spacing only when the document has a practical layout constraint.
+- Keep these fixed line spacings when adjusting pagination; do not use minimum or multiple spacing or compress them to fit a page.
 
 ## Fonts and Sizes
 
@@ -20,8 +21,9 @@ These rules are extracted from `assets/templates/文件字体格式.doc`, the up
 - First-level heading `一、xxxx`: 黑体, 三号, not bold.
 - Second-level heading `（一）xxxx`: 楷体_GB2312, 三号, bold.
 - Third-level heading `1.xxxx`: 仿宋_GB2312, 三号, bold.
-- Fourth-level heading `（1）xxxx`: 仿宋_GB2312, 三号, not bold unless the source explicitly requires emphasis.
-- Page number: 四号宋体, format like `-1-`.
+- Fourth-level heading `（1）xxxx`: 仿宋_GB2312, 三号, not bold unless the source explicitly requires emphasis; the parenthesized `（1）` uses 楷体_GB2312.
+- Parenthesized content: all paired Chinese/English round parentheses `（…）` / `(...)` and their contents use 楷体_GB2312, 三号 (16 pt), throughout the document. Include nested parentheses, heading numbers, titles, attachment names and signatures; Latin letters and digits inside also use 楷体_GB2312. Preserve required bold. This overrides the surrounding font/size, including a 二号 title. Unpaired parentheses do not change subsequent text formatting.
+- Page number: the entire `-1-` uses 四号宋体 (14 pt), including both hyphens, the PAGE field and its displayed result. Set ascii/hAnsi/cs/eastAsia to 宋体 for every footer page-number run, not only the digits.
 
 Word size mapping used by the sample:
 
@@ -93,9 +95,9 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
   - Numbered first item: left indent 6 chars (2 + 3 + `1.`1), first line −4 chars.
   - Numbered later items: left indent 6 chars, first line −1 char.
   - A serial wider than one character (`10.` and up) shifts only that item's own name column; every item still hangs under itself.
-- Names take no 书名号 and no trailing punctuation. Strip `《》` and any trailing 。；，、 carried in from the source.
+- Names take no 书名号 and no trailing punctuation. Remove `《》` and trailing sentence/separator punctuation (including 。；，、．：！？ and ASCII equivalents), while preserving meaningful closing parentheses in names such as `实施方案（试行）`.
 - Do not repeat `附件：` on the continuation items.
-- If the attachment body itself carries a serial, write it as `附件1.XXX`.
+- If the attachment body itself carries a serial, use Arabic digits, e.g. `附件1.XXX`, `附件2.XXX`, with no 书名号 or trailing punctuation. For a sole attachment, omit the serial both in the list (`附件：XXX`) and on the attachment itself (`附件` plus its name).
 
 ## 发文机关署名、成文日期与页码
 
@@ -112,7 +114,7 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 ```
 
 - Page numbers are placed on the outside edge, odd and even pages different.
-- Page number format is `-1-`, `-2-`, in 四号宋体.
+- Page number format is `-1-`, `-2-`: both hyphens and every part of the PAGE field/result are explicitly 四号宋体 (14 pt), on odd and even pages alike.
 - A seal/signature page must contain at least two lines of 正文. Do not create a page headed only by `（此页无正文）`.
 
 ## Punctuation and Typography
@@ -132,11 +134,14 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - First-level headings are 三号黑体, not bold.
 - Second-level headings are 三号楷体_GB2312, bold.
 - Third-level headings are 三号仿宋_GB2312, bold.
-- Fourth-level headings are 三号仿宋_GB2312, not bold.
+- Fourth-level headings are 三号仿宋_GB2312, not bold, with the parenthesized number in 三号楷体_GB2312.
+- All round-parenthesized spans, including Latin letters/digits and delimiters, are 三号楷体_GB2312; check titles and attachment names as well as body paragraphs.
+- Title lines have exactly 30 pt spacing; body and numbered headings have exactly 28 pt spacing.
 - All body paragraphs and body headings have a two-character first-line indent.
 - `附件：` starts 2 characters in; multiple attachments are numbered `1.` `2.`, with later serials at 5 characters.
 - Every attachment name that wraps hangs under its own first-line name column, not at the margin.
 - Attachment names carry no 书名号 and no trailing punctuation.
+- A sole attachment has no serial; multiple attachments use Arabic serials, including labels such as `附件1.XXX` on the attachments themselves.
 - Two blank lines precede the signature; the issuing unit is right-indented 4 characters.
 - The date sits directly below the issuing unit and is centered on it.
-- Page numbers follow the rules above.
+- The complete footer `-1-` uses 宋体 at 14 pt on odd and even pages, including both hyphens and the field result.
