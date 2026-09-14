@@ -70,11 +70,11 @@ class RoleMappingTests(unittest.TestCase):
 
 
 class PageNumberSpecTests(unittest.TestCase):
-    def test_fourth_size_simsun_with_spaced_dashes(self) -> None:
+    def test_fourth_size_simsun_with_unspaced_dashes(self) -> None:
         self.assertEqual(FS.PAGE_NUMBER_FONT, "宋体")
         self.assertEqual(FS.PAGE_NUMBER_FONT, FS.SONG_FONT)
         self.assertEqual(FS.PAGE_NUMBER_SIZE, 14)
-        self.assertEqual((FS.PAGE_NUMBER_PREFIX, FS.PAGE_NUMBER_SUFFIX), ("- ", " -"))
+        self.assertEqual((FS.PAGE_NUMBER_PREFIX, FS.PAGE_NUMBER_SUFFIX), ("-", "-"))
 
 
 class FontCatalogueTests(unittest.TestCase):

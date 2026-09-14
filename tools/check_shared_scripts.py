@@ -29,6 +29,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 SHARED_GROUPS: tuple[dict, ...] = (
     {
+        "file": "scripts/docx_format_helpers.py",
+        "canonical": "gongsi-qingkuang",
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi",
+                   "meeting-minutes-pro"),
+        "note": "括号片段与附件名称规范化",
+    },
+    {
         "file": "scripts/build_docx.py",
         "canonical": "gongsi-qingkuang",
         "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),

@@ -29,6 +29,7 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
 - 表注（type=tnote）："单位：万元""注：……"等，仿宋_GB2312 五号、不缩进，
   align 可选 left/right/center（默认 left；"单位"行惯例放表格上方右对齐）
 - 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
+- 所有圆括号及其中内容（含数字、西文、表格内文字）统一三号楷体_GB2312。
 - 字体嵌入：保存后自动把随附的仿宋_GB2312、楷体_GB2312 嵌入 DOCX，使文件在未
   安装这两款字体的机器上仍忠实呈现（方正小标宋许可禁止嵌入，自动跳过）；
   嵌入经反混淆校验，失败则保留未嵌入版本，绝不影响正常生成
@@ -63,7 +64,8 @@ content 结构（dict）：
   "toc": false,                           # 是否插入目录域，默认 false
   "summary": "要点概述正文（可选，多段用 \\n 分隔）",
   "summary_title": "要点概述",            # 可选，默认"要点概述"
-  "blocks": [ ...见下... ]                # 章节正文，按顺序渲染
+  "blocks": [ ...见下... ],               # 章节正文，按顺序渲染
+  "attachments": ["实施方案（试行）", "测算表"]  # 可选；单份无序号，多份阿拉伯数字
 }
 
 blocks 里每个元素是一个 dict，type 决定渲染方式：
@@ -98,6 +100,7 @@ from docx.oxml import OxmlElement
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from embed_fonts import embed_bundled_fonts  # 随技能分发的字体嵌入器
+from docx_format_helpers import parenthesized_spans, attachment_lines
 
 # ---------- 版式常量（三技能统一公文格式） ----------
 FONT_TITLE = "方正小标宋简体"
@@ -122,21 +125,37 @@ CONTENT_WIDTH = 8844       # A4：21cm - 2.8cm - 2.6cm ≈ 15.6cm（DXA≈8844�
 TABLE_SZ = 10.5            # 表格统一五号，所有单元格；表注同
 
 
-def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY):
+def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY,
+                  western_font=FONT_EN):
     run.font.size = Pt(size)
     run.font.bold = bold
-    run.font.name = FONT_EN
+    run.font.name = western_font
     # 中文字体需要单独设 eastAsia
     rpr = run._element.get_or_add_rPr()
     rfonts = rpr.find(qn('w:rFonts'))
     if rfonts is None:
         rfonts = OxmlElement('w:rFonts')
         rpr.append(rfonts)
-    rfonts.set(qn('w:ascii'), FONT_EN)
-    rfonts.set(qn('w:hAnsi'), FONT_EN)
+    rfonts.set(qn('w:ascii'), western_font)
+    rfonts.set(qn('w:hAnsi'), western_font)
+    rfonts.set(qn('w:cs'), western_font)
     rfonts.set(qn('w:eastAsia'), font_name)
     if color:
         run.font.color.rgb = RGBColor.from_string(color)
+
+
+def _add_text_runs(paragraph, text, size=BODY_SZ, bold=False, color=None,
+                   font_name=FONT_BODY):
+    text = str(text)
+    cursor = 0
+    for start, end in parenthesized_spans(text):
+        if cursor < start:
+            _set_run_font(paragraph.add_run(text[cursor:start]), size, bold, color, font_name)
+        _set_run_font(paragraph.add_run(text[start:end]), BODY_SZ, bold, color,
+                      FONT_H2, western_font=FONT_H2)
+        cursor = end
+    if cursor < len(text):
+        _set_run_font(paragraph.add_run(text[cursor:]), size, bold, color, font_name)
 
 
 def _add_para(doc, text, size=BODY_SZ, bold=False, align=None, color=None,
@@ -154,8 +173,7 @@ def _add_para(doc, text, size=BODY_SZ, bold=False, align=None, color=None,
             pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
         else:
             pf.line_spacing = line
-    run = p.add_run(text)
-    _set_run_font(run, size=size, bold=bold, color=color, font_name=font_name)
+    _add_text_runs(p, text, size=size, bold=bold, color=color, font_name=font_name)
     if outline is not None:
         _set_outline_level(p, outline)
     return p
@@ -231,8 +249,8 @@ def _fill_cell(cell, text, bold=False, header=False, size=TABLE_SZ):
     p.paragraph_format.space_after = Pt(1)
     p.paragraph_format.line_spacing = Pt(18)
     p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-    run = p.add_run(str(text) if text is not None else "")
-    _set_run_font(run, size=size, bold=bold or header, font_name=FONT_BODY)
+    _add_text_runs(p, str(text) if text is not None else "",
+                   size=size, bold=bold or header, font_name=FONT_BODY)
     _style_cell(cell, fill=HEADER_FILL if header else None)
 
 
@@ -317,6 +335,7 @@ def _add_toc(doc):
     fldChar3 = OxmlElement('w:fldChar'); fldChar3.set(qn('w:fldCharType'), 'end')
     for el in (fldChar1, instr, fldChar2, t, fldChar3):
         run._r.append(el)
+    _set_run_font(run, font_name=FONT_H2, western_font=FONT_H2)
 
 
 def _add_page_number_footer(section):
@@ -329,15 +348,19 @@ def _add_page_number_footer(section):
 
 def _add_footer_page_field(p, align):
     p.alignment = align
+    _set_run_font(p.add_run("-"), size=FOOTER_SZ,
+                  font_name=FONT_FOOTER, western_font=FONT_FOOTER)
     run = p.add_run()
-    run.add_text("-")
     f1 = OxmlElement('w:fldChar'); f1.set(qn('w:fldCharType'), 'begin')
     instr = OxmlElement('w:instrText'); instr.set(qn('xml:space'), 'preserve'); instr.text = 'PAGE'
+    separate = OxmlElement('w:fldChar'); separate.set(qn('w:fldCharType'), 'separate')
+    result = OxmlElement('w:t'); result.text = '1'
     f2 = OxmlElement('w:fldChar'); f2.set(qn('w:fldCharType'), 'end')
-    for el in (f1, instr, f2):
+    for el in (f1, instr, separate, result, f2):
         run._r.append(el)
-    run.add_text("-")
-    _set_run_font(run, size=FOOTER_SZ, font_name=FONT_FOOTER)
+    _set_run_font(run, size=FOOTER_SZ, font_name=FONT_FOOTER, western_font=FONT_FOOTER)
+    _set_run_font(p.add_run("-"), size=FOOTER_SZ,
+                  font_name=FONT_FOOTER, western_font=FONT_FOOTER)
 
 
 def _enable_odd_even_footers(doc):
@@ -380,6 +403,8 @@ def build(content, out_path):
     normal.font.name = FONT_EN
     normal.font.size = Pt(BODY_SZ)
     normal.element.rPr.rFonts.set(qn('w:eastAsia'), FONT_BODY)
+    normal.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
+    normal.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
 
     # ---------- 封面（可选，默认不生成） ----------
     cover = content.get("cover")
@@ -461,8 +486,7 @@ def build(content, out_path):
                 p.paragraph_format.left_indent = Twips(480)
                 p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
                 p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-                run = p.add_run("• " + str(item))
-                _set_run_font(run, size=BODY_SZ, font_name=FONT_BODY)
+                _add_text_runs(p, "• " + str(item), size=BODY_SZ, font_name=FONT_BODY)
         elif t == "tnote":
             # 表注："单位：万元""注：……"，仿宋五号、不缩进；单位行惯例右对齐
             _add_para(doc, blk["text"], size=TABLE_SZ, bold=False,
@@ -486,6 +510,11 @@ def build(content, out_path):
             if blk.get("text"):
                 _add_para(doc, blk["text"], align=WD_ALIGN_PARAGRAPH.JUSTIFY,
                           line=BODY_LINE_PT, font_name=FONT_BODY)
+
+    for text in attachment_lines(content.get("attachments", [])):
+        p = _add_para(doc, text, align=WD_ALIGN_PARAGRAPH.JUSTIFY,
+                      line=BODY_LINE_PT, font_name=FONT_BODY)
+        _indent_first_line(p)
 
     doc.save(out_path)
     # 嵌入随附的可嵌入字体，使交付件在未装 仿宋_GB2312/楷体_GB2312 的机器上

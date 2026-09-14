@@ -85,12 +85,12 @@ SUBTITLE_SIZE = 16       # 三号
 BODY_SIZE = 16           # 三号
 PAGE_NUMBER_FONT = SONG_FONT
 PAGE_NUMBER_SIZE = 14    # 四号
-PAGE_NUMBER_PREFIX = "- "
-PAGE_NUMBER_SUFFIX = " -"
+PAGE_NUMBER_PREFIX = "-"
+PAGE_NUMBER_SUFFIX = "-"
 
 # --- Exact line spacing (pt) ----------------------------------------------
 TITLE_LINE_SPACING = 30
-SUBTITLE_LINE_SPACING = 28
+SUBTITLE_LINE_SPACING = 30
 BODY_LINE_SPACING = 28
 
 # --- First-line indent -----------------------------------------------------

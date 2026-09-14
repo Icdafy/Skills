@@ -143,12 +143,13 @@ class PageLayoutTests(unittest.TestCase):
         )
         for footer in (section.footer, section.even_page_footer):
             paragraph = footer.paragraphs[0]
-            self.assertEqual(_footer_pattern(paragraph), "- {PAGE} -")
+            self.assertEqual(_footer_pattern(paragraph), "-{PAGE}-")
             for run in paragraph._p.iter(qn("w:r")):
                 properties = run.find(qn("w:rPr"))
                 fonts = properties.find(qn("w:rFonts"))
                 self.assertEqual(fonts.get(qn("w:ascii")), "宋体")
                 self.assertEqual(fonts.get(qn("w:hAnsi")), "宋体")
+                self.assertEqual(fonts.get(qn("w:cs")), "宋体")
                 self.assertEqual(fonts.get(qn("w:eastAsia")), "宋体")
                 self.assertEqual(properties.find(qn("w:sz")).get(qn("w:val")), "28")
         for header in (section.header, section.even_page_header, section.first_page_header):

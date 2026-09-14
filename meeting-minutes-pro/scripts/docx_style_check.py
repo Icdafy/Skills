@@ -20,13 +20,16 @@ import re
 import sys
 
 from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml.ns import qn
 from docx.shared import Pt
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from format_spec import (  # noqa: E402  (needs the path shim above)
     BODY_SIZE,
+    BODY_LINE_SPACING,
+    TITLE_LINE_SPACING,
+    SUBTITLE_LINE_SPACING,
     KAI_FONT,
     NUMBER_FONT,
     PAGE_NUMBER_FONT,
@@ -39,6 +42,7 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     WESTERN_SEGMENT,
     paragraph_role,
 )
+from docx_format_helpers import parenthesized_spans  # noqa: E402
 
 
 def _east_asia(run) -> str | None:
@@ -93,7 +97,7 @@ def _footer_run_problems(paragraph, label: str) -> list[str]:
             continue
         properties = run.find(qn("w:rPr"))
         fonts = None if properties is None else properties.find(qn("w:rFonts"))
-        for attribute in ("ascii", "hAnsi", "eastAsia"):
+        for attribute in ("ascii", "hAnsi", "cs", "eastAsia"):
             actual = None if fonts is None else fonts.get(qn(f"w:{attribute}"))
             if actual != PAGE_NUMBER_FONT:
                 problems.append(
@@ -170,22 +174,41 @@ def check_docx_style(path: Path) -> list[str]:
             continue
         ea_font, size, bold = expected
         preview = paragraph.text.strip()[:20]
+        spacing = (TITLE_LINE_SPACING if center_seen == 1 else SUBTITLE_LINE_SPACING
+                   ) if paragraph.alignment == WD_ALIGN_PARAGRAPH.CENTER else BODY_LINE_SPACING
+        if (paragraph.paragraph_format.line_spacing_rule != WD_LINE_SPACING.EXACTLY
+                or paragraph.paragraph_format.line_spacing != Pt(spacing)):
+            problems.append(f"「{preview}」行距应为固定值 {spacing} 磅")
+        spans = parenthesized_spans(paragraph.text)
+        offset = 0
         for run in paragraph.runs:
+            start, end = offset, offset + len(run.text)
+            offset = end
             if not run.text.strip():
                 continue
-            want_font = NUMBER_FONT if _is_western(run.text) else ea_font
+            inside = any(a <= start and end <= b for a, b in spans)
+            if not inside and any(a < end and start < b for a, b in spans):
+                problems.append(f"「{preview}」括号片段与外围文字应拆分设置字体")
+            run_ea = KAI_FONT if inside else ea_font
+            run_size = BODY_SIZE if inside else size
+            want_font = KAI_FONT if inside else (NUMBER_FONT if _is_western(run.text) else ea_font)
             if run.font.name != want_font:
                 problems.append(
                     f"「{preview}」中「{run.text[:12]}」字体为 {run.font.name}，应为 {want_font}"
                 )
-            if not _is_western(run.text) and _east_asia(run) != ea_font:
+            if (inside or not _is_western(run.text)) and _east_asia(run) != run_ea:
                 problems.append(
-                    f"「{preview}」中「{run.text[:12]}」东亚字体为 {_east_asia(run)}，应为 {ea_font}"
+                    f"「{preview}」中「{run.text[:12]}」东亚字体为 {_east_asia(run)}，应为 {run_ea}"
                 )
-            if run.font.size != Pt(size):
+            if inside:
+                fonts = run._element.rPr.rFonts if run._element.rPr is not None else None
+                for attribute in ('ascii', 'hAnsi', 'cs'):
+                    if fonts is None or fonts.get(qn('w:' + attribute)) != KAI_FONT:
+                        problems.append(f"「{preview}」括号内容的 {attribute} 字体应为 {KAI_FONT}")
+            if run.font.size != Pt(run_size):
                 got = None if run.font.size is None else round(run.font.size.pt, 1)
                 problems.append(
-                    f"「{preview}」中「{run.text[:12]}」字号为 {got} 磅，应为 {size} 磅"
+                    f"「{preview}」中「{run.text[:12]}」字号为 {got} 磅，应为 {run_size} 磅"
                 )
             if bool(run.bold) != bold:
                 problems.append(

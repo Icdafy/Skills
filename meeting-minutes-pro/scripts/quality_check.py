@@ -10,6 +10,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from format_spec import INDENT, level_number  # noqa: E402  (needs path shim)
+from docx_format_helpers import ATTACHMENT_PREFIX, attachment_lines  # noqa: E402
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
 # 机构自定义禁词文件：每行一条短语，# 开头为注释；与项目术语文件一样属
@@ -171,6 +172,18 @@ def validate(
     title_line, title = visible[0]
     if title.startswith(INDENT):
         errors.append(f"第 {title_line} 行标题不应首行缩进。")
+
+    # 附件按独立条目逐行列出；在文本定稿阶段规范化，生成器保留定稿原文，
+    # 因而不破坏 check_all.py 的文本与 DOCX 内容一致性核对。
+    attachments = [(number, line.strip()) for number, line in visible[1:]
+                   if ATTACHMENT_PREFIX.match(line.strip())]
+    expected_attachments = attachment_lines([line for _, line in attachments])
+    if len(expected_attachments) != len(attachments):
+        errors.append("附件名称不得为空。")
+    else:
+        for (number, actual), expected in zip(attachments, expected_attachments):
+            if actual != expected:
+                errors.append(f"第 {number} 行附件格式应为「{expected}」；单份不编号，多份用阿拉伯数字，名称无书名号或末尾标点。")
 
     last_level = 0
     first_heading_line: int | None = None

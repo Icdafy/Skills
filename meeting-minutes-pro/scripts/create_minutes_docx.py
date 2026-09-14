@@ -57,6 +57,7 @@ from embed_fonts import (  # noqa: E402
 )
 from font_preflight import required_font_status  # noqa: E402
 from quality_check import validate  # noqa: E402
+from docx_format_helpers import parenthesized_spans  # noqa: E402
 
 # Page-number text, face and size come from format_spec so the renderer and
 # delivery-time readback enforce the same explicit footer rule.
@@ -67,6 +68,7 @@ def set_east_asia_font(run, font_name: str, size: float, bold: bool = False) -> 
     run.font.size = Pt(size)
     run.bold = bold
     run._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
+    run._element.rPr.rFonts.set(qn("w:cs"), font_name)
 
 
 def set_western_font(run, east_asia_font: str, size: float, bold: bool = False) -> None:
@@ -79,7 +81,17 @@ def set_western_font(run, east_asia_font: str, size: float, bold: bool = False) 
 
 
 def add_text_runs(paragraph, text: str, font_name: str, size: float, bold: bool = False) -> None:
-    """Add runs for ``text``, switching western (ASCII) runs to Times New Roman."""
+    """Round-parenthesized spans use 三号楷体, including ASCII and delimiters."""
+    cursor = 0
+    for start, end in parenthesized_spans(text):
+        _add_unparenthesized_runs(paragraph, text[cursor:start], font_name, size, bold)
+        set_east_asia_font(paragraph.add_run(text[start:end]), KAI_FONT, BODY_SIZE, bold)
+        cursor = end
+    _add_unparenthesized_runs(paragraph, text[cursor:], font_name, size, bold)
+
+
+def _add_unparenthesized_runs(paragraph, text, font_name, size, bold=False):
+    """Outside parentheses, preserve the usual Times New Roman western runs."""
     cursor = 0
     for match in WESTERN_SEGMENT.finditer(text):
         if match.start() > cursor:
@@ -127,6 +139,7 @@ def append_page_field(paragraph) -> None:
     fonts.set(qn("w:ascii"), PAGE_NUMBER_FONT)
     fonts.set(qn("w:hAnsi"), PAGE_NUMBER_FONT)
     fonts.set(qn("w:eastAsia"), PAGE_NUMBER_FONT)
+    fonts.set(qn("w:cs"), PAGE_NUMBER_FONT)
     properties.append(fonts)
     size = OxmlElement("w:sz")
     size.set(qn("w:val"), str(PAGE_NUMBER_SIZE * 2))
@@ -194,7 +207,7 @@ def add_subtitle(document: Document, subtitle: str) -> None:
     add_text_runs(paragraph, subtitle, KAI_FONT, SUBTITLE_SIZE)
     blank = document.add_paragraph()
     blank.paragraph_format.keep_with_next = True
-    set_exact_line_spacing(blank, SUBTITLE_LINE_SPACING)
+    set_exact_line_spacing(blank, BODY_LINE_SPACING)
 
 
 def add_content_paragraph(document: Document, text: str) -> None:
