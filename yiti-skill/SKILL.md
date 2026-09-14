@@ -20,7 +20,7 @@ Use this skill to draft 投管公司报送投委会的"议题"文书. The input 
 3. Draft strictly on the fixed skeleton in `references/writing-logic.md`: 标题 → 提交部门/子公司 → 投委会： → 导语 → 一、会议基本信息 → 二、会议审议事项 → 三、请示事项 → 附件。
 4. For each 议案, put the core conclusion first in bold, then the supporting basis: 协议条款编号原文、监管政策文号、内部决策程序、关键数字（金额、期限、比例、计算基数）。Where the source material is thin, corroborate with authoritative public sources (监管公告、交易所通知、行业统计) and cite the document number; never invent figures.
 5. Run the language checks in `references/writing-logic.md`: 禁用"不是……而是""并非……而是""不仅……而是""不但……而且""值得注意的是""综上所述"等连接词；转折用"但"；全文书面公文语气。
-6. Apply the typography in `references/format-rules.md`. All Chinese runs use the company fonts; all digits and Latin characters use Times New Roman.
+6. Apply the typography in `references/format-rules.md`. Apply the parenthesis and footer overrides before the ordinary Chinese/Times New Roman font rules.
 7. For Word output, run `scripts/create_yiti_docx.py` with a JSON spec, then inspect the file in Word for font fallback, fixed line spacing, table layout, and attachment indentation.
 
 ## Required Format Priorities
@@ -30,10 +30,13 @@ Use this skill to draft 投管公司报送投委会的"议题"文书. The input 
 - One blank line, then recipient `投委会：` at the left margin, 三号仿宋_GB2312.
 - Body: 三号仿宋_GB2312; every paragraph and every heading starts with a two-Chinese-character first-line indent.
 - First-level heading `一、会议基本信息`: 三号黑体, not bold. Second-level heading `（一）XXX议案`: 三号楷体_GB2312, bold.
-- All digits and Latin characters: Times New Roman. Size follows the location: 三号 in body text, 五号 inside tables.
-- Tables: cell text 仿宋_GB2312 五号, centered horizontally and vertically; digits in cells Times New Roman 五号; table autofits to content and window width.
+- 中英文圆括号（含括号本身）及其内部所有文字、数字和西文：楷体_GB2312 三号（16 磅），适用于标题、正文、表格和附件，优先于所在位置的字体、字号规则；保留原有加粗。
+- 标题区（主标题、提交部门行）及各级标题：固定行距30磅；正文及附件：固定行距28磅，不因篇幅调整。
+- Outside parentheses and page footers, digits and Latin characters use Times New Roman. Size follows the location: 三号 in body text, 五号 inside tables.
+- 页脚 `-1-` 的左右短横线与页码数字全部使用宋体四号（14 磅）；ascii/hAnsi/eastAsia/cs 均设为宋体，页码保留 PAGE 动态域。
+- Tables (outside parentheses): cell text 仿宋_GB2312 五号, centered horizontally and vertically; digits in cells Times New Roman 五号; table autofits to content and window width.
 - Core conclusions and lead-in labels (`主要内容：` `审议依据：`) may be bold 仿宋_GB2312; no other decoration.
-- Attachment block ends the document: single attachment `附件：XXXX`; multiple attachments numbered `1.` `2.` with hanging alignment. No 落款, no date.
+- Attachment block ends the document: single attachment `附件：XXXX`; multiple attachments `附件1.XXXX`, `附件2.XXXX`, each on its own line with a two-character first-line indent. 附件名称不加书名号，末尾不加标点；JSON 的 attachments 只传附件名称，不传标签和序号。 No 落款, no date.
 
 ## Bundled Resources
 

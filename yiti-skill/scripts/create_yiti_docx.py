@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Create a 投委会议题 DOCX from a JSON spec, using the company officialese format.
 
-Every run sets ascii/hAnsi to Times New Roman and eastAsia to the role's Chinese
-font, so digits and Latin text render in Times New Roman automatically, matching
-the gold examples. Inline bold is marked with **...** in any text field.
+Ordinary runs use Times New Roman for Western text and the role's Chinese font.
+Parentheses and their contents use 三号楷体_GB2312 in every font slot; page
+numbers, including both hyphens, use 四号宋体. Inline bold uses **...**.
 
 JSON spec example:
 {
@@ -64,9 +64,10 @@ TWO_CHAR_INDENT_PT = BODY_SIZE * 2
 BOLD_PATTERN = re.compile(r"\*\*(.+?)\*\*", re.S)
 
 
-def set_run_font(run, east_asia_font: str, size_pt: float, bold: bool = False) -> None:
-    """Western chars -> Times New Roman; CJK chars -> east_asia_font."""
-    run.font.name = WESTERN_FONT
+def set_run_font(run, east_asia_font: str, size_pt: float, bold: bool = False,
+                 *, western_font: str = WESTERN_FONT) -> None:
+    """Set all font slots explicitly, with overrides for parentheses and footers."""
+    run.font.name = western_font
     run.font.size = Pt(size_pt)
     run.bold = bold
     rpr = run._element.get_or_add_rPr()
@@ -74,21 +75,57 @@ def set_run_font(run, east_asia_font: str, size_pt: float, bold: bool = False) -
     if rfonts is None:
         rfonts = OxmlElement("w:rFonts")
         rpr.append(rfonts)
-    rfonts.set(qn("w:ascii"), WESTERN_FONT)
-    rfonts.set(qn("w:hAnsi"), WESTERN_FONT)
-    rfonts.set(qn("w:cs"), WESTERN_FONT)
+    rfonts.set(qn("w:ascii"), western_font)
+    rfonts.set(qn("w:hAnsi"), western_font)
+    rfonts.set(qn("w:cs"), western_font)
     rfonts.set(qn("w:eastAsia"), east_asia_font)
+    sz_cs = rpr.find(qn("w:szCs"))
+    if sz_cs is None:
+        sz_cs = OxmlElement("w:szCs")
+        rpr.append(sz_cs)
+    sz_cs.set(qn("w:val"), str(int(size_pt * 2)))
 
 
 def add_runs_with_inline_bold(paragraph, text: str, east_asia_font: str, size_pt: float, bold: bool = False) -> None:
+    segments = []
     pos = 0
     for match in BOLD_PATTERN.finditer(text):
         if match.start() > pos:
-            set_run_font(paragraph.add_run(text[pos:match.start()]), east_asia_font, size_pt, bold)
-        set_run_font(paragraph.add_run(match.group(1)), east_asia_font, size_pt, True)
+            segments.append((text[pos:match.start()], bold))
+        segments.append((match.group(1), True))
         pos = match.end()
     if pos < len(text):
-        set_run_font(paragraph.add_run(text[pos:]), east_asia_font, size_pt, bold)
+        segments.append((text[pos:], bold))
+
+    # Match nested full-/half-width round parentheses across bold boundaries.
+    plain = "".join(part for part, _ in segments)
+    in_parentheses = [False] * len(plain)
+    stack = []
+    for index, char in enumerate(plain):
+        if char in "（(":
+            stack.append((index, char))
+        elif char in "）)" and stack:
+            if stack[-1][1] == {"）": "（", ")": "("}[char]:
+                start, _ = stack.pop()
+                in_parentheses[start:index + 1] = [True] * (index - start + 1)
+
+    offset = 0
+    for part, is_bold in segments:
+        start = 0
+        while start < len(part):
+            special = in_parentheses[offset + start]
+            end = start + 1
+            while end < len(part) and in_parentheses[offset + end] == special:
+                end += 1
+            set_run_font(
+                paragraph.add_run(part[start:end]),
+                KAITI_FONT if special else east_asia_font,
+                BODY_SIZE if special else size_pt,
+                is_bold,
+                western_font=KAITI_FONT if special else WESTERN_FONT,
+            )
+            start = end
+        offset += len(part)
 
 
 def set_paragraph_format(
@@ -140,9 +177,9 @@ def add_blank_line(doc: Document, line_pt: int = BODY_LINE_PT) -> None:
 
 
 def add_page_field(paragraph) -> None:
-    set_run_font(paragraph.add_run("-"), SONGTI_FONT, PAGE_NUMBER_SIZE)
+    set_run_font(paragraph.add_run("-"), SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
     field_run = paragraph.add_run()
-    set_run_font(field_run, SONGTI_FONT, PAGE_NUMBER_SIZE)
+    set_run_font(field_run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
     begin = OxmlElement("w:fldChar")
     begin.set(qn("w:fldCharType"), "begin")
     instr = OxmlElement("w:instrText")
@@ -156,7 +193,7 @@ def add_page_field(paragraph) -> None:
     end.set(qn("w:fldCharType"), "end")
     for element in (begin, instr, separate, result, end):
         field_run._r.append(element)
-    set_run_font(paragraph.add_run("-"), SONGTI_FONT, PAGE_NUMBER_SIZE)
+    set_run_font(paragraph.add_run("-"), SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT)
 
 
 def setup_document(doc: Document, page_numbers: bool) -> None:
@@ -225,31 +262,34 @@ def add_table(doc: Document, block: dict) -> None:
             add_runs_with_inline_bold(p, text, BODY_FONT, TABLE_SIZE, bold=is_header)
 
 
+def normalize_attachment_name(name: str) -> str:
+    """The JSON supplies names only; remove title marks and trailing punctuation."""
+    return name.translate(str.maketrans("", "", "《》〈〉")).rstrip(" \t\r\n。，、；：！？.,;:!?…")
+
+
 def add_attachments(doc: Document, attachments: list[str]) -> None:
     if not attachments:
         return
+    attachments = [normalize_attachment_name(name) for name in attachments]
     add_blank_line(doc)
     if len(attachments) == 1:
         add_paragraph(doc, f"附件：{attachments[0]}")
         return
-    add_paragraph(doc, f"附件：1.{attachments[0]}")
-    # "附件：" occupies 3 characters; align following numbers under "1."
-    hang_pt = TWO_CHAR_INDENT_PT + BODY_SIZE * 3
-    for idx, name in enumerate(attachments[1:], start=2):
-        add_paragraph(doc, f"{idx}.{name}", first_indent=False, left_indent_pt=hang_pt)
+    for idx, name in enumerate(attachments, start=1):
+        add_paragraph(doc, f"附件{idx}.{name}")
 
 
 def add_block(doc: Document, block: dict) -> None:
     kind = block.get("type", "para")
     text = block.get("text", "")
     if kind == "h1":
-        add_paragraph(doc, text, font=HEITI_FONT)
+        add_paragraph(doc, text, font=HEITI_FONT, line_pt=TITLE_LINE_PT)
     elif kind == "h2":
-        add_paragraph(doc, text, font=KAITI_FONT, bold=True)
+        add_paragraph(doc, text, font=KAITI_FONT, bold=True, line_pt=TITLE_LINE_PT)
     elif kind == "h3":
-        add_paragraph(doc, text, bold=True)
+        add_paragraph(doc, text, bold=True, line_pt=TITLE_LINE_PT)
     elif kind == "h4":
-        add_paragraph(doc, text)
+        add_paragraph(doc, text, line_pt=TITLE_LINE_PT)
     elif kind == "table":
         add_table(doc, block)
     elif kind == "blank":
