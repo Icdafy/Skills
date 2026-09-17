@@ -15,7 +15,7 @@
           页码格式与字体、首行缩进（字符单位）、字体清单——唯一真源
         └ 被 quality_check / create_minutes_docx / render_docx /
           font_preflight / embed_fonts / docx_style_check 全部 import
-渲染层  create_minutes_docx.py   文本 → DOCX（角色映射·西文段·字符缩进·QA 分隔）
+渲染层  create_minutes_docx.py   文本 → DOCX（角色映射·标题/正文行距·字符缩进·QA 分隔）
 嵌入层  embed_fonts.py           ECMA-376 混淆嵌入 + 反混淆校验（fsType 闸门）
 验收层  quality_check.py         文本层：缩进/层级/标点/问答/禁词（面向「行」）
         docx_style_check.py      样式层：逐段核验 run，并核验空页眉与页码格式/字体/对齐（不渲染）
@@ -27,6 +27,8 @@
 判定不会漂移。页码属于独立排版角色：完整 `-PAGE-` 的字体槽、字体提示和字号属性
 同样由 `format_spec` 定义；渲染层同时写入 Footer 样式、页脚段落默认字符属性和三个
 可见组成 run，验收层逐 run 回读，防止 Word 刷新域后只保留数字格式或让短横线回退。
+标题与正文的固定行距也按段落角色从 `format_spec` 取得：主/副标题及一级至四级标题
+统一 30 磅，正文、基本信息、问答和 QA 分隔空行统一 28 磅。
 
 ## 2. 决策记录（ADR）：是否引入文档模型（IR）
 

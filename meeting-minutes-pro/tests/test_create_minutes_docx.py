@@ -73,6 +73,8 @@ class RenderRoleTests(unittest.TestCase):
         text, name, ea, bold = _runs(self.last())[0]
         self.assertEqual((name, ea), ("SimHei", "SimHei"))
         self.assertNotEqual(bold, True)
+        self.assertEqual(self.last().paragraph_format.line_spacing_rule, WD_LINE_SPACING.EXACTLY)
+        self.assertAlmostEqual(self.last().paragraph_format.line_spacing, Pt(30))
 
     def test_second_level_kai_bold(self) -> None:
         CM.add_content_paragraph(self.doc, "　　（一）项目背景")
@@ -93,6 +95,12 @@ class RenderRoleTests(unittest.TestCase):
         names = {name for _, name, _, _ in _runs(self.last())}
         self.assertIn("仿宋_GB2312", names)
         self.assertNotEqual(_runs(self.last())[-1][3], True)
+        self.assertAlmostEqual(self.last().paragraph_format.line_spacing, Pt(30))
+
+    def test_body_uses_exact_28_point_spacing(self) -> None:
+        CM.add_content_paragraph(self.doc, "　　正文一段。")
+        self.assertEqual(self.last().paragraph_format.line_spacing_rule, WD_LINE_SPACING.EXACTLY)
+        self.assertAlmostEqual(self.last().paragraph_format.line_spacing, Pt(28))
 
 
 @unittest.skipUnless(HAS_DOCX, "python-docx not installed")
@@ -216,6 +224,28 @@ class PageLayoutTests(unittest.TestCase):
         self.assertEqual(para.text, "")
         self.assertEqual(para.paragraph_format.line_spacing_rule, WD_LINE_SPACING.EXACTLY)
         self.assertAlmostEqual(para.paragraph_format.line_spacing, Pt(28))
+
+    def test_blank_before_next_qa_subheading_is_preserved(self) -> None:
+        doc = Document()
+        lines = [
+            "项目会议纪要",
+            "　　二、完整问答纪要",
+            "　　（一）业务情况",
+            "　　问：当前进展如何？",
+            "　　答：已完成验证。",
+            "",
+            "　　（二）后续安排",
+            "　　问：下一步如何安排？",
+            "　　答：计划下月启动。",
+        ]
+        CM.add_minutes_content(doc, lines, "项目会议纪要")
+        texts = [paragraph.text for paragraph in doc.paragraphs]
+        second_heading = texts.index("（二）后续安排")
+        self.assertEqual(texts[second_heading - 1], "")
+        self.assertEqual(texts[second_heading + 1], "问：下一步如何安排？")
+        self.assertAlmostEqual(
+            doc.paragraphs[second_heading - 1].paragraph_format.line_spacing, Pt(28)
+        )
 
     def test_first_line_indent_is_character_based(self) -> None:
         # #5: two-character indent via w:firstLineChars (scales with font size),

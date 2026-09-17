@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from format_spec import (  # noqa: E402  (needs the path shim above)
     BODY_SIZE,
     BODY_LINE_SPACING,
+    HEADING_LINE_SPACING,
     TITLE_LINE_SPACING,
     SUBTITLE_LINE_SPACING,
     KAI_FONT,
@@ -58,8 +59,8 @@ def _is_western(text: str) -> bool:
     return WESTERN_SEGMENT.fullmatch(text) is not None
 
 
-def _expected(paragraph, center_seen: int) -> tuple[str, int, bool] | None:
-    """Return (east-asia font, size pt, bold) expected for this paragraph, or
+def _expected(paragraph, center_seen: int) -> tuple[str, int, bool, int] | None:
+    """Return (east-asia font, size pt, bold, line spacing) for this paragraph, or
     None to skip it (blank line / spacer)."""
     text = paragraph.text.strip()
     if not text:
@@ -67,10 +68,11 @@ def _expected(paragraph, center_seen: int) -> tuple[str, int, bool] | None:
     if paragraph.alignment == WD_ALIGN_PARAGRAPH.CENTER:
         # First centred line is the title; any later centred line is the subtitle.
         if center_seen == 0:
-            return TITLE_FONT, TITLE_SIZE, False
-        return KAI_FONT, SUBTITLE_SIZE, False
-    _role, font, bold = paragraph_role(text)
-    return font, BODY_SIZE, bold
+            return TITLE_FONT, TITLE_SIZE, False, TITLE_LINE_SPACING
+        return KAI_FONT, SUBTITLE_SIZE, False, SUBTITLE_LINE_SPACING
+    role, font, bold = paragraph_role(text)
+    spacing = HEADING_LINE_SPACING if role != "body" else BODY_LINE_SPACING
+    return font, BODY_SIZE, bold, spacing
 
 
 def _part_text(part) -> str:
@@ -221,11 +223,16 @@ def check_docx_style(path: Path) -> list[str]:
         if paragraph.alignment == WD_ALIGN_PARAGRAPH.CENTER and paragraph.text.strip():
             center_seen += 1
         if expected is None:
+            if not paragraph.text.strip() and (
+                paragraph.paragraph_format.line_spacing_rule != WD_LINE_SPACING.EXACTLY
+                or paragraph.paragraph_format.line_spacing != Pt(BODY_LINE_SPACING)
+            ):
+                problems.append(
+                    f"空白分隔段行距应为固定值 {BODY_LINE_SPACING} 磅"
+                )
             continue
-        ea_font, size, bold = expected
+        ea_font, size, bold, spacing = expected
         preview = paragraph.text.strip()[:20]
-        spacing = (TITLE_LINE_SPACING if center_seen == 1 else SUBTITLE_LINE_SPACING
-                   ) if paragraph.alignment == WD_ALIGN_PARAGRAPH.CENTER else BODY_LINE_SPACING
         if (paragraph.paragraph_format.line_spacing_rule != WD_LINE_SPACING.EXACTLY
                 or paragraph.paragraph_format.line_spacing != Pt(spacing)):
             problems.append(f"「{preview}」行距应为固定值 {spacing} 磅")

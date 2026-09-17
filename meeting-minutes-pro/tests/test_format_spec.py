@@ -81,6 +81,14 @@ class PageNumberSpecTests(unittest.TestCase):
         self.assertEqual(FS.PAGE_NUMBER_FONT_HINT, "eastAsia")
 
 
+class LineSpacingSpecTests(unittest.TestCase):
+    def test_titles_and_headings_use_30_body_uses_28(self) -> None:
+        self.assertEqual(FS.TITLE_LINE_SPACING, 30)
+        self.assertEqual(FS.SUBTITLE_LINE_SPACING, 30)
+        self.assertEqual(FS.HEADING_LINE_SPACING, 30)
+        self.assertEqual(FS.BODY_LINE_SPACING, 28)
+
+
 class FontCatalogueTests(unittest.TestCase):
     def test_embeddable_fonts_are_the_two_gb2312_faces(self) -> None:
         self.assertEqual(

@@ -220,6 +220,13 @@ def validate(
             elif last_level and level > last_level + 1:
                 errors.append(f"第 {line_number} 行层级从第 {last_level} 级跳至第 {level} 级。")
             last_level = level
+            if level == 2:
+                previous_raw = lines[line_number - 2] if line_number >= 2 else ""
+                previous_content = previous_raw.removeprefix(INDENT).strip()
+                if previous_content.startswith("答："):
+                    errors.append(
+                        f"第 {line_number} 行二级标题与上一主题末尾答复之间应空一行。"
+                    )
         else:
             body_lines.append((line_number, content))
         for field_index, field in enumerate(INTERVIEW_METADATA):
@@ -235,7 +242,7 @@ def validate(
         if content.startswith("问："):
             qa_labels.append((line_number, "问"))
             question_lines_seen.append((line_number, content.removeprefix("问：").strip()))
-            # 更新规则：连续问答时每组之间必须空一行；紧随各级标题的首问除外。
+            # 连续问答时每组之间必须空一行；紧随标题的首问可直接开始。
             previous_raw = lines[line_number - 2] if line_number >= 2 else ""
             previous_content = previous_raw.removeprefix(INDENT).strip()
             if previous_content and level_number(previous_content) is None:

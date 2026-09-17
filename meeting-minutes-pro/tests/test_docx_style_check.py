@@ -97,6 +97,36 @@ class StyleReadbackTests(unittest.TestCase):
             problems = DSC.check_docx_style(path)
             self.assertTrue(any("加粗" in p for p in problems))
 
+    def test_heading_must_use_30_point_exact_spacing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            document.paragraphs[1].paragraph_format.line_spacing = 28
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("行距应为固定值 30 磅" in p for p in problems))
+
+    def test_body_must_use_28_point_exact_spacing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            document.paragraphs[-1].paragraph_format.line_spacing = 30
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("行距应为固定值 28 磅" in p for p in problems))
+
+    def test_blank_qa_separator_must_use_28_point_exact_spacing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            CM.add_qa_separator(document)
+            document.save(path)
+            self.assertEqual(DSC.check_docx_style(path), [])
+            document.paragraphs[-1].paragraph_format.line_spacing = 30
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("空白分隔段行距应为固定值 28 磅" in p for p in problems))
+
     def test_wrong_footer_font_is_flagged(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "m.docx"

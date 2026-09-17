@@ -402,6 +402,39 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertEqual([], QUALITY_CHECK.validate(TextInput(text), "auto"))
 
+    def test_second_qa_heading_requires_blank_after_previous_answer(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            substantial_summary(),
+            "二、完整问答纪要",
+            "（一）业务情况",
+            "问：当前进展如何？",
+            "答：已完成验证。",
+            "（二）后续安排",
+            "问：下一步如何安排？",
+            "答：计划下月启动。",
+        )
+        self.assertTrue(any("二级标题" in error and "空一行" in error for error in errors))
+
+    def test_blank_before_heading_and_tight_first_qa_passes(self) -> None:
+        text = "\n".join(
+            [
+                "项目会议纪要",
+                INDENT + "一、完整总结概述",
+                INDENT + substantial_summary(),
+                INDENT + "二、完整问答纪要",
+                INDENT + "（一）业务情况",
+                INDENT + "问：当前进展如何？",
+                INDENT + "答：已完成验证。",
+                "",
+                INDENT + "（二）后续安排",
+                INDENT + "问：下一步如何安排？",
+                INDENT + "答：计划下月启动。",
+            ]
+        )
+        self.assertEqual([], QUALITY_CHECK.validate(TextInput(text), "auto"))
+
     def test_interviewee_affiliation_requires_parentheses(self) -> None:
         errors = self.errors(
             "auto",

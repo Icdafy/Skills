@@ -31,6 +31,7 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     FIRST_LINE_INDENT_CHARS,
     FIRST_LINE_INDENT_PT,
     INDENT,
+    HEADING_LINE_SPACING,
     KAI_FONT,
     LEFT_MARGIN_CM,
     NUMBER_FONT,
@@ -50,6 +51,7 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     TITLE_SIZE,
     TOP_MARGIN_CM,
     WESTERN_SEGMENT,
+    level_number,
     paragraph_role,
 )
 from embed_fonts import (  # noqa: E402
@@ -179,11 +181,11 @@ def set_first_line_indent(paragraph) -> None:
     indent.set(qn("w:firstLineChars"), str(FIRST_LINE_INDENT_CHARS * 100))
 
 
-def set_body_layout(paragraph) -> None:
+def set_body_layout(paragraph, line_spacing: float = BODY_LINE_SPACING) -> None:
     paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
     set_first_line_indent(paragraph)
     paragraph.paragraph_format.widow_control = True
-    set_exact_line_spacing(paragraph, BODY_LINE_SPACING)
+    set_exact_line_spacing(paragraph, line_spacing)
 
 
 def append_page_field(paragraph) -> None:
@@ -266,9 +268,10 @@ def add_subtitle(document: Document, subtitle: str) -> None:
 
 def add_content_paragraph(document: Document, text: str) -> None:
     paragraph = document.add_paragraph()
-    set_body_layout(paragraph)
     content = text.removeprefix(INDENT).strip()
     role, font_name, bold = paragraph_role(content)
+    line_spacing = HEADING_LINE_SPACING if role != "body" else BODY_LINE_SPACING
+    set_body_layout(paragraph, line_spacing)
     if role != "body":
         paragraph.paragraph_format.keep_together = True
         paragraph.paragraph_format.keep_with_next = True
@@ -279,6 +282,30 @@ def add_qa_separator(document: Document) -> None:
     """Blank spacer line rendered between consecutive Q/A groups."""
     paragraph = document.add_paragraph()
     set_exact_line_spacing(paragraph, BODY_LINE_SPACING)
+
+
+def add_minutes_content(document: Document, lines: list[str], title: str) -> None:
+    """Render source lines while preserving the QA blank-line contract."""
+    title_consumed = False
+    pending_blank = False
+    previous_content = ""
+    for line in lines:
+        if not line.strip():
+            pending_blank = title_consumed
+            continue
+        if not title_consumed and line.strip() == title:
+            title_consumed = True
+            continue
+        content = line.removeprefix(INDENT).strip()
+        starts_qa_group = content.startswith("问：")
+        starts_qa_subheading = (
+            level_number(content) == 2 and previous_content.startswith("答：")
+        )
+        if pending_blank and (starts_qa_group or starts_qa_subheading):
+            add_qa_separator(document)
+        pending_blank = False
+        add_content_paragraph(document, line)
+        previous_content = content
 
 
 def missing_font_families() -> list[str]:
@@ -357,21 +384,7 @@ def main() -> None:
     if args.subtitle:
         add_subtitle(document, args.subtitle)
 
-    title_consumed = False
-    pending_blank = False
-    for line in lines:
-        if not line.strip():
-            pending_blank = title_consumed
-            continue
-        if not title_consumed and line.strip() == title:
-            title_consumed = True
-            continue
-        # Source blank lines before a new Q/A group become a spacer paragraph
-        # so consecutive Q/A groups stay visually separated in the DOCX.
-        if pending_blank and line.removeprefix(INDENT).strip().startswith("问："):
-            add_qa_separator(document)
-        pending_blank = False
-        add_content_paragraph(document, line)
+    add_minutes_content(document, lines, title)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     document.save(args.output)

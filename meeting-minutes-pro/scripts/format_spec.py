@@ -93,6 +93,7 @@ PAGE_NUMBER_FONT_HINT = "eastAsia"
 # --- Exact line spacing (pt) ----------------------------------------------
 TITLE_LINE_SPACING = 30
 SUBTITLE_LINE_SPACING = 30
+HEADING_LINE_SPACING = 30
 BODY_LINE_SPACING = 28
 
 # --- First-line indent -----------------------------------------------------
