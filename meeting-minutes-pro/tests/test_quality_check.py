@@ -268,6 +268,59 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertTrue(any("冗余归因表述" in error for error in errors))
 
+    def test_named_reporting_clauses_are_rejected_in_summary(self) -> None:
+        phrases = (
+            "张三介绍了公司当前的产品布局。",
+            "李四认为市场需求仍将增长。",
+            "技术负责人提到核心模块已完成验证。",
+            "管理层指出今年将扩大产能。",
+            "公司方面表示，交付周期约为三个月。",
+        )
+        for phrase in phrases:
+            with self.subTest(phrase=phrase):
+                errors = self.errors(
+                    "auto",
+                    "一、完整总结概述",
+                    substantial_summary() + phrase,
+                    "二、完整问答纪要",
+                    "问：项目处于什么阶段？",
+                    "答：处于验证阶段。",
+                )
+                self.assertTrue(any("转述句式" in error for error in errors))
+
+    def test_direct_summary_statement_passes_reporting_clause_check(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            substantial_summary() + "公司当前已完成样机测试，交付周期约为三个月。",
+            "二、完整问答纪要",
+            "问：项目处于什么阶段？",
+            "答：处于验证阶段。",
+        )
+        self.assertFalse(any("转述句式" in error for error in errors))
+
+    def test_source_label_passes_reporting_clause_check(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            substantial_summary() + "管理层口径：明年计划完成扩产。",
+            "二、完整问答纪要",
+            "问：项目处于什么阶段？",
+            "答：处于验证阶段。",
+        )
+        self.assertFalse(any("转述句式" in error for error in errors))
+
+    def test_named_reporting_clause_outside_summary_is_not_scoped_error(self) -> None:
+        errors = self.errors(
+            "auto",
+            "一、完整总结概述",
+            substantial_summary(),
+            "二、完整问答纪要",
+            "问：谁说明了扩产计划？",
+            "答：张三介绍了扩产计划。",
+        )
+        self.assertFalse(any("转述句式" in error for error in errors))
+
     def test_redundant_interviewee_label_is_rejected_in_title(self) -> None:
         errors = self.errors(
             "auto",
@@ -304,6 +357,7 @@ class QualityCheckTests(unittest.TestCase):
                 code = QUALITY_CHECK.main()
         self.assertEqual(0, code)
         self.assertIn("冗余归因表述检查：0 处残留", output.getvalue())
+        self.assertIn("总结概述转述句式检查：0 处残留", output.getvalue())
 
     def test_risk_section_in_summary_is_rejected(self) -> None:
         errors = self.errors(

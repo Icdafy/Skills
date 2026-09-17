@@ -79,6 +79,19 @@ REDUNDANT_ATTRIBUTION_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     ),
 ]
 
+# 第一部分“完整总结概述”应直接写事实、观点和条件，不写“谁说了什么”的
+# 转述腔。这里只检查总结区间，后部完整问答仍可在确有必要时保留具名来源。
+# “表示/称”仅在后接逗号或冒号时判为转述，避免误伤“该公式表示变量关系”。
+SUMMARY_REPORTING_CLAUSE_PATTERNS: list[re.Pattern[str]] = [
+    re.compile(
+        r"(?:^|[。！？；]\s*)[^，。！？；：]{1,24}"
+        r"(?:介绍(?:了|称|道|，|：)|认为|提到|指出|强调|透露)"
+    ),
+    re.compile(
+        r"(?:^|[。！？；]\s*)[^，。！？；：]{1,24}(?:表示|称)(?=[，：])"
+    ),
+]
+
 # Detect prohibited paired conjunctions anywhere within the same sentence.
 CLAUSE = r"[^\r\n。！？!?]*?"
 CONTRAST_PATTERNS = [
@@ -417,6 +430,21 @@ def validate(
                         if summary_line < line_number < qa_section_line
                         and not content.startswith(INTERVIEW_METADATA)
                     ]
+                    for line_number, content in body_lines:
+                        if not (summary_line < line_number < qa_section_line):
+                            continue
+                        if content.startswith(INTERVIEW_METADATA):
+                            continue
+                        if any(
+                            pattern.search(content)
+                            for pattern in SUMMARY_REPORTING_CLAUSE_PATTERNS
+                        ):
+                            errors.append(
+                                f"第 {line_number} 行完整总结概述出现“主体＋介绍/认为/"
+                                "提到/指出/表示”等转述句式；请删除主体和转述动词，"
+                                "直接陈述实质内容。确需区分来源时改用“管理层口径："
+                                "……”等简洁标签；此规则不可用 --allow-line 放行。"
+                            )
                     qa_body = [
                         content
                         for line_number, content in body_lines
@@ -478,6 +506,7 @@ def main() -> int:
     qa_pairs = len(re.findall(r"^\s*　　问：", text, re.MULTILINE))
     print("纪要文本校验通过。")
     print("提示：冗余归因表述检查：0 处残留。")
+    print("提示：总结概述转述句式检查：0 处残留。")
     if allowed_lines:
         released = "、".join(str(number) for number in sorted(allowed_lines))
         print(f"提示：第 {released} 行的表述已按转录稿真实内容放行，交付前向用户说明。")
