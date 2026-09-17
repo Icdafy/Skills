@@ -36,6 +36,8 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     NUMBER_FONT,
     PAGE_HEIGHT_CM,
     PAGE_NUMBER_FONT,
+    PAGE_NUMBER_FONT_HINT,
+    PAGE_NUMBER_FONT_SLOTS,
     PAGE_NUMBER_PREFIX,
     PAGE_NUMBER_SIZE,
     PAGE_NUMBER_SUFFIX,
@@ -61,6 +63,62 @@ from docx_format_helpers import parenthesized_spans  # noqa: E402
 
 # Page-number text, face and size come from format_spec so the renderer and
 # delivery-time readback enforce the same explicit footer rule.
+
+
+def _set_page_number_properties(properties) -> None:
+    """Write the complete four-slot font and both size properties.
+
+    ``w:hint=eastAsia`` keeps ASCII dashes and field results on SimSun, while
+    the style/paragraph defaults protect a PAGE result run that Word rebuilds
+    during field refresh. Theme attributes are removed so they cannot override
+    the explicit localised family name.
+    """
+    fonts = properties.find(qn("w:rFonts"))
+    if fonts is None:
+        fonts = OxmlElement("w:rFonts")
+        properties.insert(0, fonts)
+    for attribute in PAGE_NUMBER_FONT_SLOTS:
+        fonts.set(qn(f"w:{attribute}"), PAGE_NUMBER_FONT)
+    fonts.set(qn("w:hint"), PAGE_NUMBER_FONT_HINT)
+    for attribute in ("asciiTheme", "hAnsiTheme", "eastAsiaTheme", "cstheme"):
+        fonts.attrib.pop(qn(f"w:{attribute}"), None)
+    for tag in ("w:sz", "w:szCs"):
+        size = properties.find(qn(tag))
+        if size is None:
+            size = OxmlElement(tag)
+            properties.append(size)
+        size.set(qn("w:val"), str(PAGE_NUMBER_SIZE * 2))
+
+
+def _set_page_number_run(run) -> None:
+    _set_page_number_properties(run._element.get_or_add_rPr())
+
+
+def _set_page_number_paragraph_defaults(paragraph) -> None:
+    paragraph_properties = paragraph._p.get_or_add_pPr()
+    run_properties = paragraph_properties.find(qn("w:rPr"))
+    if run_properties is None:
+        run_properties = OxmlElement("w:rPr")
+        paragraph_properties.append(run_properties)
+    _set_page_number_properties(run_properties)
+
+
+def configure_footer_style(document: Document) -> None:
+    footer_style = document.styles["Footer"]
+    run_properties = footer_style._element.find(qn("w:rPr"))
+    if run_properties is None:
+        run_properties = OxmlElement("w:rPr")
+        footer_style._element.append(run_properties)
+    _set_page_number_properties(run_properties)
+
+
+def enable_field_updates(document: Document) -> None:
+    settings = document.settings._element
+    update = settings.find(qn("w:updateFields"))
+    if update is None:
+        update = OxmlElement("w:updateFields")
+        settings.append(update)
+    update.set(qn("w:val"), "true")
 
 
 def set_east_asia_font(run, font_name: str, size: float, bold: bool = False) -> None:
@@ -130,20 +188,12 @@ def set_body_layout(paragraph) -> None:
 
 def append_page_field(paragraph) -> None:
     leading = paragraph.add_run(PAGE_NUMBER_PREFIX)
-    set_east_asia_font(leading, PAGE_NUMBER_FONT, PAGE_NUMBER_SIZE)
+    _set_page_number_run(leading)
     field = OxmlElement("w:fldSimple")
     field.set(qn("w:instr"), "PAGE")
     field_run = OxmlElement("w:r")
     properties = OxmlElement("w:rPr")
-    fonts = OxmlElement("w:rFonts")
-    fonts.set(qn("w:ascii"), PAGE_NUMBER_FONT)
-    fonts.set(qn("w:hAnsi"), PAGE_NUMBER_FONT)
-    fonts.set(qn("w:eastAsia"), PAGE_NUMBER_FONT)
-    fonts.set(qn("w:cs"), PAGE_NUMBER_FONT)
-    properties.append(fonts)
-    size = OxmlElement("w:sz")
-    size.set(qn("w:val"), str(PAGE_NUMBER_SIZE * 2))
-    properties.append(size)
+    _set_page_number_properties(properties)
     field_run.append(properties)
     text = OxmlElement("w:t")
     text.text = "1"
@@ -151,16 +201,18 @@ def append_page_field(paragraph) -> None:
     field.append(field_run)
     paragraph._p.append(field)
     trailing = paragraph.add_run(PAGE_NUMBER_SUFFIX)
-    set_east_asia_font(trailing, PAGE_NUMBER_FONT, PAGE_NUMBER_SIZE)
+    _set_page_number_run(trailing)
 
 
 def format_footer(footer, alignment: WD_ALIGN_PARAGRAPH) -> None:
     paragraph = footer.paragraphs[0]
     paragraph.clear()
+    paragraph.style = "Footer"
     paragraph.alignment = alignment
     paragraph.paragraph_format.space_before = Pt(0)
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.paragraph_format.line_spacing = 1.0
+    _set_page_number_paragraph_defaults(paragraph)
     append_page_field(paragraph)
 
 
@@ -180,6 +232,8 @@ def configure_document(document: Document) -> None:
     section.right_margin = Cm(RIGHT_MARGIN_CM)
     section.start_type = WD_SECTION_START.NEW_PAGE
     document.settings.odd_and_even_pages_header_footer = True
+    configure_footer_style(document)
+    enable_field_updates(document)
     section.different_first_page_header_footer = False
     clear_header(section.header)
     clear_header(section.even_page_header)

@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import importlib.util
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -144,16 +145,69 @@ class PageLayoutTests(unittest.TestCase):
         for footer in (section.footer, section.even_page_footer):
             paragraph = footer.paragraphs[0]
             self.assertEqual(_footer_pattern(paragraph), "-{PAGE}-")
-            for run in paragraph._p.iter(qn("w:r")):
+            visible_runs = [
+                run for run in paragraph._p.iter(qn("w:r"))
+                if "".join(node.text or "" for node in run.iter(qn("w:t")))
+            ]
+            self.assertEqual(
+                ["".join(node.text or "" for node in run.iter(qn("w:t")))
+                 for run in visible_runs],
+                ["-", "1", "-"],
+            )
+            for run in visible_runs:
                 properties = run.find(qn("w:rPr"))
                 fonts = properties.find(qn("w:rFonts"))
                 self.assertEqual(fonts.get(qn("w:ascii")), "宋体")
                 self.assertEqual(fonts.get(qn("w:hAnsi")), "宋体")
                 self.assertEqual(fonts.get(qn("w:cs")), "宋体")
                 self.assertEqual(fonts.get(qn("w:eastAsia")), "宋体")
+                self.assertEqual(fonts.get(qn("w:hint")), "eastAsia")
                 self.assertEqual(properties.find(qn("w:sz")).get(qn("w:val")), "28")
+                self.assertEqual(properties.find(qn("w:szCs")).get(qn("w:val")), "28")
+            paragraph_defaults = paragraph._p.pPr.find(qn("w:rPr"))
+            self.assertIsNotNone(paragraph_defaults)
+            self.assertEqual(
+                paragraph_defaults.find(qn("w:rFonts")).get(qn("w:ascii")), "宋体"
+            )
+        footer_style = doc.styles["Footer"]._element.find(qn("w:rPr"))
+        self.assertIsNotNone(footer_style)
+        self.assertEqual(footer_style.find(qn("w:rFonts")).get(qn("w:ascii")), "宋体")
+        self.assertEqual(footer_style.find(qn("w:sz")).get(qn("w:val")), "28")
+        self.assertEqual(footer_style.find(qn("w:szCs")).get(qn("w:val")), "28")
+        self.assertEqual(
+            doc.settings._element.find(qn("w:updateFields")).get(qn("w:val")), "true"
+        )
         for header in (section.header, section.even_page_header, section.first_page_header):
             self.assertEqual(_part_text(header).strip(), "")
+
+    def test_complete_footer_format_survives_save_and_reload(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "footer.docx"
+            doc = Document()
+            CM.configure_document(doc)
+            doc.save(path)
+            reopened = Document(path)
+            for footer in (
+                reopened.sections[0].footer,
+                reopened.sections[0].even_page_footer,
+            ):
+                paragraph = footer.paragraphs[0]
+                self.assertEqual(_footer_pattern(paragraph), "-{PAGE}-")
+                runs = [
+                    run for run in paragraph._p.iter(qn("w:r"))
+                    if "".join(node.text or "" for node in run.iter(qn("w:t")))
+                ]
+                self.assertEqual(len(runs), 3)
+                for run in runs:
+                    properties = run.find(qn("w:rPr"))
+                    fonts = properties.find(qn("w:rFonts"))
+                    self.assertTrue(all(
+                        fonts.get(qn(f"w:{slot}")) == "宋体"
+                        for slot in ("ascii", "hAnsi", "cs", "eastAsia")
+                    ))
+                    self.assertEqual(fonts.get(qn("w:hint")), "eastAsia")
+                    self.assertEqual(properties.find(qn("w:sz")).get(qn("w:val")), "28")
+                    self.assertEqual(properties.find(qn("w:szCs")).get(qn("w:val")), "28")
 
     def test_qa_separator_is_blank_exact_spacing(self) -> None:
         doc = Document()

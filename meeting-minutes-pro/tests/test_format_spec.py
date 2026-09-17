@@ -75,6 +75,10 @@ class PageNumberSpecTests(unittest.TestCase):
         self.assertEqual(FS.PAGE_NUMBER_FONT, FS.SONG_FONT)
         self.assertEqual(FS.PAGE_NUMBER_SIZE, 14)
         self.assertEqual((FS.PAGE_NUMBER_PREFIX, FS.PAGE_NUMBER_SUFFIX), ("-", "-"))
+        self.assertEqual(
+            FS.PAGE_NUMBER_FONT_SLOTS, ("ascii", "hAnsi", "cs", "eastAsia")
+        )
+        self.assertEqual(FS.PAGE_NUMBER_FONT_HINT, "eastAsia")
 
 
 class FontCatalogueTests(unittest.TestCase):

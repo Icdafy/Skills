@@ -33,6 +33,8 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     KAI_FONT,
     NUMBER_FONT,
     PAGE_NUMBER_FONT,
+    PAGE_NUMBER_FONT_HINT,
+    PAGE_NUMBER_FONT_SLOTS,
     PAGE_NUMBER_PREFIX,
     PAGE_NUMBER_SIZE,
     PAGE_NUMBER_SUFFIX,
@@ -91,28 +93,65 @@ def _footer_pattern(paragraph) -> str:
 def _footer_run_problems(paragraph, label: str) -> list[str]:
     problems: list[str] = []
     expected_size = str(PAGE_NUMBER_SIZE * 2)
+    visible_runs = []
     for run in paragraph._p.iter(qn("w:r")):
         text = "".join(node.text or "" for node in run.iter(qn("w:t")))
         if not text:
             continue
+        visible_runs.append((run, text))
+    for index, (run, text) in enumerate(visible_runs):
+        if run.getparent() is not None and run.getparent().tag == qn("w:fldSimple"):
+            component = "PAGE 域显示数字"
+        elif index == 0:
+            component = "左短横线"
+        elif index == len(visible_runs) - 1:
+            component = "右短横线"
+        else:
+            component = f"可见组成部分「{text}」"
         properties = run.find(qn("w:rPr"))
         fonts = None if properties is None else properties.find(qn("w:rFonts"))
-        for attribute in ("ascii", "hAnsi", "cs", "eastAsia"):
+        for attribute in PAGE_NUMBER_FONT_SLOTS:
             actual = None if fonts is None else fonts.get(qn(f"w:{attribute}"))
             if actual != PAGE_NUMBER_FONT:
                 problems.append(
-                    f"{label}中「{text}」{attribute} 字体为 {actual}，应为 {PAGE_NUMBER_FONT}"
+                    f"{label}{component}的 {attribute} 字体为 {actual}，应为 {PAGE_NUMBER_FONT}"
                 )
-        size = None if properties is None else properties.find(qn("w:sz"))
-        actual_size = None if size is None else size.get(qn("w:val"))
-        if actual_size != expected_size:
-            try:
-                got = None if actual_size is None else int(actual_size) / 2
-            except ValueError:
-                got = actual_size
+        actual_hint = None if fonts is None else fonts.get(qn("w:hint"))
+        if actual_hint != PAGE_NUMBER_FONT_HINT:
             problems.append(
-                f"{label}中「{text}」字号为 {got} 磅，应为 {PAGE_NUMBER_SIZE} 磅"
+                f"{label}{component}的字体提示为 {actual_hint}，应为 {PAGE_NUMBER_FONT_HINT}"
             )
+        for tag, size_label in (("w:sz", "sz"), ("w:szCs", "szCs")):
+            size = None if properties is None else properties.find(qn(tag))
+            actual_size = None if size is None else size.get(qn("w:val"))
+            if actual_size != expected_size:
+                try:
+                    got = None if actual_size is None else int(actual_size) / 2
+                except ValueError:
+                    got = actual_size
+                problems.append(
+                    f"{label}{component}的 {size_label} 字号为 {got} 磅，"
+                    f"应为 {PAGE_NUMBER_SIZE} 磅"
+                )
+    return problems
+
+
+def _page_number_defaults_problems(properties, label: str) -> list[str]:
+    problems: list[str] = []
+    fonts = None if properties is None else properties.find(qn("w:rFonts"))
+    for attribute in PAGE_NUMBER_FONT_SLOTS:
+        actual = None if fonts is None else fonts.get(qn(f"w:{attribute}"))
+        if actual != PAGE_NUMBER_FONT:
+            problems.append(f"{label}的 {attribute} 字体为 {actual}，应为 {PAGE_NUMBER_FONT}")
+    actual_hint = None if fonts is None else fonts.get(qn("w:hint"))
+    if actual_hint != PAGE_NUMBER_FONT_HINT:
+        problems.append(f"{label}的字体提示为 {actual_hint}，应为 {PAGE_NUMBER_FONT_HINT}")
+    expected_size = str(PAGE_NUMBER_SIZE * 2)
+    for tag, size_label in (("w:sz", "sz"), ("w:szCs", "szCs")):
+        size = None if properties is None else properties.find(qn(tag))
+        actual = None if size is None else size.get(qn("w:val"))
+        if actual != expected_size:
+            problems.append(f"{label}的 {size_label} 应为 {expected_size}")
     return problems
 
 
@@ -120,6 +159,11 @@ def _page_frame_problems(document) -> list[str]:
     problems: list[str] = []
     if not document.settings.odd_and_even_pages_header_footer:
         problems.append("未启用奇偶页不同的页眉页脚")
+
+    footer_style_properties = document.styles["Footer"]._element.find(qn("w:rPr"))
+    problems.extend(
+        _page_number_defaults_problems(footer_style_properties, "Footer 样式")
+    )
 
     expected_pattern = f"{PAGE_NUMBER_PREFIX}{{PAGE}}{PAGE_NUMBER_SUFFIX}"
     for index, section in enumerate(document.sections, start=1):
@@ -158,6 +202,12 @@ def _page_frame_problems(document) -> list[str]:
             if paragraph.alignment != alignment:
                 want = "右对齐" if alignment == WD_ALIGN_PARAGRAPH.RIGHT else "左对齐"
                 problems.append(f"{prefix}{label}未{want}")
+            paragraph_properties = paragraph._p.get_or_add_pPr().find(qn("w:rPr"))
+            problems.extend(
+                _page_number_defaults_problems(
+                    paragraph_properties, f"{prefix}{label}段落默认字符属性"
+                )
+            )
             problems.extend(_footer_run_problems(paragraph, f"{prefix}{label}"))
     return problems
 

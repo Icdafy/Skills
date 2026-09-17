@@ -87,6 +87,8 @@ PAGE_NUMBER_FONT = SONG_FONT
 PAGE_NUMBER_SIZE = 14    # 四号
 PAGE_NUMBER_PREFIX = "-"
 PAGE_NUMBER_SUFFIX = "-"
+PAGE_NUMBER_FONT_SLOTS = ("ascii", "hAnsi", "cs", "eastAsia")
+PAGE_NUMBER_FONT_HINT = "eastAsia"
 
 # --- Exact line spacing (pt) ----------------------------------------------
 TITLE_LINE_SPACING = 30

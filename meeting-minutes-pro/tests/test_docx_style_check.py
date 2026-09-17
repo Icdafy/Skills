@@ -12,6 +12,7 @@ from pathlib import Path
 
 try:
     from docx import Document
+    from docx.oxml.ns import qn
     HAS_DOCX = True
 except ImportError:  # pragma: no cover
     HAS_DOCX = False
@@ -104,6 +105,38 @@ class StyleReadbackTests(unittest.TestCase):
             document.save(path)
             problems = DSC.check_docx_style(path)
             self.assertTrue(any("奇数页页脚" in p and "字体" in p for p in problems))
+
+    def test_each_footer_component_font_is_checked_independently(self) -> None:
+        for component_index, component_label in enumerate(
+            ("左短横线", "PAGE 域显示数字", "右短横线")
+        ):
+            with self.subTest(component=component_label), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "m.docx"
+                document = _build(path)
+                paragraph = document.sections[0].footer.paragraphs[0]
+                runs = [
+                    run for run in paragraph._p.iter(qn("w:r"))
+                    if "".join(node.text or "" for node in run.iter(qn("w:t")))
+                ]
+                fonts = runs[component_index].find(qn("w:rPr")).find(qn("w:rFonts"))
+                fonts.set(qn("w:ascii"), "仿宋_GB2312")
+                document.save(path)
+                problems = DSC.check_docx_style(path)
+                self.assertTrue(any(component_label in p and "字体" in p for p in problems))
+
+    def test_footer_szcs_and_font_hint_are_required(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = _build(path)
+            paragraph = document.sections[0].footer.paragraphs[0]
+            first_run = next(paragraph._p.iter(qn("w:r")))
+            properties = first_run.find(qn("w:rPr"))
+            properties.remove(properties.find(qn("w:szCs")))
+            properties.find(qn("w:rFonts")).attrib.pop(qn("w:hint"))
+            document.save(path)
+            problems = DSC.check_docx_style(path)
+            self.assertTrue(any("szCs" in p for p in problems))
+            self.assertTrue(any("字体提示" in p for p in problems))
 
     def test_spaced_footer_format_is_flagged(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
