@@ -29,3 +29,5 @@ python tools/package_investment_skills.py --check
 ```
 
 `--check` 对比包内清单、每个文件及ZIP本身的SHA-256，发现漏文件、包损坏或源码与安装包不同步即失败。安装包以技能名为唯一顶层目录，不打入缓存、虚拟环境或Git仓库。
+
+安装包现已包含两阶段固定模板：首次写作先询问早前期（伊隆纬特）或中后期（因诺科技），用户回答后按对应标题填入当前公司资料。使用 `scripts/stage_template.py check content.json` 校验成稿标题、顺序和占位项；完整标题及来源位置位于各技能 `references/template-early.md`、`references/template-mid-late.md`。

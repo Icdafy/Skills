@@ -1,0 +1,420 @@
+{
+  "version": "2026-09-20.1",
+  "skill": "zhuying-yewu-fenxi",
+  "stage": "early",
+  "label": "早前期（伊隆纬特）",
+  "source": {
+    "filename": "伊隆纬特项目立项书-案例.docx",
+    "sha256": "2c94c03228604c720df0df9997534b8e576f781817d1a65646e06c56adc7e18f",
+    "confirmed_on": "2026-09-20",
+    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs)"
+  },
+  "source_headings": [
+    {
+      "id": "e111",
+      "level": 1,
+      "text": "三、主营业务分析",
+      "paragraph": 111
+    },
+    {
+      "id": "e112",
+      "level": 2,
+      "text": "（一）主营产品概况",
+      "paragraph": 112
+    },
+    {
+      "id": "e115",
+      "level": 3,
+      "text": "1.主营产品情况",
+      "paragraph": 115
+    },
+    {
+      "id": "e116",
+      "level": 3,
+      "text": "2.产品销售情况",
+      "paragraph": 116
+    },
+    {
+      "id": "e117",
+      "level": 4,
+      "text": "（1）主营产品收入及毛利率（2023–2026年4月）",
+      "paragraph": 117
+    },
+    {
+      "id": "e121",
+      "level": 4,
+      "text": "（2）主营产品产能、产量、销售情况（2024-2026一季度）",
+      "paragraph": 121
+    },
+    {
+      "id": "e123",
+      "level": 4,
+      "text": "（3）未来三年产品销售预测",
+      "paragraph": 123
+    },
+    {
+      "id": "e125",
+      "level": 2,
+      "text": "（二）核心技术优势",
+      "paragraph": 125
+    },
+    {
+      "id": "e127",
+      "level": 3,
+      "text": "1.抛面动中通的核心优势",
+      "paragraph": 127
+    },
+    {
+      "id": "e128",
+      "level": 4,
+      "text": "（1）机器人直驱关节替代传统伺服链，实现轻量化与降本",
+      "paragraph": 128
+    },
+    {
+      "id": "e130",
+      "level": 4,
+      "text": "（2）运动控制系统的精度提升和结构简化",
+      "paragraph": 130
+    },
+    {
+      "id": "e132",
+      "level": 4,
+      "text": "（3）改进导航方案并压缩成本",
+      "paragraph": 132
+    },
+    {
+      "id": "e134",
+      "level": 4,
+      "text": "（4）整机小型化与轻量化",
+      "paragraph": 134
+    },
+    {
+      "id": "e137",
+      "level": 3,
+      "text": "2.相控阵的核心优势",
+      "paragraph": 137
+    },
+    {
+      "id": "e138",
+      "level": 4,
+      "text": "（1）采用收发共口径设计，实现高低轨融合覆盖。",
+      "paragraph": 138
+    },
+    {
+      "id": "e140",
+      "level": 4,
+      "text": "（2）标准化模块化设计",
+      "paragraph": 140
+    },
+    {
+      "id": "e142",
+      "level": 4,
+      "text": "（3）产品轻量化和综合降本",
+      "paragraph": 142
+    },
+    {
+      "id": "e144",
+      "level": 2,
+      "text": "（三）生产、销售、研发模式",
+      "paragraph": 144
+    },
+    {
+      "id": "e145",
+      "level": 3,
+      "text": "1. 生产模式",
+      "paragraph": 145
+    },
+    {
+      "id": "e147",
+      "level": 3,
+      "text": "2. 销售模式",
+      "paragraph": 147
+    },
+    {
+      "id": "e151",
+      "level": 3,
+      "text": "3. 研发模式",
+      "paragraph": 151
+    },
+    {
+      "id": "e154",
+      "level": 2,
+      "text": "（四）上下游客户分析",
+      "paragraph": 154
+    },
+    {
+      "id": "e155",
+      "level": 3,
+      "text": "1. 上游供应链",
+      "paragraph": 155
+    },
+    {
+      "id": "e157",
+      "level": 3,
+      "text": "2. 下游客户结构：央企主导、海外突破、集中度较高",
+      "paragraph": 157
+    },
+    {
+      "id": "e163",
+      "level": 2,
+      "text": "（五）竞争对手分析",
+      "paragraph": 163
+    },
+    {
+      "id": "e165",
+      "level": 2,
+      "text": "（六）未来业务发展预测",
+      "paragraph": 165
+    },
+    {
+      "id": "e166",
+      "level": 3,
+      "text": "1. 营收与利润预测",
+      "paragraph": 166
+    },
+    {
+      "id": "e168",
+      "level": 3,
+      "text": "2. 产品迭代路线图",
+      "paragraph": 168
+    }
+  ],
+  "nodes": [
+    {
+      "id": "e111",
+      "level": 1,
+      "text": "三、主营业务分析",
+      "sources": [
+        "e111"
+      ]
+    },
+    {
+      "id": "e112",
+      "level": 2,
+      "text": "（一）主营产品概况",
+      "sources": [
+        "e112"
+      ]
+    },
+    {
+      "id": "e115",
+      "level": 3,
+      "text": "1.主营产品情况",
+      "sources": [
+        "e115"
+      ]
+    },
+    {
+      "id": "e116",
+      "level": 3,
+      "text": "2.产品销售情况",
+      "sources": [
+        "e116"
+      ]
+    },
+    {
+      "id": "e117",
+      "level": 4,
+      "text": "（1）主营产品收入及毛利率（{revenue_period}）",
+      "sources": [
+        "e117"
+      ],
+      "guidance": "当前资料对应的历史期间。"
+    },
+    {
+      "id": "e121",
+      "level": 4,
+      "text": "（2）主营产品产能、产量、销售情况（{production_period}）",
+      "sources": [
+        "e121"
+      ],
+      "guidance": "当前资料对应的产销期间。"
+    },
+    {
+      "id": "e123",
+      "level": 4,
+      "text": "（3）未来三年产品销售预测",
+      "sources": [
+        "e123"
+      ]
+    },
+    {
+      "id": "e125",
+      "level": 2,
+      "text": "（二）核心技术优势",
+      "sources": [
+        "e125"
+      ]
+    },
+    {
+      "id": "e127",
+      "level": 3,
+      "text": "1.{product_1}的核心优势",
+      "sources": [
+        "e127"
+      ],
+      "guidance": "第一条真实产品线或核心产品名称。"
+    },
+    {
+      "id": "e128",
+      "level": 4,
+      "text": "（1）{product_1_advantage_1}",
+      "sources": [
+        "e128"
+      ],
+      "guidance": "产品一的第一项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e130",
+      "level": 4,
+      "text": "（2）{product_1_advantage_2}",
+      "sources": [
+        "e130"
+      ],
+      "guidance": "产品一的第二项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e132",
+      "level": 4,
+      "text": "（3）{product_1_advantage_3}",
+      "sources": [
+        "e132"
+      ],
+      "guidance": "产品一的第三项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e134",
+      "level": 4,
+      "text": "（4）{product_1_advantage_4}",
+      "sources": [
+        "e134"
+      ],
+      "guidance": "产品一的第四项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e137",
+      "level": 3,
+      "text": "2.{product_2}的核心优势",
+      "sources": [
+        "e137"
+      ],
+      "guidance": "第二条真实产品线或核心产品名称。"
+    },
+    {
+      "id": "e138",
+      "level": 4,
+      "text": "（1）{product_2_advantage_1}",
+      "sources": [
+        "e138"
+      ],
+      "guidance": "产品二的第一项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e140",
+      "level": 4,
+      "text": "（2）{product_2_advantage_2}",
+      "sources": [
+        "e140"
+      ],
+      "guidance": "产品二的第二项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e142",
+      "level": 4,
+      "text": "（3）{product_2_advantage_3}",
+      "sources": [
+        "e142"
+      ],
+      "guidance": "产品二的第三项技术机制与客户效果，须有依据。"
+    },
+    {
+      "id": "e144",
+      "level": 2,
+      "text": "（三）生产、销售、研发模式",
+      "sources": [
+        "e144"
+      ]
+    },
+    {
+      "id": "e145",
+      "level": 3,
+      "text": "1.生产模式",
+      "sources": [
+        "e145"
+      ]
+    },
+    {
+      "id": "e147",
+      "level": 3,
+      "text": "2.销售模式",
+      "sources": [
+        "e147"
+      ]
+    },
+    {
+      "id": "e151",
+      "level": 3,
+      "text": "3.研发模式",
+      "sources": [
+        "e151"
+      ]
+    },
+    {
+      "id": "e154",
+      "level": 2,
+      "text": "（四）上下游客户分析",
+      "sources": [
+        "e154"
+      ]
+    },
+    {
+      "id": "e155",
+      "level": 3,
+      "text": "1.上游供应链",
+      "sources": [
+        "e155"
+      ]
+    },
+    {
+      "id": "e157",
+      "level": 3,
+      "text": "2.下游客户结构：{customer_structure}",
+      "sources": [
+        "e157"
+      ],
+      "guidance": "依据当前公司客户事实概括，不能预设央企主导、海外突破或集中度较高。"
+    },
+    {
+      "id": "e163",
+      "level": 2,
+      "text": "（五）竞争对手分析",
+      "sources": [
+        "e163"
+      ]
+    },
+    {
+      "id": "e165",
+      "level": 2,
+      "text": "（六）未来业务发展预测",
+      "sources": [
+        "e165"
+      ]
+    },
+    {
+      "id": "e166",
+      "level": 3,
+      "text": "1.营收与利润预测",
+      "sources": [
+        "e166"
+      ]
+    },
+    {
+      "id": "e168",
+      "level": 3,
+      "text": "2.产品迭代路线图",
+      "sources": [
+        "e168"
+      ]
+    }
+  ]
+}

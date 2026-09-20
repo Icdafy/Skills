@@ -421,6 +421,9 @@ def _finalize_western_fonts(doc):
 
 
 def build(content, out_path):
+    if "report_template" in content:
+        from stage_template import validate
+        validate(content, root=Path(__file__).resolve().parents[1])
     doc = Document()
     _fix_zoom(doc)
     _enable_odd_even_footers(doc)

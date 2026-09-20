@@ -38,7 +38,10 @@ REQUIRED = ('SKILL.md', 'requirements.txt', 'references/agent-compatibility.md',
             'references/investment-logic-review.md', 'scripts/build_docx.py',
             'scripts/style_check.py', 'scripts/ensure_fonts.py',
             'scripts/embed_fonts.py', 'scripts/docx_format_helpers.py',
-            'scripts/skill_portability.py')
+            'scripts/skill_portability.py', 'scripts/stage_template.py',
+            'references/stage-template-workflow.md', 'references/template-early.md',
+            'references/template-mid-late.md', 'assets/templates/early.json',
+            'assets/templates/mid-late.json')
 
 
 def payload(path):
@@ -87,6 +90,14 @@ def check(root):
     missing = [p for p in REQUIRED if not (root / p).is_file()]
     if missing:
         raise ValueError('Missing resources: ' + ', '.join(missing))
+    for stage in ('early', 'mid-late'):
+        template = json.loads((root / 'assets/templates' / (stage + '.json')).read_text('utf-8'))
+        if template.get('stage') != stage or template.get('skill') != fields['name']:
+            raise ValueError('Stage template belongs to a different skill or stage')
+        source_ids = [h['id'] for h in template['source_headings']]
+        mapped_ids = [source for node in template['nodes'] for source in node['sources']]
+        if source_ids != mapped_ids or len(source_ids) != len(set(source_ids)):
+            raise ValueError('Stage template has missing, repeated or reordered source headings')
     # Markdown links resolve against their containing file, never the task cwd.
     for path in root.rglob('*.md'):
         for target in re.findall(r'\]\(([^)]+)\)', path.read_text(encoding='utf-8')):

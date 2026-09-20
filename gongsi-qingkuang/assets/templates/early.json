@@ -1,0 +1,377 @@
+{
+  "version": "2026-09-20.1",
+  "skill": "gongsi-qingkuang",
+  "stage": "early",
+  "label": "早前期（伊隆纬特）",
+  "source": {
+    "filename": "伊隆纬特项目立项书-案例.docx",
+    "sha256": "2c94c03228604c720df0df9997534b8e576f781817d1a65646e06c56adc7e18f",
+    "confirmed_on": "2026-09-20",
+    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs)"
+  },
+  "source_headings": [
+    {
+      "id": "e169",
+      "level": 1,
+      "text": "四、公司情况",
+      "paragraph": 169
+    },
+    {
+      "id": "e170",
+      "level": 2,
+      "text": "（一）基本信息",
+      "paragraph": 170
+    },
+    {
+      "id": "e171",
+      "level": 3,
+      "text": "1.工商信息",
+      "paragraph": 171
+    },
+    {
+      "id": "e172",
+      "level": 3,
+      "text": "2.核心团队",
+      "paragraph": 172
+    },
+    {
+      "id": "e173",
+      "level": 4,
+      "text": "（1）张勇，公司总经理",
+      "paragraph": 173
+    },
+    {
+      "id": "e175",
+      "level": 4,
+      "text": "（2）孙鹏，公司副总经理",
+      "paragraph": 175
+    },
+    {
+      "id": "e177",
+      "level": 4,
+      "text": "（3）曹义东，公司副总经理",
+      "paragraph": 177
+    },
+    {
+      "id": "e179",
+      "level": 4,
+      "text": "（4）周小军，公司副总经理",
+      "paragraph": 179
+    },
+    {
+      "id": "e181",
+      "level": 4,
+      "text": "（5）鄢泽洪，首席科学家",
+      "paragraph": 181
+    },
+    {
+      "id": "e183",
+      "level": 4,
+      "text": "（6）伍金宵，相控阵研发负责人",
+      "paragraph": 183
+    },
+    {
+      "id": "e185",
+      "level": 3,
+      "text": "3.人员及组织架构",
+      "paragraph": 185
+    },
+    {
+      "id": "e191",
+      "level": 3,
+      "text": "4.知识产权",
+      "paragraph": 191
+    },
+    {
+      "id": "e193",
+      "level": 3,
+      "text": "5.前五大客户及前五大供应商",
+      "paragraph": 193
+    },
+    {
+      "id": "e194",
+      "level": 4,
+      "text": "（1）前五大客户",
+      "paragraph": 194
+    },
+    {
+      "id": "e195",
+      "level": 4,
+      "text": "（2）前五大供应商",
+      "paragraph": 195
+    },
+    {
+      "id": "e196",
+      "level": 2,
+      "text": "（二）股权变动情况",
+      "paragraph": 196
+    },
+    {
+      "id": "e197",
+      "level": 3,
+      "text": "1.股东结构",
+      "paragraph": 197
+    },
+    {
+      "id": "e202",
+      "level": 3,
+      "text": "2.历史融资情况",
+      "paragraph": 202
+    },
+    {
+      "id": "e204",
+      "level": 4,
+      "text": "（1）2021年8月，公司第一次股权转让",
+      "paragraph": 204
+    },
+    {
+      "id": "e206",
+      "level": 4,
+      "text": "（2）2022年3月，公司第一次增资",
+      "paragraph": 206
+    },
+    {
+      "id": "e208",
+      "level": 4,
+      "text": "（3）2023年3月，公司第二次股权转让",
+      "paragraph": 208
+    },
+    {
+      "id": "e210",
+      "level": 4,
+      "text": "（4）2023年6月，公司第三次股权转让",
+      "paragraph": 210
+    },
+    {
+      "id": "e212",
+      "level": 4,
+      "text": "（5）2023年6月，公司第二次增资",
+      "paragraph": 212
+    },
+    {
+      "id": "e214",
+      "level": 4,
+      "text": "（6）2023年9月，公司第三次增资",
+      "paragraph": 214
+    },
+    {
+      "id": "e216",
+      "level": 2,
+      "text": "（三）财务数据",
+      "paragraph": 216
+    },
+    {
+      "id": "e217",
+      "level": 3,
+      "text": "1.核心财务数据",
+      "paragraph": 217
+    },
+    {
+      "id": "e220",
+      "level": 3,
+      "text": "2.存在问题",
+      "paragraph": 220
+    },
+    {
+      "id": "e221",
+      "level": 4,
+      "text": "（1）持续亏损",
+      "paragraph": 221
+    },
+    {
+      "id": "e223",
+      "level": 4,
+      "text": "（2）毛利率波动较大",
+      "paragraph": 223
+    },
+    {
+      "id": "e225",
+      "level": 3,
+      "text": "3.财务预测",
+      "paragraph": 225
+    }
+  ],
+  "nodes": [
+    {
+      "id": "e169",
+      "level": 1,
+      "text": "四、公司情况",
+      "sources": [
+        "e169"
+      ]
+    },
+    {
+      "id": "e170",
+      "level": 2,
+      "text": "（一）基本信息",
+      "sources": [
+        "e170"
+      ]
+    },
+    {
+      "id": "e171",
+      "level": 3,
+      "text": "1.工商信息",
+      "sources": [
+        "e171"
+      ]
+    },
+    {
+      "id": "e172",
+      "level": 3,
+      "text": "2.核心团队",
+      "sources": [
+        "e172"
+      ]
+    },
+    {
+      "repeat": "team",
+      "min_items": 1,
+      "sources": [
+        "e173",
+        "e175",
+        "e177",
+        "e179",
+        "e181",
+        "e183"
+      ],
+      "guidance": "按实际核心团队人数逐人展开，姓名、职务从当前公司资料填写。",
+      "items": [
+        {
+          "level": 4,
+          "text": "（{n}）{name}，{role}"
+        }
+      ]
+    },
+    {
+      "id": "e185",
+      "level": 3,
+      "text": "3.人员及组织架构",
+      "sources": [
+        "e185"
+      ]
+    },
+    {
+      "id": "e191",
+      "level": 3,
+      "text": "4.知识产权",
+      "sources": [
+        "e191"
+      ]
+    },
+    {
+      "id": "e193",
+      "level": 3,
+      "text": "5.前五大客户及前五大供应商",
+      "sources": [
+        "e193"
+      ]
+    },
+    {
+      "id": "e194",
+      "level": 4,
+      "text": "（1）前五大客户",
+      "sources": [
+        "e194"
+      ]
+    },
+    {
+      "id": "e195",
+      "level": 4,
+      "text": "（2）前五大供应商",
+      "sources": [
+        "e195"
+      ]
+    },
+    {
+      "id": "e196",
+      "level": 2,
+      "text": "（二）股权变动情况",
+      "sources": [
+        "e196"
+      ]
+    },
+    {
+      "id": "e197",
+      "level": 3,
+      "text": "1.股东结构",
+      "sources": [
+        "e197"
+      ]
+    },
+    {
+      "id": "e202",
+      "level": 3,
+      "text": "2.历史融资情况",
+      "sources": [
+        "e202"
+      ]
+    },
+    {
+      "repeat": "financing_events",
+      "min_items": 1,
+      "sources": [
+        "e204",
+        "e206",
+        "e208",
+        "e210",
+        "e212",
+        "e214"
+      ],
+      "guidance": "按时间顺序逐项列示实际股权变动，不复制案例的日期、轮数或事件。",
+      "items": [
+        {
+          "level": 4,
+          "text": "（{n}）{date}，{event}"
+        }
+      ]
+    },
+    {
+      "id": "e216",
+      "level": 2,
+      "text": "（三）财务数据",
+      "sources": [
+        "e216"
+      ]
+    },
+    {
+      "id": "e217",
+      "level": 3,
+      "text": "1.核心财务数据",
+      "sources": [
+        "e217"
+      ]
+    },
+    {
+      "id": "e220",
+      "level": 3,
+      "text": "2.存在问题",
+      "sources": [
+        "e220"
+      ]
+    },
+    {
+      "repeat": "financial_issues",
+      "min_items": 0,
+      "sources": [
+        "e221",
+        "e223"
+      ],
+      "guidance": "只列有证据的实际财务问题；已核查未发现此类问题可传空列表，在父节说明核查范围及结果。",
+      "items": [
+        {
+          "level": 4,
+          "text": "（{n}）{issue}"
+        }
+      ]
+    },
+    {
+      "id": "e225",
+      "level": 3,
+      "text": "3.财务预测",
+      "sources": [
+        "e225"
+      ]
+    }
+  ]
+}

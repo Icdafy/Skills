@@ -1,0 +1,230 @@
+{
+  "version": "2026-09-20.1",
+  "skill": "hangye-fenxi",
+  "stage": "early",
+  "label": "早前期（伊隆纬特）",
+  "source": {
+    "filename": "伊隆纬特项目立项书-案例.docx",
+    "sha256": "2c94c03228604c720df0df9997534b8e576f781817d1a65646e06c56adc7e18f",
+    "confirmed_on": "2026-09-20",
+    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs)"
+  },
+  "source_headings": [
+    {
+      "id": "e046",
+      "level": 1,
+      "text": "二、所属行业分析",
+      "paragraph": 46
+    },
+    {
+      "id": "e047",
+      "level": 2,
+      "text": "（一）行业发展现状",
+      "paragraph": 47
+    },
+    {
+      "id": "e048",
+      "level": 3,
+      "text": "1.卫星通信终端是低空经济全域覆盖的核心基础设施",
+      "paragraph": 48
+    },
+    {
+      "id": "e051",
+      "level": 4,
+      "text": "（1）政策支持层面",
+      "paragraph": 51
+    },
+    {
+      "id": "e055",
+      "level": 4,
+      "text": "（2）市场需求层面",
+      "paragraph": 55
+    },
+    {
+      "id": "e060",
+      "level": 3,
+      "text": "2. 市场规模与增长趋势",
+      "paragraph": 60
+    },
+    {
+      "id": "e064",
+      "level": 4,
+      "text": "（1）高轨主导：全域覆盖、全时值守的保障功能",
+      "paragraph": 64
+    },
+    {
+      "id": "e067",
+      "level": 4,
+      "text": "（2）低轨卫星：低时延与小型化优势拓展低空应用增量场景",
+      "paragraph": 67
+    },
+    {
+      "id": "e074",
+      "level": 4,
+      "text": "（3）低轨星座规模化组网释放终端市场成长空间",
+      "paragraph": 74
+    },
+    {
+      "id": "e078",
+      "level": 2,
+      "text": "（二）产业链分析",
+      "paragraph": 78
+    },
+    {
+      "id": "e079",
+      "level": 3,
+      "text": "1.产业链概况",
+      "paragraph": 79
+    },
+    {
+      "id": "e082",
+      "level": 4,
+      "text": "（1）产业链上游",
+      "paragraph": 82
+    },
+    {
+      "id": "e090",
+      "level": 4,
+      "text": "（2）产业链中游",
+      "paragraph": 90
+    },
+    {
+      "id": "e096",
+      "level": 4,
+      "text": "（3）产业链下游",
+      "paragraph": 96
+    },
+    {
+      "id": "e103",
+      "level": 3,
+      "text": "2.相关洞察",
+      "paragraph": 103
+    }
+  ],
+  "nodes": [
+    {
+      "id": "e046",
+      "level": 1,
+      "text": "二、所属行业分析",
+      "sources": [
+        "e046"
+      ]
+    },
+    {
+      "id": "e047",
+      "level": 2,
+      "text": "（一）行业发展现状",
+      "sources": [
+        "e047"
+      ]
+    },
+    {
+      "id": "e048",
+      "level": 3,
+      "text": "1.{necessity_heading}",
+      "sources": [
+        "e048"
+      ],
+      "guidance": "用资料说明本赛道对下游场景的作用与必要性，不预设基础设施地位。"
+    },
+    {
+      "id": "e051",
+      "level": 4,
+      "text": "（1）政策支持层面",
+      "sources": [
+        "e051"
+      ]
+    },
+    {
+      "id": "e055",
+      "level": 4,
+      "text": "（2）市场需求层面",
+      "sources": [
+        "e055"
+      ]
+    },
+    {
+      "id": "e060",
+      "level": 3,
+      "text": "2.市场规模与增长趋势",
+      "sources": [
+        "e060"
+      ]
+    },
+    {
+      "id": "e064",
+      "level": 4,
+      "text": "（1）{existing_market_heading}",
+      "sources": [
+        "e064"
+      ],
+      "guidance": "存量市场、成熟路线或现有方案的功能与地位。"
+    },
+    {
+      "id": "e067",
+      "level": 4,
+      "text": "（2）{incremental_market_heading}",
+      "sources": [
+        "e067"
+      ],
+      "guidance": "增量场景与新技术路线的客户价值。"
+    },
+    {
+      "id": "e074",
+      "level": 4,
+      "text": "（3）{market_release_heading}",
+      "sources": [
+        "e074"
+      ],
+      "guidance": "市场空间释放所依赖的建设、成本或应用条件。"
+    },
+    {
+      "id": "e078",
+      "level": 2,
+      "text": "（二）产业链分析",
+      "sources": [
+        "e078"
+      ]
+    },
+    {
+      "id": "e079",
+      "level": 3,
+      "text": "1.产业链概况",
+      "sources": [
+        "e079"
+      ]
+    },
+    {
+      "id": "e082",
+      "level": 4,
+      "text": "（1）产业链上游",
+      "sources": [
+        "e082"
+      ]
+    },
+    {
+      "id": "e090",
+      "level": 4,
+      "text": "（2）产业链中游",
+      "sources": [
+        "e090"
+      ]
+    },
+    {
+      "id": "e096",
+      "level": 4,
+      "text": "（3）产业链下游",
+      "sources": [
+        "e096"
+      ]
+    },
+    {
+      "id": "e103",
+      "level": 3,
+      "text": "2.相关洞察",
+      "sources": [
+        "e103"
+      ]
+    }
+  ]
+}

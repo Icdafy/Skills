@@ -28,6 +28,9 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
 SHARED_GROUPS: tuple[dict, ...] = (
+    {'file': 'scripts/stage_template.py', 'canonical': 'gongsi-qingkuang', 'skills': ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang'), 'note': '阶段模板初始化与标题检查'},
+    {'file': 'references/stage-template-workflow.md', 'canonical': 'gongsi-qingkuang', 'skills': ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang'), 'note': '用户阶段选择及固定模板填空'},
+    {'file': 'references/investment-logic-review.md', 'canonical': 'gongsi-qingkuang', 'skills': ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang'), 'note': '固定标题下的投资逻辑复核'},
     {
         "file": "scripts/skill_portability.py",
         "canonical": "gongsi-qingkuang",

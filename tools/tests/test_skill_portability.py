@@ -36,6 +36,16 @@ class SkillPortabilityTests(unittest.TestCase):
                     cwd=directory, capture_output=True, encoding='utf-8')
                 self.assertEqual(check.returncode, 0, check.stdout + check.stderr)
                 self.assertIn('Package SHA-256 manifest matches', check.stdout)
+                for stage in ('early', 'mid-late'):
+                    output = directory / (stage + '.json')
+                    initialized = subprocess.run(
+                        [sys.executable, '-X', 'utf8', str(installed / 'scripts/stage_template.py'),
+                         'init', '--stage', stage, '--output', str(output)],
+                        cwd=directory, capture_output=True, encoding='utf-8')
+                    self.assertEqual(initialized.returncode, 0, initialized.stdout + initialized.stderr)
+                    content = json.loads(output.read_text('utf-8'))
+                    self.assertEqual(content['report_template']['skill'], skill)
+                    self.assertEqual(content['report_template']['stage'], stage)
                 # Tampering must fail, even when the changed file is only a reference.
                 reference = installed / 'references/investment-logic-review.md'
                 reference.write_text(reference.read_text(encoding='utf-8') + '\nchanged', encoding='utf-8')

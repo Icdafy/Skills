@@ -1,0 +1,585 @@
+{
+  "version": "2026-09-20.1",
+  "skill": "zhuying-yewu-fenxi",
+  "stage": "mid-late",
+  "label": "中后期（因诺科技）",
+  "source": {
+    "filename": "附件3：关于投资西安因诺航空科技有限公司的尽调报告_案例.pdf",
+    "sha256": "ef701c68c2510e7325c6784ce8948c8dc92c56cb0bd08d91616dd8abfe623bf5",
+    "confirmed_on": "2026-09-20",
+    "locator": "PDF physical page (1-based)"
+  },
+  "source_headings": [
+    {
+      "id": "m021",
+      "level": 1,
+      "text": "四、主营业务",
+      "page": 25
+    },
+    {
+      "id": "m022",
+      "level": 2,
+      "text": "（一）主营业务介绍",
+      "page": 25
+    },
+    {
+      "id": "m023",
+      "level": 3,
+      "text": "1.军工板块",
+      "page": 26
+    },
+    {
+      "id": "m024",
+      "level": 4,
+      "text": "（1）业务介绍",
+      "page": 26
+    },
+    {
+      "id": "m025",
+      "level": 4,
+      "text": "（2）主要客户及重要订单",
+      "page": 27
+    },
+    {
+      "id": "m026",
+      "level": 4,
+      "text": "（3）竞对分析",
+      "page": 27
+    },
+    {
+      "id": "m027",
+      "level": 4,
+      "text": "（4）竞争优势",
+      "page": 28
+    },
+    {
+      "id": "m028",
+      "level": 4,
+      "text": "（5）未来业务开展规划",
+      "page": 29
+    },
+    {
+      "id": "m029",
+      "level": 3,
+      "text": "2.能源板块",
+      "page": 29
+    },
+    {
+      "id": "m030",
+      "level": 4,
+      "text": "（1）业务介绍",
+      "page": 30
+    },
+    {
+      "id": "m031",
+      "level": 4,
+      "text": "（2）主要客户及重要订单",
+      "page": 30
+    },
+    {
+      "id": "m032",
+      "level": 4,
+      "text": "（3）竞对分析",
+      "page": 31
+    },
+    {
+      "id": "m033",
+      "level": 4,
+      "text": "（4）竞争优势",
+      "page": 31
+    },
+    {
+      "id": "m034",
+      "level": 4,
+      "text": "（5）未来业务开展规划",
+      "page": 32
+    },
+    {
+      "id": "m035",
+      "level": 4,
+      "text": "（6）能源板块其他业务",
+      "page": 32
+    },
+    {
+      "id": "m036",
+      "level": 3,
+      "text": "3.交通板块",
+      "page": 33
+    },
+    {
+      "id": "m037",
+      "level": 4,
+      "text": "（1）业务介绍",
+      "page": 33
+    },
+    {
+      "id": "m038",
+      "level": 4,
+      "text": "（2）主要客户及重要订单",
+      "page": 33
+    },
+    {
+      "id": "m039",
+      "level": 4,
+      "text": "（3）竞对分析",
+      "page": 34
+    },
+    {
+      "id": "m040",
+      "level": 4,
+      "text": "（4）产品优势",
+      "page": 34
+    },
+    {
+      "id": "m041",
+      "level": 4,
+      "text": "（5）未来业务开展规划",
+      "page": 34
+    },
+    {
+      "id": "m042",
+      "level": 2,
+      "text": "（二）主要产品介绍",
+      "page": 35
+    },
+    {
+      "id": "m043",
+      "level": 2,
+      "text": "（三）公司核心技术及技术优势",
+      "page": 40
+    },
+    {
+      "id": "m044",
+      "level": 3,
+      "text": "1.核心技术",
+      "page": 40
+    },
+    {
+      "id": "m045",
+      "level": 3,
+      "text": "2.技术优势",
+      "page": 41
+    },
+    {
+      "id": "m046",
+      "level": 4,
+      "text": "（1）感知层面",
+      "page": 41
+    },
+    {
+      "id": "m047",
+      "level": 4,
+      "text": "（2）决策层面",
+      "page": 42
+    },
+    {
+      "id": "m048",
+      "level": 4,
+      "text": "（3）处置",
+      "page": 42
+    },
+    {
+      "id": "m049",
+      "level": 2,
+      "text": "（四）业务经营模式",
+      "page": 42
+    },
+    {
+      "id": "m050",
+      "level": 3,
+      "text": "1.采购模式",
+      "page": 42
+    },
+    {
+      "id": "m051",
+      "level": 3,
+      "text": "2.生产模式",
+      "page": 42
+    },
+    {
+      "id": "m052",
+      "level": 4,
+      "text": "（1）无人机整机及模块生产情况",
+      "page": 42
+    },
+    {
+      "id": "m053",
+      "level": 4,
+      "text": "（2）无人机场生产情况",
+      "page": 43
+    },
+    {
+      "id": "m054",
+      "level": 3,
+      "text": "3.销售模式",
+      "page": 44
+    },
+    {
+      "id": "m055",
+      "level": 3,
+      "text": "4.研发模式",
+      "page": 45
+    },
+    {
+      "id": "m056",
+      "level": 4,
+      "text": "（1）研发情况",
+      "page": 45
+    },
+    {
+      "id": "m057",
+      "level": 4,
+      "text": "（2）研发系统设置和运行情况",
+      "page": 46
+    },
+    {
+      "id": "m058",
+      "level": 2,
+      "text": "（五）公司主要客户及主要供应商",
+      "page": 47
+    },
+    {
+      "id": "m059",
+      "level": 3,
+      "text": "1.前十大客户",
+      "page": 47
+    },
+    {
+      "id": "m060",
+      "level": 3,
+      "text": "2.前十大供应商为",
+      "page": 48
+    }
+  ],
+  "nodes": [
+    {
+      "id": "m021",
+      "level": 1,
+      "text": "四、主营业务",
+      "sources": [
+        "m021"
+      ]
+    },
+    {
+      "id": "m022",
+      "level": 2,
+      "text": "（一）主营业务介绍",
+      "sources": [
+        "m022"
+      ]
+    },
+    {
+      "id": "m023",
+      "level": 3,
+      "text": "1.{business_1}板块",
+      "sources": [
+        "m023"
+      ],
+      "guidance": "第一项实际业务板块名称。"
+    },
+    {
+      "id": "m024",
+      "level": 4,
+      "text": "（1）业务介绍",
+      "sources": [
+        "m024"
+      ]
+    },
+    {
+      "id": "m025",
+      "level": 4,
+      "text": "（2）主要客户及重要订单",
+      "sources": [
+        "m025"
+      ]
+    },
+    {
+      "id": "m026",
+      "level": 4,
+      "text": "（3）竞对分析",
+      "sources": [
+        "m026"
+      ]
+    },
+    {
+      "id": "m027",
+      "level": 4,
+      "text": "（4）竞争优势",
+      "sources": [
+        "m027"
+      ]
+    },
+    {
+      "id": "m028",
+      "level": 4,
+      "text": "（5）未来业务开展规划",
+      "sources": [
+        "m028"
+      ]
+    },
+    {
+      "id": "m029",
+      "level": 3,
+      "text": "2.{business_2}板块",
+      "sources": [
+        "m029"
+      ],
+      "guidance": "第二项实际业务板块名称。"
+    },
+    {
+      "id": "m030",
+      "level": 4,
+      "text": "（1）业务介绍",
+      "sources": [
+        "m030"
+      ]
+    },
+    {
+      "id": "m031",
+      "level": 4,
+      "text": "（2）主要客户及重要订单",
+      "sources": [
+        "m031"
+      ]
+    },
+    {
+      "id": "m032",
+      "level": 4,
+      "text": "（3）竞对分析",
+      "sources": [
+        "m032"
+      ]
+    },
+    {
+      "id": "m033",
+      "level": 4,
+      "text": "（4）竞争优势",
+      "sources": [
+        "m033"
+      ]
+    },
+    {
+      "id": "m034",
+      "level": 4,
+      "text": "（5）未来业务开展规划",
+      "sources": [
+        "m034"
+      ]
+    },
+    {
+      "id": "m035",
+      "level": 4,
+      "text": "（6）{business_2}板块其他业务",
+      "sources": [
+        "m035"
+      ],
+      "guidance": "同一第二业务板块的其他实际业务。"
+    },
+    {
+      "id": "m036",
+      "level": 3,
+      "text": "3.{business_3}板块",
+      "sources": [
+        "m036"
+      ],
+      "guidance": "第三项实际业务板块名称。"
+    },
+    {
+      "id": "m037",
+      "level": 4,
+      "text": "（1）业务介绍",
+      "sources": [
+        "m037"
+      ]
+    },
+    {
+      "id": "m038",
+      "level": 4,
+      "text": "（2）主要客户及重要订单",
+      "sources": [
+        "m038"
+      ]
+    },
+    {
+      "id": "m039",
+      "level": 4,
+      "text": "（3）竞对分析",
+      "sources": [
+        "m039"
+      ]
+    },
+    {
+      "id": "m040",
+      "level": 4,
+      "text": "（4）产品优势",
+      "sources": [
+        "m040"
+      ]
+    },
+    {
+      "id": "m041",
+      "level": 4,
+      "text": "（5）未来业务开展规划",
+      "sources": [
+        "m041"
+      ]
+    },
+    {
+      "id": "m042",
+      "level": 2,
+      "text": "（二）主要产品介绍",
+      "sources": [
+        "m042"
+      ]
+    },
+    {
+      "id": "m043",
+      "level": 2,
+      "text": "（三）公司核心技术及技术优势",
+      "sources": [
+        "m043"
+      ]
+    },
+    {
+      "id": "m044",
+      "level": 3,
+      "text": "1.核心技术",
+      "sources": [
+        "m044"
+      ]
+    },
+    {
+      "id": "m045",
+      "level": 3,
+      "text": "2.技术优势",
+      "sources": [
+        "m045"
+      ]
+    },
+    {
+      "id": "m046",
+      "level": 4,
+      "text": "（1）{technology_layer_1}",
+      "sources": [
+        "m046"
+      ],
+      "guidance": "第一层技术机制；原例为感知。"
+    },
+    {
+      "id": "m047",
+      "level": 4,
+      "text": "（2）{technology_layer_2}",
+      "sources": [
+        "m047"
+      ],
+      "guidance": "第二层技术机制；原例为决策。"
+    },
+    {
+      "id": "m048",
+      "level": 4,
+      "text": "（3）{technology_layer_3}",
+      "sources": [
+        "m048"
+      ],
+      "guidance": "第三层技术机制；原例为处置。"
+    },
+    {
+      "id": "m049",
+      "level": 2,
+      "text": "（四）业务经营模式",
+      "sources": [
+        "m049"
+      ]
+    },
+    {
+      "id": "m050",
+      "level": 3,
+      "text": "1.采购模式",
+      "sources": [
+        "m050"
+      ]
+    },
+    {
+      "id": "m051",
+      "level": 3,
+      "text": "2.生产模式",
+      "sources": [
+        "m051"
+      ]
+    },
+    {
+      "id": "m052",
+      "level": 4,
+      "text": "（1）{production_line_1}生产情况",
+      "sources": [
+        "m052"
+      ],
+      "guidance": "第一类实际产品或模块。"
+    },
+    {
+      "id": "m053",
+      "level": 4,
+      "text": "（2）{production_line_2}生产情况",
+      "sources": [
+        "m053"
+      ],
+      "guidance": "第二类实际产品或模块。"
+    },
+    {
+      "id": "m054",
+      "level": 3,
+      "text": "3.销售模式",
+      "sources": [
+        "m054"
+      ]
+    },
+    {
+      "id": "m055",
+      "level": 3,
+      "text": "4.研发模式",
+      "sources": [
+        "m055"
+      ]
+    },
+    {
+      "id": "m056",
+      "level": 4,
+      "text": "（1）研发情况",
+      "sources": [
+        "m056"
+      ]
+    },
+    {
+      "id": "m057",
+      "level": 4,
+      "text": "（2）研发系统设置和运行情况",
+      "sources": [
+        "m057"
+      ]
+    },
+    {
+      "id": "m058",
+      "level": 2,
+      "text": "（五）公司主要客户及主要供应商",
+      "sources": [
+        "m058"
+      ]
+    },
+    {
+      "id": "m059",
+      "level": 3,
+      "text": "1.前十大客户",
+      "sources": [
+        "m059"
+      ]
+    },
+    {
+      "id": "m060",
+      "level": 3,
+      "text": "2.前十大供应商为",
+      "sources": [
+        "m060"
+      ]
+    }
+  ]
+}

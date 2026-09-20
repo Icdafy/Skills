@@ -1,0 +1,184 @@
+{
+  "version": "2026-09-20.1",
+  "skill": "hangye-fenxi",
+  "stage": "mid-late",
+  "label": "中后期（因诺科技）",
+  "source": {
+    "filename": "附件3：关于投资西安因诺航空科技有限公司的尽调报告_案例.pdf",
+    "sha256": "ef701c68c2510e7325c6784ce8948c8dc92c56cb0bd08d91616dd8abfe623bf5",
+    "confirmed_on": "2026-09-20",
+    "locator": "PDF physical page (1-based)"
+  },
+  "source_headings": [
+    {
+      "id": "m009",
+      "level": 1,
+      "text": "三、所属行业分析",
+      "page": 10
+    },
+    {
+      "id": "m010",
+      "level": 2,
+      "text": "（一）行业发展现状",
+      "page": 10
+    },
+    {
+      "id": "m011",
+      "level": 3,
+      "text": "1.市场规模与增长趋势",
+      "page": 10
+    },
+    {
+      "id": "m012",
+      "level": 3,
+      "text": "2.核心增长驱动力",
+      "page": 11
+    },
+    {
+      "id": "m013",
+      "level": 4,
+      "text": "（1）政策驱动",
+      "page": 12
+    },
+    {
+      "id": "m014",
+      "level": 4,
+      "text": "（2）市场驱动",
+      "page": 17
+    },
+    {
+      "id": "m015",
+      "level": 2,
+      "text": "（二）产业链分析",
+      "page": 20
+    },
+    {
+      "id": "m016",
+      "level": 3,
+      "text": "1.产业链概况",
+      "page": 20
+    },
+    {
+      "id": "m017",
+      "level": 4,
+      "text": "（1）产业链上游",
+      "page": 20
+    },
+    {
+      "id": "m018",
+      "level": 4,
+      "text": "（2）产业链中游",
+      "page": 21
+    },
+    {
+      "id": "m019",
+      "level": 4,
+      "text": "（3）产业链下游",
+      "page": 22
+    },
+    {
+      "id": "m020",
+      "level": 3,
+      "text": "2.产业链演进",
+      "page": 24
+    }
+  ],
+  "nodes": [
+    {
+      "id": "m009",
+      "level": 1,
+      "text": "三、所属行业分析",
+      "sources": [
+        "m009"
+      ]
+    },
+    {
+      "id": "m010",
+      "level": 2,
+      "text": "（一）行业发展现状",
+      "sources": [
+        "m010"
+      ]
+    },
+    {
+      "id": "m011",
+      "level": 3,
+      "text": "1.市场规模与增长趋势",
+      "sources": [
+        "m011"
+      ]
+    },
+    {
+      "id": "m012",
+      "level": 3,
+      "text": "2.核心增长驱动力",
+      "sources": [
+        "m012"
+      ]
+    },
+    {
+      "id": "m013",
+      "level": 4,
+      "text": "（1）政策驱动",
+      "sources": [
+        "m013"
+      ]
+    },
+    {
+      "id": "m014",
+      "level": 4,
+      "text": "（2）市场驱动",
+      "sources": [
+        "m014"
+      ]
+    },
+    {
+      "id": "m015",
+      "level": 2,
+      "text": "（二）产业链分析",
+      "sources": [
+        "m015"
+      ]
+    },
+    {
+      "id": "m016",
+      "level": 3,
+      "text": "1.产业链概况",
+      "sources": [
+        "m016"
+      ]
+    },
+    {
+      "id": "m017",
+      "level": 4,
+      "text": "（1）产业链上游",
+      "sources": [
+        "m017"
+      ]
+    },
+    {
+      "id": "m018",
+      "level": 4,
+      "text": "（2）产业链中游",
+      "sources": [
+        "m018"
+      ]
+    },
+    {
+      "id": "m019",
+      "level": 4,
+      "text": "（3）产业链下游",
+      "sources": [
+        "m019"
+      ]
+    },
+    {
+      "id": "m020",
+      "level": 3,
+      "text": "2.产业链演进",
+      "sources": [
+        "m020"
+      ]
+    }
+  ]
+}
