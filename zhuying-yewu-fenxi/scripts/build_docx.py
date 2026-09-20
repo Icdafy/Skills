@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文排版 v2）
+build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文排版 v3）
 
 本脚本是 hangye-fenxi / zhuying-yewu-fenxi / gongsi-qingkuang 三个技能共用的
 排版渲染器。技能自包含、可独立分发，故不能跨技能 import，三份必须各自留物理
@@ -16,7 +16,7 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
 - 正文（仿宋_GB2312 三号 16pt、两端对齐、首行缩进 2 字符、固定行距 28 磅）
 - 四级编号标题（一、/（一）/ 1. /（1））均首行缩进 2 字符、与段落平齐：
   一级黑体三号不加粗；二级楷体_GB2312 三号加粗；三级仿宋_GB2312 三号加粗；
-  四级仿宋_GB2312 三号不加粗（集团规范：四级标题及正文不加粗，三技能统一）
+  四级仿宋_GB2312 三号加粗（编号适用标题字体，其余括注适用括注规则）
 - 核心结论/段首论点句：整段加粗（type=p, bold=true）
 - 表格（统一表格规范）：
     * 全表统一仿宋_GB2312、五号 10.5pt
@@ -29,7 +29,8 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
 - 表注（type=tnote）："单位：万元""注：……"等，仿宋_GB2312 五号、不缩进，
   align 可选 left/right/center（默认 left；"单位"行惯例放表格上方右对齐）
 - 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
-- 所有圆括号及其中内容（含数字、西文、表格内文字）统一三号楷体_GB2312。
+- 表外括注中文三号楷体_GB2312，表内括注中文五号楷体_GB2312。
+- 所有中文格式完成后，最后统一全文西文字体为 Times New Roman，保留字号与中文字体。
 - 字体嵌入：保存后自动把随附的仿宋_GB2312、楷体_GB2312 嵌入 DOCX，使文件在未
   安装这两款字体的机器上仍忠实呈现（方正小标宋许可禁止嵌入，自动跳过）；
   嵌入经反混淆校验，失败则保留未嵌入版本，绝不影响正常生成
@@ -72,7 +73,7 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
   {"type":"h1","text":"二、所属行业分析"}          # 一级标题（自带"二、"前缀）
   {"type":"h2","text":"（一）行业发展现状"}          # 二级
   {"type":"h3","text":"1.市场规模与增长趋势"}        # 三级
-  {"type":"h4","text":"（1）政策驱动"}              # 四级（不加粗）
+  {"type":"h4","text":"（1）政策驱动"}              # 四级（加粗）
   {"type":"p","text":"正文段落……"}                 # 普通段落
   {"type":"p","text":"……","bold":true}            # 加粗段落（核心结论/段首论点句）
   {"type":"bullet","items":["要点1","要点2"]}       # 项目符号列表
@@ -88,7 +89,7 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
 标题层级与编号：脚本不自动编号，"二、""（一）"等前缀由你写在 text 里。
 """
 
-import sys, json
+import sys, json, re
 from pathlib import Path
 
 from docx import Document
@@ -113,7 +114,7 @@ BODY_SZ = 16               # 三号
 H1_SZ = 16                 # 一级标题黑体三号，不加粗
 H2_SZ = 16                 # 二级标题楷体_GB2312 三号，加粗
 H3_SZ = 16                 # 三级标题仿宋_GB2312 三号，加粗
-H4_SZ = 16                 # 四级标题仿宋_GB2312 三号，不加粗（三技能统一）
+H4_SZ = 16                 # 四级标题仿宋_GB2312 三号，加粗（三技能统一）
 COVER_TITLE_SZ = 22        # 二号方正小标宋简体
 COVER_ORG_SZ = 16          # 落款/机构三号仿宋_GB2312
 FOOTER_SZ = 14             # 四号宋体
@@ -145,14 +146,18 @@ def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY
 
 
 def _add_text_runs(paragraph, text, size=BODY_SZ, bold=False, color=None,
-                   font_name=FONT_BODY):
+                   font_name=FONT_BODY, in_table=False, heading4=False):
     text = str(text)
     cursor = 0
+    # 四级标题编号属于标题，其余括注仍按括注规则处理。
+    prefix = re.match(r'^\s*（\d+）', text) if heading4 else None
     for start, end in parenthesized_spans(text):
         if cursor < start:
             _set_run_font(paragraph.add_run(text[cursor:start]), size, bold, color, font_name)
-        _set_run_font(paragraph.add_run(text[start:end]), BODY_SZ, bold, color,
-                      FONT_H2, western_font=FONT_H2)
+        is_heading_number = prefix is not None and end == prefix.end()
+        _set_run_font(paragraph.add_run(text[start:end]),
+                      size if is_heading_number else (TABLE_SZ if in_table else BODY_SZ),
+                      bold, color, FONT_BODY if is_heading_number else FONT_H2)
         cursor = end
     if cursor < len(text):
         _set_run_font(paragraph.add_run(text[cursor:]), size, bold, color, font_name)
@@ -173,7 +178,8 @@ def _add_para(doc, text, size=BODY_SZ, bold=False, align=None, color=None,
             pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
         else:
             pf.line_spacing = line
-    _add_text_runs(p, text, size=size, bold=bold, color=color, font_name=font_name)
+    _add_text_runs(p, text, size=size, bold=bold, color=color, font_name=font_name,
+                   heading4=outline == 3)
     if outline is not None:
         _set_outline_level(p, outline)
     return p
@@ -250,7 +256,7 @@ def _fill_cell(cell, text, bold=False, header=False, size=TABLE_SZ):
     p.paragraph_format.line_spacing = Pt(18)
     p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
     _add_text_runs(p, str(text) if text is not None else "",
-                   size=size, bold=bold or header, font_name=FONT_BODY)
+                   size=TABLE_SZ, bold=bold or header, font_name=FONT_BODY, in_table=True)
     _style_cell(cell, fill=HEADER_FILL if header else None)
 
 
@@ -390,6 +396,30 @@ def _fix_zoom(doc):
         pass
 
 
+def _finalize_western_fonts(doc):
+    """最后统一西文字体，保留中文字体、字号、加粗及域结构。
+
+    覆盖正文、嵌套表格、页眉页脚和样式；清除西文主题覆盖，避免打开 Word
+    或刷新域时又恢复主题字体。所有字符（含数字、%和短横线）的西文字体槽
+    均为 Times New Roman，eastAsia 不变。
+    """
+    roots = [doc.element, doc.styles.element]
+    for part in doc.part.package.parts:
+        if part.partname.startswith(('/word/header', '/word/footer')):
+            roots.append(part.element)
+    for root in roots:
+        # 空 run 和域 run 也设置，避免继承了不同的西文字体。
+        for run in root.iter(qn('w:r')):
+            rpr = run.get_or_add_rPr()
+            if rpr.find(qn('w:rFonts')) is None:
+                rpr.insert(0, OxmlElement('w:rFonts'))
+        for fonts in root.iter(qn('w:rFonts')):
+            for slot in ('ascii', 'hAnsi', 'cs'):
+                fonts.set(qn('w:' + slot), FONT_EN)
+            for slot in ('asciiTheme', 'hAnsiTheme', 'cstheme', 'csTheme'):
+                fonts.attrib.pop(qn('w:' + slot), None)
+
+
 def build(content, out_path):
     doc = Document()
     _fix_zoom(doc)
@@ -469,8 +499,8 @@ def build(content, out_path):
                           font_name=FONT_BODY)
             _indent_first_line(p)
         elif t == "h4":
-            # 四级标题不加粗（集团规范：四级标题及正文不加粗，三技能统一）
-            p = _add_para(doc, blk["text"], size=H4_SZ, bold=False,
+            # 四级标题三号仿宋加粗，编号内数字在最终字体遍历中统一为西文字体。
+            p = _add_para(doc, blk["text"], size=H4_SZ, bold=True,
                           space_before=2, space_after=2, outline=3,
                           align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
                           font_name=FONT_BODY)
@@ -516,6 +546,7 @@ def build(content, out_path):
                       line=BODY_LINE_PT, font_name=FONT_BODY)
         _indent_first_line(p)
 
+    _finalize_western_fonts(doc)
     doc.save(out_path)
     # 嵌入随附的可嵌入字体，使交付件在未装 仿宋_GB2312/楷体_GB2312 的机器上
     # 不掉字；校验不过时保留未嵌入版本，不影响生成结果。

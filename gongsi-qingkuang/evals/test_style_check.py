@@ -20,7 +20,7 @@ class StyleCheckBehavior(unittest.TestCase):
 
     def test_internal_report_and_real_model_are_allowed(self):
         result = self.scan('公司拟融资1200万元，投前估值8800万元。\n'
-                           '后续我们将核查相关协议。\n'
+                           '相关协议已约定知识产权归公司所有。\n'
                            '设备型号为V10.0，按GB/T 19001—2016执行。\n'
                            '供应商核查结果已归档，应收账款核查结果亦已归档。')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -32,6 +32,12 @@ class StyleCheckBehavior(unittest.TestCase):
                 result = self.scan(text)
                 self.assertEqual(result.returncode, 1, result.stdout)
                 self.assertIn('外部指导口吻', result.stdout)
+
+    def test_deferred_analysis_is_flagged(self):
+        for text in ['需要后续进行判断。', '后续我们将核查相关协议。',
+                     '优势的持续性有待验证。', '仍需进一步分析。']:
+            with self.subTest(text=text):
+                self.assertEqual(self.scan(text).returncode, 1)
 
     def test_json_tables_and_notes_are_scanned(self):
         data = {'blocks': [{'type': 'table', 'header': ['材料所列轮次'], 'rows': [['回复V10.0']]},

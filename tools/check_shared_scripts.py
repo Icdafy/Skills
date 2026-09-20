@@ -29,6 +29,24 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 
 SHARED_GROUPS: tuple[dict, ...] = (
     {
+        "file": "scripts/skill_portability.py",
+        "canonical": "gongsi-qingkuang",
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
+        "note": "跨 Agent 完整性检查、打包与目录安装",
+    },
+    {
+        "file": "references/agent-compatibility.md",
+        "canonical": "gongsi-qingkuang",
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
+        "note": "跨 Agent 安装与真实调用验收",
+    },
+    {
+        "file": "requirements.txt",
+        "canonical": "gongsi-qingkuang",
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
+        "note": "Word 运行依赖",
+    },
+    {
         "file": "scripts/docx_format_helpers.py",
         "canonical": "gongsi-qingkuang",
         "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi",

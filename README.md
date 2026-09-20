@@ -36,3 +36,7 @@
 ---
 
 各技能文件夹内含 `SKILL.md`（触发与执行逻辑）及 `references/` 等配套资源；详细说明见各文件夹内 README（如有）。
+
+## 立项报告三技能跨 Agent 安装
+
+[完整ZIP下载与安装说明](distributions/investment-report-skills/README.md)覆盖 WorkBuddy、Kimi、Claude桌面版、Qoder、Trae 等客户端，并区分桌面、CLI及地区版本。包内提供资源完整性检查、Word冒烟测试及安装后调用验收。维护者更新技能后运行 `python tools/package_investment_skills.py`，提交前运行同命令的 `--check`。

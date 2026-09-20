@@ -175,7 +175,7 @@ python scripts/ensure_fonts.py --check
 | 字体 | 一级章标题黑体，二级标题楷体_GB2312，正文及三级以下标题仿宋_GB2312 |
 | 页码 | 页脚"-1-"格式，宋体四号，奇偶页外侧 |
 | 表格 | 全表统一仿宋_GB2312、五号字（10.5pt），仅首行表头加粗并加浅蓝底（#D9E2F3），表头行跨页重复，所有单元格内容水平和垂直居中，宽度按窗口自动调整（autofit），列宽自适应不写死磅值 |
-| 加粗 | 二级/三级标题、核心结论、段首论点句、启示总结句加粗；四级标题、证据句与表格正文不加粗 |
+| 加粗 | 二级/三级/四级标题、核心结论、段首论点句、启示总结句加粗；证据句与表格正文默认不加粗 |
 
 ---
 
@@ -243,3 +243,9 @@ Use $hangye-fenxi 帮我把这份行业分析改写成范文风格，并生成 .
 ---
 
 *私有技能 · 仅供本人使用。自带商用/系统字体请勿再分发。*
+
+## 跨 Agent 安装与调用
+
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/hangye-fenxi.zip)。WorkBuddy、Kimi、Claude桌面版、Qoder及Trae的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
+
+本技能名为 `hangye-fenxi`。保留完整文件夹，启用后新建会话点名调用；可运行 `python scripts/skill_portability.py check --smoke` 检查资源及Word生成。技能发现与模型实际调用须在目标客户端按指引验收，不能仅凭复制文件认定成功。

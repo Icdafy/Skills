@@ -95,3 +95,9 @@ python scripts/extract_docx.py "某公司-尽调资料.docx" out.txt
 - 默认骨架回归范文四节制；合规节与综合判断节改为增配节，风险线索全部汇入随稿待核查清单。
 - 基于范文逐字复核补齐**文体指纹**：称谓两分法、转折只用"但"、引导句冒号收尾、客户供应商节纯表格、财务分析段以简称开头等。
 - 修复 `reconcile_check.py` 合计行识别缺陷（合计标记在序号列时曾被当明细重复求和），并支持"前10大小计/总收入"两级合计与"收入额/价税合计"表头；已用两篇范文真实数据完成正反向冒烟测试。
+
+## 跨 Agent 安装与调用
+
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip)。WorkBuddy、Kimi、Claude桌面版、Qoder及Trae的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
+
+本技能名为 `gongsi-qingkuang`。保留完整文件夹，启用后新建会话点名调用；可运行 `python scripts/skill_portability.py check --smoke` 检查资源及Word生成。技能发现与模型实际调用须在目标客户端按指引验收，不能仅凭复制文件认定成功。
