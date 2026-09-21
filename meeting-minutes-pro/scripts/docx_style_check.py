@@ -40,6 +40,8 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     PAGE_NUMBER_SIZE,
     PAGE_NUMBER_SUFFIX,
     SUBTITLE_SIZE,
+    TABLE_FONT,
+    TABLE_SIZE,
     TITLE_FONT,
     TITLE_SIZE,
     WESTERN_SEGMENT,
@@ -236,42 +238,58 @@ def check_docx_style(path: Path) -> list[str]:
         if (paragraph.paragraph_format.line_spacing_rule != WD_LINE_SPACING.EXACTLY
                 or paragraph.paragraph_format.line_spacing != Pt(spacing)):
             problems.append(f"「{preview}」行距应为固定值 {spacing} 磅")
-        spans = parenthesized_spans(paragraph.text)
-        offset = 0
-        for run in paragraph.runs:
-            start, end = offset, offset + len(run.text)
-            offset = end
-            if not run.text.strip():
-                continue
-            inside = any(a <= start and end <= b for a, b in spans)
-            if not inside and any(a < end and start < b for a, b in spans):
-                problems.append(f"「{preview}」括号片段与外围文字应拆分设置字体")
-            run_ea = KAI_FONT if inside else ea_font
-            run_size = BODY_SIZE if inside else size
-            want_font = KAI_FONT if inside else (NUMBER_FONT if _is_western(run.text) else ea_font)
-            if run.font.name != want_font:
-                problems.append(
-                    f"「{preview}」中「{run.text[:12]}」字体为 {run.font.name}，应为 {want_font}"
-                )
-            if (inside or not _is_western(run.text)) and _east_asia(run) != run_ea:
-                problems.append(
-                    f"「{preview}」中「{run.text[:12]}」东亚字体为 {_east_asia(run)}，应为 {run_ea}"
-                )
-            if inside:
-                fonts = run._element.rPr.rFonts if run._element.rPr is not None else None
-                for attribute in ('ascii', 'hAnsi', 'cs'):
-                    if fonts is None or fonts.get(qn('w:' + attribute)) != KAI_FONT:
-                        problems.append(f"「{preview}」括号内容的 {attribute} 字体应为 {KAI_FONT}")
-            if run.font.size != Pt(run_size):
-                got = None if run.font.size is None else round(run.font.size.pt, 1)
-                problems.append(
-                    f"「{preview}」中「{run.text[:12]}」字号为 {got} 磅，应为 {run_size} 磅"
-                )
-            if bool(run.bold) != bold:
-                problems.append(
-                    f"「{preview}」中「{run.text[:12]}」加粗为 {bool(run.bold)}，应为 {bold}"
-                )
+        problems.extend(_run_problems(paragraph, preview, ea_font, size, bold, BODY_SIZE))
+    for table in document.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    if not paragraph.text.strip():
+                        continue
+                    preview = "表格：" + paragraph.text.strip()[:16]
+                    problems.extend(_run_problems(
+                        paragraph, preview, TABLE_FONT, TABLE_SIZE, False, TABLE_SIZE))
     problems.extend(_page_frame_problems(document))
+    return problems
+
+
+def _run_problems(paragraph, preview: str, ea_font: str, size: float, bold: bool,
+                  paren_size: float) -> list[str]:
+    """Every run: Western slots Times New Roman; East Asian face per role
+    (楷体_GB2312 inside parentheses); size and weight per role."""
+    problems: list[str] = []
+    spans = parenthesized_spans(paragraph.text)
+    offset = 0
+    for run in paragraph.runs:
+        start, end = offset, offset + len(run.text)
+        offset = end
+        if not run.text.strip():
+            continue
+        inside = any(a <= start and end <= b for a, b in spans)
+        if not inside and any(a < end and start < b for a, b in spans):
+            problems.append(f"「{preview}」括号片段与外围文字应拆分设置字体")
+        run_ea = KAI_FONT if inside else ea_font
+        run_size = paren_size if inside else size
+        fonts = run._element.rPr.rFonts if run._element.rPr is not None else None
+        for attribute in ("ascii", "hAnsi", "cs"):
+            actual = None if fonts is None else fonts.get(qn("w:" + attribute))
+            if actual != NUMBER_FONT:
+                problems.append(
+                    f"「{preview}」中「{run.text[:12]}」西文字体（{attribute}）为 {actual}，"
+                    f"应为 {NUMBER_FONT}"
+                )
+        if _east_asia(run) != run_ea:
+            problems.append(
+                f"「{preview}」中「{run.text[:12]}」东亚字体为 {_east_asia(run)}，应为 {run_ea}"
+            )
+        if run.font.size != Pt(run_size):
+            got = None if run.font.size is None else round(run.font.size.pt, 1)
+            problems.append(
+                f"「{preview}」中「{run.text[:12]}」字号为 {got} 磅，应为 {run_size} 磅"
+            )
+        if bool(run.bold) != bold:
+            problems.append(
+                f"「{preview}」中「{run.text[:12]}」加粗为 {bool(run.bold)}，应为 {bold}"
+            )
     return problems
 
 

@@ -37,8 +37,16 @@ def _east_asia(run):
     return rpr.rFonts.get(qn("w:eastAsia"))
 
 
+def _effective_font(run):
+    """The face that actually draws the run: Times New Roman for a western
+    segment (ascii slot), otherwise the East Asian face."""
+    if CM.WESTERN_SEGMENT.fullmatch(run.text):
+        return run.font.name
+    return _east_asia(run)
+
+
 def _runs(paragraph):
-    return [(r.text, r.font.name, _east_asia(r), r.bold)
+    return [(r.text, _effective_font(r), _east_asia(r), r.bold)
             for r in paragraph.runs if r.text]
 
 
@@ -90,12 +98,23 @@ class RenderRoleTests(unittest.TestCase):
         self.assertEqual(runs[1][1], "仿宋_GB2312")
         self.assertTrue(self.last().paragraph_format.keep_together)
 
-    def test_fourth_level_fangsong_not_bold(self) -> None:
+    def test_fourth_level_fangsong_bold(self) -> None:
         CM.add_content_paragraph(self.doc, "　　（1）测试环境")
-        names = {name for _, name, _, _ in _runs(self.last())}
-        self.assertIn("仿宋_GB2312", names)
-        self.assertNotEqual(_runs(self.last())[-1][3], True)
+        runs = _runs(self.last())
+        self.assertEqual(runs[0][:3], ("（1）", "楷体_GB2312", "楷体_GB2312"))
+        self.assertEqual(runs[-1][:3], ("测试环境", "仿宋_GB2312", "仿宋_GB2312"))
+        self.assertTrue(all(run[3] for run in runs))
         self.assertAlmostEqual(self.last().paragraph_format.line_spacing, Pt(30))
+
+    def test_every_body_run_uses_times_new_roman_western_slots(self) -> None:
+        CM.add_content_paragraph(self.doc, "　　占比约35%（2025年口径，含A类）。")
+        for run in self.last().runs:
+            fonts = run._element.rPr.rFonts
+            for slot in ("ascii", "hAnsi", "cs"):
+                self.assertEqual(fonts.get(qn(f"w:{slot}")), "Times New Roman")
+        paren = next(r for r in self.last().runs if r.text.startswith("（"))
+        self.assertEqual(_east_asia(paren), "楷体_GB2312")
+        self.assertEqual(paren.font.size.pt, 16)
 
     def test_body_uses_exact_28_point_spacing(self) -> None:
         CM.add_content_paragraph(self.doc, "　　正文一段。")
@@ -127,6 +146,35 @@ class WesternRunTests(unittest.TestCase):
         self.assertEqual(runs[0][:2], ("3.5", "Times New Roman"))
         self.assertEqual(runs[1][1], "仿宋_GB2312")
         self.assertNotEqual(runs[1][3], True)
+
+
+@unittest.skipUnless(HAS_DOCX, "python-docx not installed")
+class TableTests(unittest.TestCase):
+    def test_pipe_rows_render_as_wuhao_fangsong_table(self) -> None:
+        doc = Document()
+        lines = [
+            "项目会议纪要",
+            "　　一、财务情况",
+            "　　|指标|金额（万元）|",
+            "　　|---|---|",
+            "　　|营业收入（2025年）|1,234.5|",
+            "　　正文继续。",
+        ]
+        CM.add_minutes_content(doc, lines, "项目会议纪要")
+        CM.apply_western_font_pass(doc)
+        self.assertEqual(len(doc.tables), 1)
+        table = doc.tables[0]
+        self.assertEqual([[c.text for c in row.cells] for row in table.rows],
+                         [["指标", "金额（万元）"], ["营业收入（2025年）", "1,234.5"]])
+        for row in table.rows:
+            for cell in row.cells:
+                for run in cell.paragraphs[0].runs:
+                    self.assertEqual(run.font.size.pt, 10.5)
+                    self.assertFalse(run.bold)
+                    self.assertEqual(run.font.name, "Times New Roman")
+                    want = "楷体_GB2312" if run.text.startswith("（") else "仿宋_GB2312"
+                    self.assertEqual(_east_asia(run), want)
+        self.assertEqual(doc.paragraphs[-1].text, "正文继续。")
 
 
 @unittest.skipUnless(HAS_DOCX, "python-docx not installed")

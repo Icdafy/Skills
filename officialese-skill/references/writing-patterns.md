@@ -17,6 +17,12 @@ When drafting in chat, do not explain this detection unless asked. Produce the o
 
 ## General Style
 
+Hard rules (apply to every output):
+
+- Use formal written officialese. Keep the overall tone neutral: neither overly conservative (piling up hedges and qualifiers) nor aggressive (absolute claims, slogans, exaggeration).
+- Do not end paragraphs with follow-up-judgment tails, and do not use them anywhere in the text: `需要后续进行判断`、`有待后续判断`、`有待进一步研判`、`需进一步评估`、`仍需持续观察`、`后续视情况而定`、`具体情况有待确定` and similar sentences. When a paragraph has made its point, end it.
+- State necessity, purpose and conclusions directly and affirmatively: write `开展……是……的需要`、`……有利于……`、`需要……`. Do not use negation-contrast constructions: `不是……而是……`、`并非……而是……`、`不在于……而在于……`、`……而非……`、`……而不是……`、`与其……不如……`.
+
 - Start with basis or purpose: `为进一步...`, `根据...要求`, `结合...实际`.
 - State the action clearly: `现将有关事项通知如下`, `现就有关情况报告如下`, `特请示如下`.
 - Use concrete responsibilities: `由...牵头`, `各部门按职责分工落实`, `于...前报送`.
@@ -207,6 +213,9 @@ Useful sentence frames:
 
 ## Polishing Checklist
 
+- Delete any `需要后续进行判断`、`有待进一步研判`、`需进一步评估`-type tail sentence.
+- Rewrite every `不是……而是……`-type contrast as a direct affirmative statement.
+- Check the tone is neutral: remove both excessive hedging and overstatement.
 - Replace vague subjects with accountable entities.
 - Convert long oral sentences into numbered requirements.
 - Remove duplicated adjectives and slogans.

@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from format_spec import INDENT, level_number  # noqa: E402  (needs path shim)
+from format_spec import INDENT, is_table_row, level_number  # noqa: E402  (needs path shim)
 from docx_format_helpers import ATTACHMENT_PREFIX, attachment_lines  # noqa: E402
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
@@ -102,6 +102,13 @@ CONTRAST_PATTERNS = [
     re.compile("不" + "仅" + CLAUSE + "还"),
     re.compile("不" + "但" + CLAUSE + "而" + "且"),
     re.compile("不" + "但" + CLAUSE + "还"),
+    # 直接陈述“是什么”，不写“不是……，是……”“不在于……而在于……”“……而非……”
+    # “……而不是……”“与其……不如……”等否定对照句式。
+    re.compile("不" + "是" + r"[^\r\n。！？!?，,；;]*?[，,；;]\s*" + "是"),
+    re.compile("不" + "在于" + CLAUSE + "而" + "在于"),
+    re.compile("与" + "其" + CLAUSE + "不" + "如"),
+    re.compile("而" + "非" + "(?!常)"),
+    re.compile("而" + "不" + "是"),
 ]
 
 # 硬性禁用：记录人员附注式的“待核实/待核验/待落实”、以及主观判断和指导性
@@ -129,6 +136,19 @@ PENDING_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     (
         re.compile(r"建议(?:下一步|后续|跟进|补充|进一步)|下一步建议|值得注意的是"),
         "“下一步建议”类指导性表述",
+    ),
+    # 段落末尾不得追加“需要后续进行判断”“有待进一步研判”“仍需持续观察”一类
+    # 记录人员自加的后续判断尾句，全文亦不得出现。
+    (
+        re.compile(
+            r"(?:需要?|有待|仍需|尚需|还需|须)(?:后续|进一步|持续|再)?(?:进行)?"
+            r"(?:判断|研判|评估|观察|论证)"
+        ),
+        "“需要后续进行判断”类后续判断尾句",
+    ),
+    (
+        re.compile(r"后续(?:再)?(?:进行)?(?:判断|研判|评估|观察)|视(?:后续)?情况(?:而定|再定)|持续观察"),
+        "“后续再判断/视情况而定”类后续判断尾句",
     ),
 ]
 
@@ -207,9 +227,12 @@ def validate(
     headings: list[tuple[int, int, str]] = []
     body_lines: list[tuple[int, str]] = []
     for line_number, line in visible[1:]:
+        content = line.removeprefix(INDENT).strip()
+        if is_table_row(content):
+            # 表格行按五号仿宋单独排版，不参与缩进、层级和问答结构校验。
+            continue
         if not line.startswith(INDENT):
             errors.append(f"第 {line_number} 行未以两个全角空格起首。")
-        content = line.removeprefix(INDENT).strip()
         level = level_number(content)
         if level is not None:
             headings.append((line_number, level, content))

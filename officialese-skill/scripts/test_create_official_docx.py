@@ -18,6 +18,14 @@ class OfficialFormatTests(unittest.TestCase):
             self.assertEqual(fonts.get(qn('w:' + script)), font)
         self.assertEqual(run.font.size.pt, size)
 
+    def assert_mixed_font(self, run, east_asia, size):
+        """中文用 ``east_asia``，数字、字母、% 等用 Times New Roman。"""
+        fonts = run._r.rPr.rFonts
+        self.assertEqual(fonts.get(qn('w:eastAsia')), east_asia)
+        for script in ('ascii', 'hAnsi', 'cs'):
+            self.assertEqual(fonts.get(qn('w:' + script)), generator.WESTERN_FONT)
+        self.assertEqual(run.font.size.pt, size)
+
     def test_parentheses_preserve_text_and_surrounding_format(self):
         doc = Document()
         p = doc.add_paragraph()
@@ -26,7 +34,7 @@ class OfficialFormatTests(unittest.TestCase):
         self.assertEqual(p.text, text)
         for run in p.runs:
             if run.text.startswith(('（外层', '(ABC')):
-                self.assert_font(run, generator.KAITI_FONT, 16)
+                self.assert_mixed_font(run, generator.KAITI_FONT, 16)
             else:
                 self.assertEqual(run._r.rPr.rFonts.get(qn('w:eastAsia')),
                                  generator.BODY_FONT)
@@ -69,7 +77,9 @@ class OfficialFormatTests(unittest.TestCase):
                 'subtitle': '业务部门',
                 'recipient': '各部门（含子公司）：',
                 'body': ['正文（说明ABC 123）结束'],
-                'sections': [{'heading': '（1）工作要求', 'level': 4}],
+                'sections': [{'heading': '（1）工作要求', 'level': 4,
+                              'paragraphs': [{'table': [['项目', '占比（%）'],
+                                                        ['研发投入（2026年）', '12.5%']]}]}],
                 'attachments': ['附件1.《工作计划（试行）》；'],
                 'issuer': '某某公司（集团）',
                 'date': '2026年9月14日',
@@ -86,8 +96,25 @@ class OfficialFormatTests(unittest.TestCase):
                 for run in paragraph.runs:
                     if run.text.startswith(('（', '(')):
                         parenthetical_runs.append(run.text)
-                        self.assert_font(run, generator.KAITI_FONT, 16)
+                        self.assert_mixed_font(run, generator.KAITI_FONT, 16)
+                    else:
+                        self.assertEqual(run._r.rPr.rFonts.get(qn('w:ascii')),
+                                         generator.WESTERN_FONT)
             self.assertEqual(len(parenthetical_runs), 6)
+            heading4 = next(p for p in doc.paragraphs if p.text == '（1）工作要求')
+            self.assertTrue(all(run.bold for run in heading4.runs))
+            self.assertEqual(heading4.runs[-1]._r.rPr.rFonts.get(qn('w:eastAsia')),
+                             generator.BODY_FONT)
+            cells = [p for row in doc.tables[0].rows for c in row.cells
+                     for p in c.paragraphs]
+            self.assertEqual([p.text for p in cells],
+                             ['项目', '占比（%）', '研发投入（2026年）', '12.5%'])
+            for paragraph in cells:
+                for run in paragraph.runs:
+                    east = (generator.KAITI_FONT if run.text.startswith('（')
+                            else generator.BODY_FONT)
+                    self.assert_mixed_font(run, east, 10.5)
+                    self.assertFalse(run.bold)
             title = next(p for p in doc.paragraphs if p.text.startswith('关于'))
             self.assertEqual(title.runs[0].font.size.pt, 22)
             section = doc.sections[0]

@@ -59,11 +59,14 @@ class StyleReadbackTests(unittest.TestCase):
             doc = Document(path)
             spans = [r for p in doc.paragraphs for r in p.runs if r.text.startswith(('（', '('))]
             self.assertEqual([r.text for r in spans], ['（试行2026）', '(ABC)', '（外层(123)说明）', '（1）'])
-            self.assertTrue(all(r.font.name == '楷体_GB2312' and r.font.size.pt == 16 for r in spans))
-            spans[2].font.name = 'Times New Roman'
+            self.assertTrue(all(
+                r._element.rPr.rFonts.get(qn('w:eastAsia')) == '楷体_GB2312'
+                and r.font.name == 'Times New Roman' and r.font.size.pt == 16
+                for r in spans))
+            spans[2]._element.rPr.rFonts.set(qn('w:eastAsia'), '仿宋_GB2312')
             doc.save(path)
             self.assertTrue(any('楷体_GB2312' in p for p in DSC.check_docx_style(path)))
-            spans[2].font.name = '楷体_GB2312'
+            spans[2]._element.rPr.rFonts.set(qn('w:eastAsia'), '楷体_GB2312')
             doc.paragraphs[0].paragraph_format.line_spacing = 1.5
             doc.save(path)
             self.assertTrue(any('行距' in p for p in DSC.check_docx_style(path)))
@@ -85,6 +88,20 @@ class StyleReadbackTests(unittest.TestCase):
             problems = DSC.check_docx_style(path)
             self.assertTrue(problems)
             self.assertTrue(any("SimSun" in p for p in problems))
+
+    def test_table_text_must_be_wuhao(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "m.docx"
+            document = Document()
+            CM.configure_document(document)
+            CM.add_title(document, "某某公司访谈纪要")
+            CM.add_table(document, [["指标", "金额（万元）"], ["收入", "12.5%"]])
+            document.save(path)
+            self.assertEqual(DSC.check_docx_style(path), [])
+            document.tables[0].cell(1, 0).paragraphs[0].runs[0].font.size = 16 * 12700
+            document.save(path)
+            self.assertTrue(any("表格" in p and "10.5" in p
+                                for p in DSC.check_docx_style(path)))
 
     def test_wrong_bold_is_flagged(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

@@ -21,15 +21,18 @@ The explicit rules in this file take precedence over the original sample where t
 - First-level heading `一、xxxx`: 黑体, 三号, not bold.
 - Second-level heading `（一）xxxx`: 楷体_GB2312, 三号, bold.
 - Third-level heading `1.xxxx`: 仿宋_GB2312, 三号, bold.
-- Fourth-level heading `（1）xxxx`: 仿宋_GB2312, 三号, not bold unless the source explicitly requires emphasis; the parenthesized `（1）` uses 楷体_GB2312.
-- Parenthesized content: all paired Chinese/English round parentheses `（…）` / `(...)` and their contents use 楷体_GB2312, 三号 (16 pt), throughout the document. Include nested parentheses, heading numbers, titles, attachment names and signatures; Latin letters and digits inside also use 楷体_GB2312. Preserve required bold. This overrides the surrounding font/size, including a 二号 title. Unpaired parentheses do not change subsequent text formatting.
-- Page number: the entire `-1-` uses 四号宋体 (14 pt), including both hyphens, the PAGE field and its displayed result. Set ascii/hAnsi/cs/eastAsia to 宋体 for every footer page-number run, not only the digits.
+- Fourth-level heading `（1）xxxx`: 仿宋_GB2312, 三号, bold. Use it only when the content needs a fourth level. The parenthesized `（1）` follows the parentheses rule (楷体_GB2312, bold kept).
+- Parenthesized content: all paired Chinese/English round parentheses `（…）` / `(...)` and their contents use 楷体_GB2312, 三号 (16 pt), throughout the document. Include nested parentheses, heading numbers, titles, attachment names and signatures. Preserve required bold. This overrides the surrounding font/size, including a 二号 title. Digits, Latin letters and `%` inside the parentheses use Times New Roman (see the final pass below). Unpaired parentheses do not change subsequent text formatting.
+- Tables: all text inside a table is fixed at 仿宋_GB2312, 五号 (10.5 pt), not bold, including header rows. Parenthesized spans inside a table use 楷体_GB2312, 五号 (10.5 pt). Cells use single line spacing, no first-line indent, centered horizontally and vertically.
+- Times New Roman final pass: every digit, Latin letter, `%` and other half-width character in the whole document uses Times New Roman — titles, body, headings, parenthesized spans, tables, attachments, signature and date. Apply it last, after 方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312 and the 四号宋体 footer are in place: select the whole text and set only the Western font (ascii/hAnsi/cs) to Times New Roman. Times New Roman has no CJK glyphs, so Chinese characters keep their Chinese faces (eastAsia unchanged). The footer `-1-` is excluded and stays 四号宋体.
+- Page number: the entire `-1-` uses 四号宋体 (14 pt), including both hyphens, the PAGE field and its displayed result — the two hyphens are resized to 四号 as well, not only the digit. Set ascii/hAnsi/cs/eastAsia to 宋体 for every footer page-number run. Odd and even pages use different footers.
 
 Word size mapping used by the sample:
 
 - 二号 = 22 pt.
 - 三号 = 16 pt.
 - 四号 = 14 pt.
+- 五号 = 10.5 pt.
 
 ## Document Structure
 
@@ -53,13 +56,13 @@ When the user asks for plain text rather than DOCX, preserve the same order. Mai
 - Use `一、` for first-level sections.
 - Use `（一）` for second-level sections.
 - Use `1.` for third-level sections.
-- Use `（1）` for fourth-level points.
+- Use `（1）` for fourth-level points (三号仿宋_GB2312, bold), only when needed.
 - Do not reverse or skip the hierarchy, and do not mix Arabic and Chinese numbering at the same hierarchy.
 - Keep headings compact; move explanations into following paragraphs.
 - First-level headings used as subheadings normally have no sentence-ending punctuation.
 - Second-level headings used as subheadings may omit punctuation when compact.
 - Third-level `1.` headings or points should include punctuation when written as a sentence or clause.
-- Fourth-level `（1）` points should include punctuation.
+- Fourth-level `（1）` points should include punctuation when written as a sentence or clause.
 - In DOCX, all four heading levels use a Word first-line indent of 2 Chinese characters; in plain text, prefix them with `　　`.
 
 ## 行文方向 and Front-Matter Notes
@@ -113,7 +116,7 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
                               2026年6月8日                  ← 与署名同心
 ```
 
-- Page numbers are placed on the outside edge, odd and even pages different.
+- Page numbers are placed on the outside edge, odd and even pages different (odd pages right, even pages left).
 - Page number format is `-1-`, `-2-`: both hyphens and every part of the PAGE field/result are explicitly 四号宋体 (14 pt), on odd and even pages alike.
 - A seal/signature page must contain at least two lines of 正文. Do not create a page headed only by `（此页无正文）`.
 
@@ -134,8 +137,10 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - First-level headings are 三号黑体, not bold.
 - Second-level headings are 三号楷体_GB2312, bold.
 - Third-level headings are 三号仿宋_GB2312, bold.
-- Fourth-level headings are 三号仿宋_GB2312, not bold, with the parenthesized number in 三号楷体_GB2312.
-- All round-parenthesized spans, including Latin letters/digits and delimiters, are 三号楷体_GB2312; check titles and attachment names as well as body paragraphs.
+- Fourth-level headings are 三号仿宋_GB2312, bold, with the parenthesized number in 三号楷体_GB2312.
+- All round-parenthesized spans, including delimiters, are 三号楷体_GB2312 (五号楷体_GB2312 inside tables); check titles and attachment names as well as body paragraphs.
+- All table text is 五号仿宋_GB2312, not bold.
+- Every digit, Latin letter and `%` outside the footer is Times New Roman, including inside parentheses and tables; Chinese characters keep their Chinese faces.
 - Title lines have exactly 30 pt spacing; body and numbered headings have exactly 28 pt spacing.
 - All body paragraphs and body headings have a two-character first-line indent.
 - `附件：` starts 2 characters in; multiple attachments are numbered `1.` `2.`, with later serials at 5 characters.
@@ -144,4 +149,4 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - A sole attachment has no serial; multiple attachments use Arabic serials, including labels such as `附件1.XXX` on the attachments themselves.
 - Two blank lines precede the signature; the issuing unit is right-indented 4 characters.
 - The date sits directly below the issuing unit and is centered on it.
-- The complete footer `-1-` uses 宋体 at 14 pt on odd and even pages, including both hyphens and the field result.
+- The complete footer `-1-` uses 宋体 at 14 pt (四号) on odd and even pages, including both hyphens and the field result; odd/even footers are different.

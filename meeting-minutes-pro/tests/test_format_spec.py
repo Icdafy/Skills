@@ -65,7 +65,7 @@ class RoleMappingTests(unittest.TestCase):
         self.assertEqual(FS.paragraph_role("一、总述"), ("first", FS.HEI_FONT, False))
         self.assertEqual(FS.paragraph_role("（一）背景"), ("second", FS.KAI_FONT, True))
         self.assertEqual(FS.paragraph_role("1.指标"), ("third", FS.FANGSONG_FONT, True))
-        self.assertEqual(FS.paragraph_role("（1）环境"), ("fourth", FS.FANGSONG_FONT, False))
+        self.assertEqual(FS.paragraph_role("（1）环境"), ("fourth", FS.FANGSONG_FONT, True))
         self.assertEqual(FS.paragraph_role("正文一段。"), ("body", FS.FANGSONG_FONT, False))
 
 

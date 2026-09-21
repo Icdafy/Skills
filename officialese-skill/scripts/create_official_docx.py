@@ -13,6 +13,7 @@ from pathlib import Path
 from docx import Document
 from docx.enum.section import WD_ORIENT
 from docx.enum.style import WD_STYLE_TYPE
+from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -27,13 +28,15 @@ BODY_FONT = "仿宋_GB2312"
 KAITI_FONT = "楷体_GB2312"
 HEITI_FONT = "黑体"
 SONGTI_FONT = "宋体"
-# 西文字母与阿拉伯数字统一 Times New Roman；中文走 eastAsia，Word 在同一 run 内
-# 按字符类型自动分派。括号片段整体用楷体，页码整体用宋体。
+# 西文字母、阿拉伯数字及 % 等半角符号统一 Times New Roman；中文走 eastAsia，
+# Word 在同一 run 内按字符类型自动分派。括号片段的中文用楷体_GB2312，其中的
+# 数字、字母同样走 Times New Roman。页码 -1- 整体用四号宋体，不参与西文替换。
 WESTERN_FONT = "Times New Roman"
 
 TITLE_SIZE = 22  # 二号
 BODY_SIZE = 16  # 三号
 PAGE_NUMBER_SIZE = 14  # 四号
+TABLE_SIZE = 10.5  # 五号：表格内文字固定五号仿宋_GB2312，括号片段五号楷体_GB2312
 BODY_LINE_PT = 28
 TITLE_LINE_PT = 30
 # 版式以「字」为单位：一个全角汉字宽 = 正文字号 = 三号 16 磅。
@@ -78,7 +81,7 @@ def set_east_asia_font(obj, font_name: str, western_font: str | None = None) -> 
     rfonts.set(qn("w:eastAsia"), font_name)
 
 
-def set_run_font(run, font_name: str, size_pt: int, bold: bool = False,
+def set_run_font(run, font_name: str, size_pt: float, bold: bool = False,
                  western_font: str | None = None) -> None:
     run.font.name = western_font or WESTERN_FONT
     set_east_asia_font(run, font_name, western_font)
@@ -94,11 +97,13 @@ def set_style_font(style, font_name: str, size_pt: int, bold: bool = False,
     set_east_asia_font(style, font_name, western_font)
 
 
-def add_formatted_text(paragraph, text: str, font: str, size: int,
-                       bold: bool = False) -> None:
-    """成对中英文圆括号及其内容（含嵌套）统一三号楷体，保留原文和加粗。
+def add_formatted_text(paragraph, text: str, font: str, size: float,
+                       bold: bool = False, paren_size: float = BODY_SIZE) -> None:
+    """成对中英文圆括号及其内容（含嵌套）统一楷体_GB2312，保留原文和加粗。
 
-    西文和数字也使用楷体；未配对的括号保持原格式，不影响后续正文。
+    括号片段字号为 ``paren_size``：正文、标题等处为三号，表格内为五号。括号内
+    的数字、字母和 % 等仍走 Times New Roman（最后的西文字体整理也会统一复核）；
+    未配对的括号保持原格式，不影响后续正文。
     """
     stack = []
     spans = []
@@ -119,8 +124,8 @@ def add_formatted_text(paragraph, text: str, font: str, size: int,
     for start, end in merged:
         if cursor < start:
             set_run_font(paragraph.add_run(text[cursor:start]), font, size, bold)
-        set_run_font(paragraph.add_run(text[start:end]), KAITI_FONT, BODY_SIZE,
-                     bold, western_font=KAITI_FONT)
+        set_run_font(paragraph.add_run(text[start:end]), KAITI_FONT, paren_size,
+                     bold)
         cursor = end
     if cursor < len(text):
         set_run_font(paragraph.add_run(text[cursor:]), font, size, bold)
@@ -191,7 +196,7 @@ def configure_styles(doc: Document) -> None:
     configure_style(doc, STYLE_H1, HEITI_FONT, BODY_SIZE, bold=False)
     configure_style(doc, STYLE_H2, KAITI_FONT, BODY_SIZE, bold=True)
     configure_style(doc, STYLE_H3, BODY_FONT, BODY_SIZE, bold=True)
-    configure_style(doc, STYLE_H4, BODY_FONT, BODY_SIZE, bold=False)
+    configure_style(doc, STYLE_H4, BODY_FONT, BODY_SIZE, bold=True)
 
 
 def add_text_paragraph(
@@ -345,7 +350,55 @@ def add_heading(doc: Document, text: str, level: int) -> None:
     elif level == 3:
         add_text_paragraph(doc, text, font=BODY_FONT, bold=True, style=STYLE_H3)
     else:
-        add_text_paragraph(doc, text, font=BODY_FONT, bold=False, style=STYLE_H4)
+        # 四级标题（1）：仿宋_GB2312 加粗，括号片段仍按括号规则用楷体_GB2312。
+        add_text_paragraph(doc, text, font=BODY_FONT, bold=True, style=STYLE_H4)
+
+
+def _set_cell_margins(table, top_bottom_pt: float = 2, left_right_pt: float = 4) -> None:
+    tbl_pr = table._tbl.tblPr
+    margins = OxmlElement("w:tblCellMar")
+    for side, value in (("top", top_bottom_pt), ("left", left_right_pt),
+                        ("bottom", top_bottom_pt), ("right", left_right_pt)):
+        node = OxmlElement(f"w:{side}")
+        node.set(qn("w:w"), str(int(value * 20)))
+        node.set(qn("w:type"), "dxa")
+        margins.append(node)
+    tbl_pr.append(margins)
+
+
+def add_table(doc: Document, rows: list[list]) -> None:
+    """表格内所有文字固定五号仿宋_GB2312（不加粗），括号片段五号楷体_GB2312，
+    数字、字母和 % 等走 Times New Roman。单倍行距、无首行缩进、居中。"""
+    rows = [[("" if cell is None else str(cell)) for cell in row] for row in rows if row]
+    if not rows:
+        return
+    columns = max(len(row) for row in rows)
+    table = doc.add_table(rows=len(rows), cols=columns)
+    table.style = "Table Grid"
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    _set_cell_margins(table)
+    for r, row in enumerate(rows):
+        for c in range(columns):
+            cell = table.cell(r, c)
+            cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+            paragraph = cell.paragraphs[0]
+            fmt = paragraph.paragraph_format
+            fmt.line_spacing_rule = WD_LINE_SPACING.SINGLE
+            fmt.space_before = Pt(0)
+            fmt.space_after = Pt(0)
+            fmt.first_line_indent = Pt(0)
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            text = row[c] if c < len(row) else ""
+            add_formatted_text(paragraph, text, BODY_FONT, TABLE_SIZE, False,
+                               paren_size=TABLE_SIZE)
+
+
+def add_block(doc: Document, item) -> None:
+    """正文条目：字符串为正文段落；``{"table": [[...], ...]}`` 为表格。"""
+    if isinstance(item, dict) and "table" in item:
+        add_table(doc, item["table"])
+    else:
+        add_text_paragraph(doc, str(item))
 
 
 def add_sections(doc: Document, sections: list[dict]) -> None:
@@ -354,7 +407,7 @@ def add_sections(doc: Document, sections: list[dict]) -> None:
         if title:
             add_heading(doc, title, int(section.get("level", 1)))
         for para in section.get("paragraphs", []):
-            add_text_paragraph(doc, para)
+            add_block(doc, para)
         children = section.get("children", [])
         if children:
             add_sections(doc, children)
@@ -456,6 +509,34 @@ def add_signature_block(doc: Document, issuer: str | None, date: str | None) -> 
         add_date_line(doc, date, issuer)
 
 
+def _iter_body_paragraphs(doc: Document):
+    """正文段落与表格单元格段落（含嵌套表格），不含页眉页脚。"""
+    def walk_tables(tables):
+        for table in tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    yield from cell.paragraphs
+                    yield from walk_tables(cell.tables)
+    yield from doc.paragraphs
+    yield from walk_tables(doc.tables)
+
+
+def apply_western_font_pass(doc: Document) -> None:
+    """全文西文字体整理：把每个 run 的 ascii/hAnsi/cs 设为 Times New Roman，
+    eastAsia 保持原中文字体不变。与在 Word 中全选后把西文字体设为 Times New
+    Roman 等效：数字、字母、% 等半角字符改用 Times New Roman，汉字不受影响。
+    页脚页码 -1- 固定四号宋体，不在此处理范围内。"""
+    for paragraph in _iter_body_paragraphs(doc):
+        for run in paragraph.runs:
+            rpr = run._element.get_or_add_rPr()
+            rfonts = rpr.rFonts
+            if rfonts is None:
+                rfonts = OxmlElement("w:rFonts")
+                rpr.insert(0, rfonts)
+            for slot in ("ascii", "hAnsi", "cs"):
+                rfonts.set(qn(f"w:{slot}"), WESTERN_FONT)
+
+
 def build_docx(data: dict, output: Path) -> None:
     doc = Document()
     configure_styles(doc)
@@ -478,11 +559,14 @@ def build_docx(data: dict, output: Path) -> None:
         add_text_paragraph(doc, recipient, first_indent=False)
 
     for para in data.get("body", []):
-        add_text_paragraph(doc, para)
+        add_block(doc, para)
 
     add_sections(doc, data.get("sections", []))
     add_attachments(doc, data.get("attachments", []))
     add_signature_block(doc, data.get("issuer"), data.get("date"))
+    # 最后一步：在各中文字体（方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312）
+    # 与页脚四号宋体设置完成后，再对全文统一选择一次 Times New Roman。
+    apply_western_font_pass(doc)
 
     doc.save(output)
     # 嵌入随附的可嵌入字体（仿宋_GB2312、楷体_GB2312），使交付件在未装这两款

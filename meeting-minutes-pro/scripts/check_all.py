@@ -25,12 +25,16 @@ from run_state import atomic_json, file_hash
 SCRIPTS_DIR = Path(__file__).resolve().parent
 
 
+TABLE_SEPARATOR_LINE = re.compile(r"^\|(?::?-{3,}:?\|)+$")
+
+
 def normalized_lines(text: str) -> list[str]:
-    """Non-empty lines with all whitespace (incl. ideographic space) removed."""
+    """Non-empty lines with all whitespace (incl. ideographic space) removed.
+    Markdown table separator rows (``|---|---|``) are not rendered and are dropped."""
     lines: list[str] = []
     for line in text.splitlines():
         cleaned = re.sub(r"[\s　]+", "", line)
-        if cleaned:
+        if cleaned and not TABLE_SEPARATOR_LINE.match(cleaned):
             lines.append(cleaned)
     return lines
 
@@ -80,8 +84,19 @@ def docx_text_lines(path: Path) -> list[str] | None:
         from docx import Document
     except ImportError:
         return None
+    from docx.oxml.ns import qn
+    from docx.table import Table
+    from docx.text.paragraph import Paragraph
     document = Document(str(path))
-    return normalized_lines("\n".join(p.text for p in document.paragraphs))
+    lines: list[str] = []
+    # Body order: paragraphs as-is, each table row as ``|cell|cell|``.
+    for child in document.element.body.iterchildren():
+        if child.tag == qn("w:p"):
+            lines.append(Paragraph(child, document).text)
+        elif child.tag == qn("w:tbl"):
+            for row in Table(child, document).rows:
+                lines.append("|" + "|".join(cell.text for cell in row.cells) + "|")
+    return normalized_lines("\n".join(lines))
 
 
 def check_docx_style_report(path: Path) -> dict:

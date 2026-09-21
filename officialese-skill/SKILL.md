@@ -30,20 +30,25 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 - Subtitle or department line: 三号楷体_GB2312, centered.
 - After subtitle/department line, leave one blank line before the recipient/body.
 - Body: 三号仿宋_GB2312.
-- All content in Chinese or English round parentheses `（…）` / `(...)`, including the parentheses themselves, uses 三号楷体_GB2312 (16 pt). This applies throughout titles, body, heading numbers, attachment names and signatures, including Latin letters, digits and nested parentheses; retain any required bold formatting. This rule overrides the surrounding font and size.
+- All content in Chinese or English round parentheses `（…）` / `(...)`, including the parentheses themselves, uses 三号楷体_GB2312 (16 pt). This applies throughout titles, body, heading numbers, attachment names and signatures, including nested parentheses; retain any required bold formatting. This rule overrides the surrounding Chinese font and size. Digits, Latin letters and `%` inside the parentheses follow the Times New Roman rule below.
+- Tables: every character in a table is fixed at 五号仿宋_GB2312 (10.5 pt), not bold; parenthesized spans inside tables use 五号楷体_GB2312 (10.5 pt). Table cells use single line spacing, no first-line indent, centered.
+- Times New Roman final pass: all digits, Latin letters, `%` and other half-width characters in the whole document (titles, body, headings, parentheses, tables, attachments, signature, date) use Times New Roman. Apply it as the last step, after 方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312 and the 四号宋体 footer have been set: set the Western font (ascii/hAnsi/cs) of every body and table run to Times New Roman while keeping each run's East Asian font unchanged, so Chinese characters keep their Chinese faces. The footer `-1-` stays entirely 四号宋体.
 - Title lines (main title, subtitle and issuing-unit title line): exactly 30 pt line spacing. Body and its numbered headings: exactly 28 pt. Do not substitute multiple/minimum spacing or reduce these values to fit a page.
 - Preserve Chinese punctuation and numbering hierarchy: `一、`, `（一）`, `1.`, `（1）`.
 - First-level heading `一、xxxx`: 三号黑体, not bold.
 - Second-level heading `（一）xxxx`: 三号楷体_GB2312, bold.
 - Third-level heading `1.xxxx`: 三号仿宋_GB2312, bold.
-- Fourth-level heading `（1）xxxx`: 三号仿宋_GB2312, not bold; the parenthesized `（1）` uses 三号楷体_GB2312.
+- Fourth-level heading `（1）xxxx` (use only when the content needs a fourth level): 三号仿宋_GB2312, bold; the parenthesized `（1）` follows the parentheses rule (楷体_GB2312, bold kept, digit in Times New Roman).
 - Body paragraphs and numbered headings must start with a two-Chinese-character first-line indent. In plain-text output, prefix them with two full-width spaces `　　`; in DOCX output, use Word first-line indent.
 - 附件说明 starts 2 characters in, uses Arabic serials for two or more attachments, and hangs each wrapped name under that attachment's own name column instead of returning to the margin. Names carry no 书名号 and no trailing punctuation.
 - An attachment's own numbered label uses `附件1.XXX`; a sole attachment has no Arabic serial (`附件：XXX` in the attachment list, `附件` plus its name on the attachment itself).
-- The entire footer page number `-1-`, including both hyphens and the PAGE field/result, must use 宋体, 四号 (14 pt). Explicitly set every run's Chinese and Western fonts to 宋体.
+- The entire footer page number `-1-`, including both hyphens and the PAGE field/result, must use 宋体, 四号 (14 pt) — the hyphens are 四号 too, not only the digit. Explicitly set every run's Chinese and Western fonts to 宋体. Odd and even pages use different footers: odd pages right-aligned, even pages left-aligned.
 - 发文机关署名 sits two blank lines below the body or 附件说明, right-indented 4 characters; 成文日期 goes on the next line, centered on the signature.
 - Keep titles short and literal. Put explanatory content in the body, not the title.
 - Do not use casual, promotional, or emotional wording.
+- Tone: formal written officialese with a neutral overall tone — neither overly conservative nor aggressive. State facts, basis and arrangements plainly; avoid both hedging and overstatement.
+- Never end a paragraph (or write anywhere in the text) with follow-up-judgment tails such as `需要后续进行判断`、`有待进一步研判`、`后续视情况再定`、`仍需持续观察`、`需进一步评估`. The document states what it states; do not append such sentences.
+- State necessity and conclusions directly as affirmative statements (`是……`、`需要……`、`有利于……`). Do not use negation-contrast constructions such as `不是……而是……`、`并非……而是……`、`不在于……而在于……`、`……而非……`、`与其……不如……`.
 - Check the final file visually for font fallback, page margins, fixed line spacing, attachment labels, seal/signature area, and page numbers.
 
 ## Bundled Resources
@@ -54,5 +59,5 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 - `assets/fonts/楷体_GB2312.ttf`: subtitle, second-level heading and parenthesized-content font.
 - `assets/fonts/simfang.ttf`: 仿宋_GB2312 body font.
 - `assets/templates/文件字体格式.doc`: original uploaded format sample.
-- `scripts/create_official_docx.py`: deterministic starter DOCX generator. Outside parentheses and page numbers, Latin letters and Arabic numerals use Times New Roman while CJK keeps its Chinese face via `w:rFonts`. Parenthesized spans are split into runs entirely in 三号楷体_GB2312; every run of the footer `-1-` is entirely in 四号宋体. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails. `--attachment` normalizes names and builds the 附件说明 block with the hanging indents described above (one attachment has no serial), and `--issuer`/`--date` emit the 4-character-indented signature with the date centered on it.
+- `scripts/create_official_docx.py`: deterministic starter DOCX generator. Parenthesized spans are split into their own runs with 楷体_GB2312 as the Chinese face (三号 in the body, 五号 in tables). Tables are given as `{"table": [[...], ...]}` items in `body` or a section's `paragraphs` and render in 五号仿宋_GB2312. Every run of the footer `-1-` is entirely 四号宋体, with odd/even footers. As its final step the generator runs a Times New Roman pass over every body and table run (ascii/hAnsi/cs → Times New Roman, eastAsia unchanged), so digits, letters and `%` are Times New Roman everywhere outside the footer. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails. `--attachment` normalizes names and builds the 附件说明 block with the hanging indents described above (one attachment has no serial), and `--issuer`/`--date` emit the 4-character-indented signature with the date centered on it.
 - `scripts/embed_fonts.py`: font embedder used by the generator; run `python scripts/embed_fonts.py --docx out.docx --verify` to re-check an existing file.

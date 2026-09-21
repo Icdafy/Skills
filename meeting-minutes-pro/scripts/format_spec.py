@@ -30,10 +30,10 @@ INDENT = "　　"
 # must therefore write these exact strings as w:eastAsia.
 TITLE_FONT = "方正小标宋简体"   # 大标题：二号方正小标宋简体
 KAI_FONT = "楷体_GB2312"        # 二级标题（加粗）、副标题
-FANGSONG_FONT = "仿宋_GB2312"   # 正文、三/四级标题
+FANGSONG_FONT = "仿宋_GB2312"   # 正文、三/四级标题（均加粗）、表格
 HEI_FONT = "SimHei"             # 一级标题：三号黑体（SimHei 为系统字体，不入替换表）
 SONG_FONT = "宋体"               # 页码：四号宋体（SimSun）
-NUMBER_FONT = "Times New Roman"  # 西文字母与阿拉伯数字
+NUMBER_FONT = "Times New Roman"  # 西文字母、阿拉伯数字及 % 等半角字符（全文最后统一设置）
 
 # --- Heading grammar: 一、/（一）/1./（1） ---------------------------------
 FIRST_LEVEL = re.compile(r"^[一二三四五六七八九十]+、")
@@ -67,7 +67,7 @@ def paragraph_role(text: str) -> tuple[str, str, bool]:
     if level == 3:
         return "third", FANGSONG_FONT, True
     if level == 4:
-        return "fourth", FANGSONG_FONT, False
+        return "fourth", FANGSONG_FONT, True
     return "body", FANGSONG_FONT, False
 
 
@@ -83,12 +83,34 @@ WESTERN_SEGMENT = re.compile(r"[0-9A-Za-z]+(?:[.,\-/][0-9A-Za-z]+)*%?")
 TITLE_SIZE = 22          # 二号
 SUBTITLE_SIZE = 16       # 三号
 BODY_SIZE = 16           # 三号
+TABLE_SIZE = 10.5        # 五号：表格内文字固定五号仿宋_GB2312，括号片段五号楷体_GB2312
+TABLE_FONT = FANGSONG_FONT
 PAGE_NUMBER_FONT = SONG_FONT
 PAGE_NUMBER_SIZE = 14    # 四号
 PAGE_NUMBER_PREFIX = "-"
 PAGE_NUMBER_SUFFIX = "-"
 PAGE_NUMBER_FONT_SLOTS = ("ascii", "hAnsi", "cs", "eastAsia")
 PAGE_NUMBER_FONT_HINT = "eastAsia"
+
+# --- Tables in the plain-text minutes -----------------------------------
+# A table is written as consecutive Markdown pipe rows (``　　|项目|金额|``);
+# a ``|---|---|`` separator row is optional and is not rendered.
+TABLE_ROW = re.compile(r"^\|.*\|$")
+TABLE_SEPARATOR = re.compile(r"^\|(?:\s*:?-{3,}:?\s*\|)+$")
+
+
+def is_table_row(text: str) -> bool:
+    """True for a pipe-table row (indent already stripped), separators included."""
+    return TABLE_ROW.match(text.strip()) is not None
+
+
+def is_table_separator(text: str) -> bool:
+    return TABLE_SEPARATOR.match(text.strip()) is not None
+
+
+def table_cells(text: str) -> list[str]:
+    return [cell.strip() for cell in text.strip()[1:-1].split("|")]
+
 
 # --- Exact line spacing (pt) ----------------------------------------------
 TITLE_LINE_SPACING = 30

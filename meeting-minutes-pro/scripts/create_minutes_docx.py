@@ -18,6 +18,7 @@ from pathlib import Path
 
 from docx import Document
 from docx.enum.section import WD_SECTION_START
+from docx.enum.table import WD_CELL_VERTICAL_ALIGNMENT, WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
@@ -46,13 +47,18 @@ from format_spec import (  # noqa: E402  (needs the path shim above)
     RIGHT_MARGIN_CM,
     SUBTITLE_LINE_SPACING,
     SUBTITLE_SIZE,
+    TABLE_FONT,
+    TABLE_SIZE,
     TITLE_FONT,
     TITLE_LINE_SPACING,
     TITLE_SIZE,
     TOP_MARGIN_CM,
     WESTERN_SEGMENT,
+    is_table_row,
+    is_table_separator,
     level_number,
     paragraph_role,
+    table_cells,
 )
 from embed_fonts import (  # noqa: E402
     default_font_paths,
@@ -124,11 +130,13 @@ def enable_field_updates(document: Document) -> None:
 
 
 def set_east_asia_font(run, font_name: str, size: float, bold: bool = False) -> None:
-    run.font.name = font_name
+    """Chinese characters use ``font_name``; the Western slots are Times New
+    Roman so digits, letters and % in the run never fall back to the CJK face."""
+    run.font.name = NUMBER_FONT
     run.font.size = Pt(size)
     run.bold = bold
     run._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
-    run._element.rPr.rFonts.set(qn("w:cs"), font_name)
+    run._element.rPr.rFonts.set(qn("w:cs"), NUMBER_FONT)
 
 
 def set_western_font(run, east_asia_font: str, size: float, bold: bool = False) -> None:
@@ -138,14 +146,17 @@ def set_western_font(run, east_asia_font: str, size: float, bold: bool = False) 
     run.font.size = Pt(size)
     run.bold = bold
     run._element.rPr.rFonts.set(qn("w:eastAsia"), east_asia_font)
+    run._element.rPr.rFonts.set(qn("w:cs"), NUMBER_FONT)
 
 
-def add_text_runs(paragraph, text: str, font_name: str, size: float, bold: bool = False) -> None:
-    """Round-parenthesized spans use 三号楷体, including ASCII and delimiters."""
+def add_text_runs(paragraph, text: str, font_name: str, size: float, bold: bool = False,
+                  paren_size: float = BODY_SIZE) -> None:
+    """Round-parenthesized spans use 楷体_GB2312 (三号; 五号 inside tables) for
+    Chinese, with digits/letters/% inside still in Times New Roman."""
     cursor = 0
     for start, end in parenthesized_spans(text):
         _add_unparenthesized_runs(paragraph, text[cursor:start], font_name, size, bold)
-        set_east_asia_font(paragraph.add_run(text[start:end]), KAI_FONT, BODY_SIZE, bold)
+        set_east_asia_font(paragraph.add_run(text[start:end]), KAI_FONT, paren_size, bold)
         cursor = end
     _add_unparenthesized_runs(paragraph, text[cursor:], font_name, size, bold)
 
@@ -278,6 +289,71 @@ def add_content_paragraph(document: Document, text: str) -> None:
     add_text_runs(paragraph, content, font_name, BODY_SIZE, bold)
 
 
+def _set_table_cell_margins(table, top_bottom_pt: float = 2, left_right_pt: float = 4) -> None:
+    margins = OxmlElement("w:tblCellMar")
+    for side, value in (("top", top_bottom_pt), ("left", left_right_pt),
+                        ("bottom", top_bottom_pt), ("right", left_right_pt)):
+        node = OxmlElement(f"w:{side}")
+        node.set(qn("w:w"), str(int(value * 20)))
+        node.set(qn("w:type"), "dxa")
+        margins.append(node)
+    table._tbl.tblPr.append(margins)
+
+
+def add_table(document: Document, rows: list[list[str]]) -> None:
+    """表格内全部文字固定五号仿宋_GB2312、不加粗；括号片段五号楷体_GB2312；
+    数字、字母和 % 用 Times New Roman。单倍行距、无首行缩进、水平垂直居中。"""
+    rows = [row for row in rows if row]
+    if not rows:
+        return
+    columns = max(len(row) for row in rows)
+    table = document.add_table(rows=len(rows), cols=columns)
+    table.style = "Table Grid"
+    table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    _set_table_cell_margins(table)
+    for r, row in enumerate(rows):
+        for c in range(columns):
+            cell = table.cell(r, c)
+            cell.vertical_alignment = WD_CELL_VERTICAL_ALIGNMENT.CENTER
+            paragraph = cell.paragraphs[0]
+            paragraph.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            fmt = paragraph.paragraph_format
+            fmt.first_line_indent = Pt(0)
+            fmt.line_spacing_rule = WD_LINE_SPACING.SINGLE
+            fmt.space_before = Pt(0)
+            fmt.space_after = Pt(0)
+            add_text_runs(paragraph, row[c] if c < len(row) else "", TABLE_FONT,
+                          TABLE_SIZE, False, paren_size=TABLE_SIZE)
+
+
+def _iter_body_paragraphs(document: Document):
+    """Body and table-cell paragraphs (nested tables too); headers/footers excluded."""
+    def walk(tables):
+        for table in tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    yield from cell.paragraphs
+                    yield from walk(cell.tables)
+    yield from document.paragraphs
+    yield from walk(document.tables)
+
+
+def apply_western_font_pass(document: Document) -> None:
+    """全文最后一步：在方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312 与页脚
+    四号宋体设置完成后，再对全文统一选择一次 Times New Roman——每个 run 的
+    ascii/hAnsi/cs 设为 Times New Roman，eastAsia 保持不变，因此数字、字母、%
+    等改用 Times New Roman，汉字不受影响。页脚 -1- 不在处理范围内，保持四号宋体。"""
+    for paragraph in _iter_body_paragraphs(document):
+        for run in paragraph.runs:
+            properties = run._element.get_or_add_rPr()
+            fonts = properties.find(qn("w:rFonts"))
+            if fonts is None:
+                fonts = OxmlElement("w:rFonts")
+                properties.insert(0, fonts)
+            for slot in ("ascii", "hAnsi", "cs"):
+                fonts.set(qn(f"w:{slot}"), NUMBER_FONT)
+
+
 def add_qa_separator(document: Document) -> None:
     """Blank spacer line rendered between consecutive Q/A groups."""
     paragraph = document.add_paragraph()
@@ -289,14 +365,29 @@ def add_minutes_content(document: Document, lines: list[str], title: str) -> Non
     title_consumed = False
     pending_blank = False
     previous_content = ""
+    table_rows: list[list[str]] = []
+
+    def flush_table() -> None:
+        if table_rows:
+            add_table(document, list(table_rows))
+            table_rows.clear()
+
     for line in lines:
         if not line.strip():
+            flush_table()
             pending_blank = title_consumed
             continue
         if not title_consumed and line.strip() == title:
             title_consumed = True
             continue
         content = line.removeprefix(INDENT).strip()
+        if title_consumed and is_table_row(content):
+            if not is_table_separator(content):
+                table_rows.append(table_cells(content))
+            pending_blank = False
+            previous_content = content
+            continue
+        flush_table()
         starts_qa_group = content.startswith("问：")
         starts_qa_subheading = (
             level_number(content) == 2 and previous_content.startswith("答：")
@@ -306,6 +397,7 @@ def add_minutes_content(document: Document, lines: list[str], title: str) -> Non
         pending_blank = False
         add_content_paragraph(document, line)
         previous_content = content
+    flush_table()
 
 
 def missing_font_families() -> list[str]:
@@ -385,6 +477,7 @@ def main() -> None:
         add_subtitle(document, args.subtitle)
 
     add_minutes_content(document, lines, title)
+    apply_western_font_pass(document)
 
     args.output.parent.mkdir(parents=True, exist_ok=True)
     document.save(args.output)

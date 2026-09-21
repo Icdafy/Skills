@@ -51,6 +51,36 @@ class CustomBannedTests(unittest.TestCase):
         self.assertFalse(any("自定义禁用" in error for error in errors))
 
 
+class ToneRuleTests(unittest.TestCase):
+    def test_follow_up_judgment_tail_is_flagged(self) -> None:
+        for tail in ("该事项需要后续进行判断。", "相关影响有待进一步研判。",
+                     "市场变化仍需持续观察。", "具体安排视情况而定。"):
+            with self.subTest(tail=tail):
+                doc = document("访谈纪要", "一、总体情况", "公司已完成样机测试，" + tail)
+                errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+                self.assertTrue(any("后续判断" in error or "有待" in error for error in errors))
+
+    def test_negation_contrast_is_flagged(self) -> None:
+        for sentence in ("该项目的核心不在于规模而在于技术。",
+                         "公司选择自研而非外购。",
+                         "本轮融资用于扩产而不是研发。",
+                         "这不是短期行为，是长期布局。"):
+            with self.subTest(sentence=sentence):
+                doc = document("访谈纪要", "一、总体情况", sentence)
+                errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+                self.assertTrue(any("对照式" in error for error in errors))
+
+    def test_plain_statement_passes_tone_rules(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "公司选择自研路线，非常重视核心技术积累。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+        self.assertFalse(any("对照式" in error or "后续判断" in error for error in errors))
+
+    def test_table_rows_skip_indent_rule(self) -> None:
+        doc = TextInput("访谈纪要\n　　一、财务情况\n|指标|金额（万元）|\n|---|---|\n|收入|100|\n　　正文。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+        self.assertFalse(any("全角空格" in error for error in errors))
+
+
 class HalfwidthPunctTests(unittest.TestCase):
     def test_halfwidth_paren_next_to_cjk_flagged(self) -> None:
         doc = document("访谈纪要", "一、总体情况", "张某某(总经理)介绍了情况。")
