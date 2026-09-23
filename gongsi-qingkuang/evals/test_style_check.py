@@ -53,6 +53,16 @@ class StyleCheckBehavior(unittest.TestCase):
         self.assertEqual(result.returncode, 0)
         self.assertIn('[WARN]', result.stdout)
 
+    def test_number_range_and_time_status(self):
+        result = self.scan('公司预计年收入为300—350万元。')
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('数值范围', result.stdout)
+        self.assertEqual(self.scan('公司预计年收入为300万—350万元。').returncode, 0)
+        warn = self.scan('创立公司前为某企业联合创始人。')
+        self.assertEqual(warn.returncode, 0)
+        self.assertIn('时点不明', warn.stdout)
+        self.assertNotIn('时点不明', self.scan('公司目前为小批量交付阶段。').stdout)
+
     def test_existing_rules_and_editorial_notes_remain_detectable(self):
         for text in ['标的公司具有优势。', '公司不仅提供产品，而且提供服务。',
                      '【待补充】财务数据。', '核心结论：业绩改善。', '（这部分重新写吧）']:

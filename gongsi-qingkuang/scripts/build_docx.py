@@ -82,6 +82,8 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
       "rows":[["a","b"],["c","d"]]}                 # autofit 到窗口，列等分
   {"type":"table","header":[...],"rows":[...],
       "widths":[3,6]}                               # 可选：列宽比例（随窗口缩放）
+  {"type":"image","path":"photos/product.jpg",      # 插图（如产品实物照片），居中；
+      "width_cm":12,"caption":"图1 核心产品实物"}     # 相对路径按 content.json 所在目录解析
   {"type":"note","text":"【待进一步核实】"}          # 灰色提示；默认不使用（见缺口纪律）
   {"type":"pagebreak"}                             # 分页
   {"type":"_注","text":"骨架注释，不会渲染"}          # "_"开头的类型视为模板注释，跳过
@@ -529,6 +531,22 @@ def build(content, out_path):
         elif t == "table":
             _add_table(doc, blk.get("header"), blk.get("rows", []), blk.get("widths"))
             doc.add_paragraph()  # 表后空行
+        elif t == "image":
+            # 产品实物照片等插图：居中，宽度按厘米给定（默认12cm，不超过版心），图名放图下方
+            img = Path(blk["path"])
+            if not img.is_absolute():
+                img = Path(content.get("_base_dir", ".")) / img
+            if not img.is_file():
+                raise FileNotFoundError(f"image 块引用的图片不存在：{img}")
+            width = min(float(blk.get("width_cm", 12)), 15.6)
+            p = doc.add_paragraph()
+            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.paragraph_format.keep_with_next = bool(blk.get("caption"))
+            p.add_run().add_picture(str(img), width=Cm(width))
+            if blk.get("caption"):
+                _add_para(doc, blk["caption"], size=TABLE_SZ, bold=False,
+                          align=WD_ALIGN_PARAGRAPH.CENTER, space_before=2,
+                          space_after=6, line=18, font_name=FONT_BODY)
         elif t == "note":
             # 灰色提示：默认不使用——缺口一律在对话中提示，不写入报告（见文件头"数据缺口纪律"）
             _add_para(doc, blk["text"], color="808080", line=BODY_LINE_PT,
@@ -563,5 +581,7 @@ if __name__ == "__main__":
         sys.exit(1)
     with open(sys.argv[1], "r", encoding="utf-8") as f:
         data = json.load(f)
+    # image 块的相对路径按 content.json 所在目录解析
+    data.setdefault("_base_dir", str(Path(sys.argv[1]).resolve().parent))
     path = build(data, sys.argv[2])
     print("已生成:", path)

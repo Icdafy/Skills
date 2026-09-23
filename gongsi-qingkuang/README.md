@@ -93,6 +93,16 @@ python scripts/extract_docx.py "某公司-尽调资料.docx" out.txt
 - 基于范文逐字复核补齐**文体指纹**：称谓两分法、转折只用"但"、引导句冒号收尾、客户供应商节纯表格、财务分析段以简称开头等。
 - 修复 `reconcile_check.py` 合计行识别缺陷（合计标记在序号列时曾被当明细重复求和），并支持"前10大小计/总收入"两级合计与"收入额/价税合计"表头；已用两篇范文真实数据完成正反向冒烟测试。
 
+## 审阅批注吸收（2026-09）
+
+根据一份早期立项报告多轮审阅批注与修订（已脱敏，不含项目事实）更新：
+
+- 设立背景首句交代控股股东/实控人及其直接、穿透持股与背景；实控人关联的同名、近名企业写清关系；任职与持股写“曾任/现任/至今”；
+- 数据段首句写结论和影响，避免“这段想表达什么”；
+- 融资表（T13）逐轮列估值、对赌及回购（写明义务主体）与其他特殊条款；新增可比估值表（T16）与估值合理性四步写法；
+- 意向订单按业务板块拆分（T17），单独写深度合作、绑定大客户与中标工程；
+- `style_check.py` 新增数值范围（“7万—10万元”）、半角括号、不规范用词扫描，排他论断与任职时点不明给警告；`build_docx.py` 新增 `image` 块（产品实物照片等）。
+
 ## 跨 Agent 安装与调用
 
 [下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip)。WorkBuddy、Kimi、Claude桌面版、Qoder及Trae的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
