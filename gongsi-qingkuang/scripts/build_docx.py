@@ -76,6 +76,7 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
   {"type":"h4","text":"（1）政策驱动"}              # 四级（加粗）
   {"type":"p","text":"正文段落……"}                 # 普通段落
   {"type":"p","text":"……","bold":true}            # 加粗段落（核心结论/段首论点句）
+  {"type":"p","lead":"段首判断句。","text":"其后证据……"}  # 仅段首判断句加粗，其余同段不加粗
   {"type":"bullet","items":["要点1","要点2"]}       # 项目符号列表
   {"type":"tnote","text":"单位：万元","align":"right"}   # 表注，仿宋五号
   {"type":"table","header":["列1","列2"],           # 表格；header 可省略（无表头）
@@ -511,9 +512,17 @@ def build(content, out_path):
                           font_name=FONT_BODY)
             _indent_first_line(p)
         elif t == "p":
-            p = _add_para(doc, blk["text"], bold=blk.get("bold", False),
-                          align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
-                          font_name=FONT_BODY)
+            if blk.get("lead"):
+                # 段首判断句加粗、其后证据不加粗，同在一段（终稿范式的节首写法）
+                p = _add_para(doc, blk["lead"], bold=True,
+                              align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
+                              font_name=FONT_BODY)
+                if blk.get("text"):
+                    _add_text_runs(p, blk["text"], bold=False, font_name=FONT_BODY)
+            else:
+                p = _add_para(doc, blk["text"], bold=blk.get("bold", False),
+                              align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
+                              font_name=FONT_BODY)
             _indent_first_line(p)
         elif t == "bullet":
             for item in blk.get("items", []):

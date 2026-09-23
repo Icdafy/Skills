@@ -34,7 +34,7 @@ def filled(root, selected):
 
 class StageTemplateTests(unittest.TestCase):
     def test_all_original_headings_have_template_mappings(self):
-        counts = {'hangye-fenxi': (15, 12), 'zhuying-yewu-fenxi': (28, 40), 'gongsi-qingkuang': (30, 95)}
+        counts = {'hangye-fenxi': (12, 12), 'zhuying-yewu-fenxi': (15, 40), 'gongsi-qingkuang': (28, 95)}
         for name in NAMES:
             for selected, count in zip(('early', 'mid-late'), counts[name]):
                 with self.subTest(name=name, stage=selected):
@@ -90,22 +90,62 @@ class StageTemplateTests(unittest.TestCase):
         content = filled(root, 'early')
         bindings = content['report_template']['bindings']
         bindings['team'] = [{'name': '虚构甲', 'role': '总经理'}, {'name': '虚构乙', 'role': '总工程师'}, {'name': '虚构丙', 'role': '财务负责人'}]
-        bindings['financial_issues'] = []
         draft = stage.initialize('early', bindings, root)
         for block in draft['blocks']:
             if block['type'] == 'p':block['text'] = '此处为虚构核验事实。'
         stage.validate(draft, root)
         self.assertIn('（3）虚构丙，财务负责人', [b['text'] for b in draft['blocks']])
-        self.assertNotIn('（1）持续亏损', [b['text'] for b in draft['blocks']])
+        self.assertNotIn('（4）虚构测试name，虚构测试role', [b['text'] for b in draft['blocks']])
         bindings['team'] = []
         with self.assertRaisesRegex(ValueError, '数量不足'):
             stage.initialize('early', bindings, root)
+
+    def test_early_business_repeats_products_and_techs_in_given_order(self):
+        root = REPO / NAMES[1]
+        content = filled(root, 'early')
+        bindings = content['report_template']['bindings']
+        bindings['products'] = [{'product': '核心装置'}, {'product': '整机集成'}, {'product': '配套设备'}]
+        bindings['techs'] = [{'tech': '轻量化制造'}, {'tech': '整机适配与先发优势'}]
+        draft = stage.initialize('early', bindings, root)
+        for block in draft['blocks']:
+            if block['type'] == 'p':
+                block['text'] = '虚构事实。'
+        stage.validate(draft, root)
+        heads = [b['text'] for b in draft['blocks'] if b['type'].startswith('h')]
+        self.assertEqual(heads[3:6], ['1.核心装置', '2.整机集成', '3.配套设备'])
+        self.assertIn('2.整机适配与先发优势', heads)
+
+    def test_early_templates_keep_case_text_out_of_public_repo(self):
+        for name in NAMES:
+            template = stage.load_template('early', REPO / name)
+            with self.subTest(name=name):
+                self.assertIn('事实不入库', template['source']['filename'])
+                for node in template['nodes']:
+                    texts = [i['text'] for i in node.get('items', [])] or [node['text']]
+                    sources = [h['text'] for h in template['source_headings'] if h['id'] in node['sources']]
+                    if any('{' in t for t in texts):
+                        self.assertTrue(all('【' in s for s in sources), sources)
+
+    def test_lead_sentence_renders_bold_then_plain_in_one_paragraph(self):
+        ns = {'w': 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'}
+        content = {'blocks': [{'type': 'p', 'lead': '判断句。', 'text': '证据句。'}]}
+        with tempfile.TemporaryDirectory() as tmp:
+            source, target = Path(tmp) / 'c.json', Path(tmp) / 'o.docx'
+            source.write_text(json.dumps(content, ensure_ascii=False), encoding='utf8')
+            run = subprocess.run([sys.executable, '-X', 'utf8', str(REPO / NAMES[0] / 'scripts/build_docx.py'), str(source), str(target)], capture_output=True)
+            self.assertEqual(run.returncode, 0, run.stderr)
+            with zipfile.ZipFile(target) as archive:
+                xml = ET.fromstring(archive.read('word/document.xml'))
+            para = [p for p in xml.findall('.//w:body/w:p', ns) if ''.join(t.text or '' for t in p.findall('.//w:t', ns))][0]
+            runs = [(''.join(t.text or '' for t in r.findall('w:t', ns)), r.find('w:rPr/w:b', ns) is not None and r.find('w:rPr/w:b', ns).get('{%s}val' % ns['w']) not in ('0', 'false'))
+                    for r in para.findall('w:r', ns) if r.findall('w:t', ns)]
+            self.assertEqual(runs, [('判断句。', True), ('证据句。', False)])
 
     def test_bindings_reject_hidden_headings_and_extra_fields(self):
         root = REPO / NAMES[0]
         bindings = filled(root, 'early')['report_template']['bindings']
         for value in ('正文\n新增标题', '', ['非法列表']):
-            invalid = dict(bindings, necessity_heading=value)
+            invalid = dict(bindings, demand_heading=value)
             with self.assertRaises(ValueError):
                 stage.initialize('early', invalid, root)
         with self.assertRaises(ValueError):

@@ -1,420 +1,210 @@
 {
-  "version": "2026-09-20.1",
+  "version": "2026-09-23.1",
   "skill": "zhuying-yewu-fenxi",
   "stage": "early",
-  "label": "早前期（伊隆纬特）",
+  "label": "早前期（2026-09 终稿范式）",
   "source": {
-    "filename": "伊隆纬特项目立项书-案例.docx",
-    "sha256": "2c94c03228604c720df0df9997534b8e576f781817d1a65646e06c56adc7e18f",
-    "confirmed_on": "2026-09-20",
-    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs)"
+    "filename": "早前期立项报告终稿（2026-09，内部文件，事实不入库）",
+    "sha256": "4ea69b51a84ebf72ac8182c03c6d8d03bb148b943c04128e7cad59ba4d9429f4",
+    "confirmed_on": "2026-09-23",
+    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs); case-specific heading text replaced by 【】 descriptions"
   },
   "source_headings": [
     {
-      "id": "e111",
+      "id": "e083",
       "level": 1,
       "text": "三、主营业务分析",
-      "paragraph": 111
+      "paragraph": 83
     },
     {
-      "id": "e112",
+      "id": "e084",
       "level": 2,
-      "text": "（一）主营产品概况",
-      "paragraph": 112
+      "text": "（一）主营业务介绍",
+      "paragraph": 84
+    },
+    {
+      "id": "e086",
+      "level": 2,
+      "text": "（二）主要产品概况",
+      "paragraph": 86
+    },
+    {
+      "id": "e088",
+      "level": 3,
+      "text": "【n.产品或产品线名称】",
+      "paragraph": 88
+    },
+    {
+      "id": "e095",
+      "level": 3,
+      "text": "【n.产品或产品线名称】",
+      "paragraph": 95
+    },
+    {
+      "id": "e100",
+      "level": 3,
+      "text": "【n.产品或产品线名称】",
+      "paragraph": 100
+    },
+    {
+      "id": "e104",
+      "level": 2,
+      "text": "（三）核心技术与优势",
+      "paragraph": 104
+    },
+    {
+      "id": "e107",
+      "level": 3,
+      "text": "【n.核心技术名称（末项可为整机适配与先发优势）】",
+      "paragraph": 107
+    },
+    {
+      "id": "e111",
+      "level": 3,
+      "text": "【n.核心技术名称（末项可为整机适配与先发优势）】",
+      "paragraph": 111
     },
     {
       "id": "e115",
       "level": 3,
-      "text": "1.主营产品情况",
+      "text": "【n.核心技术名称（末项可为整机适配与先发优势）】",
       "paragraph": 115
     },
     {
-      "id": "e116",
+      "id": "e119",
       "level": 3,
-      "text": "2.产品销售情况",
-      "paragraph": 116
+      "text": "【n.核心技术名称（末项可为整机适配与先发优势）】",
+      "paragraph": 119
     },
     {
-      "id": "e117",
-      "level": 4,
-      "text": "（1）主营产品收入及毛利率（2023–2026年4月）",
-      "paragraph": 117
-    },
-    {
-      "id": "e121",
-      "level": 4,
-      "text": "（2）主营产品产能、产量、销售情况（2024-2026一季度）",
-      "paragraph": 121
-    },
-    {
-      "id": "e123",
-      "level": 4,
-      "text": "（3）未来三年产品销售预测",
-      "paragraph": 123
-    },
-    {
-      "id": "e125",
+      "id": "e124",
       "level": 2,
-      "text": "（二）核心技术优势",
-      "paragraph": 125
+      "text": "（四）业务开展情况",
+      "paragraph": 124
     },
     {
-      "id": "e127",
+      "id": "e126",
       "level": 3,
-      "text": "1.抛面动中通的核心优势",
-      "paragraph": 127
-    },
-    {
-      "id": "e128",
-      "level": 4,
-      "text": "（1）机器人直驱关节替代传统伺服链，实现轻量化与降本",
-      "paragraph": 128
+      "text": "1.【近期安排】（【年份区间】）",
+      "paragraph": 126
     },
     {
       "id": "e130",
-      "level": 4,
-      "text": "（2）运动控制系统的精度提升和结构简化",
+      "level": 3,
+      "text": "2.【中期安排】（【年份区间】）",
       "paragraph": 130
     },
     {
-      "id": "e132",
-      "level": 4,
-      "text": "（3）改进导航方案并压缩成本",
-      "paragraph": 132
-    },
-    {
       "id": "e134",
-      "level": 4,
-      "text": "（4）整机小型化与轻量化",
+      "level": 3,
+      "text": "3.【远期安排】（【年份区间】）",
       "paragraph": 134
-    },
-    {
-      "id": "e137",
-      "level": 3,
-      "text": "2.相控阵的核心优势",
-      "paragraph": 137
-    },
-    {
-      "id": "e138",
-      "level": 4,
-      "text": "（1）采用收发共口径设计，实现高低轨融合覆盖。",
-      "paragraph": 138
-    },
-    {
-      "id": "e140",
-      "level": 4,
-      "text": "（2）标准化模块化设计",
-      "paragraph": 140
-    },
-    {
-      "id": "e142",
-      "level": 4,
-      "text": "（3）产品轻量化和综合降本",
-      "paragraph": 142
-    },
-    {
-      "id": "e144",
-      "level": 2,
-      "text": "（三）生产、销售、研发模式",
-      "paragraph": 144
-    },
-    {
-      "id": "e145",
-      "level": 3,
-      "text": "1. 生产模式",
-      "paragraph": 145
-    },
-    {
-      "id": "e147",
-      "level": 3,
-      "text": "2. 销售模式",
-      "paragraph": 147
-    },
-    {
-      "id": "e151",
-      "level": 3,
-      "text": "3. 研发模式",
-      "paragraph": 151
-    },
-    {
-      "id": "e154",
-      "level": 2,
-      "text": "（四）上下游客户分析",
-      "paragraph": 154
-    },
-    {
-      "id": "e155",
-      "level": 3,
-      "text": "1. 上游供应链",
-      "paragraph": 155
-    },
-    {
-      "id": "e157",
-      "level": 3,
-      "text": "2. 下游客户结构：央企主导、海外突破、集中度较高",
-      "paragraph": 157
-    },
-    {
-      "id": "e163",
-      "level": 2,
-      "text": "（五）竞争对手分析",
-      "paragraph": 163
-    },
-    {
-      "id": "e165",
-      "level": 2,
-      "text": "（六）未来业务发展预测",
-      "paragraph": 165
-    },
-    {
-      "id": "e166",
-      "level": 3,
-      "text": "1. 营收与利润预测",
-      "paragraph": 166
-    },
-    {
-      "id": "e168",
-      "level": 3,
-      "text": "2. 产品迭代路线图",
-      "paragraph": 168
     }
   ],
   "nodes": [
     {
-      "id": "e111",
+      "id": "e083",
       "level": 1,
       "text": "三、主营业务分析",
       "sources": [
-        "e111"
+        "e083"
       ]
     },
     {
-      "id": "e112",
+      "id": "e084",
       "level": 2,
-      "text": "（一）主营产品概况",
+      "text": "（一）主营业务介绍",
       "sources": [
-        "e112"
-      ]
-    },
-    {
-      "id": "e115",
-      "level": 3,
-      "text": "1.主营产品情况",
-      "sources": [
-        "e115"
-      ]
-    },
-    {
-      "id": "e116",
-      "level": 3,
-      "text": "2.产品销售情况",
-      "sources": [
-        "e116"
-      ]
-    },
-    {
-      "id": "e117",
-      "level": 4,
-      "text": "（1）主营产品收入及毛利率（{revenue_period}）",
-      "sources": [
-        "e117"
+        "e084"
       ],
-      "guidance": "当前资料对应的历史期间。"
+      "guidance": "一段写核心产品、延伸方向、公司与合作方分工、已实现的交付和所处阶段；配业务板块表（板块/内容及开展方式/当前阶段/落地证据）。"
     },
     {
-      "id": "e121",
-      "level": 4,
-      "text": "（2）主营产品产能、产量、销售情况（{production_period}）",
-      "sources": [
-        "e121"
-      ],
-      "guidance": "当前资料对应的产销期间。"
-    },
-    {
-      "id": "e123",
-      "level": 4,
-      "text": "（3）未来三年产品销售预测",
-      "sources": [
-        "e123"
-      ]
-    },
-    {
-      "id": "e125",
+      "id": "e086",
       "level": 2,
-      "text": "（二）核心技术优势",
+      "text": "（二）主要产品概况",
       "sources": [
-        "e125"
+        "e086"
+      ],
+      "guidance": "节首一句写产品主次关系：核心交付、应用延伸、配套保障。"
+    },
+    {
+      "repeat": "products",
+      "min_items": 1,
+      "sources": [
+        "e088",
+        "e095",
+        "e100"
+      ],
+      "guidance": "按主次排列，核心产品第一；每项写定位与状态、参数表、价格与成本、竞品对比、结构原理及配置规则。",
+      "items": [
+        {
+          "level": 3,
+          "text": "{n}.{product}"
+        }
       ]
     },
     {
-      "id": "e127",
-      "level": 3,
-      "text": "1.{product_1}的核心优势",
+      "id": "e104",
+      "level": 2,
+      "text": "（三）核心技术与优势",
       "sources": [
-        "e127"
+        "e104"
       ],
-      "guidance": "第一条真实产品线或核心产品名称。"
+      "guidance": "节首一段：技术围绕什么展开、分几个方面、为何需要系统能力、公司优势依据。"
     },
     {
-      "id": "e128",
-      "level": 4,
-      "text": "（1）{product_1_advantage_1}",
+      "repeat": "techs",
+      "min_items": 1,
       "sources": [
-        "e128"
+        "e107",
+        "e111",
+        "e115",
+        "e119"
       ],
-      "guidance": "产品一的第一项技术机制与客户效果，须有依据。"
+      "guidance": "只列支撑核心产品的技术，按产品价值链排序；每项三段：作用与难点→公司做法与量化结果（含具名对标）→价值与追赶难点。",
+      "items": [
+        {
+          "level": 3,
+          "text": "{n}.{tech}"
+        }
+      ]
+    },
+    {
+      "id": "e124",
+      "level": 2,
+      "text": "（四）业务开展情况",
+      "sources": [
+        "e124"
+      ],
+      "guidance": "节首一段概括当前阶段与近期、中期、远期安排。"
+    },
+    {
+      "id": "e126",
+      "level": 3,
+      "text": "1.{near_term_heading}（{near_term_period}）",
+      "sources": [
+        "e126"
+      ],
+      "guidance": "按“产品研发及验证方面”“场景验证方面”“生产及经营方面”分段，写已完成事项和一两年内节点。"
     },
     {
       "id": "e130",
-      "level": 4,
-      "text": "（2）{product_1_advantage_2}",
+      "level": 3,
+      "text": "2.{mid_term_heading}（{mid_term_period}）",
       "sources": [
         "e130"
       ],
-      "guidance": "产品一的第二项技术机制与客户效果，须有依据。"
-    },
-    {
-      "id": "e132",
-      "level": 4,
-      "text": "（3）{product_1_advantage_3}",
-      "sources": [
-        "e132"
-      ],
-      "guidance": "产品一的第三项技术机制与客户效果，须有依据。"
+      "guidance": "按“业务布局方面”“市场拓展方面”“大型项目方面”分段，意向金额与合同状态写清。"
     },
     {
       "id": "e134",
-      "level": 4,
-      "text": "（4）{product_1_advantage_4}",
+      "level": 3,
+      "text": "3.{long_term_heading}（{long_term_period}）",
       "sources": [
         "e134"
       ],
-      "guidance": "产品一的第四项技术机制与客户效果，须有依据。"
-    },
-    {
-      "id": "e137",
-      "level": 3,
-      "text": "2.{product_2}的核心优势",
-      "sources": [
-        "e137"
-      ],
-      "guidance": "第二条真实产品线或核心产品名称。"
-    },
-    {
-      "id": "e138",
-      "level": 4,
-      "text": "（1）{product_2_advantage_1}",
-      "sources": [
-        "e138"
-      ],
-      "guidance": "产品二的第一项技术机制与客户效果，须有依据。"
-    },
-    {
-      "id": "e140",
-      "level": 4,
-      "text": "（2）{product_2_advantage_2}",
-      "sources": [
-        "e140"
-      ],
-      "guidance": "产品二的第二项技术机制与客户效果，须有依据。"
-    },
-    {
-      "id": "e142",
-      "level": 4,
-      "text": "（3）{product_2_advantage_3}",
-      "sources": [
-        "e142"
-      ],
-      "guidance": "产品二的第三项技术机制与客户效果，须有依据。"
-    },
-    {
-      "id": "e144",
-      "level": 2,
-      "text": "（三）生产、销售、研发模式",
-      "sources": [
-        "e144"
-      ]
-    },
-    {
-      "id": "e145",
-      "level": 3,
-      "text": "1.生产模式",
-      "sources": [
-        "e145"
-      ]
-    },
-    {
-      "id": "e147",
-      "level": 3,
-      "text": "2.销售模式",
-      "sources": [
-        "e147"
-      ]
-    },
-    {
-      "id": "e151",
-      "level": 3,
-      "text": "3.研发模式",
-      "sources": [
-        "e151"
-      ]
-    },
-    {
-      "id": "e154",
-      "level": 2,
-      "text": "（四）上下游客户分析",
-      "sources": [
-        "e154"
-      ]
-    },
-    {
-      "id": "e155",
-      "level": 3,
-      "text": "1.上游供应链",
-      "sources": [
-        "e155"
-      ]
-    },
-    {
-      "id": "e157",
-      "level": 3,
-      "text": "2.下游客户结构：{customer_structure}",
-      "sources": [
-        "e157"
-      ],
-      "guidance": "依据当前公司客户事实概括，不能预设央企主导、海外突破或集中度较高。"
-    },
-    {
-      "id": "e163",
-      "level": 2,
-      "text": "（五）竞争对手分析",
-      "sources": [
-        "e163"
-      ]
-    },
-    {
-      "id": "e165",
-      "level": 2,
-      "text": "（六）未来业务发展预测",
-      "sources": [
-        "e165"
-      ]
-    },
-    {
-      "id": "e166",
-      "level": 3,
-      "text": "1.营收与利润预测",
-      "sources": [
-        "e166"
-      ]
-    },
-    {
-      "id": "e168",
-      "level": 3,
-      "text": "2.产品迭代路线图",
-      "sources": [
-        "e168"
-      ]
+      "guidance": "产能规划、长期业务方向、配套服务；末句写扩张前提。"
     }
   ]
 }

@@ -22,6 +22,7 @@ class ReportStyleTests(unittest.TestCase):
             '客户认证需要6个月，期间须完成可靠性测试。',
             '技术团队完成样机验证，已交付10套产品。',
             '公司在同一工况下将检测误差从2毫米降至1毫米，满足客户验收要求。',
+            '后续更换供应商通常需要重新开展接口匹配、地面试验和飞行验证。',
         ]
         for skill in SKILLS:
             spec = importlib.util.spec_from_file_location(
@@ -64,6 +65,22 @@ class ReportStyleTests(unittest.TestCase):
             with self.subTest(skill=skill, warn='exclusivity'):
                 self.assertTrue(any(rule.search('国内暂无同规格直接竞品。')
                                     for _, rule in module.WARN_RULES))
+
+    def test_meta_advice_and_internal_source_traces(self):
+        rejected = ['技术可行性、产品定型和常态化作业应分别评价。', '不能据此推导出全国性供给网络已经形成。',
+                    '数据来源：业务回复Q5.1。', '按V10.0订单口径列示。', '详版列示单价6万元。',
+                    '依据《某公司业务尽调问题及回复》复算。']
+        accepted = ['动力系统价格仍为现有方案的4倍以上。', '2025年第一季度收入为10万元。', '型号为V10.0，按GB/T 19001—2016执行。']
+        for skill in SKILLS:
+            spec = importlib.util.spec_from_file_location('style_' + skill, ROOT / skill / 'scripts/style_check.py')
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            for text in rejected:
+                with self.subTest(skill=skill, rejected=text):
+                    self.assertTrue(any(rule.search(text) for _, rule in module.RULES))
+            for text in accepted:
+                with self.subTest(skill=skill, accepted=text):
+                    self.assertFalse(any(rule.search(text) for _, rule in module.RULES))
 
     def test_industry_and_business_chapters_reject_investment_stance(self):
         for skill in ('hangye-fenxi', 'zhuying-yewu-fenxi'):

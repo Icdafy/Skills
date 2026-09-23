@@ -1,241 +1,233 @@
 {
-  "version": "2026-09-20.1",
+  "version": "2026-09-23.1",
   "skill": "gongsi-qingkuang",
   "stage": "early",
-  "label": "早前期（伊隆纬特）",
+  "label": "早前期（2026-09 终稿范式）",
   "source": {
-    "filename": "伊隆纬特项目立项书-案例.docx",
-    "sha256": "2c94c03228604c720df0df9997534b8e576f781817d1a65646e06c56adc7e18f",
-    "confirmed_on": "2026-09-20",
-    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs)"
+    "filename": "早前期立项报告终稿（2026-09，内部文件，事实不入库）",
+    "sha256": "4ea69b51a84ebf72ac8182c03c6d8d03bb148b943c04128e7cad59ba4d9429f4",
+    "confirmed_on": "2026-09-23",
+    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs); case-specific heading text replaced by 【】 descriptions"
   },
   "source_headings": [
     {
-      "id": "e169",
+      "id": "e138",
       "level": 1,
       "text": "四、公司情况",
-      "paragraph": 169
+      "paragraph": 138
     },
     {
-      "id": "e170",
+      "id": "e139",
       "level": 2,
       "text": "（一）基本信息",
-      "paragraph": 170
+      "paragraph": 139
     },
     {
-      "id": "e171",
+      "id": "e140",
       "level": 3,
-      "text": "1.工商信息",
-      "paragraph": 171
+      "text": "1.设立背景",
+      "paragraph": 140
+    },
+    {
+      "id": "e144",
+      "level": 3,
+      "text": "2.核心团队",
+      "paragraph": 144
+    },
+    {
+      "id": "e146",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 146
+    },
+    {
+      "id": "e148",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 148
+    },
+    {
+      "id": "e150",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 150
+    },
+    {
+      "id": "e152",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 152
+    },
+    {
+      "id": "e154",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 154
+    },
+    {
+      "id": "e156",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 156
+    },
+    {
+      "id": "e158",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 158
+    },
+    {
+      "id": "e160",
+      "level": 4,
+      "text": "（n）【姓名】，【职务】",
+      "paragraph": 160
+    },
+    {
+      "id": "e162",
+      "level": 3,
+      "text": "3.人员及组织架构",
+      "paragraph": 162
+    },
+    {
+      "id": "e169",
+      "level": 3,
+      "text": "4.关联公司及经营主体",
+      "paragraph": 169
     },
     {
       "id": "e172",
       "level": 3,
-      "text": "2.核心团队",
+      "text": "5.知识产权",
       "paragraph": 172
     },
     {
-      "id": "e173",
-      "level": 4,
-      "text": "（1）张勇，公司总经理",
-      "paragraph": 173
+      "id": "e174",
+      "level": 3,
+      "text": "6.资质及荣誉",
+      "paragraph": 174
     },
     {
-      "id": "e175",
-      "level": 4,
-      "text": "（2）孙鹏，公司副总经理",
-      "paragraph": 175
-    },
-    {
-      "id": "e177",
-      "level": 4,
-      "text": "（3）曹义东，公司副总经理",
-      "paragraph": 177
+      "id": "e178",
+      "level": 3,
+      "text": "7.主要客户及供应商",
+      "paragraph": 178
     },
     {
       "id": "e179",
       "level": 4,
-      "text": "（4）周小军，公司副总经理",
+      "text": "（1）主要客户",
       "paragraph": 179
-    },
-    {
-      "id": "e181",
-      "level": 4,
-      "text": "（5）鄢泽洪，首席科学家",
-      "paragraph": 181
     },
     {
       "id": "e183",
       "level": 4,
-      "text": "（6）伍金宵，相控阵研发负责人",
+      "text": "（2）主要供应商",
       "paragraph": 183
     },
     {
-      "id": "e185",
-      "level": 3,
-      "text": "3.人员及组织架构",
-      "paragraph": 185
+      "id": "e189",
+      "level": 2,
+      "text": "（二）股权变动情况",
+      "paragraph": 189
     },
     {
-      "id": "e191",
+      "id": "e190",
       "level": 3,
-      "text": "4.知识产权",
-      "paragraph": 191
+      "text": "1.股东结构及控制权",
+      "paragraph": 190
     },
     {
       "id": "e193",
       "level": 3,
-      "text": "5.前五大客户及前五大供应商",
+      "text": "2.历史融资情况",
       "paragraph": 193
     },
     {
-      "id": "e194",
-      "level": 4,
-      "text": "（1）前五大客户",
-      "paragraph": 194
-    },
-    {
       "id": "e195",
-      "level": 4,
-      "text": "（2）前五大供应商",
+      "level": 3,
+      "text": "3.本轮融资及资金使用计划",
       "paragraph": 195
     },
     {
-      "id": "e196",
-      "level": 2,
-      "text": "（二）股权变动情况",
-      "paragraph": 196
-    },
-    {
       "id": "e197",
-      "level": 3,
-      "text": "1.股东结构",
+      "level": 2,
+      "text": "（三）财务数据",
       "paragraph": 197
     },
     {
-      "id": "e202",
-      "level": 3,
-      "text": "2.历史融资情况",
-      "paragraph": 202
-    },
-    {
-      "id": "e204",
-      "level": 4,
-      "text": "（1）2021年8月，公司第一次股权转让",
-      "paragraph": 204
-    },
-    {
-      "id": "e206",
-      "level": 4,
-      "text": "（2）2022年3月，公司第一次增资",
-      "paragraph": 206
-    },
-    {
-      "id": "e208",
-      "level": 4,
-      "text": "（3）2023年3月，公司第二次股权转让",
-      "paragraph": 208
-    },
-    {
-      "id": "e210",
-      "level": 4,
-      "text": "（4）2023年6月，公司第三次股权转让",
-      "paragraph": 210
-    },
-    {
-      "id": "e212",
-      "level": 4,
-      "text": "（5）2023年6月，公司第二次增资",
-      "paragraph": 212
-    },
-    {
-      "id": "e214",
-      "level": 4,
-      "text": "（6）2023年9月，公司第三次增资",
-      "paragraph": 214
-    },
-    {
-      "id": "e216",
-      "level": 2,
-      "text": "（三）财务数据",
-      "paragraph": 216
-    },
-    {
-      "id": "e217",
+      "id": "e198",
       "level": 3,
       "text": "1.核心财务数据",
-      "paragraph": 217
+      "paragraph": 198
     },
     {
-      "id": "e220",
+      "id": "e201",
       "level": 3,
-      "text": "2.存在问题",
-      "paragraph": 220
+      "text": "2.公司收入预测及订单依据",
+      "paragraph": 201
     },
     {
-      "id": "e221",
+      "id": "e203",
       "level": 4,
-      "text": "（1）持续亏损",
-      "paragraph": 221
+      "text": "（1）已签在手订单",
+      "paragraph": 203
     },
     {
-      "id": "e223",
+      "id": "e205",
       "level": 4,
-      "text": "（2）毛利率波动较大",
-      "paragraph": 223
-    },
-    {
-      "id": "e225",
-      "level": 3,
-      "text": "3.财务预测",
-      "paragraph": 225
+      "text": "（2）意向订单",
+      "paragraph": 205
     }
   ],
   "nodes": [
     {
-      "id": "e169",
+      "id": "e138",
       "level": 1,
       "text": "四、公司情况",
       "sources": [
-        "e169"
+        "e138"
       ]
     },
     {
-      "id": "e170",
+      "id": "e139",
       "level": 2,
       "text": "（一）基本信息",
       "sources": [
-        "e170"
+        "e139"
       ]
     },
     {
-      "id": "e171",
+      "id": "e140",
       "level": 3,
-      "text": "1.工商信息",
+      "text": "1.设立背景",
       "sources": [
-        "e171"
-      ]
+        "e140"
+      ],
+      "guidance": "实控人及实际持股、背景首句→设立缘由→工商信息表（注明截至时点）→设立后主要研发及应用节点表。"
     },
     {
-      "id": "e172",
+      "id": "e144",
       "level": 3,
       "text": "2.核心团队",
       "sources": [
-        "e172"
-      ]
+        "e144"
+      ],
+      "guidance": "节首一段：覆盖岗位，全职与兼职名单。"
     },
     {
       "repeat": "team",
       "min_items": 1,
       "sources": [
-        "e173",
-        "e175",
-        "e177",
-        "e179",
-        "e181",
-        "e183"
+        "e146",
+        "e148",
+        "e150",
+        "e152",
+        "e154",
+        "e156",
+        "e158",
+        "e160"
       ],
-      "guidance": "按实际核心团队人数逐人展开，姓名、职务从当前公司资料填写。",
+      "guidance": "按实控人、首席科学家、经营管理、研发、产品、市场、融资顺序逐人展开；每人一段：出生年月、学历、全职或兼职及持股、履历、在公司的分工。",
       "items": [
         {
           "level": 4,
@@ -244,134 +236,145 @@
       ]
     },
     {
-      "id": "e185",
+      "id": "e162",
       "level": 3,
       "text": "3.人员及组织架构",
       "sources": [
-        "e185"
+        "e162"
+      ],
+      "guidance": "总人数与全兼职→部门、学历、年龄三表→组织分工与核心工程化人员集中度。"
+    },
+    {
+      "id": "e169",
+      "level": 3,
+      "text": "4.关联公司及经营主体",
+      "sources": [
+        "e169"
+      ],
+      "guidance": "子公司、生产场地及拟建基地一表（主体或场地/性质及状态/承担功能），末句写各地分工。"
+    },
+    {
+      "id": "e172",
+      "level": 3,
+      "text": "5.知识产权",
+      "sources": [
+        "e172"
+      ],
+      "guidance": "计数句（发明、实用新型、授权、审查、受理）+明细表（含受让情况）。"
+    },
+    {
+      "id": "e174",
+      "level": 3,
+      "text": "6.资质及荣誉",
+      "sources": [
+        "e174"
+      ],
+      "guidance": "资质表（事项/取得时间/适用对象）→许可或适航路径段（写清资质覆盖范围）→认定、任职及获奖表。"
+    },
+    {
+      "id": "e178",
+      "level": 3,
+      "text": "7.主要客户及供应商",
+      "sources": [
+        "e178"
       ]
     },
     {
-      "id": "e191",
-      "level": 3,
-      "text": "4.知识产权",
+      "id": "e179",
+      "level": 4,
+      "text": "（1）主要客户",
       "sources": [
-        "e191"
+        "e179"
+      ],
+      "guidance": "分期前五大客户表（名称/金额/占比/交易内容）；表后首句写集中度结论及对核心业务的影响。"
+    },
+    {
+      "id": "e183",
+      "level": 4,
+      "text": "（2）主要供应商",
+      "sources": [
+        "e183"
+      ],
+      "guidance": "分期前五大供应商表；双向购销、高校往来、关键外购件依赖分段交代。"
+    },
+    {
+      "id": "e189",
+      "level": 2,
+      "text": "（二）股权变动情况",
+      "sources": [
+        "e189"
       ]
+    },
+    {
+      "id": "e190",
+      "level": 3,
+      "text": "1.股东结构及控制权",
+      "sources": [
+        "e190"
+      ],
+      "guidance": "股东表（认缴/实缴/比例/身份）+控制权段：实控人比例、创始团队合计、机构合计。"
     },
     {
       "id": "e193",
       "level": 3,
-      "text": "5.前五大客户及前五大供应商",
+      "text": "2.历史融资情况",
       "sources": [
         "e193"
-      ]
-    },
-    {
-      "id": "e194",
-      "level": 4,
-      "text": "（1）前五大客户",
-      "sources": [
-        "e194"
-      ]
+      ],
+      "guidance": "签约与到账口径→融资表（时间/轮次/投资方/金额/估值/对赌情况，写明回购义务主体）。"
     },
     {
       "id": "e195",
-      "level": 4,
-      "text": "（2）前五大供应商",
+      "level": 3,
+      "text": "3.本轮融资及资金使用计划",
       "sources": [
         "e195"
-      ]
-    },
-    {
-      "id": "e196",
-      "level": 2,
-      "text": "（二）股权变动情况",
-      "sources": [
-        "e196"
-      ]
+      ],
+      "guidance": "拟融资额、投前投后估值、资金用途，一段写完。"
     },
     {
       "id": "e197",
-      "level": 3,
-      "text": "1.股东结构",
+      "level": 2,
+      "text": "（三）财务数据",
       "sources": [
         "e197"
       ]
     },
     {
-      "id": "e202",
-      "level": 3,
-      "text": "2.历史融资情况",
-      "sources": [
-        "e202"
-      ]
-    },
-    {
-      "repeat": "financing_events",
-      "min_items": 1,
-      "sources": [
-        "e204",
-        "e206",
-        "e208",
-        "e210",
-        "e212",
-        "e214"
-      ],
-      "guidance": "按时间顺序逐项列示实际股权变动，不复制案例的日期、轮数或事件。",
-      "items": [
-        {
-          "level": 4,
-          "text": "（{n}）{date}，{event}"
-        }
-      ]
-    },
-    {
-      "id": "e216",
-      "level": 2,
-      "text": "（三）财务数据",
-      "sources": [
-        "e216"
-      ]
-    },
-    {
-      "id": "e217",
+      "id": "e198",
       "level": 3,
       "text": "1.核心财务数据",
       "sources": [
-        "e217"
-      ]
-    },
-    {
-      "id": "e220",
-      "level": 3,
-      "text": "2.存在问题",
-      "sources": [
-        "e220"
-      ]
-    },
-    {
-      "repeat": "financial_issues",
-      "min_items": 0,
-      "sources": [
-        "e221",
-        "e223"
+        "e198"
       ],
-      "guidance": "只列有证据的实际财务问题；已核查未发现此类问题可传空列表，在父节说明核查范围及结果。",
-      "items": [
-        {
-          "level": 4,
-          "text": "（{n}）{issue}"
-        }
-      ]
+      "guidance": "口径句+三段式财务表+一段分析：收入、亏损、费用、毛利率口径、现金流，问题在此段内写清。"
     },
     {
-      "id": "e225",
+      "id": "e201",
       "level": 3,
-      "text": "3.财务预测",
+      "text": "2.公司收入预测及订单依据",
       "sources": [
-        "e225"
-      ]
+        "e201"
+      ],
+      "guidance": "分产品线分年度预测表，随后以已签与意向订单说明依据。"
+    },
+    {
+      "id": "e203",
+      "level": 4,
+      "text": "（1）已签在手订单",
+      "sources": [
+        "e203"
+      ],
+      "guidance": "项数、金额、交付与确认收入状态+订单明细表。"
+    },
+    {
+      "id": "e205",
+      "level": 4,
+      "text": "（2）意向订单",
+      "sources": [
+        "e205"
+      ],
+      "guidance": "截至日期、项数、金额、计数口径→按交付年份分组→按业务板块分表（项数、金额、占比），点明单一大项占比。"
     }
   ]
 }

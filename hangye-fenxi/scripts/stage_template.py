@@ -100,7 +100,7 @@ def has_content(block):
         return any(str(cell).strip() for row in block.get("rows", []) for cell in row)
     if block.get("type") == "bullet":
         return any(str(item).strip() for item in block.get("items", []))
-    return block.get("type") == "p" and bool(str(block.get("text", "")).strip())
+    return block.get("type") == "p" and bool((str(block.get("lead", "")) + str(block.get("text", ""))).strip())
 
 
 def validate(content, root=ROOT):

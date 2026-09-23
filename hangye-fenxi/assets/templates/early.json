@@ -1,230 +1,195 @@
 {
-  "version": "2026-09-20.1",
+  "version": "2026-09-23.1",
   "skill": "hangye-fenxi",
   "stage": "early",
-  "label": "早前期（伊隆纬特）",
+  "label": "早前期（2026-09 终稿范式）",
   "source": {
-    "filename": "伊隆纬特项目立项书-案例.docx",
-    "sha256": "2c94c03228604c720df0df9997534b8e576f781817d1a65646e06c56adc7e18f",
-    "confirmed_on": "2026-09-20",
-    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs)"
+    "filename": "早前期立项报告终稿（2026-09，内部文件，事实不入库）",
+    "sha256": "4ea69b51a84ebf72ac8182c03c6d8d03bb148b943c04128e7cad59ba4d9429f4",
+    "confirmed_on": "2026-09-23",
+    "locator": "Word main-document paragraph (1-based, includes empty paragraphs, excludes table paragraphs); case-specific heading text replaced by 【】 descriptions"
   },
   "source_headings": [
     {
-      "id": "e046",
+      "id": "e040",
       "level": 1,
       "text": "二、所属行业分析",
-      "paragraph": 46
+      "paragraph": 40
     },
     {
-      "id": "e047",
+      "id": "e041",
       "level": 2,
       "text": "（一）行业发展现状",
-      "paragraph": 47
+      "paragraph": 41
+    },
+    {
+      "id": "e043",
+      "level": 3,
+      "text": "1.【需求释放与市场空间判断句】",
+      "paragraph": 43
     },
     {
       "id": "e048",
       "level": 3,
-      "text": "1.卫星通信终端是低空经济全域覆盖的核心基础设施",
+      "text": "2.【技术路线演进判断句】",
       "paragraph": 48
     },
     {
-      "id": "e051",
-      "level": 4,
-      "text": "（1）政策支持层面",
-      "paragraph": 51
-    },
-    {
-      "id": "e055",
-      "level": 4,
-      "text": "（2）市场需求层面",
-      "paragraph": 55
-    },
-    {
-      "id": "e060",
+      "id": "e057",
       "level": 3,
-      "text": "2. 市场规模与增长趋势",
-      "paragraph": 60
+      "text": "3.【商业化进程与经济性判断句】",
+      "paragraph": 57
+    },
+    {
+      "id": "e059",
+      "level": 4,
+      "text": "（1）【验证进展转化判断句】",
+      "paragraph": 59
+    },
+    {
+      "id": "e061",
+      "level": 4,
+      "text": "（2）【全生命周期或场景经济性判断句】",
+      "paragraph": 61
     },
     {
       "id": "e064",
-      "level": 4,
-      "text": "（1）高轨主导：全域覆盖、全时值守的保障功能",
+      "level": 3,
+      "text": "4.【政策体系判断句】",
       "paragraph": 64
     },
     {
-      "id": "e067",
-      "level": 4,
-      "text": "（2）低轨卫星：低时延与小型化优势拓展低空应用增量场景",
-      "paragraph": 67
-    },
-    {
-      "id": "e074",
-      "level": 4,
-      "text": "（3）低轨星座规模化组网释放终端市场成长空间",
-      "paragraph": 74
-    },
-    {
-      "id": "e078",
+      "id": "e069",
       "level": 2,
       "text": "（二）产业链分析",
-      "paragraph": 78
+      "paragraph": 69
     },
     {
-      "id": "e079",
+      "id": "e072",
       "level": 3,
-      "text": "1.产业链概况",
-      "paragraph": 79
+      "text": "1.【上游+构成】",
+      "paragraph": 72
     },
     {
-      "id": "e082",
-      "level": 4,
-      "text": "（1）产业链上游",
-      "paragraph": 82
-    },
-    {
-      "id": "e090",
-      "level": 4,
-      "text": "（2）产业链中游",
-      "paragraph": 90
-    },
-    {
-      "id": "e096",
-      "level": 4,
-      "text": "（3）产业链下游",
-      "paragraph": 96
-    },
-    {
-      "id": "e103",
+      "id": "e076",
       "level": 3,
-      "text": "2.相关洞察",
-      "paragraph": 103
+      "text": "2.【中游+构成】",
+      "paragraph": 76
+    },
+    {
+      "id": "e081",
+      "level": 3,
+      "text": "3.【下游+构成】",
+      "paragraph": 81
     }
   ],
   "nodes": [
     {
-      "id": "e046",
+      "id": "e040",
       "level": 1,
       "text": "二、所属行业分析",
       "sources": [
-        "e046"
+        "e040"
       ]
     },
     {
-      "id": "e047",
+      "id": "e041",
       "level": 2,
       "text": "（一）行业发展现状",
       "sources": [
-        "e047"
-      ]
+        "e041"
+      ],
+      "guidance": "节首一段：行业定位与所处阶段，并点明下文按需求、技术路线、商业化与经济性、政策四方面展开。"
+    },
+    {
+      "id": "e043",
+      "level": 3,
+      "text": "1.{demand_heading}",
+      "sources": [
+        "e043"
+      ],
+      "guidance": "需求与空间：界定任务边界（量化门槛）→现有方案为何不能覆盖（量化）→权威数据证明增量需求→细分场景空间表。"
     },
     {
       "id": "e048",
       "level": 3,
-      "text": "1.{necessity_heading}",
+      "text": "2.{route_heading}",
       "sources": [
         "e048"
       ],
-      "guidance": "用资料说明本赛道对下游场景的作用与必要性，不预设基础设施地位。"
+      "guidance": "技术路线：多路线并行及各自制约→统一前提的控制变量对比表→适用边界与场景分工。"
     },
     {
-      "id": "e051",
-      "level": 4,
-      "text": "（1）政策支持层面",
-      "sources": [
-        "e051"
-      ]
-    },
-    {
-      "id": "e055",
-      "level": 4,
-      "text": "（2）市场需求层面",
-      "sources": [
-        "e055"
-      ]
-    },
-    {
-      "id": "e060",
+      "id": "e057",
       "level": 3,
-      "text": "2.市场规模与增长趋势",
+      "text": "3.{commercial_heading}",
       "sources": [
-        "e060"
-      ]
+        "e057"
+      ],
+      "guidance": "商业化：节首一段概括投资关注价值，再分验证转化与经济性两段展开。"
+    },
+    {
+      "id": "e059",
+      "level": 4,
+      "text": "（1）{validation_heading}",
+      "sources": [
+        "e059"
+      ],
+      "guidance": "工程验证→国内外同类进展→付费合同或交付（与公司情况章数字一致）→仍未形成的环节。"
+    },
+    {
+      "id": "e061",
+      "level": 4,
+      "text": "（2）{economics_heading}",
+      "sources": [
+        "e061"
+      ],
+      "guidance": "同等作业量下的成本对比、客户损失节约，配经济性对比表；写明价格假设的公开依据。"
     },
     {
       "id": "e064",
-      "level": 4,
-      "text": "（1）{existing_market_heading}",
+      "level": 3,
+      "text": "4.{policy_heading}",
       "sources": [
         "e064"
       ],
-      "guidance": "存量市场、成熟路线或现有方案的功能与地位。"
+      "guidance": "政策：战略定位节点→直接针对细分环节的专项政策与标准（写层级）→配套制度与要素供给→一句总体判断。"
     },
     {
-      "id": "e067",
-      "level": 4,
-      "text": "（2）{incremental_market_heading}",
-      "sources": [
-        "e067"
-      ],
-      "guidance": "增量场景与新技术路线的客户价值。"
-    },
-    {
-      "id": "e074",
-      "level": 4,
-      "text": "（3）{market_release_heading}",
-      "sources": [
-        "e074"
-      ],
-      "guidance": "市场空间释放所依赖的建设、成本或应用条件。"
-    },
-    {
-      "id": "e078",
+      "id": "e069",
       "level": 2,
       "text": "（二）产业链分析",
       "sources": [
-        "e078"
-      ]
+        "e069"
+      ],
+      "guidance": "节首一段：产业链构成、公司所处环节及其与合作方的分工边界。"
     },
     {
-      "id": "e079",
+      "id": "e072",
       "level": 3,
-      "text": "1.产业链概况",
+      "text": "1.{upstream_heading}",
       "sources": [
-        "e079"
-      ]
+        "e072"
+      ],
+      "guidance": "以“上游”开头写明构成；写各要素对成本、性能、可靠性的作用及国内基础。"
     },
     {
-      "id": "e082",
-      "level": 4,
-      "text": "（1）产业链上游",
-      "sources": [
-        "e082"
-      ]
-    },
-    {
-      "id": "e090",
-      "level": 4,
-      "text": "（2）产业链中游",
-      "sources": [
-        "e090"
-      ]
-    },
-    {
-      "id": "e096",
-      "level": 4,
-      "text": "（3）产业链下游",
-      "sources": [
-        "e096"
-      ]
-    },
-    {
-      "id": "e103",
+      "id": "e076",
       "level": 3,
-      "text": "2.相关洞察",
+      "text": "2.{midstream_heading}",
       "sources": [
-        "e103"
-      ]
+        "e076"
+      ],
+      "guidance": "以“中游”开头；分工表（环节/职责/代表主体/配套能力关键），公司与国内外同类企业并列，写专业门槛与公司进展。"
+    },
+    {
+      "id": "e081",
+      "level": 3,
+      "text": "3.{downstream_heading}",
+      "sources": [
+        "e081"
+      ],
+      "guidance": "以“下游”开头；需求主体与采购逻辑，配应用方向表（方向/需求主体/长续航等核心价值）。"
     }
   ]
 }
