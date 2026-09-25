@@ -1,4 +1,4 @@
 interface:
   display_name: "投委会议题"
-  short_description: "根据股东会/合伙人会议通知撰写投委会议题并生成公文排版DOCX"
-  default_prompt: "Use $yiti-skill to draft a 投委会议题 from the provided meeting notice and proposal documents. Follow the fixed skeleton (导语、会议基本信息、会议审议事项、请示事项、附件), put core conclusions first in bold, cite clause numbers and document numbers, and apply the company typography rules."
+  short_description: "撰写股东会/合伙人会议参会表决议题及投资项目退出议题，生成公文排版DOCX"
+  default_prompt: "Use $yiti-skill to draft a 投委会议题. For meeting notices, follow the 会议类 skeleton (导语、会议基本信息、会议审议事项、请示事项、附件); for an exit, follow the 退出类 skeleton (两段导语、项目基本情况、发展情况、退出原因、退出安排、请示事项、附件、落款、退出方案). Write neutral formal officialese, end every paragraph on a fact or conclusion, state necessity directly, run the text checker, and apply the company typography rules."
