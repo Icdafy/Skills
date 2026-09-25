@@ -28,14 +28,15 @@ Rules come from the gold examples in `references/gold-examples.md` (例六 is a 
 4. End every paragraph with a fact or a conclusion. Never close a paragraph with "需要后续进行判断""有待进一步研判""后续持续关注""视情况而定" or any similar deferral sentence.
 5. State what things are and why they are necessary, directly. Never use "不是……而是""并非……而是""不仅……而且""而非" or other set-up-then-negate patterns.
 6. Put the JSON spec through `scripts/check_yiti_text.py spec.json`; fix every 硬规则 hit, review each 警告 in context.
-7. Render with `scripts/create_yiti_docx.py spec.json out.docx` (see `assets/examples/exit-yiti-spec.json` for a complete B 类 spec), then open the file in Word and check font fallback, line spacing, table layout, attachment alignment and page numbers.
+7. Run `scripts/ensure_fonts.py` once per machine: it installs the bundled 仿宋_GB2312, 楷体_GB2312 and 方正小标宋简体 per-user when missing (Windows registry included, no admin rights). 方正小标宋简体's licence forbids embedding it in the .docx, so the machine that opens the file must have it installed.
+8. Render with `scripts/create_yiti_docx.py spec.json out.docx` (see `assets/examples/exit-yiti-spec.json` for a complete B 类 spec), then open the file in Word and check font fallback, line spacing, table layout, attachment alignment and page numbers.
 
 ## Required Format Priorities
 
 Apply fonts in this order, exactly as in the manual Word workflow:
 
 1. Chinese fonts by role: title 二号方正小标宋简体; `提交子公司：投管公司` 三号楷体_GB2312 centered; body 三号仿宋_GB2312; `一、` 三号黑体 not bold; `（一）` 三号楷体_GB2312 bold; `1.` 三号仿宋_GB2312 bold; `（1）` 三号仿宋_GB2312 bold (四级标题，按需使用).
-2. Every round parenthesis and its contents: 楷体_GB2312, 三号 in titles/body/attachment lines, 五号 inside tables. The serial number `（1）` of a 四级标题 follows the heading (仿宋_GB2312 bold).
+2. Every round parenthesis and its contents: 楷体_GB2312. Size follows the location: 二号 in the main title and attachment titles (same size as the title), 三号 in the submit line, body, headings and attachment lines, 五号 inside tables. The serial number `（1）` of a 四级标题 is not changed to 楷体: it stays 仿宋_GB2312 bold with the heading.
 3. Tables: every character 五号; outside parentheses 仿宋_GB2312, inside parentheses 楷体_GB2312; centered horizontally and vertically; header row bold and repeated across pages.
 4. Footer: `-1-`, both hyphens and the PAGE field all 四号宋体 in every font slot; always on; odd/even pages different (odd right, even left).
 5. Last pass: Times New Roman for the whole body — every digit, Latin letter and symbol such as `%` `.` `:` becomes Times New Roman, inside parentheses and tables too, while Chinese characters keep the fonts above. The footer is excluded and stays 四号宋体. Full-width digits and `％` are converted to half-width first so the pass reaches them.
@@ -54,8 +55,9 @@ Layout:
 - `references/exit-writing-logic.md`: B 类 skeleton, section logic, connective and data sentence bank, 退出方案 template and self-check list.
 - `references/gold-examples.md`: six annotated 议题 (券商股东会两例、基金合伙人会议三例、项目退出一例).
 - `assets/examples/exit-yiti-spec.json`: complete desensitized B 类 spec (正文、附件说明、落款、退出方案附件及流程表).
-- `assets/fonts/`: 方正小标宋简体、楷体_GB2312、仿宋_GB2312 (simfang.ttf).
+- `assets/fonts/`: 方正小标宋简体、楷体_GB2312、仿宋_GB2312 (simfang.ttf), installed by `scripts/ensure_fonts.py`.
 - `assets/templates/文件字体格式.doc`: original company format sample.
 - `scripts/create_yiti_docx.py`: deterministic DOCX generator. Spec fields: `kind` (`meeting`/`exit`), `title` (use `\n` to break lines), `submit_line`, `recipient` (empty string omits it), `intro` (string or list of paragraphs), `blocks` (`h1` `h2` `h3` `h4` `para` `table` `blank`; `**...**` for inline bold), `attachments`, `signature` {`issuer`, `date`}, `appendices` [{`title`, `blocks`}], `page_numbers` (default true). Embeds the bundled 仿宋_GB2312/楷体_GB2312 on save and prints the text-check result.
 - `scripts/check_yiti_text.py`: language scanner for JSON specs or text drafts (deferral endings, set-up-then-negate patterns, stock phrases, tone warnings); exit code 1 on hard hits.
+- `scripts/ensure_fonts.py`: checks the three official-document fonts and installs missing ones per-user from `assets/fonts/` (`--check` only reports). The generator prints a reminder when any is missing.
 - `scripts/embed_fonts.py`: font embedder used by the generator; `python scripts/embed_fonts.py --docx out.docx --verify` re-checks an existing file.

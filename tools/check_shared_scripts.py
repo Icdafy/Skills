@@ -44,6 +44,12 @@ SHARED_GROUPS: tuple[dict, ...] = (
         "note": "跨 Agent 安装与真实调用验收",
     },
     {
+        "file": "scripts/ensure_fonts.py",
+        "canonical": "gongsi-qingkuang",
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "yiti-skill"),
+        "note": "公文字体检测与用户级安装",
+    },
+    {
         "file": "requirements.txt",
         "canonical": "gongsi-qingkuang",
         "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),

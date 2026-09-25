@@ -3,7 +3,7 @@
 
 Font order mirrors the manual workflow: first give every run its Chinese font
 (方正小标宋简体 / 黑体 / 楷体_GB2312 / 仿宋_GB2312), then set parentheses and their
-contents to 楷体_GB2312 (三号 in text, 五号 in tables), then the footer `-1-` to
+contents to 楷体_GB2312 (二号 in titles, 三号 in text, 五号 in tables), then the footer `-1-` to
 四号宋体, and finally apply Times New Roman to the whole body so every digit,
 Latin letter and symbol such as % is Times New Roman while Chinese characters
 keep their fonts. The footer is excluded from that last pass. Inline bold uses
@@ -54,6 +54,7 @@ from docx.shared import Cm, Pt
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from embed_fonts import embed_bundled_fonts  # noqa: E402  随技能分发的字体嵌入器
 from check_yiti_text import scan_spec  # noqa: E402  议题语言扫描
+import ensure_fonts  # noqa: E402  公文字体检测（缺失时提示运行 ensure_fonts.py 安装）
 
 TITLE_FONT = "方正小标宋简体"
 BODY_FONT = "仿宋_GB2312"
@@ -213,6 +214,7 @@ def add_paragraph(
     first_indent: bool = True,
     alignment=WD_ALIGN_PARAGRAPH.JUSTIFY,
     keep_serial: bool = False,
+    paren_size: float = BODY_SIZE,
 ):
     p = doc.add_paragraph()
     set_paragraph_format(
@@ -221,7 +223,7 @@ def add_paragraph(
         first_indent_pt=TWO_CHAR_INDENT_PT if first_indent else 0,
         alignment=alignment,
     )
-    add_runs_with_inline_bold(p, text, font, size, bold, keep_serial=keep_serial)
+    add_runs_with_inline_bold(p, text, font, size, bold, paren_size=paren_size, keep_serial=keep_serial)
     return p
 
 
@@ -470,6 +472,7 @@ def add_signature(doc: Document, signature: dict) -> None:
 
 
 def add_title_lines(doc: Document, title: str) -> None:
+    """主标题、附件标题：二号方正小标宋简体；标题内括号为楷体_GB2312，与标题同为二号。"""
     for line in str(title).splitlines():
         add_paragraph(
             doc,
@@ -479,6 +482,7 @@ def add_title_lines(doc: Document, title: str) -> None:
             line_pt=TITLE_LINE_PT,
             first_indent=False,
             alignment=WD_ALIGN_PARAGRAPH.CENTER,
+            paren_size=TITLE_SIZE,
         )
 
 
@@ -588,6 +592,14 @@ def main() -> None:
     data = json.loads(args.input.read_text(encoding="utf-8-sig"))
     build_docx(data, args.output)
     print(f"Saved: {args.output}")
+    try:
+        missing = [item["family"] for item in ensure_fonts.check()]
+    except Exception:  # 检测失败不影响生成
+        missing = []
+    if missing:
+        print(f"本机未安装：{'、'.join(missing)}，Word 打开会用替代字体显示；"
+              f"运行 python {Path(__file__).with_name('ensure_fonts.py')} 从技能自带字体安装。",
+              file=sys.stderr)
     hard, warn = scan_spec(data)
     if hard or warn:
         print("文本检查（硬规则须改掉后重新生成）：", file=sys.stderr)

@@ -75,7 +75,8 @@ class YitiFormatTests(unittest.TestCase):
 
     def test_parentheses_kaiti_with_times_new_roman_digits(self):
         doc = self.docs[0]
-        body = [(p, 16) for p in doc.paragraphs]
+        # 主标题内括号与标题同为二号，其余表格外括号三号，表格内五号。
+        body = [(p, 22 if index == 0 else 16) for index, p in enumerate(doc.paragraphs)]
         body += [(p, 10.5) for t in doc.tables for row in t.rows for c in row.cells for p in c.paragraphs]
         checked = 0
         for paragraph, size in body:
@@ -97,7 +98,11 @@ class YitiFormatTests(unittest.TestCase):
         self.assertEqual(intro.text, '正文2026（含加粗ABC12及(嵌套34)内容）恢复正文56。')
         self.assertTrue(next(r for r in intro.runs if r.text == '加粗ABC12').bold)
         self.assert_font(intro.runs[-1], '仿宋_GB2312', 'Times New Roman', 16)
-        self.assert_font(doc.paragraphs[0].runs[0], '方正小标宋简体', 'Times New Roman', 22)
+        title_runs = doc.paragraphs[0].runs
+        self.assertEqual([r.text for r in title_runs], ['审议关于示例公司', '（有限合伙ABC123）', '的议题'])
+        self.assert_font(title_runs[0], '方正小标宋简体', 'Times New Roman', 22)
+        self.assert_font(title_runs[1], '楷体_GB2312', 'Times New Roman', 22)
+        self.assert_font(title_runs[2], '方正小标宋简体', 'Times New Roman', 22)
 
     def test_table_text_is_wuhao_fangsong_and_kaiti(self):
         table = self.docs[0].tables[0]
@@ -116,6 +121,7 @@ class YitiFormatTests(unittest.TestCase):
         self.assert_font(paragraphs['（一）议案'].runs[0], '楷体_GB2312', 'Times New Roman', 16, bold=True)
         self.assert_font(paragraphs['1.依据'].runs[0], '仿宋_GB2312', 'Times New Roman', 16, bold=True)
         h4 = paragraphs['（1）条款（修订）']
+        # 四级标题序号"（1）"随标题用仿宋_GB2312加粗，不按括号规则改楷体。
         self.assertEqual(h4.runs[0].text, '（1）条款')
         self.assert_font(h4.runs[0], '仿宋_GB2312', 'Times New Roman', 16, bold=True)
         self.assert_font(h4.runs[1], '楷体_GB2312', 'Times New Roman', 16, bold=True)
