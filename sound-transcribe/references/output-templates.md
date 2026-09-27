@@ -42,9 +42,9 @@
 5. **寒暄过滤**：开场寒暄、结尾致谢不进问答体，归入文末"其他内容"一节。
 6. **无声纹数据时**：问答对可信度声明必须写"仅句式判断"，且不猜测提问者/回答者身份。
 
-## 模板 B：会议纪要素材（交接 meeting-minutes 技能）
+## 模板 B：会议纪要素材（交接 meeting-minutes-pro 技能）
 
-输出文件 `<prefix>.meeting-material.md`，作为 meeting-minutes 技能的输入：
+输出文件 `<prefix>.meeting-material.md`，作为 meeting-minutes-pro 技能的输入：
 
 ```markdown
 # 会议纪要素材

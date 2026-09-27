@@ -94,7 +94,7 @@ Get-Content -LiteralPath "<prefix>.md" -Encoding UTF8 -Tail 20
 转录验证通过后，按 `post-processing.md` 执行：场景检测 → 校对（出修订对照表）→
 章节划分 → 多层总结 → 按 `output-templates.md` 出场景化产物（问答体/讲座笔记/备忘等）。
 
-用户要正式会议纪要时，把时间戳 `.md` 或 `.clean.md` 交给 `meeting-minutes` 技能，
+用户要正式会议纪要时，把时间戳 `.md` 或 `.clean.md` 交给 `meeting-minutes-pro` 技能，
 并携带"待核实事项"一节。
 
 ## 最终报告模板

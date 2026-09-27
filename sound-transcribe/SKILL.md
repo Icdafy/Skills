@@ -65,7 +65,7 @@ description: Transcribe audio or video recordings into accurate text, subtitles,
 后处理层（按需）：`.clean.md`（校对稿+修订对照表）/ `.summary.md`（多层总结）/
 场景化产物（`.qa.md` 问答体等，见 `references/output-templates.md`）。
 
-用户要会议纪要时：转录 + 后处理完成后交接 `meeting-minutes` 技能。
+用户要会议纪要时：转录 + 后处理完成后交接 `meeting-minutes-pro` 技能。
 
 ## 质量守则
 
