@@ -8,23 +8,22 @@
 
 运行要求同时写入技能正文和 `metadata.compatibility`。为兼容只接受通用核心 frontmatter 字段的严格校验器，本包不另设顶层 `compatibility` 扩展。只识别该可选扩展的平台可能忽略机器可读运行说明，此时以 README 和技能正文为准。
 
-| 客户端 | 安装／导入方式 | 中文名称表现 | 注意事项 |
-| --- | --- | --- | --- |
-| Codex／OpenAI | 安装到配置的技能目录，或通过受支持界面上传目录／ZIP；`scripts/install_skill.py --target codex` 使用通用用户级目录 | 支持时由 `agents/openai.yaml` 和 `metadata.display_name` 显示中文名称 | 功能可用性和上传入口随账号及版本而异 |
-| Claude | 安装到 Claude 技能目录，或通过 Skills API 上传 ZIP；安装脚本支持 `--target claude` | 使用 API 时把 `display_title` 设为 `国企股权投资投后报告`；忽略显示元数据的本地客户端可能显示英文标识 | ZIP 须保留顶层技能文件夹 |
-| Qoder | 安装到 Qoder 技能目录；安装脚本支持 `--target qoder` | Qoder 的必填 `name` 要求小写 ASCII；不识别可选显示元数据时会显示 `soe-post-investment-report` | 不得把标准标识改成中文 |
-| Trae IDE／CLI | 使用项目级技能目录；安装脚本支持 `--target trae` 和 `--target trae-cli`，并要求 `--project` | 平台提供显示名称字段时手工设置中文，否则可能显示英文标识 | 按所安装版本核对当前项目级目录 |
-| WorkBuddy／CodeBuddy | 使用项目技能目录；安装脚本支持 `--target workbuddy --project ...` | 导入或市场界面支持时设置中文名称；忽略元数据时可能显示英文标识 | 不同版本的产品命名和本地目录约定可能不同 |
-| 其他 Agent Skills 客户端 | 复制完整目录或上传可移植 ZIP | 优先把显示标题设为 `国企股权投资投后报告`；只显示必填 `name` 的客户端会显示英文标识 | 正式使用前验证触发行为、相对资源、Python 依赖和渲染能力 |
+各客户端（Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM、WorkBuddy、TRAE、Qoder）的安装入口、调用方式、运行环境适配与验收统一见 [agent-compatibility.md](agent-compatibility.md)，推荐使用 `scripts/skill_portability.py`（`agents` 列出目标，`install --agent <客户端> --apply` 安装，`package` 生成上传用 ZIP）。以下只列中文显示名称的表现：
+
+| 客户端 | 中文名称表现 |
+| --- | --- |
+| Codex、ChatGPT 桌面版 | 读取 `agents/openai.yaml` 的 `display_name`，显示 `国企股权投资投后报告` |
+| Claude 网页／桌面 Chat | 上传界面显示 `SKILL.md` 的 `name`；使用 Skills API 时把 `display_title` 设为 `国企股权投资投后报告` |
+| Claude Code、Kimi Code、Qoder、TRAE、WorkBuddy、ZCode、AutoClaw | 多数只显示必填 `name`，即 `soe-post-investment-report`；导入界面提供显示名称字段时手工填写中文名 |
+| 豆包电脑版、Kimi Work | 上传后以 `SKILL.md` 解析结果为准；可编辑名称时填写中文名，不改动 `name` 字段 |
+
+`scripts/install_skill.py` 保留兼容：`--target codex` 现写入 `~/.agents/skills/`（新版 Codex 与 ChatGPT 桌面版读取的目录），`claude`、`qoder`、`trae`、`trae-cli`、`workbuddy` 与 `--zip` 行为不变。
 
 相关规范与平台资料：
 
 - [Agent Skills 规范](https://github.com/agentskills/agentskills/blob/main/docs/specification.mdx)
 - [OpenAI Skills API 创建方法](https://developers.openai.com/api/reference/python/resources/skills/methods/create)
 - [Claude Agent Skills](https://platform.claude.com/docs/en/managed-agents/skills) 与 [Claude Skills 创建 API](https://platform.claude.com/docs/en/api/beta/skills/create)
-- [Qoder Skills](https://docs.qoder.com/zh/cli/Skills)
-- [Trae Skills](https://docs.trae.cn/work_skills)、[Trae CLI Skills](https://docs.trae.cn/cli_skills) 与 [Trae IDE Skills](https://docs.trae.cn/ide_skills)
-- [腾讯云 WorkBuddy skills](https://cloud.tencent.com/document/product/1831/134516)
 
 ## 认证边界
 

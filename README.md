@@ -1,6 +1,6 @@
 # Skills 军团
 
-面向一级市场股权投资与投研工作流的通用 Agent Skills 技能库，可供支持或可导入 `SKILL.md`/Agent Skills 包结构的 Claude、Codex、ChatGPT、WorkBuddy、Trae、Qoder 等智能体复用；具体导入方式、能力与中文显示名称以各客户端版本为准。按用途分为两类：**立项报告章节生成**（以资深投资经理视角，把项目资料包炼成客观、审慎、证据可追溯的报告正文）与**通用办公工具**（投后报告、纪要、公文、PPT、转写）。
+面向一级市场股权投资与投研工作流的通用 Agent Skills 技能库，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 等支持 `SKILL.md`/Agent Skills 包结构的智能体中下载安装并完整调用（见下文“跨 Agent 安装”）；具体导入方式、能力与中文显示名称以各客户端版本为准。按用途分为两类：**立项报告章节生成**（以资深投资经理视角，把项目资料包炼成客观、审慎、证据可追溯的报告正文）与**通用办公工具**（投后报告、纪要、公文、PPT、转写）。
 
 ## 立项报告章节生成
 
@@ -27,6 +27,7 @@
 | 工具 | 说明 |
 | --- | --- |
 | [tools/check_shared_scripts.py](tools/check_shared_scripts.py) | 校验跨技能共享脚本的多份副本是否一致，防止静默漂移。技能自包含、可独立分发，故不能跨技能 import，`build_docx.py`（立项三技能）与 `embed_fonts.py`（五个公文技能）必须各自留物理副本。改动流程：改 `gongsi-qingkuang` 下的基准副本 → `python tools/check_shared_scripts.py --sync` 同步 → 提交前 `python tools/check_shared_scripts.py` 校验（漂移即退出码 1）。 |
+| [tools/package_skills.py](tools/package_skills.py) | 生成并校验七个技能的可下载 ZIP（`distributions/investment-report-skills/`、`distributions/office-skills/`）：清单、逐文件及 ZIP 本身 SHA-256 与源码一致，`--check` 发现漏文件或包过期即失败。各技能的 `scripts/skill_portability.py` 与 `references/agent-compatibility.md` 为七份共享副本，由上一行工具同步校验。旧命令 `tools/package_investment_skills.py` 仍可用，仅处理立项三技能。 |
 | [tools/verify_embedding_with_word.py](tools/verify_embedding_with_word.py) | 决定性验证「嵌入 DOCX 的字体真的被渲染器使用」。把随附字体内部名改成本机未安装的名字再排版，带阴性对照：不嵌入必须回退系统字体，嵌入后必须不回退。单元测试只能断言 fontTable 写了 `w:charset`，证明不了渲染器会采用——这个盲区曾让一版"看起来成功、实际无效"的实现通过全部校验。改动任何 `embed_fonts.py` 后建议跑一次：`python tools/verify_embedding_with_word.py --skill <技能> [--renderer word\|libreoffice]`。 |
 | [tools/tests/](tools/tests/) | 五个公文 DOCX 技能的仓库级回归测试（以子进程调各技能 CLI，避免同名 `embed_fonts` 串味）：`python -m unittest discover -s tools/tests`。其中 `test_unified_format.py` 把同一份内容交给 yiti-skill、officialese-skill 与立项报告三技能的生成器，逐项核对统一公文格式标准（以 [yiti-skill/references/format-rules.md](yiti-skill/references/format-rules.md) 为基准），防止各技能版式再次分叉；soe-post-investment-report 由其自带校验器与测试覆盖。 |
 
@@ -34,6 +35,15 @@
 
 各技能文件夹内含 `SKILL.md`（触发与执行逻辑）及 `references/` 等配套资源；详细说明见各文件夹内 README（如有）。
 
-## 立项报告三技能跨 Agent 安装
+## 跨 Agent 安装
 
-[完整ZIP下载与安装说明](distributions/investment-report-skills/README.md)覆盖 WorkBuddy、Kimi、Claude桌面版、Qoder、Trae 等客户端，并区分桌面、CLI及地区版本。包内提供资源完整性检查、Word冒烟测试及安装后调用验收。维护者更新技能后运行 `python tools/package_investment_skills.py`，提交前运行同命令的 `--check`。
+下列七个技能均已适配 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM、WorkBuddy、TRAE、Qoder：描述控制在 200 字符内（满足 claude.ai 上传上限），附 `agents/openai.yaml` 中文显示名称，每个技能自带 `references/agent-compatibility.md`（各客户端安装入口、调用方式、运行环境与验收）和 `scripts/skill_portability.py`（完整性检查、Word 冒烟测试、目录安装、打包）。
+
+| 获取方式 | 适用客户端 | 操作 |
+|---|---|---|
+| 单技能 ZIP | Claude 网页/桌面 Chat、ChatGPT 团队版、豆包电脑版（工作模式）、WorkBuddy、Kimi Work、Qoder 桌面版、TRAE、智谱 ZCode | 下载 [立项报告三技能](distributions/investment-report-skills/README.md) 或 [办公四技能](distributions/office-skills/README.md) 的 ZIP，在客户端“上传技能”入口导入 |
+| 随包安装器 | Claude Code、Codex、ChatGPT 桌面版、Kimi Code、Qoder CLI/QoderWork/CN、TRAE、WorkBuddy、CodeBuddy、ZCode、AutoClaw（OpenClaw） | 解压后 `python scripts/skill_portability.py install --agent <客户端> --apply`，或 `--detect --apply` 自动识别本机客户端；`agents` 子命令列出全部目录 |
+| Claude Code 插件市场 | Claude Code | `/plugin marketplace add Icdafy/Skills`，再 `/plugin install <技能名>@icdafy-skills` |
+| Codex 技能安装器 | Codex、ChatGPT 桌面版 | `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<技能名>` |
+
+安装后新建会话，按各技能 `references/agent-compatibility.md` 的验收步骤确认可发现、自动路由、`check --smoke` 与 Word 输出；包及脚本检查通过不等于所有客户端模型调用已经实测。维护者更新技能后运行 `python tools/check_shared_scripts.py --sync`、`python tools/package_skills.py`，提交前运行 `python tools/package_skills.py --check`。

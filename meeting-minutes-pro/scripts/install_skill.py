@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Install this skill into Codex, Claude Code, and/or Tencent WorkBuddy."""
+"""Install this skill into Codex, Claude Code, and/or Tencent WorkBuddy.
+
+Kept for compatibility; ``scripts/skill_portability.py install`` covers every
+supported client (see references/agent-compatibility.md).
+"""
 
 from __future__ import annotations
 
@@ -16,10 +20,10 @@ SKILL_NAME = SKILL_DIR.name
 
 def destinations() -> dict[str, Path]:
     home = Path.home()
-    codex_root = Path(os.environ.get("CODEX_HOME", home / ".codex")).expanduser()
     claude_root = Path(os.environ.get("CLAUDE_CONFIG_DIR", home / ".claude")).expanduser()
     return {
-        "codex": codex_root / "skills" / SKILL_NAME,
+        # Current Codex and the ChatGPT desktop app read $HOME/.agents/skills.
+        "codex": home / ".agents" / "skills" / SKILL_NAME,
         "claude": claude_root / "skills" / SKILL_NAME,
         "workbuddy": home / ".workbuddy" / "skills" / SKILL_NAME,
     }

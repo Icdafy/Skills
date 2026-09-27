@@ -34,13 +34,15 @@ SHARED_GROUPS: tuple[dict, ...] = (
     {
         "file": "scripts/skill_portability.py",
         "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "officialese-skill",
+                   "yiti-skill", "meeting-minutes-pro", "soe-post-investment-report"),
         "note": "跨 Agent 完整性检查、打包与目录安装",
     },
     {
         "file": "references/agent-compatibility.md",
         "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "officialese-skill",
+                   "yiti-skill", "meeting-minutes-pro", "soe-post-investment-report"),
         "note": "跨 Agent 安装与真实调用验收",
     },
     {
@@ -53,7 +55,8 @@ SHARED_GROUPS: tuple[dict, ...] = (
     {
         "file": "requirements.txt",
         "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
+        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "officialese-skill",
+                   "yiti-skill"),
         "note": "Word 运行依赖",
     },
     {

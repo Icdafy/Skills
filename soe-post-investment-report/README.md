@@ -73,7 +73,16 @@ python -X utf8 scripts/font_preflight.py
 
 ## 跨智能体安装
 
-本技能采用通用 `SKILL.md` 包结构。可复制完整目录到目标智能体的技能目录，或使用安装脚本：
+本技能采用通用 `SKILL.md` 包结构，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 中使用。界面型客户端上传[完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip)；目录型客户端使用通用安装器，各客户端入口、调用方式和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)：
+
+```bash
+python -X utf8 scripts/skill_portability.py agents
+python -X utf8 scripts/skill_portability.py check --smoke
+python -X utf8 scripts/skill_portability.py install --agent claude-code --agent codex --apply
+python -X utf8 scripts/skill_portability.py install --detect --apply
+```
+
+原安装脚本保留兼容（`--target codex` 现写入新版 Codex 与 ChatGPT 桌面版读取的 `~/.agents/skills/`）：
 
 ```bash
 # 用户级目录

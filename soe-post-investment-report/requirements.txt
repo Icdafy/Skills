@@ -1,0 +1,4 @@
+# Python >= 3.10. DOCX generation and validation need python-docx;
+# PDF page certification additionally needs pypdf plus Word/LibreOffice and Poppler.
+python-docx>=1.1,<2
+pypdf>=4,<7

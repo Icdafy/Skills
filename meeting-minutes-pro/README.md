@@ -38,11 +38,11 @@ Qwen 主稿再次由 Qwen 重转不计作独立双引擎；当前自动复核器
 
 ## 安装、更新与隐私
 
-安装命令：`python scripts/install_skill.py --target codex`；其他目标支持 claude、workbuddy、all。覆盖更新加 `--force`，仅覆盖公共技能文件，保留目标项目术语与机构禁词；不会删除整个目标目录。旧版无指纹 ASR 检查点自动重算，旧版复核报告须按新版重新生成。
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip)，在 Claude、ChatGPT、豆包、WorkBuddy、Kimi Work、Qoder、TRAE 的技能界面上传；目录型客户端用 `python scripts/skill_portability.py install --agent <客户端> --apply`（`agents` 子命令列出 claude-code、codex、kimi-code、workbuddy、trae-cn、qoder-cli、zcode、openclaw 等全部目标，`--detect` 自动识别本机客户端）。覆盖更新时旧版先备份到 `skill-backups/`，项目术语与机构禁词始终保留。旧命令 `python scripts/install_skill.py --target codex|claude|workbuddy|all [--force]` 仍可用。旧版无指纹 ASR 检查点自动重算，旧版复核报告须按新版重新生成。
 
 `glossary/industry/` 是公共行业术语库；`glossary/` 根下项目术语和 `banned-phrases.txt` 是用户数据。安装复制与 Git 发布默认排除私有数据。对目录手工打包时也必须排除这些文件，不得仅依赖 `.gitignore`。不把模型、录音、转录稿、项目数据或本机路径补丁上传到技能仓库。
 
-跨平台说明见 [安装参考](references/platforms.md)。从已使用目录分发前按公共文件清单核对；本地环境可能另有平台兼容修复，不随技能复制。
+各客户端安装入口、调用方式与验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)，本技能特有的执行环境与分发要求见 [安装参考](references/platforms.md)。从已使用目录分发前按公共文件清单核对；本地环境可能另有平台兼容修复，不随技能复制。
 
 ## 验证
 

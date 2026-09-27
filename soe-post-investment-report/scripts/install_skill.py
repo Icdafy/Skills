@@ -7,6 +7,9 @@ Supported locations:
 * project level: Trae IDE, Trae CLI and WorkBuddy/CodeBuddy;
 * portable: a ZIP whose top-level directory is the skill slug.
 
+Kept for compatibility; ``scripts/skill_portability.py install`` covers every
+supported client (see references/agent-compatibility.md).
+
 Destinations are never replaced unless ``--force`` is supplied.  Even with
 ``--force``, an existing destination is renamed to a timestamped backup so the
 operation remains recoverable.
@@ -127,8 +130,8 @@ def target_base(target: str, project: Path | None) -> Path:
             raise InstallError(f"--project is not valid for the user-level target '{target}'")
         home = Path.home()
         if target == "codex":
-            codex_home = Path(os.environ.get("CODEX_HOME", str(home / ".codex"))).expanduser()
-            return (codex_home / "skills").resolve()
+            # Current Codex and the ChatGPT desktop app read $HOME/.agents/skills.
+            return (home / ".agents" / "skills").resolve()
         if target == "claude":
             claude_home = Path(os.environ.get("CLAUDE_CONFIG_DIR", str(home / ".claude"))).expanduser()
             return (claude_home / "skills").resolve()

@@ -114,6 +114,6 @@ python scripts/extract_docx.py "某公司-尽调资料.docx" out.txt
 
 ## 跨 Agent 安装与调用
 
-[下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip)。WorkBuddy、Kimi、Claude桌面版、Qoder及Trae的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip)。Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
 
 本技能名为 `gongsi-qingkuang`。保留完整文件夹，启用后新建会话点名调用；可运行 `python scripts/skill_portability.py check --smoke` 检查资源及Word生成。技能发现与模型实际调用须在目标客户端按指引验收，不能仅凭复制文件认定成功。

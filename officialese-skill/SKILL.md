@@ -1,11 +1,21 @@
 ---
 name: officialese-skill
-description: Draft, revise, and format Chinese state-owned enterprise official documents and Word files using a company-style officialese format. Use for SOE or Chinese corporate/government-style documents such as 通知, 请示, 报告, 函, 会议纪要, 附件说明, 上行文, 平行文, 下行文, formal redrafting, official tone polishing, DOC/DOCX layout, Chinese public-document typography, fonts, margins, headings, attachments, signatures, and page numbers.
+description: 起草、改写、润色并排版中国国企公文及Word文件：通知、请示、报告、函、会议纪要、方案、附件说明等；识别上行文、平行文、下行文口吻，按公司版式设置字体、字号、页边距、标题层级、附件、落款和页码，输出DOC/DOCX。投委会议题、投后报告、立项报告章节另用专门技能。
 ---
 
 # Officialese Skill
 
+## When to Use
+
+Draft, revise, and format Chinese state-owned enterprise official documents and Word files using a company-style officialese format. Use for SOE or Chinese corporate/government-style documents such as 通知, 请示, 报告, 函, 会议纪要, 附件说明, 上行文, 平行文, 下行文, formal redrafting, official tone polishing, DOC/DOCX layout, Chinese public-document typography, fonts, margins, headings, attachments, signatures, and page numbers.
+
 Use this skill to create or revise Chinese SOE-style official documents with both correct wording and Word layout. The local rules are based on the uploaded company sample `assets/templates/文件字体格式.doc`, the bundled official fonts, and the company onboarding training PDF's 公文格式 rules.
+
+## Cross-Agent Use
+
+This skill uses the standard `SKILL.md` entry (`name` / `description`) and runs unchanged in Claude, ChatGPT, Codex, Kimi, 豆包, 智谱 GLM (ZCode, AutoClaw), WorkBuddy, TRAE and Qoder, invoked by natural language or by picking it from the client's skill list. For installation, migration or triggering problems read `references/agent-compatibility.md` and install the complete folder or ZIP; `scripts/skill_portability.py` checks the package, runs a Word smoke test, installs into client skill folders and builds upload ZIPs.
+
+Resolve every `scripts/`, `references/` and `assets/` path against the folder that contains this `SKILL.md`, never against the task working directory; call scripts with absolute paths and write output into the user's task folder. Use whatever web, file and code-execution tools the host provides. Word output needs Python 3.10+ and `requirements.txt`; when the host cannot execute code or install fonts, deliver the text and state plainly that the DOCX was not generated or verified.
 
 ## Workflow
 
@@ -62,4 +72,8 @@ Use this skill to create or revise Chinese SOE-style official documents with bot
 - `assets/templates/文件字体格式.doc`: original uploaded format sample.
 - `scripts/create_official_docx.py`: deterministic starter DOCX generator. Parenthesized spans are split into their own runs with 楷体_GB2312 as the Chinese face at the size of their position (二号 in titles, 三号 in the body, 五号 in tables). Tables are given as `{"table": [[...], ...]}` items in `body` or a section's `paragraphs` and render in 五号仿宋_GB2312 with a bold, unshaded, repeating header row. Every run of the footer `-1-` is entirely 四号宋体, with odd/even footers. As its final step the generator runs a Times New Roman pass over every body and table run (ascii/hAnsi/cs → Times New Roman, eastAsia unchanged), so digits, letters and `%` are Times New Roman everywhere outside the footer. On save it embeds the bundled 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails. `--attachment` normalizes names and builds the 附件说明 block with the hanging indents described above (one attachment has no serial), and `--issuer`/`--date` emit the 4-character-indented signature with the date centered on it.
 - `scripts/embed_fonts.py`: font embedder used by the generator; run `python scripts/embed_fonts.py --docx out.docx --verify` to re-check an existing file.
+- `references/agent-compatibility.md`: installation, invocation, runtime adaptation and acceptance checks for each supported client.
+- `scripts/skill_portability.py`: stdlib-only package checker, DOCX smoke test, client-folder installer and ZIP packager.
+- `agents/openai.yaml`: Chinese display name and default prompt for Codex and ChatGPT.
+- `requirements.txt`: Python dependency for DOCX output.
 - `scripts/ensure_fonts.py`: detects 仿宋_GB2312, 楷体_GB2312 and 方正小标宋简体 and installs the bundled copies per user when missing (`--check` only reports).

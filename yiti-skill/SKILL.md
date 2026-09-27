@@ -1,9 +1,13 @@
 ---
 name: yiti-skill
-description: Draft Chinese SOE investment-committee deliberation memos (投委会议题). Use when the user provides a 股东会/合伙人会议通知、议案、会议材料 and asks for a 投委会议题/审议议题/参会及表决事项议题, or provides 投后资料、对赌回购条款、经营数据 and asks for a 项目退出议题/股权回购退出议题/提前退出议题, or asks to 报送投委会/提请投委会审议. Covers 参股公司股东会、基金合伙人会议 and 已投项目退出（实际控制人回购、股权转让）, including full DOCX output with company officialese typography (方正小标宋简体标题、仿宋_GB2312正文、括号楷体_GB2312、Times New Roman数字、表格五号、页脚-1-四号宋体奇偶页).
+description: 撰写国企投委会议题（DOCX）：依据股东会、合伙人会议通知及议案撰写参会表决议题；依据投后资料、对赌回购条款、经营数据撰写项目退出、股权回购议题。用于“写投委会议题”“报送投委会”“提请投委会审议”，按公司公文版式排版。
 ---
 
 # 议题 Skill（投委会议题撰写）
+
+## 适用范围
+
+Draft Chinese SOE investment-committee deliberation memos (投委会议题). Use when the user provides a 股东会/合伙人会议通知、议案、会议材料 and asks for a 投委会议题/审议议题/参会及表决事项议题, or provides 投后资料、对赌回购条款、经营数据 and asks for a 项目退出议题/股权回购退出议题/提前退出议题, or asks to 报送投委会/提请投委会审议. Covers 参股公司股东会、基金合伙人会议 and 已投项目退出（实际控制人回购、股权转让）, including full DOCX output with company officialese typography (方正小标宋简体标题、仿宋_GB2312正文、括号楷体_GB2312、Times New Roman数字、表格五号、页脚-1-四号宋体奇偶页).
 
 Use this skill to draft 投管公司报送投委会的"议题"文书 and render it as a Word file. Two kinds of 议题 share one typography and one generator:
 
@@ -13,6 +17,12 @@ Use this skill to draft 投管公司报送投委会的"议题"文书 and render 
 | B. 投资项目退出议题 | 投资决策文件、增资协议对赌回购条款、投后经营数据、与实际控制人沟通情况 | `references/exit-writing-logic.md` | 例六 |
 
 Rules come from the gold examples in `references/gold-examples.md` (例六 is a desensitized 2026-09 项目退出议题终稿), the company format sample `assets/templates/文件字体格式.doc`, and the bundled fonts.
+
+## 调用与跨 Agent 运行
+
+本技能采用标准 `SKILL.md`（`name` / `description`）入口，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 等客户端通过自然语言匹配或在技能列表中显式选择。安装、迁移或触发异常时读取 [跨 Agent 安装与调用](references/agent-compatibility.md)，按实际产品安装完整目录或 ZIP，并完成调用验收；`scripts/skill_portability.py` 提供完整性检查、Word 冒烟测试、目录安装和打包。
+
+执行时以当前已加载 `SKILL.md` 所在目录作为技能根目录，文内 `scripts/`、`references/`、`assets/`都相对此根目录解析，不相对用户任务目录；调用脚本时使用脚本及输入输出的绝对路径，输出文件放用户任务目录。网页检索、文件读取和代码执行使用宿主当前可用的等价工具，不要求特定工具名称。生成 Word 需要 Python 3.10+ 及 `requirements.txt`；宿主无执行或字体条件时，交付议题文本并如实说明 Word 未生成或未验证。
 
 ## What a 议题 is
 
@@ -59,5 +69,8 @@ Layout:
 - `assets/templates/文件字体格式.doc`: original company format sample.
 - `scripts/create_yiti_docx.py`: deterministic DOCX generator. Spec fields: `kind` (`meeting`/`exit`), `title` (use `\n` to break lines), `submit_line`, `recipient` (empty string omits it), `intro` (string or list of paragraphs), `blocks` (`h1` `h2` `h3` `h4` `para` `table` `blank`; `**...**` for inline bold), `attachments`, `signature` {`issuer`, `date`}, `appendices` [{`title`, `blocks`}], `page_numbers` (default true). Embeds the bundled 仿宋_GB2312/楷体_GB2312 on save and prints the text-check result.
 - `scripts/check_yiti_text.py`: language scanner for JSON specs or text drafts (deferral endings, set-up-then-negate patterns, stock phrases, tone warnings); exit code 1 on hard hits.
+- `references/agent-compatibility.md`: installation, invocation, runtime adaptation and acceptance checks for each supported client.
+- `scripts/skill_portability.py`: stdlib-only package checker, DOCX smoke test, client-folder installer and ZIP packager.
+- `requirements.txt`: Python dependency for DOCX output.
 - `scripts/ensure_fonts.py`: checks the three official-document fonts and installs missing ones per-user from `assets/fonts/` (`--check` only reports). The generator prints a reminder when any is missing.
 - `scripts/embed_fonts.py`: font embedder used by the generator; `python scripts/embed_fonts.py --docx out.docx --verify` re-checks an existing file.
