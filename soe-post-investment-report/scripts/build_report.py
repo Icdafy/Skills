@@ -5,6 +5,14 @@ The input is a UTF-8 JSON object shaped like ``assets/report-spec.example.json``
 This renderer is deterministic and contains no project-specific business logic. It
 does not bundle or embed fonts; install properly licensed fonts on the rendering
 machine and run ``font_preflight.py`` before final production.
+
+Typography follows the shared 公文格式标准 (yiti-skill ``references/format-rules.md``):
+round parentheses and their contents use 楷体_GB2312 at the size of their position
+(二号 in titles, 三号 in text, 五号 in tables), keeping the position's bold; numbered
+headings sit on a fixed 30 pt line and 四级标题 is 仿宋_GB2312 bold with its "（1）"
+serial in the heading font; tables are single-spaced with a bold, unshaded header;
+the 附件说明 hangs each name under its own column; the date is centred under the
+issuer; the footer reads ``-1-`` in 四号宋体 on every font slot.
 """
 
 from __future__ import annotations
@@ -14,6 +22,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import sys
 from typing import Any, Iterable
 import uuid
@@ -48,9 +57,28 @@ IMPRINT_PT = 14
 CAPTION_PT = 12
 TITLE_LINE_PT = 30
 BODY_LINE_PT = 28
-TABLE_LINE_PT = 18
+TABLE_LINE_PT = 18  # 表注（tnote）行距；表格单元格用单倍行距
 TWO_CHARS_OOXML = 200
 CONTENT_DXA = 8844
+TWO_CHAR_INDENT_PT = BODY_PT * 2
+SIGNATURE_RIGHT_INDENT_PT = BODY_PT * 4  # 落款右空四字
+
+# The 四级标题 serial "（1）" keeps the heading font instead of 楷体_GB2312.
+H4_SERIAL = re.compile(r"^[（(]\d+[）)]")
+# Times New Roman advance widths in em, for hanging-indent and signature alignment.
+TNR_EM = {".": 0.25, ",": 0.25, ":": 0.278, "-": 0.333, " ": 0.25, "/": 0.278, "%": 0.833}
+
+
+def text_width_pt(text: str, size_pt: float = BODY_PT) -> float:
+    """Width of a line set in a Chinese font + Times New Roman at ``size_pt``."""
+
+    width = 0.0
+    for char in text:
+        if ord(char) < 128:
+            width += (0.5 if char.isdigit() else TNR_EM.get(char, 0.5)) * size_pt
+        else:
+            width += size_pt
+    return width
 
 
 def configure_utf8_stdio() -> None:
@@ -86,14 +114,105 @@ def set_font(
     run.font.bold = bold
     if color:
         run.font.color.rgb = RGBColor.from_string(color)
-    fonts = _rpr(run).find(qn("w:rFonts"))
+    properties = _rpr(run)
+    fonts = properties.find(qn("w:rFonts"))
     if fonts is None:
         fonts = OxmlElement("w:rFonts")
-        _rpr(run).insert(0, fonts)
+        properties.insert(0, fonts)
     fonts.set(qn("w:ascii"), western)
     fonts.set(qn("w:hAnsi"), western)
     fonts.set(qn("w:cs"), western)
     fonts.set(qn("w:eastAsia"), east_asia)
+    if western != east_asia:
+        # 中文引号、破折号、省略号按中文字体排；数字、字母、% 仍用 Times New Roman。
+        fonts.set(qn("w:hint"), "eastAsia")
+    size_cs = properties.find(qn("w:szCs"))
+    if size_cs is None:
+        size_cs = OxmlElement("w:szCs")
+        properties.append(size_cs)
+    size_cs.set(qn("w:val"), str(int(size * 2)))
+    language = properties.find(qn("w:lang"))
+    if language is None:
+        language = OxmlElement("w:lang")
+        properties.append(language)
+    language.set(qn("w:eastAsia"), "zh-CN")
+
+
+def parenthesis_mask(text: str) -> list[bool]:
+    """True for every character inside a matched pair of round parentheses."""
+
+    mask = [False] * len(text)
+    stack: list[tuple[int, str]] = []
+    for index, char in enumerate(text):
+        if char in "（(":
+            stack.append((index, char))
+        elif char in "）)" and stack:
+            if stack[-1][1] == {"）": "（", ")": "("}[char]:
+                start, _ = stack.pop()
+                mask[start : index + 1] = [True] * (index - start + 1)
+    return mask
+
+
+def add_text_runs(
+    paragraph: Any,
+    text: str,
+    font: str,
+    size: float,
+    *,
+    bold: bool = False,
+    color: str | None = None,
+    keep_serial: bool = False,
+) -> None:
+    """Add ``text`` with round parentheses and their contents in 楷体_GB2312.
+
+    The parenthesized span keeps the size and bold of its position; unmatched
+    delimiters do not change the following text. ``keep_serial`` keeps a leading
+    四级标题 serial such as "（1）" in the heading font.
+    """
+
+    text = str(text)
+    mask = parenthesis_mask(text)
+    serial = H4_SERIAL.match(text) if keep_serial else None
+    if serial is not None:
+        mask[: serial.end()] = [False] * serial.end()
+    start = 0
+    while start < len(text):
+        special = mask[start]
+        end = start + 1
+        while end < len(text) and mask[end] == special:
+            end += 1
+        set_font(
+            paragraph.add_run(text[start:end]),
+            FONT_KAITI if special else font,
+            size,
+            bold=bold,
+            color=color,
+        )
+        start = end
+
+
+# CT_PPr children that follow w:autoSpaceDE/w:autoSpaceDN in schema order.
+AUTO_SPACE_SUCCESSORS = (
+    "w:bidi", "w:adjustRightInd", "w:snapToGrid", "w:spacing", "w:ind",
+    "w:contextualSpacing", "w:mirrorIndents", "w:suppressOverlap", "w:jc",
+    "w:textDirection", "w:textAlignment", "w:textboxTightWrap", "w:outlineLvl",
+    "w:divId", "w:cnfStyle", "w:rPr", "w:sectPr", "w:pPrChange",
+)
+
+
+def disable_auto_spacing(paragraph: Any) -> None:
+    """Stop Word adding CJK/Latin gaps so hanging indents align to the character."""
+
+    ppr = paragraph._p.get_or_add_pPr()
+    for tag, successors in (
+        ("w:autoSpaceDE", ("w:autoSpaceDN",) + AUTO_SPACE_SUCCESSORS),
+        ("w:autoSpaceDN", AUTO_SPACE_SUCCESSORS),
+    ):
+        element = ppr.find(qn(tag))
+        if element is None:
+            element = OxmlElement(tag)
+            ppr.insert_element_before(element, *successors)
+        element.set(qn("w:val"), "0")
 
 
 def fit_text(run: Any, width_twips: int, horizontal_scale: int = 37) -> None:
@@ -179,6 +298,7 @@ def add_paragraph(
     keep_with_next: bool = False,
     color: str | None = None,
     outline: int | None = None,
+    keep_serial: bool = False,
 ) -> Any:
     paragraph = doc.add_paragraph()
     format_paragraph(
@@ -192,19 +312,20 @@ def add_paragraph(
         after_pt=after_pt,
         keep_with_next=keep_with_next,
     )
-    run = paragraph.add_run(str(text))
-    set_font(run, font, size, bold=bold, color=color)
+    add_text_runs(paragraph, str(text), font, size, bold=bold, color=color, keep_serial=keep_serial)
     if outline is not None:
         set_outline_level(paragraph, outline)
     return paragraph
 
 
 def add_page_field(paragraph: Any) -> None:
+    """页码 -1-：两个短横线、PAGE 域及其显示结果全部四号宋体，四个字体槽均为宋体。"""
+
     paragraph.paragraph_format.space_before = Pt(0)
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.paragraph_format.line_spacing = Pt(FOOTER_PT)
 
-    left = paragraph.add_run("- ")
+    left = paragraph.add_run("-")
     set_font(left, FONT_SONG, FOOTER_PT, western=FONT_SONG)
 
     field = paragraph.add_run()
@@ -223,8 +344,17 @@ def add_page_field(paragraph: Any) -> None:
     for element in (begin, instruction, separate, result, end):
         field._r.append(element)
 
-    right = paragraph.add_run(" -")
+    right = paragraph.add_run("-")
     set_font(right, FONT_SONG, FOOTER_PT, western=FONT_SONG)
+    # Paragraph mark in 四号宋体 too, so the footer line height follows the page number.
+    mark = OxmlElement("w:rPr")
+    fonts = OxmlElement("w:rFonts")
+    for slot in ("ascii", "hAnsi", "eastAsia", "cs"):
+        fonts.set(qn("w:" + slot), FONT_SONG)
+    size = OxmlElement("w:sz")
+    size.set(qn("w:val"), str(FOOTER_PT * 2))
+    mark.extend([fonts, size])
+    paragraph._p.get_or_add_pPr().append(mark)
 
 
 def setup_document(doc: Document, layout: dict[str, Any] | None = None) -> None:
@@ -292,7 +422,7 @@ def _set_cell_width_pct(cell: Any, pct: int) -> None:
     props.insert(0, width)
 
 
-def _set_cell_borders(cell: Any, *, color: str = "808080", size: int = 6) -> None:
+def _set_cell_borders(cell: Any, *, color: str = "auto", size: int = 4) -> None:
     props = cell._tc.get_or_add_tcPr()
     borders = props.find(qn("w:tcBorders"))
     if borders is None:
@@ -349,22 +479,58 @@ def _fill_cell(cell: Any, text: Any, *, header: bool = False, align: str = "cent
     }.get(align, WD_ALIGN_PARAGRAPH.CENTER)
     paragraph.paragraph_format.space_before = Pt(0)
     paragraph.paragraph_format.space_after = Pt(0)
-    paragraph.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
-    paragraph.paragraph_format.line_spacing = Pt(TABLE_LINE_PT)
-    run = paragraph.add_run("" if text is None else str(text))
-    set_font(run, FONT_BODY, TABLE_PT, bold=header)
+    paragraph.paragraph_format.first_line_indent = Pt(0)
+    # 表格用单倍行距，不套用正文 28 磅固定行距。
+    paragraph.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
+    add_text_runs(paragraph, "" if text is None else str(text), FONT_BODY, TABLE_PT, bold=header)
     _set_cell_borders(cell)
     _set_cell_margins(cell)
+
+
+def column_widths(all_rows: list[list[Any]], column_count: int, total_pt: float) -> list[float]:
+    """Content-based column widths that fill the text width (yiti-skill algorithm).
+
+    Short labels (序号、数字、"（工作日）"，不超过6个汉字宽) never wrap, so they set a
+    column's minimum; the width left over is shared in proportion to how much
+    longer each column's longest line is than its minimum.
+    """
+
+    padding = 9.0  # left + right cell margins (90 + 90 twips)
+    short_limit = TABLE_PT * 6
+    minimum: list[float] = []
+    maximum: list[float] = []
+    for column_index in range(column_count):
+        widths = [
+            text_width_pt(line, TABLE_PT)
+            for row in all_rows
+            if column_index < len(row)
+            for line in str("" if row[column_index] is None else row[column_index]).splitlines()
+        ]
+        short = [width for width in widths if width <= short_limit]
+        low = max(short + [TABLE_PT * 2]) + padding
+        minimum.append(low)
+        maximum.append(max(max(widths + [0.0]) + padding, low))
+    if sum(maximum) <= total_pt:
+        extra = total_pt - sum(maximum)
+        return [width + extra * width / sum(maximum) for width in maximum]
+    stretch = [high - low for low, high in zip(minimum, maximum)]
+    free = total_pt - sum(minimum)
+    if free <= 0 or not sum(stretch):
+        return [total_pt * low / sum(minimum) for low in minimum]
+    return [low + free * part / sum(stretch) for low, part in zip(minimum, stretch)]
 
 
 def add_table(doc: Document, block: dict[str, Any]) -> Any:
     header = block.get("header") or []
     rows = block.get("rows") or []
     column_count = len(header) if header else max((len(row) for row in rows), default=1)
-    widths = block.get("widths") or [1] * column_count
-    if len(widths) != column_count or sum(widths) <= 0:
-        widths = [1] * column_count
+    widths = block.get("widths")
+    if not widths or len(widths) != column_count or sum(widths) <= 0:
+        widths = column_widths(([header] if header else []) + list(rows), column_count, CONTENT_DXA / 20)
 
+    if doc.paragraphs and doc.paragraphs[-1].text.strip():
+        # 表格前的引导句或表题与表格同页。
+        doc.paragraphs[-1].paragraph_format.keep_with_next = True
     table = doc.add_table(rows=(1 if header else 0) + len(rows), cols=column_count)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
     _set_table_full_width(table)
@@ -459,14 +625,12 @@ def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
     left_p = left.paragraphs[0]
     left_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     left_p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
-    left_run = left_p.add_run(str(metadata.get("document_number") or "〔文号〕"))
-    set_font(left_run, FONT_BODY, BODY_PT)
+    add_text_runs(left_p, str(metadata.get("document_number") or "〔文号〕"), FONT_BODY, BODY_PT)
 
     right_p = right.paragraphs[0]
     right_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     right_p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
-    right_run = right_p.add_run(str(metadata.get("signer") or ""))
-    set_font(right_run, FONT_KAITI, BODY_PT)
+    add_text_runs(right_p, str(metadata.get("signer") or ""), FONT_KAITI, BODY_PT)
 
     title = doc.add_paragraph()
     format_paragraph(
@@ -478,60 +642,41 @@ def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
         after_pt=24,
         keep_with_next=True,
     )
-    line1 = title.add_run(company)
-    set_font(line1, FONT_TITLE, TITLE_PT)
-    line1.add_break(WD_BREAK.LINE)
-    line2 = title.add_run(f"关于{_period_label(metadata) or '〔报告期间〕'}股权投资项目投后情况报告")
-    set_font(line2, FONT_TITLE, TITLE_PT)
+    # 标题内括号为楷体_GB2312，与标题同为二号。
+    add_text_runs(title, company, FONT_TITLE, TITLE_PT)
+    title.runs[-1].add_break(WD_BREAK.LINE)
+    add_text_runs(
+        title,
+        f"关于{_period_label(metadata) or '〔报告期间〕'}股权投资项目投后情况报告",
+        FONT_TITLE,
+        TITLE_PT,
+    )
+
+
+HEADING_FORMATS = {
+    1: (FONT_HEITI, False),  # 一、黑体，不加粗
+    2: (FONT_KAITI, True),  # （一）楷体_GB2312，加粗
+    3: (FONT_BODY, True),  # 1.仿宋_GB2312，加粗
+    4: (FONT_BODY, True),  # （1）仿宋_GB2312，加粗；序号随标题字体
+}
 
 
 def add_heading(doc: Document, text: str, level: int) -> Any:
-    if level == 1:
-        return add_paragraph(
-            doc,
-            text,
-            font=FONT_HEITI,
-            size=BODY_PT,
-            bold=False,
-            before_pt=0,
-            after_pt=0,
-            keep_with_next=True,
-            outline=0,
-        )
-    if level == 2:
-        return add_paragraph(
-            doc,
-            text,
-            font=FONT_KAITI,
-            size=BODY_PT,
-            bold=True,
-            before_pt=0,
-            after_pt=0,
-            keep_with_next=True,
-            outline=1,
-        )
-    if level == 3:
-        return add_paragraph(
-            doc,
-            text,
-            font=FONT_BODY,
-            size=BODY_PT,
-            bold=True,
-            before_pt=0,
-            after_pt=0,
-            keep_with_next=True,
-            outline=2,
-        )
+    """各级编号标题：三号、首行空两字、固定行距 30 磅、与下段同页。"""
+
+    font, bold = HEADING_FORMATS.get(level, HEADING_FORMATS[4])
     return add_paragraph(
         doc,
         text,
-        font=FONT_BODY,
+        font=font,
         size=BODY_PT,
-        bold=False,
+        bold=bold,
+        line_pt=TITLE_LINE_PT,
         before_pt=0,
         after_pt=0,
         keep_with_next=True,
-        outline=3,
+        outline=min(level, 4) - 1,
+        keep_serial=level >= 4,
     )
 
 
@@ -584,42 +729,72 @@ def render_blocks(doc: Document, blocks: Iterable[dict[str, Any]]) -> None:
             raise ValueError(f"Unsupported block type: {block_type}")
 
 
+def _hanging_paragraph(doc: Document, text: str, text_start_pt: float, first_line_start_pt: float) -> Any:
+    """附件说明段落：首行从 first_line_start_pt 起排，回行悬挂到 text_start_pt。"""
+
+    paragraph = add_paragraph(
+        doc,
+        text,
+        first_line_chars=None,
+        left_indent_pt=text_start_pt,
+    )
+    paragraph.paragraph_format.first_line_indent = Pt(first_line_start_pt - text_start_pt)
+    disable_auto_spacing(paragraph)
+    return paragraph
+
+
 def add_attachment_list(doc: Document, attachments: list[dict[str, Any]]) -> None:
+    """附件说明：正文下空一行，左空二字写"附件："。
+
+    单份：附件：名称（回行与名称首字对齐）。
+    多份：附件：1.名称 / 2.名称……，"2."与"1."对齐，每份回行与序号后的名称首字对齐。
+    缩进按实际字宽计算并关闭中西文自动间距，保证对齐。
+    """
+
     if not attachments:
         return
-    add_paragraph(doc, "", first_line_chars=None)
-    first = attachments[0]
-    add_paragraph(doc, f"附件：1.{first.get('title', '')}")
-    for number, attachment in enumerate(attachments[1:], start=2):
-        add_paragraph(
-            doc,
-            f"{number}.{attachment.get('title', '')}",
-            first_line_chars=None,
-            left_indent_pt=80,
-        )
+    from validate_report import attachment_list_lines
+
+    lines = attachment_list_lines(attachments)
+    doc.paragraphs[-1].paragraph_format.keep_with_next = True
+    add_paragraph(doc, "", first_line_chars=None, keep_with_next=True)
+    label = "附件："
+    label_start = TWO_CHAR_INDENT_PT
+    number_start = label_start + text_width_pt(label)
+    if len(lines) == 1:
+        _hanging_paragraph(doc, lines[0], number_start, label_start)
+        return
+    paragraphs = []
+    for index, line in enumerate(lines, start=1):
+        text_start = number_start + text_width_pt(f"{index}.")
+        first_line_start = label_start if index == 1 else number_start
+        paragraphs.append(_hanging_paragraph(doc, line, text_start, first_line_start))
+    for paragraph in paragraphs[:-1]:
+        paragraph.paragraph_format.keep_with_next = True  # 多份附件说明不跨页拆开
 
 
 def add_signature(doc: Document, metadata: dict[str, Any]) -> None:
-    add_paragraph(doc, "", first_line_chars=None)
-    add_paragraph(doc, "", first_line_chars=None)
+    """落款：附件说明下空两行；署名右空四字，成文日期在署名下居中对齐。"""
+
     issuer = str(metadata.get("issuer") or metadata.get("company") or "")
     issue_date = str(metadata.get("issue_date") or "")
-    if issuer:
-        add_paragraph(
+    # 落款不单独成页：附件说明（或正文末段）、两行空行与署名连在一起。
+    doc.paragraphs[-1].paragraph_format.keep_with_next = True
+    add_paragraph(doc, "", first_line_chars=None, keep_with_next=True)
+    add_paragraph(doc, "", first_line_chars=None, keep_with_next=True)
+    width = max(text_width_pt(issuer), text_width_pt(issue_date))
+    for text in (issuer, issue_date):
+        if not text:
+            continue
+        paragraph = add_paragraph(
             doc,
-            issuer,
+            text,
             align=WD_ALIGN_PARAGRAPH.RIGHT,
-            right_indent_pt=64,
+            right_indent_pt=SIGNATURE_RIGHT_INDENT_PT + (width - text_width_pt(text)) / 2,
             first_line_chars=None,
+            keep_with_next=text == issuer and bool(issue_date),
         )
-    if issue_date:
-        add_paragraph(
-            doc,
-            issue_date,
-            align=WD_ALIGN_PARAGRAPH.RIGHT,
-            right_indent_pt=64,
-            first_line_chars=None,
-        )
+        disable_auto_spacing(paragraph)
     contact_name = str(metadata.get("contact_name") or "").strip()
     contact_phone = str(metadata.get("contact_phone") or "").strip()
     if contact_name or contact_phone:
@@ -701,20 +876,25 @@ def add_imprint(doc: Document, metadata: dict[str, Any]) -> None:
     left_p = left.paragraphs[0]
     left_p.alignment = WD_ALIGN_PARAGRAPH.LEFT
     left_p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
-    set_font(left_p.add_run(printer), FONT_BODY, IMPRINT_PT)
+    add_text_runs(left_p, printer, FONT_BODY, IMPRINT_PT)
 
     right_p = right.paragraphs[0]
     right_p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     right_p.paragraph_format.line_spacing = Pt(BODY_LINE_PT)
-    set_font(right_p.add_run(date_text), FONT_BODY, IMPRINT_PT)
+    add_text_runs(right_p, date_text, FONT_BODY, IMPRINT_PT)
 
 
-def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: int) -> None:
+def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: int, total: int) -> None:
+    """附件正文另起一页：左上角顶格"附件："（多份时"附件1："），三号仿宋_GB2312；
+    附件标题二号方正小标宋简体居中，标题下空一行后接正文。"""
+
+    from validate_report import attachment_page_label
+
     doc.add_page_break()
     number = attachment.get("number") or fallback_number
     add_paragraph(
         doc,
-        f"附件{number}",
+        attachment_page_label(number, total),
         first_line_chars=None,
         align=WD_ALIGN_PARAGRAPH.LEFT,
         keep_with_next=True,
@@ -727,9 +907,9 @@ def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: i
         align=WD_ALIGN_PARAGRAPH.CENTER,
         line_pt=TITLE_LINE_PT,
         first_line_chars=None,
-        after_pt=16,
         keep_with_next=True,
     )
+    add_paragraph(doc, "", first_line_chars=None, line_pt=TITLE_LINE_PT, keep_with_next=True)
     render_blocks(doc, attachment.get("blocks") or [])
 
 
@@ -756,7 +936,7 @@ def build_report(spec: dict[str, Any], output: Path, *, force: bool = False) -> 
     add_signature(doc, metadata)
 
     for index, attachment in enumerate(attachments, start=1):
-        add_attachment(doc, attachment, index)
+        add_attachment(doc, attachment, index, len(attachments))
 
     add_imprint(doc, metadata)
 

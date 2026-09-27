@@ -24,7 +24,7 @@ from xml.etree import ElementTree as ET
 from zipfile import ZIP_DEFLATED, ZipFile
 
 from docx import Document
-from docx.enum.text import WD_ALIGN_PARAGRAPH
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_LINE_SPACING
 from docx.oxml.ns import qn
 
 
@@ -274,7 +274,7 @@ class SkillRegressionTests(unittest.TestCase):
                 visible_page_number = "".join(
                     node.text or "" for node in footer_root.findall(".//w:t", namespace)
                 )
-                self.assertEqual(visible_page_number, "- 1 -")
+                self.assertEqual(visible_page_number, "-1-")
                 for run in footer_root.findall(".//w:r", namespace):
                     text = "".join(node.text or "" for node in run.findall("w:t", namespace))
                     instruction = "".join(
@@ -437,8 +437,8 @@ class SkillRegressionTests(unittest.TestCase):
         odd_footer = section.footer.paragraphs[0]
         odd_footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
         self.assertGreaterEqual(len(odd_footer.runs), 3)
-        odd_footer.runs[0].text = "-"
-        odd_footer.runs[-1].text = "-"
+        odd_footer.runs[0].text = "- "
+        odd_footer.runs[-1].text = " -"
 
         mutated_docx = self.work / "fixed-layout-drift.docx"
         document.save(mutated_docx)
@@ -454,7 +454,116 @@ class SkillRegressionTests(unittest.TestCase):
         )
         self.assertIn("header must contain no content", result.stdout)
         self.assertIn("odd-page footer is not aligned to the outside right edge", result.stdout)
-        self.assertIn("footer format is '-1-'; expected '- 1 -'", result.stdout)
+        self.assertIn("footer format is '- 1 -'; expected '-1-'", result.stdout)
+
+    def test_generated_docx_follows_shared_official_format(self) -> None:
+        """The report uses the shared 公文格式标准 of yiti-skill."""
+
+        spec = copy.deepcopy(self.spec)
+        spec["main_blocks"].insert(
+            3,
+            {"type": "h4", "text": "（1）出资进度（含补充说明）", "fact_ids": []},
+        )
+        spec_path, docx_path = self.build_docx(spec)
+        result = self.run_script("validate_report.py", "--spec", spec_path, "--docx", docx_path)
+        self.assertEqual(result.returncode, 0, result.stdout)
+
+        document = Document(docx_path)
+        paragraphs = document.paragraphs
+
+        def east_asia(run: object) -> str:
+            return run._element.rPr.rFonts.get(qn("w:eastAsia"))
+
+        # 四级标题：仿宋_GB2312加粗、固定 30 磅；序号"（1）"随标题，其后括注改楷体。
+        heading4 = next(p for p in paragraphs if p.text.startswith("（1）出资进度"))
+        self.assertEqual(heading4.paragraph_format.line_spacing.pt, 30)
+        self.assertTrue(all(run.bold for run in heading4.runs if run.text))
+        self.assertEqual(heading4.runs[0].text, "（1）出资进度")
+        self.assertEqual(east_asia(heading4.runs[0]), "仿宋_GB2312")
+        self.assertEqual(heading4.runs[1].text, "（含补充说明）")
+        self.assertEqual(east_asia(heading4.runs[1]), "楷体_GB2312")
+        self.assertEqual(heading4.runs[1].font.size.pt, 16)
+        for heading in self.production_fixed_headings:
+            paragraph = next(p for p in paragraphs if p.text == heading)
+            self.assertEqual(paragraph.paragraph_format.line_spacing.pt, 30)
+
+        # 正文括号及括号内文字：三号楷体_GB2312，括号外仍为仿宋_GB2312。
+        body_paren_runs = [
+            run
+            for p in paragraphs
+            if p.paragraph_format.line_spacing is not None
+            and p.paragraph_format.line_spacing.pt == 28
+            for run in p.runs
+            if run.text.startswith(("（", "("))
+        ]
+        self.assertTrue(body_paren_runs)
+        for run in body_paren_runs:
+            self.assertEqual(east_asia(run), "楷体_GB2312")
+
+        # 表格：单倍行距、表头加粗、无底纹、黑色单线框。
+        table = document.tables[2]
+        for row_index, row in enumerate(table.rows):
+            for cell in row.cells:
+                self.assertIsNone(cell._tc.tcPr.find(qn("w:shd")))
+                border = cell._tc.tcPr.find(qn("w:tcBorders")).find(qn("w:top"))
+                self.assertEqual(border.get(qn("w:color")), "auto")
+                for paragraph in cell.paragraphs:
+                    self.assertEqual(paragraph.paragraph_format.line_spacing_rule, WD_LINE_SPACING.SINGLE)
+                    for run in paragraph.runs:
+                        if run.text:
+                            self.assertEqual(bool(run.bold), row_index == 0)
+                            self.assertEqual(run.font.size.pt, 10.5)
+
+        # 附件说明：附件：1.XXX，"2."与"1."对齐，回行悬挂到名称首字。
+        titles = [attachment["title"] for attachment in spec["attachments"]]
+        texts = [p.text for p in paragraphs]
+        first = texts.index(f"附件：1.{titles[0]}")
+        self.assertEqual(texts[first + 1], f"2.{titles[1]}")
+        item1, item2 = paragraphs[first], paragraphs[first + 1]
+        start1 = item1.paragraph_format.left_indent.pt + item1.paragraph_format.first_line_indent.pt
+        start2 = item2.paragraph_format.left_indent.pt + item2.paragraph_format.first_line_indent.pt
+        self.assertAlmostEqual(start1, 32, places=1)
+        self.assertAlmostEqual(start2, 80, places=1)
+        self.assertGreater(item1.paragraph_format.left_indent.pt, 80)
+
+        # 落款：署名右空四字，成文日期在署名下居中。
+        issuer = next(p for p in paragraphs if p.text == spec["document"]["issuer"])
+        date = next(p for p in paragraphs if p.text == spec["document"]["issue_date"])
+        self.assertAlmostEqual(issuer.paragraph_format.right_indent.pt, 64, places=1)
+        self.assertGreater(date.paragraph_format.right_indent.pt, 64)
+
+        # 附件正文页左上角：附件1：附件2：…
+        for attachment in spec["attachments"]:
+            self.assertIn(f"附件{attachment['number']}：", texts)
+
+    def test_validator_rejects_fullwidth_alphanumerics(self) -> None:
+        invalid = copy.deepcopy(self.spec)
+        block = next(b for b in invalid["main_blocks"] if b.get("type") == "p")
+        block["text"] = block["text"] + "（ＡＢ１２％）"
+        result = self.run_script("validate_report.py", "--spec", self.write_spec(invalid))
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("全角数字、字母或％须改为半角", result.stdout)
+
+    def test_single_attachment_uses_unnumbered_labels(self) -> None:
+        # Rendering only: a one-attachment spec would fail the unrelated project
+        # registry cross-references, so drive the renderer and scope parser directly.
+        spec = copy.deepcopy(self.spec)
+        spec["attachments"] = spec["attachments"][:1]
+        sys.path.insert(0, str(SCRIPTS))
+        try:
+            import build_report
+            import validate_report
+        finally:
+            sys.path.remove(str(SCRIPTS))
+        output = build_report.build_report(spec, self.work / "single-attachment.docx")
+        document = Document(output)
+        texts = [p.text for p in document.paragraphs]
+        self.assertIn(f"附件：{spec['attachments'][0]['title']}", texts)
+        self.assertIn("附件：", texts)
+        self.assertNotIn("附件1：", texts)
+        scopes, unexpected = validate_report.docx_scoped_items(document, spec)
+        self.assertEqual(unexpected, [])
+        self.assertIn(f"attachment {spec['attachments'][0]['id']}", scopes)
 
     def test_validator_rejects_duplicate_main_heading(self) -> None:
         invalid = copy.deepcopy(self.spec)

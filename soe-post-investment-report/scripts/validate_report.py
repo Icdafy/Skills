@@ -188,22 +188,62 @@ PUBLIC_PATTERNS = {
     "Chinese identity number": re.compile(r"(?<!\d)\d{17}[\dXx](?!\d)"),
     "long account-like number": re.compile(r"(?<!\d)\d{16,19}(?!\d)"),
 }
+# Typography follows the shared 公文格式标准 (yiti-skill references/format-rules.md):
+# numbered headings sit on a fixed 30 pt line, 四级标题 is bold, tables use single
+# line spacing, and the footer reads "-1-".
 TEMPLATE_TYPOGRAPHY = {
     "redhead": ("方正小标宋简体", 68.0, True, None),
     "title": ("方正小标宋简体", 22.0, False, 30.0),
-    "h1": ("黑体", 16.0, False, 28.0),
-    "h2": ("楷体_GB2312", 16.0, True, 28.0),
-    "h3": ("仿宋_GB2312", 16.0, True, 28.0),
-    "h4": ("仿宋_GB2312", 16.0, False, 28.0),
+    "h1": ("黑体", 16.0, False, 30.0),
+    "h2": ("楷体_GB2312", 16.0, True, 30.0),
+    "h3": ("仿宋_GB2312", 16.0, True, 30.0),
+    "h4": ("仿宋_GB2312", 16.0, True, 30.0),
     "p": ("仿宋_GB2312", 16.0, False, 28.0),
     # 表题 in the source template: 小四黑体, centered, on the 28 pt body grid.
     "caption": ("黑体", 12.0, False, 28.0),
     "tnote": ("仿宋_GB2312", 10.5, False, 18.0),
+    "table": ("仿宋_GB2312", 10.5, False, None),
     "footer": ("宋体", 14.0, False, None),
     # 版记（印发机关和印发日期）: GB/T 9704-2012 prescribes 四号仿宋.
     "imprint": ("仿宋_GB2312", 14.0, False, 28.0),
 }
 DEFAULT_WESTERN_FONT = "Times New Roman"
+# Round parentheses and their contents use 楷体_GB2312 at the size of their position.
+PARENTHESIS_FONT = "楷体_GB2312"
+# The 四级标题 serial "（1）" keeps the heading font (仿宋_GB2312 bold).
+H4_SERIAL_PATTERN = re.compile(r"^[（(]\d+[）)]")
+# Full-width digits, Latin letters and ％ must be half-width so Times New Roman applies.
+FULLWIDTH_ALNUM_PATTERN = re.compile(r"[０-９Ａ-Ｚａ-ｚ％]")
+
+
+def parenthesis_mask(text: str) -> list[bool]:
+    """True for every character inside a matched pair of round parentheses."""
+
+    mask = [False] * len(text)
+    stack: list[tuple[int, str]] = []
+    for index, char in enumerate(text):
+        if char in "（(":
+            stack.append((index, char))
+        elif char in "）)" and stack:
+            if stack[-1][1] == {"）": "（", ")": "("}[char]:
+                start, _ = stack.pop()
+                mask[start : index + 1] = [True] * (index - start + 1)
+    return mask
+
+
+def attachment_page_label(number: Any, total: int) -> str:
+    """Top-left label of an attachment page: 附件： for one, 附件1：附件2：… for several."""
+
+    return "附件：" if total == 1 else f"附件{number}："
+
+
+def attachment_list_lines(attachments: list[dict[str, Any]]) -> list[str]:
+    """附件说明 text: 附件：XXX for one; 附件：1.XXX then 2.XXX … for several."""
+
+    titles = [str(item.get("title") or "") for item in attachments]
+    if len(titles) == 1:
+        return [f"附件：{titles[0]}"]
+    return [("附件：" if index == 1 else "") + f"{index}.{title}" for index, title in enumerate(titles, start=1)]
 
 
 @dataclass
@@ -521,6 +561,64 @@ def validate_official_style(spec: dict[str, Any], findings: Findings) -> None:
                 continue
             reported.add(key)
             findings.warning(f"{location}: {message}（“{match.group(0).strip()}”）")
+
+
+def iter_rendered_spec_texts(spec: dict[str, Any]) -> Iterable[tuple[str, str]]:
+    """Yield (location, text) for every string the generator renders into the DOCX."""
+
+    document = spec.get("document") or {}
+    for key in (
+        "company",
+        "document_number",
+        "signer",
+        "recipient",
+        "legal_basis",
+        "issuer",
+        "issue_date",
+        "contact_name",
+        "contact_phone",
+        "printer",
+        "print_date",
+    ):
+        value = str(document.get(key) or "").strip()
+        if value:
+            yield f"document.{key}", value
+    scopes: list[tuple[str, list[dict[str, Any]]]] = [("main body", spec.get("main_blocks") or [])]
+    for attachment in spec.get("attachments") or []:
+        scope = f"attachment {attachment.get('id')}"
+        title = str(attachment.get("title") or "").strip()
+        if title:
+            yield f"{scope} title", title
+        scopes.append((scope, attachment.get("blocks") or []))
+    for scope, blocks in scopes:
+        for index, block in enumerate(blocks, start=1):
+            text = str(block.get("text") or "").strip()
+            if text:
+                yield f"{scope} block {index}", text
+            for cell in block.get("header") or []:
+                if str(cell or "").strip():
+                    yield f"{scope} block {index} header", str(cell)
+            for row_index, row in enumerate(block.get("rows") or [], start=1):
+                for cell in row:
+                    if str(cell or "").strip():
+                        yield f"{scope} block {index} row {row_index}", str(cell)
+
+
+def validate_halfwidth_alphanumerics(spec: dict[str, Any], findings: Findings) -> None:
+    """Digits, Latin letters and % must be half-width so they render in Times New Roman.
+
+    yiti-skill's generator converts them automatically; here the specification is
+    the evidence-bearing source that the DOCX is checked against, so it must carry
+    the half-width form itself.
+    """
+
+    for location, text in iter_rendered_spec_texts(spec):
+        match = FULLWIDTH_ALNUM_PATTERN.search(text)
+        if match is not None:
+            findings.error(
+                f"{location}: 全角数字、字母或％须改为半角（“{match.group(0)}”），"
+                "以便统一设为 Times New Roman"
+            )
 
 
 def validate_imprint_metadata(document: dict[str, Any], findings: Findings) -> None:
@@ -1375,6 +1473,7 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
     validate_document_dates(document, findings)
     validate_imprint_metadata(document, findings)
     validate_official_style(spec, findings)
+    validate_halfwidth_alphanumerics(spec, findings)
 
     main_blocks = spec.get("main_blocks") or []
     main_headings = block_headings(main_blocks)
@@ -1669,12 +1768,14 @@ def docx_scoped_items(
         tail = re.sub(r"[\s　]+", "", items[-1][1])
         if tail == f"{printer}␟{print_date}印发":
             items = items[:-1]
+    attachment_count = len(expected_spec.get("attachments") or [])
     for kind, value in items:
         if kind == "p":
             compact = re.sub(r"[\s\u3000]+", "", value)
-            match = re.fullmatch(r"附件(\d+)", compact)
+            # Attachment page labels: 附件： (single attachment) or 附件1：附件2：…
+            match = re.fullmatch(r"附件(\d+)?[：:]", compact)
             if match:
-                number = int(match.group(1))
+                number = int(match.group(1)) if match.group(1) else (1 if attachment_count == 1 else 0)
                 next_scope = number_to_scope.get(number)
                 if next_scope is None:
                     unexpected_labels.append(value)
@@ -1770,7 +1871,14 @@ def validate_scoped_docx_content(
             )
             if attachment is None:
                 continue
-            label_item = normalized_item("p", [f"附件{attachment.get('number')}"])
+            label_item = normalized_item(
+                "p",
+                [
+                    attachment_page_label(
+                        attachment.get("number"), len(expected_spec.get("attachments") or [])
+                    )
+                ],
+            )
             controlled_items = list(actual_items)
             if controlled_items and controlled_items[0] == label_item:
                 controlled_items = controlled_items[1:]
@@ -1810,17 +1918,10 @@ def validate_scoped_docx_content(
                 "two-line title, recipient, opening, and first fixed heading order"
             )
 
-        suffix_items: list[str] = []
         attachments = expected_spec.get("attachments") or []
-        if attachments:
-            first = attachments[0]
-            suffix_items.append(
-                normalized_item("p", [f"附件：1.{first.get('title', '')}"])
-            )
-            for number, attachment in enumerate(attachments[1:], start=2):
-                suffix_items.append(
-                    normalized_item("p", [f"{number}.{attachment.get('title', '')}"])
-                )
+        suffix_items: list[str] = [
+            normalized_item("p", [line]) for line in attachment_list_lines(attachments)
+        ]
         issuer = str(document.get("issuer") or document.get("company") or "").strip()
         issue_date = str(document.get("issue_date") or "").strip()
         if issuer:
@@ -1891,9 +1992,8 @@ def paragraph_heading_kind(paragraph: Any) -> str:
     if east_asia in {"楷体", "楷体_GB2312"} and is_bold:
         return "h2"
     if east_asia in {"仿宋", "仿宋_GB2312"} and is_bold:
-        return "h3"
-    if east_asia in {"仿宋", "仿宋_GB2312"} and not is_bold:
-        return "h4"
+        # 三级与四级标题同为仿宋_GB2312加粗，按编号区分："1." 与 "（1）"。
+        return "h4" if H4_SERIAL_PATTERN.match(paragraph.text.strip()) else "h3"
     return "unknown"
 
 
@@ -2051,17 +2151,31 @@ def _validate_paragraph_typography(
         expected_bold = bold_override
     if line_override is not None:
         expected_line = line_override
-    runs = [run for run in paragraph.runs if run.text.strip()]
+    all_runs = list(paragraph.runs)
+    plain = "".join(run.text for run in all_runs)
+    # The red head is one fitted run; every other paragraph applies the
+    # parenthesis rule, except the 四级标题 serial that keeps the heading font.
+    mask = parenthesis_mask(plain) if kind != "redhead" else [False] * len(plain)
+    serial = H4_SERIAL_PATTERN.match(plain) if kind == "h4" else None
+    if serial is not None:
+        mask[: serial.end()] = [False] * serial.end()
+    runs: list[tuple[Run, bool]] = []
+    offset = 0
+    for run in all_runs:
+        start, offset = offset, offset + len(run.text)
+        if run.text.strip():
+            runs.append((run, all(mask[start:offset])))
     if not runs:
         findings.error(f"DOCX typography check found no visible run for {label}")
         return
-    for run in runs:
+    for run, in_parentheses in runs:
         east_asia_font, western_font, size, bold, _color = _effective_run_format(
             doc, paragraph, run
         )
-        if east_asia_font != expected_font:
+        run_font = PARENTHESIS_FONT if in_parentheses else expected_font
+        if east_asia_font != run_font:
             findings.error(
-                f"DOCX {label} uses East Asian font {east_asia_font or '<missing>'}; expected {expected_font}"
+                f"DOCX {label} uses East Asian font {east_asia_font or '<missing>'}; expected {run_font}"
             )
         if western_font != western_override:
             findings.error(
@@ -2161,21 +2275,19 @@ def validate_docx_typography(
         ("issue date", str(metadata.get("issue_date") or "").strip(), {}),
     ]
     attachments = expected_spec.get("attachments") or []
-    if attachments:
-        envelope_paragraphs.append(
-            (
-                "attachment list item 1",
-                f"附件：1.{attachments[0].get('title', '')}",
-                {"first_line_chars_override": 2.0},
-            )
-        )
-        envelope_paragraphs.extend(
-            (f"attachment list item {number}", f"{number}.{attachment.get('title', '')}", {})
-            for number, attachment in enumerate(attachments[1:], start=2)
-        )
+    # 附件说明 hangs each wrapped name under its own name column, so the list uses
+    # point indents rather than the two-character first-line indent.
+    envelope_paragraphs.extend(
+        (f"attachment list item {number}", line, {})
+        for number, line in enumerate(attachment_list_lines(attachments), start=1)
+    )
     for attachment in attachments:
         envelope_paragraphs.append(
-            (f"attachment {attachment.get('id')} label", f"附件{attachment.get('number')}", {})
+            (
+                f"attachment {attachment.get('id')} label",
+                attachment_page_label(attachment.get("number"), len(attachments)),
+                {},
+            )
         )
     contact_parts: list[str] = []
     if str(metadata.get("contact_name") or "").strip():
@@ -2365,7 +2477,7 @@ def validate_docx_typography(
                         doc,
                         paragraph,
                         label=f"table {table_number} row {row_number + 1} cell {cell_number}",
-                        kind="tnote",
+                        kind="table",
                         findings=findings,
                         bold_override=row_number == 0,
                     )
@@ -2432,10 +2544,10 @@ def validate_docx_typography(
             visible_text = "".join(
                 str(item.text or "") for item in page_paragraph._p.findall(".//" + qn("w:t"))
             )
-            if visible_text != "- 1 -":
+            if visible_text != "-1-":
                 findings.error(
                     f"DOCX section {section_number} {footer_name}-page footer format is "
-                    f"{visible_text!r}; expected '- 1 -'"
+                    f"{visible_text!r}; expected '-1-'"
                 )
     if page_field_count == 0:
         findings.error("DOCX typography check found no PAGE field run in odd/even footers")
@@ -2521,8 +2633,9 @@ def validate_docx(
             attachment_id = str(attachment.get("id") or "<unknown>")
             number = str(attachment.get("number") or "")
             title = str(attachment.get("title") or "").strip()
-            if number and re.sub(r"[\s\u3000]+", "", f"附件{number}") not in normalized_doc_text:
-                findings.error(f"DOCX is missing attachment page label 附件{number}")
+            page_label = attachment_page_label(number, len(expected_spec.get("attachments") or []))
+            if number and re.sub(r"[\s\u3000]+", "", page_label) not in normalized_doc_text:
+                findings.error(f"DOCX is missing attachment page label {page_label}")
             if title and re.sub(r"[\s\u3000]+", "", title) not in normalized_doc_text:
                 findings.error(f"DOCX is missing attachment title {title}")
             expected_blocks.extend(
@@ -2553,10 +2666,13 @@ def validate_docx(
     main_heading_entries: list[tuple[str, str]] = []
     for paragraph in doc.paragraphs:
         text = paragraph.text.strip()
-        # The generated attachment page begins with the standalone label "附件1".
-        # The earlier attachment list begins with "附件：1." and must remain inside
+        # The generated attachment page begins with the standalone label "附件1："
+        # (or "附件：" for a single attachment). The earlier attachment list begins
+        # with "附件：1." and must remain inside
         # the main-body scope, so do not use a broad startswith("附件") boundary.
-        if re.match(r"^附件\s*[：:]\s*1(?:[.．、]|\s|$)", text) or re.fullmatch(r"附件\s*(?:1|一)", text):
+        if re.match(r"^附件\s*[：:]\s*1(?:[.．、]|\s|$)", text) or re.fullmatch(
+            r"附件\s*(?:(?:1|一)\s*[：:]?|[：:])", text
+        ):
             break
         if HEADING_PATTERN.match(text):
             main_headings.append(text)
@@ -2776,8 +2892,9 @@ def validate_pdf(
         for attachment in expected_spec.get("attachments") or []:
             number = str(attachment.get("number") or "")
             title = str(attachment.get("title") or "").strip()
-            if number and re.sub(r"[\s\u3000]+", "", f"附件{number}") not in normalized_pdf_text:
-                findings.error(f"PDF is missing attachment page label 附件{number}")
+            page_label = attachment_page_label(number, len(expected_spec.get("attachments") or []))
+            if number and re.sub(r"[\s\u3000]+", "", page_label) not in normalized_pdf_text:
+                findings.error(f"PDF is missing attachment page label {page_label}")
             if title and re.sub(r"[\s\u3000]+", "", title) not in normalized_pdf_text:
                 findings.error(f"PDF is missing attachment title {title}")
 
@@ -2787,11 +2904,11 @@ def validate_pdf(
         # Match the standalone attachment-page label only. Main-body prose may
         # legitimately contain references such as "详见附件1" and the attachment
         # list contains "附件：1."; neither marks the page boundary.
-        if any(re.fullmatch(r"附件(?:一|1)", line) for line in lines):
+        if any(re.fullmatch(r"附件(?:(?:一|1)[：:]?|[：:])", line) for line in lines):
             first_attachment_page = page_number
             break
     if first_attachment_page is None:
-        message = "Could not locate the standalone 附件1 page label in extracted PDF text; the 10-page main-body limit is unproven"
+        message = "Could not locate the standalone first attachment page label (附件1： or 附件：) in extracted PDF text; the 10-page main-body limit is unproven"
         if template_mode:
             findings.warning(message)
         else:
