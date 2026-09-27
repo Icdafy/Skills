@@ -9,28 +9,35 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
     python tools/check_shared_scripts.py --sync
 把改动同步到另外两份；提交前用 `python tools/check_shared_scripts.py` 校验一致
 （不带 --sync 时发现漂移即退出码 1）。不要手工逐份修改。
-统一公文版式基准（依据集团《关于规范行文格式的通知》所附模板 + 用户表格规则）：
+统一公文版式基准（与 yiti-skill 的 references/format-rules.md 一致，依据集团
+《关于规范行文格式的通知》所附模板）：
 
 - A4 页面（上 3.7cm、下 3.5cm、左 2.8cm、右 2.6cm）
 - 封面主标题（方正小标宋简体二号 22pt、居中、固定行距 30 磅）；默认不生成封面
-- 正文（仿宋_GB2312 三号 16pt、两端对齐、首行缩进 2 字符、固定行距 28 磅）
-- 四级编号标题（一、/（一）/ 1. /（1））均首行缩进 2 字符、与段落平齐：
+- 正文（仿宋_GB2312 三号 16pt、两端对齐、首行缩进 2 字符、固定行距 28 磅，段前段后 0）
+- 四级编号标题（一、/（一）/ 1. /（1））均首行缩进 2 字符、与段落平齐、固定行距 30 磅：
   一级黑体三号不加粗；二级楷体_GB2312 三号加粗；三级仿宋_GB2312 三号加粗；
-  四级仿宋_GB2312 三号加粗（编号适用标题字体，其余括注适用括注规则）
+  四级仿宋_GB2312 三号加粗（序号"（1）"随标题用仿宋加粗，其余括注适用括注规则）
 - 核心结论/段首论点句：整段加粗（type=p, bold=true）
+- 字体按四步设置：①中文字体按角色；②圆括号及其内文字改楷体_GB2312，字号随所在
+  位置（封面标题二号、正文三号、表格与表注五号），保留加粗；③页脚 -1- 四号宋体；
+  ④最后全文（不含页脚）西文字体统一 Times New Roman，中文字体不变
+- 全角数字、字母和％先转半角，保证第④步能作用到它们
 - 表格（统一表格规范）：
-    * 全表统一仿宋_GB2312、五号 10.5pt
-    * 仅首行（表头）加粗，浅蓝底 #D9E2F3；其余单元格不加粗、无底纹
-    * 所有单元格内容水平居中 + 垂直居中
-    * 细灰边框 #BFBFBF
-    * 表头行跨页重复（tblHeader）
-    * 宽度按窗口自动调整（pct 100% + tblLayout=autofit），随页宽缩放不溢出；
-      table 块的 widths 作为列宽比例（转百分比），不写死磅值
+    * 全表统一五号 10.5pt：括号外仿宋_GB2312，括号及括号内楷体_GB2312
+    * 仅首行（表头）加粗，无底纹；其余单元格不加粗
+    * 所有单元格内容水平居中 + 垂直居中，单倍行距
+    * 黑色单线全框线
+    * 表头行跨页重复（tblHeader），各行不跨页断开（cantSplit）
+    * 表宽铺满版心（pct 100% + tblLayout=autofit）；列宽按内容分配，
+      table 块给出 widths 时按其比例（转百分比）
+    * 表格前一段（引导句）与表格同页
 - 表注（type=tnote）："单位：万元""注：……"等，仿宋_GB2312 五号、不缩进，
   align 可选 left/right/center（默认 left；"单位"行惯例放表格上方右对齐）
-- 页脚页码（奇偶页外侧，四号宋体，格式 -1-）
-- 表外括注中文三号楷体_GB2312，表内括注中文五号楷体_GB2312。
-- 所有中文格式完成后，最后统一全文西文字体为 Times New Roman，保留字号与中文字体。
+- 页脚页码（奇偶页不同，奇数页居右、偶数页居左，完整 -1- 四号宋体）
+- 附件说明：正文下空一行，"附件："左空二字；多份为"附件：1.XXX"，"2."与"1."对齐，
+  回行悬挂对齐到名称首字（按实际字宽计算，关闭中西文自动间距）
+- 落款（可选 signature）：附件说明下空两行，署名右空四字，成文日期在署名下居中
 - 字体嵌入：保存后自动把随附的仿宋_GB2312、楷体_GB2312 嵌入 DOCX，使文件在未
   安装这两款字体的机器上仍忠实呈现（方正小标宋许可禁止嵌入，自动跳过）；
   嵌入经反混淆校验，失败则保留未嵌入版本，绝不影响正常生成
@@ -66,7 +73,8 @@ content 结构（dict）：
   "summary": "要点概述正文（可选，多段用 \\n 分隔）",
   "summary_title": "要点概述",            # 可选，默认"要点概述"
   "blocks": [ ...见下... ],               # 章节正文，按顺序渲染
-  "attachments": ["实施方案（试行）", "测算表"]  # 可选；单份无序号，多份阿拉伯数字
+  "attachments": ["实施方案（试行）", "测算表"],  # 可选；单份无序号，多份阿拉伯数字
+  "signature": {"issuer": "XX投资管理有限公司", "date": "2026年9月1日"}  # 可选落款
 }
 
 blocks 里每个元素是一个 dict，type 决定渲染方式：
@@ -80,7 +88,7 @@ blocks 里每个元素是一个 dict，type 决定渲染方式：
   {"type":"bullet","items":["要点1","要点2"]}       # 项目符号列表
   {"type":"tnote","text":"单位：万元","align":"right"}   # 表注，仿宋五号
   {"type":"table","header":["列1","列2"],           # 表格；header 可省略（无表头）
-      "rows":[["a","b"],["c","d"]]}                 # autofit 到窗口，列等分
+      "rows":[["a","b"],["c","d"]]}                 # 铺满版心，列宽按内容分配
   {"type":"table","header":[...],"rows":[...],
       "widths":[3,6]}                               # 可选：列宽比例（随窗口缩放）
   {"type":"image","path":"photos/product.jpg",      # 插图（如产品实物照片），居中；
@@ -104,9 +112,9 @@ from docx.oxml import OxmlElement
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from embed_fonts import embed_bundled_fonts  # 随技能分发的字体嵌入器
-from docx_format_helpers import parenthesized_spans, attachment_lines
+from docx_format_helpers import parenthesized_spans, normalize_attachment_name
 
-# ---------- 版式常量（三技能统一公文格式） ----------
+# ---------- 版式常量（与 yiti-skill 统一的公文格式） ----------
 FONT_TITLE = "方正小标宋简体"
 FONT_BODY = "仿宋_GB2312"
 FONT_H1 = "黑体"            # 使用系统原本黑体，不随技能打包替换
@@ -117,20 +125,43 @@ BODY_SZ = 16               # 三号
 H1_SZ = 16                 # 一级标题黑体三号，不加粗
 H2_SZ = 16                 # 二级标题楷体_GB2312 三号，加粗
 H3_SZ = 16                 # 三级标题仿宋_GB2312 三号，加粗
-H4_SZ = 16                 # 四级标题仿宋_GB2312 三号，加粗（三技能统一）
+H4_SZ = 16                 # 四级标题仿宋_GB2312 三号，加粗
 COVER_TITLE_SZ = 22        # 二号方正小标宋简体
 COVER_ORG_SZ = 16          # 落款/机构三号仿宋_GB2312
 FOOTER_SZ = 14             # 四号宋体
 BODY_LINE_PT = 28
-TITLE_LINE_PT = 30
-TABLE_BORDER = "BFBFBF"    # 表格边框灰
-HEADER_FILL = "D9E2F3"     # 表头浅蓝底（三技能统一）
+TITLE_LINE_PT = 30         # 主标题及各级编号标题
+TABLE_BORDER = "auto"      # 表格黑色单线全框线
 CONTENT_WIDTH = 8844       # A4：21cm - 2.8cm - 2.6cm ≈ 15.6cm（DXA≈8844）
+CONTENT_WIDTH_PT = CONTENT_WIDTH / 20
 TABLE_SZ = 10.5            # 表格统一五号，所有单元格；表注同
+TWO_CHAR_INDENT_PT = BODY_SZ * 2
+SIGNATURE_RIGHT_INDENT_PT = BODY_SZ * 4  # 落款右空四字
+
+# 四级标题序号"（1）"随标题用仿宋_GB2312加粗，不按括号规则改楷体。
+H4_SERIAL = re.compile(r'^\s*[（(]\d+[）)]')
+# 全角数字、字母和百分号转半角，保证最后一轮 Times New Roman 能作用到它们。
+FULLWIDTH = {code: code - 0xFEE0 for code in range(0xFF10, 0xFF1A)}
+FULLWIDTH.update({code: code - 0xFEE0 for code in range(0xFF21, 0xFF3B)})
+FULLWIDTH.update({code: code - 0xFEE0 for code in range(0xFF41, 0xFF5B)})
+FULLWIDTH[0xFF05] = ord('%')
+# Times New Roman 字宽（em），用于附件说明悬挂缩进与落款居中。
+TNR_EM = {'.': 0.25, ',': 0.25, ':': 0.278, '-': 0.333, ' ': 0.25, '/': 0.278, '%': 0.833}
+
+
+def _text_width_pt(text, size=BODY_SZ):
+    """中文字体 + Times New Roman 混排时一行文字的宽度（磅）。"""
+    width = 0.0
+    for char in str(text):
+        if ord(char) < 128:
+            width += (0.5 if char.isdigit() else TNR_EM.get(char, 0.5)) * size
+        else:
+            width += size
+    return width
 
 
 def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY,
-                  western_font=FONT_EN):
+                  western_font=FONT_EN, east_asia_hint=True):
     run.font.size = Pt(size)
     run.font.bold = bold
     run.font.name = western_font
@@ -139,35 +170,52 @@ def _set_run_font(run, size=BODY_SZ, bold=False, color=None, font_name=FONT_BODY
     rfonts = rpr.find(qn('w:rFonts'))
     if rfonts is None:
         rfonts = OxmlElement('w:rFonts')
-        rpr.append(rfonts)
+        rpr.insert(0, rfonts)
     rfonts.set(qn('w:ascii'), western_font)
     rfonts.set(qn('w:hAnsi'), western_font)
     rfonts.set(qn('w:cs'), western_font)
     rfonts.set(qn('w:eastAsia'), font_name)
+    if east_asia_hint:
+        # 中文引号、破折号、省略号按中文字体排；数字、字母、% 属 ASCII，仍用 Times New Roman。
+        rfonts.set(qn('w:hint'), 'eastAsia')
     if color:
         run.font.color.rgb = RGBColor.from_string(color)
+    sz_cs = rpr.find(qn('w:szCs'))
+    if sz_cs is None:
+        sz_cs = OxmlElement('w:szCs')
+        rpr.append(sz_cs)
+    sz_cs.set(qn('w:val'), str(int(size * 2)))
+    lang = rpr.find(qn('w:lang'))
+    if lang is None:
+        lang = OxmlElement('w:lang')
+        rpr.append(lang)
+    lang.set(qn('w:eastAsia'), 'zh-CN')
 
 
 def _add_text_runs(paragraph, text, size=BODY_SZ, bold=False, color=None,
-                   font_name=FONT_BODY, in_table=False, heading4=False):
-    text = str(text)
+                   font_name=FONT_BODY, heading4=False):
+    """括号及括号内文字用楷体_GB2312，字号与所在位置一致（标题二号、正文三号、
+    表格/表注五号），保留所在位置的加粗；四级标题序号"（1）"随标题。"""
+    text = str(text).translate(FULLWIDTH)
     cursor = 0
-    # 四级标题编号属于标题，其余括注仍按括注规则处理。
-    prefix = re.match(r'^\s*（\d+）', text) if heading4 else None
+    prefix = H4_SERIAL.match(text) if heading4 else None
     for start, end in parenthesized_spans(text):
         if cursor < start:
             _set_run_font(paragraph.add_run(text[cursor:start]), size, bold, color, font_name)
-        is_heading_number = prefix is not None and end == prefix.end()
-        _set_run_font(paragraph.add_run(text[start:end]),
-                      size if is_heading_number else (TABLE_SZ if in_table else BODY_SZ),
-                      bold, color, FONT_BODY if is_heading_number else FONT_H2)
+        if prefix is not None and start < prefix.end():
+            # 序号与后续括注合并成一个区间时，序号部分仍随标题字体。
+            serial_end = prefix.end()
+            _set_run_font(paragraph.add_run(text[start:serial_end]), size, bold, color, font_name)
+            start = serial_end
+        if start < end:
+            _set_run_font(paragraph.add_run(text[start:end]), size, bold, color, FONT_H2)
         cursor = end
     if cursor < len(text):
         _set_run_font(paragraph.add_run(text[cursor:]), size, bold, color, font_name)
 
 
 def _add_para(doc, text, size=BODY_SZ, bold=False, align=None, color=None,
-              space_before=0, space_after=6, outline=None, line=None,
+              space_before=0, space_after=0, outline=None, line=None,
               font_name=FONT_BODY):
     p = doc.add_paragraph()
     if align is not None:
@@ -254,13 +302,14 @@ def _fill_cell(cell, text, bold=False, header=False, size=TABLE_SZ):
     cell.text = ""
     p = cell.paragraphs[0]
     p.alignment = WD_ALIGN_PARAGRAPH.CENTER  # 水平居中；垂直居中见 _style_cell
-    p.paragraph_format.space_before = Pt(1)
-    p.paragraph_format.space_after = Pt(1)
-    p.paragraph_format.line_spacing = Pt(18)
-    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    p.paragraph_format.space_before = Pt(0)
+    p.paragraph_format.space_after = Pt(0)
+    p.paragraph_format.first_line_indent = Pt(0)
+    # 表格用单倍行距，不套用正文 28 磅固定行距。
+    p.paragraph_format.line_spacing_rule = WD_LINE_SPACING.SINGLE
     _add_text_runs(p, str(text) if text is not None else "",
-                   size=TABLE_SZ, bold=bold or header, font_name=FONT_BODY, in_table=True)
-    _style_cell(cell, fill=HEADER_FILL if header else None)
+                   size=TABLE_SZ, bold=bold or header, font_name=FONT_BODY)
+    _style_cell(cell)
 
 
 def _mark_header_row(row):
@@ -272,10 +321,45 @@ def _mark_header_row(row):
         trPr.append(th)
 
 
+def _mark_cant_split(row):
+    """行不跨页断开。cantSplit 在 CT_TrPr 中位于 tblHeader 之前。"""
+    trPr = row._tr.get_or_add_trPr()
+    if trPr.find(qn('w:cantSplit')) is None:
+        trPr.insert(0, OxmlElement('w:cantSplit'))
+
+
+def _column_widths(all_rows, ncols, total=CONTENT_WIDTH_PT):
+    """按内容分配列宽并铺满版心（与 yiti-skill 相同的算法）。
+
+    序号、数字、"（工作日）"等不超过 6 个汉字宽的短文字不折行，决定该列最小宽度；
+    剩余宽度按各列最长一行超出最小宽度的部分成比例分配。
+    """
+    padding = 10.0  # 单元格左右内边距（100 + 100 twips）
+    short_limit = TABLE_SZ * 6
+    minimum, maximum = [], []
+    for c_idx in range(ncols):
+        widths = [_text_width_pt(line, TABLE_SZ)
+                  for row in all_rows if c_idx < len(row)
+                  for line in str(row[c_idx] if row[c_idx] is not None else "").splitlines()]
+        short = [w for w in widths if w <= short_limit]
+        low = max(short + [TABLE_SZ * 2]) + padding
+        minimum.append(low)
+        maximum.append(max(max(widths + [0.0]) + padding, low))
+    if sum(maximum) <= total:
+        extra = total - sum(maximum)
+        return [w + extra * w / sum(maximum) for w in maximum]
+    stretch = [hi - lo for lo, hi in zip(minimum, maximum)]
+    free = total - sum(minimum)
+    if free <= 0 or not sum(stretch):
+        return [total * lo / sum(minimum) for lo in minimum]
+    return [lo + free * s / sum(stretch) for lo, s in zip(minimum, stretch)]
+
+
 def _add_table(doc, header, rows, widths=None):
     ncols = len(header) if header else (len(rows[0]) if rows else 1)
     if not widths or len(widths) != ncols:
-        widths = [CONTENT_WIDTH // ncols] * ncols   # 默认等分，作为列宽比例
+        # 未给出列宽比例时按内容分配（序号等短列定宽，长文字列分得剩余宽度）
+        widths = _column_widths(([header] if header else []) + list(rows), ncols)
     nrows = (1 if header else 0) + len(rows)
     table = doc.add_table(rows=nrows, cols=ncols)
     table.alignment = WD_TABLE_ALIGNMENT.CENTER
@@ -291,7 +375,9 @@ def _add_table(doc, header, rows, widths=None):
         for j in range(ncols):
             val = row[j] if j < len(row) else ""
             _fill_cell(table.rows[r + i].cells[j], val, size=TABLE_SZ)
-    # 列宽改用百分比：保持 widths 的设计比例，随窗口宽度整体缩放
+    for row in table.rows:
+        _mark_cant_split(row)
+    # 列宽用百分比：保持列宽比例，随窗口宽度整体缩放
     total = sum(widths) or 1
     col_pct = [max(1, round(w / total * 5000)) for w in widths]  # 5000 = 100.00%
     for row in table.rows:
@@ -333,7 +419,7 @@ def _set_cell_width_pct(cell, pct):
 def _add_toc(doc):
     """插入 Word 原生 TOC 域；打开文档后需手动/自动更新（右键→更新域）。"""
     _add_para(doc, "目录", size=H1_SZ, bold=False, align=WD_ALIGN_PARAGRAPH.CENTER,
-              space_after=8, line=BODY_LINE_PT, font_name=FONT_H1)
+              line=TITLE_LINE_PT, font_name=FONT_H1)
     p = doc.add_paragraph()
     run = p.add_run()
     fldChar1 = OxmlElement('w:fldChar'); fldChar1.set(qn('w:fldCharType'), 'begin')
@@ -356,10 +442,17 @@ def _add_page_number_footer(section):
 
 
 def _add_footer_page_field(p, align):
+    """页码 -1-：两个短横线、PAGE 域及其显示结果全部四号宋体（四个字体槽均为宋体），
+    不参与最后的 Times New Roman 统一。"""
     p.alignment = align
-    _set_run_font(p.add_run("-"), size=FOOTER_SZ,
-                  font_name=FONT_FOOTER, western_font=FONT_FOOTER)
+
+    def songti(run):
+        _set_run_font(run, size=FOOTER_SZ, font_name=FONT_FOOTER,
+                      western_font=FONT_FOOTER, east_asia_hint=False)
+
+    songti(p.add_run("-"))
     run = p.add_run()
+    songti(run)
     f1 = OxmlElement('w:fldChar'); f1.set(qn('w:fldCharType'), 'begin')
     instr = OxmlElement('w:instrText'); instr.set(qn('xml:space'), 'preserve'); instr.text = 'PAGE'
     separate = OxmlElement('w:fldChar'); separate.set(qn('w:fldCharType'), 'separate')
@@ -367,9 +460,16 @@ def _add_footer_page_field(p, align):
     f2 = OxmlElement('w:fldChar'); f2.set(qn('w:fldCharType'), 'end')
     for el in (f1, instr, separate, result, f2):
         run._r.append(el)
-    _set_run_font(run, size=FOOTER_SZ, font_name=FONT_FOOTER, western_font=FONT_FOOTER)
-    _set_run_font(p.add_run("-"), size=FOOTER_SZ,
-                  font_name=FONT_FOOTER, western_font=FONT_FOOTER)
+    songti(p.add_run("-"))
+    # 段落标记同为四号宋体，页脚行高随页码。
+    mark = OxmlElement('w:rPr')
+    fonts = OxmlElement('w:rFonts')
+    for slot in ('ascii', 'hAnsi', 'eastAsia', 'cs'):
+        fonts.set(qn('w:' + slot), FONT_FOOTER)
+    size = OxmlElement('w:sz')
+    size.set(qn('w:val'), str(FOOTER_SZ * 2))
+    mark.extend([fonts, size])
+    p._p.get_or_add_pPr().append(mark)
 
 
 def _enable_odd_even_footers(doc):
@@ -386,6 +486,114 @@ def _set_a4_page(section):
     section.bottom_margin = Cm(3.5)
     section.left_margin = Cm(2.8)
     section.right_margin = Cm(2.6)
+    section.header_distance = Cm(1.5)
+    section.footer_distance = Cm(2.35)
+
+
+def _set_chinese_language(doc):
+    """中文排版默认语言，替换 python-docx 模板里的 en-US/ja-JP。"""
+    defaults = doc.styles.element.find(qn('w:docDefaults'))
+    lang = defaults.find('.//' + qn('w:lang')) if defaults is not None else None
+    if lang is not None:
+        lang.set(qn('w:eastAsia'), 'zh-CN')
+    theme_lang = doc.settings.element.find(qn('w:themeFontLang'))
+    if theme_lang is not None:
+        theme_lang.set(qn('w:eastAsia'), 'zh-CN')
+
+
+# CT_PPr 中位于 autoSpaceDE/autoSpaceDN 之后的子元素（按 schema 顺序插入）。
+_AUTO_SPACE_SUCCESSORS = (
+    'w:bidi', 'w:adjustRightInd', 'w:snapToGrid', 'w:spacing', 'w:ind',
+    'w:contextualSpacing', 'w:mirrorIndents', 'w:suppressOverlap', 'w:jc',
+    'w:textDirection', 'w:textAlignment', 'w:textboxTightWrap', 'w:outlineLvl',
+    'w:divId', 'w:cnfStyle', 'w:rPr', 'w:sectPr', 'w:pPrChange',
+)
+
+
+def _disable_auto_spacing(paragraph):
+    """关闭中西文自动间距，使悬挂缩进与落款居中按字宽精确对齐。"""
+    pPr = paragraph._p.get_or_add_pPr()
+    for tag, successors in (('w:autoSpaceDE', ('w:autoSpaceDN',) + _AUTO_SPACE_SUCCESSORS),
+                            ('w:autoSpaceDN', _AUTO_SPACE_SUCCESSORS)):
+        element = pPr.find(qn(tag))
+        if element is None:
+            element = OxmlElement(tag)
+            pPr.insert_element_before(element, *successors)
+        element.set(qn('w:val'), '0')
+
+
+def _plain_para(doc, text, *, first_line_pt=0.0, left_pt=0.0, right_pt=0.0,
+                align=WD_ALIGN_PARAGRAPH.JUSTIFY):
+    """附件说明、落款用段落：三号仿宋、固定 28 磅、磅值缩进、关闭中西文自动间距。"""
+    p = doc.add_paragraph()
+    p.alignment = align
+    pf = p.paragraph_format
+    pf.space_before = Pt(0)
+    pf.space_after = Pt(0)
+    pf.line_spacing = Pt(BODY_LINE_PT)
+    pf.line_spacing_rule = WD_LINE_SPACING.EXACTLY
+    pf.first_line_indent = Pt(first_line_pt)
+    if left_pt:
+        pf.left_indent = Pt(left_pt)
+    if right_pt:
+        pf.right_indent = Pt(right_pt)
+    _disable_auto_spacing(p)
+    if text:
+        _add_text_runs(p, text, font_name=FONT_BODY)
+    return p
+
+
+def _add_attachments(doc, attachments, keep_with_body=False):
+    """附件说明：正文下空一行，左空二字写"附件："。
+
+    单份：附件：名称（回行与名称首字对齐）。
+    多份：附件：1.名称 / 2.名称……，"2."与"1."对齐，每份回行与序号后的名称首字对齐。
+    """
+    names = [name for source in attachments or [] if (name := normalize_attachment_name(source))]
+    if not names:
+        return
+    if keep_with_body and doc.paragraphs:
+        # 有落款时，正文末段随附件说明、落款同页。
+        doc.paragraphs[-1].paragraph_format.keep_with_next = True
+    _plain_para(doc, "").paragraph_format.keep_with_next = keep_with_body
+    label = "附件："
+    label_start = TWO_CHAR_INDENT_PT
+    number_start = label_start + _text_width_pt(label)
+    if len(names) == 1:
+        _plain_para(doc, label + names[0], first_line_pt=label_start - number_start,
+                    left_pt=number_start)
+        return
+    lines = []
+    for idx, name in enumerate(names, start=1):
+        number = f"{idx}."
+        text_start = number_start + _text_width_pt(number)
+        if idx == 1:
+            lines.append(_plain_para(doc, f"{label}{number}{name}",
+                                     first_line_pt=label_start - text_start, left_pt=text_start))
+        else:
+            lines.append(_plain_para(doc, f"{number}{name}",
+                                     first_line_pt=number_start - text_start, left_pt=text_start))
+    for line in lines[:-1]:
+        line.paragraph_format.keep_with_next = True  # 多份附件说明不跨页拆开
+
+
+def _add_signature(doc, signature):
+    """落款：附件说明下空两行；署名右空四字，成文日期在署名下居中对齐。"""
+    issuer = str((signature or {}).get("issuer", "")).strip()
+    date = str((signature or {}).get("date", "")).strip()
+    if not issuer and not date:
+        return
+    if doc.paragraphs:
+        doc.paragraphs[-1].paragraph_format.keep_with_next = True
+    for _ in range(2):
+        _plain_para(doc, "").paragraph_format.keep_with_next = True
+    width = max(_text_width_pt(issuer), _text_width_pt(date))
+    for text in (issuer, date):
+        if not text:
+            continue
+        p = _plain_para(doc, text, align=WD_ALIGN_PARAGRAPH.RIGHT,
+                        right_pt=SIGNATURE_RIGHT_INDENT_PT + (width - _text_width_pt(text)) / 2)
+        p.paragraph_format.keep_with_next = text == issuer and bool(date)
 
 
 def _fix_zoom(doc):
@@ -402,13 +610,13 @@ def _fix_zoom(doc):
 def _finalize_western_fonts(doc):
     """最后统一西文字体，保留中文字体、字号、加粗及域结构。
 
-    覆盖正文、嵌套表格、页眉页脚和样式；清除西文主题覆盖，避免打开 Word
+    覆盖正文、嵌套表格、页眉和样式；清除西文主题覆盖，避免打开 Word
     或刷新域时又恢复主题字体。所有字符（含数字、%和短横线）的西文字体槽
-    均为 Times New Roman，eastAsia 不变。
+    均为 Times New Roman，eastAsia 不变。页脚 -1- 不参与这一步，保持四号宋体。
     """
     roots = [doc.element, doc.styles.element]
     for part in doc.part.package.parts:
-        if part.partname.startswith(('/word/header', '/word/footer')):
+        if part.partname.startswith('/word/header'):
             roots.append(part.element)
     for root in roots:
         # 空 run 和域 run 也设置，避免继承了不同的西文字体。
@@ -429,6 +637,7 @@ def build(content, out_path):
         validate(content, root=Path(__file__).resolve().parents[1])
     doc = Document()
     _fix_zoom(doc)
+    _set_chinese_language(doc)
     _enable_odd_even_footers(doc)
     sec = doc.sections[0]
     _set_a4_page(sec)
@@ -472,7 +681,7 @@ def build(content, out_path):
     if content.get("summary"):
         _add_para(doc, content.get("summary_title", "要点概述"),
                   size=H1_SZ, bold=False, align=WD_ALIGN_PARAGRAPH.CENTER,
-                  space_after=8, outline=0, line=BODY_LINE_PT,
+                  outline=0, line=TITLE_LINE_PT,
                   font_name=FONT_H1)
         for para in str(content["summary"]).split("\n"):
             if para.strip():
@@ -484,32 +693,21 @@ def build(content, out_path):
     # ---------- 章节正文 ----------
     ALIGN = {"left": WD_ALIGN_PARAGRAPH.LEFT, "right": WD_ALIGN_PARAGRAPH.RIGHT,
              "center": WD_ALIGN_PARAGRAPH.CENTER}
+    # 各级标题：固定行距 30 磅、段前段后 0、与下段同页（标题不单独留在页末）。
+    HEADINGS = {
+        "h1": (H1_SZ, False, FONT_H1, 0),     # 一、黑体不加粗
+        "h2": (H2_SZ, True, FONT_H2, 1),      # （一）楷体_GB2312加粗
+        "h3": (H3_SZ, True, FONT_BODY, 2),    # 1.仿宋_GB2312加粗
+        "h4": (H4_SZ, True, FONT_BODY, 3),    # （1）仿宋_GB2312加粗
+    }
     for blk in content.get("blocks", []):
         t = blk.get("type")
-        if t == "h1":
-            p = _add_para(doc, blk["text"], size=H1_SZ, bold=False,
-                          space_before=8, space_after=6, outline=0,
-                          align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
-                          font_name=FONT_H1)
-            _indent_first_line(p)
-        elif t == "h2":
-            p = _add_para(doc, blk["text"], size=H2_SZ, bold=True,
-                          space_before=6, space_after=4, outline=1,
-                          align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
-                          font_name=FONT_H2)
-            _indent_first_line(p)
-        elif t == "h3":
-            p = _add_para(doc, blk["text"], size=H3_SZ, bold=True,
-                          space_before=4, space_after=4, outline=2,
-                          align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
-                          font_name=FONT_BODY)
-            _indent_first_line(p)
-        elif t == "h4":
-            # 四级标题三号仿宋加粗，编号内数字在最终字体遍历中统一为西文字体。
-            p = _add_para(doc, blk["text"], size=H4_SZ, bold=True,
-                          space_before=2, space_after=2, outline=3,
-                          align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=BODY_LINE_PT,
-                          font_name=FONT_BODY)
+        if t in HEADINGS:
+            size, bold, font, level = HEADINGS[t]
+            p = _add_para(doc, blk["text"], size=size, bold=bold, outline=level,
+                          align=WD_ALIGN_PARAGRAPH.JUSTIFY, line=TITLE_LINE_PT,
+                          font_name=font)
+            p.paragraph_format.keep_with_next = True
             _indent_first_line(p)
         elif t == "p":
             if blk.get("lead"):
@@ -538,6 +736,9 @@ def build(content, out_path):
                       space_before=0, space_after=2, line=18,
                       font_name=FONT_BODY)
         elif t == "table":
+            if doc.paragraphs and doc.paragraphs[-1].text.strip():
+                # 表格前的引导句（或"单位："表注）与表格同页
+                doc.paragraphs[-1].paragraph_format.keep_with_next = True
             _add_table(doc, blk.get("header"), blk.get("rows", []), blk.get("widths"))
             doc.add_paragraph()  # 表后空行
         elif t == "image":
@@ -571,10 +772,10 @@ def build(content, out_path):
                 _add_para(doc, blk["text"], align=WD_ALIGN_PARAGRAPH.JUSTIFY,
                           line=BODY_LINE_PT, font_name=FONT_BODY)
 
-    for text in attachment_lines(content.get("attachments", [])):
-        p = _add_para(doc, text, align=WD_ALIGN_PARAGRAPH.JUSTIFY,
-                      line=BODY_LINE_PT, font_name=FONT_BODY)
-        _indent_first_line(p)
+    signature = content.get("signature") or {}
+    _add_attachments(doc, content.get("attachments", []),
+                     keep_with_body=bool(signature.get("issuer") or signature.get("date")))
+    _add_signature(doc, signature)
 
     _finalize_western_fonts(doc)
     doc.save(out_path)

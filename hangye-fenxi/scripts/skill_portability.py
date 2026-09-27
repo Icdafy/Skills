@@ -152,7 +152,11 @@ def smoke(root):
             for name in ['word/document.xml', *footers]:
                 tree = ET.fromstring(archive.read(name))
                 for fonts in tree.findall('.//w:rFonts', ns):
-                    if any(fonts.get(w + slot) != 'Times New Roman' for slot in ('ascii', 'hAnsi', 'cs')):
+                    if name in footers:
+                        # 页脚 -1- 不参与 Times New Roman 统一，四个字体槽均为宋体。
+                        if any(fonts.get(w + slot) != '宋体' for slot in ('ascii', 'hAnsi', 'cs', 'eastAsia')):
+                            raise ValueError('Footer page number must be 宋体 in every font slot')
+                    elif any(fonts.get(w + slot) != 'Times New Roman' for slot in ('ascii', 'hAnsi', 'cs')):
                         raise ValueError('Western font normalization failed')
                 if name in footers:
                     alignments.add(tree.find('.//w:jc', ns).get(w + 'val'))

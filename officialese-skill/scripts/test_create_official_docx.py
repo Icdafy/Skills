@@ -65,8 +65,15 @@ class OfficialFormatTests(unittest.TestCase):
         generator.add_attachments(doc, ['附件一：申报表；', '附件2.测算表！'])
         items = [p for p in doc.paragraphs if p.text]
         self.assertEqual([p.text for p in items], ['附件：1.申报表', '2.测算表'])
-        self.assertEqual(items[0].paragraph_format.left_indent.pt, 96)
-        self.assertEqual(items[1].paragraph_format.first_line_indent.pt, -16)
+        # 名称起点 = 左空2字 + "附件："3字 + "1."（Times New Roman 实际字宽 0.75 字）。
+        name_col = 32 + 48 + generator.text_width_pt('1.')
+        self.assertAlmostEqual(items[0].paragraph_format.left_indent.pt, name_col, places=1)
+        self.assertAlmostEqual(items[0].paragraph_format.first_line_indent.pt, 32 - name_col, places=1)
+        # "2."与"1."左对齐：首行从 32+48 磅起排，回行悬挂在名称首字。
+        self.assertAlmostEqual(items[1].paragraph_format.left_indent.pt
+                               + items[1].paragraph_format.first_line_indent.pt, 80, places=1)
+        for item in items:
+            self.assertEqual(item._p.pPr.find(qn('w:autoSpaceDE')).get(qn('w:val')), '0')
 
     def test_saved_document_spacing_parentheses_and_whole_page_field(self):
         with tempfile.TemporaryDirectory() as temp:
@@ -76,7 +83,7 @@ class OfficialFormatTests(unittest.TestCase):
                 'issuer_title': '公司文件',
                 'subtitle': '业务部门',
                 'recipient': '各部门（含子公司）：',
-                'body': ['正文（说明ABC 123）结束'],
+                'body': ['正文（说明ＡＢＣ １２３）结束'],
                 'sections': [{'heading': '（1）工作要求', 'level': 4,
                               'paragraphs': [{'table': [['项目', '占比（%）'],
                                                         ['研发投入（2026年）', '12.5%']]}]}],
@@ -86,35 +93,52 @@ class OfficialFormatTests(unittest.TestCase):
             }, path)
             doc = Document(path)
             parenthetical_runs = []
+            title_styles = (generator.STYLE_TITLE, generator.STYLE_SUBTITLE,
+                            generator.STYLE_H1, generator.STYLE_H2,
+                            generator.STYLE_H3, generator.STYLE_H4)
             for paragraph in doc.paragraphs:
-                expected_spacing = 30 if paragraph.style.name in (
-                    generator.STYLE_TITLE, generator.STYLE_SUBTITLE) else 28
+                expected_spacing = 30 if paragraph.style.name in title_styles else 28
                 self.assertEqual(paragraph.paragraph_format.line_spacing.pt,
                                  expected_spacing)
                 self.assertEqual(paragraph.paragraph_format.line_spacing_rule,
                                  WD_LINE_SPACING.EXACTLY)
                 for run in paragraph.runs:
-                    if run.text.startswith(('（', '(')):
+                    if run.text.startswith(('（', '(')) and not run.text.startswith('（1）'):
                         parenthetical_runs.append(run.text)
-                        self.assert_mixed_font(run, generator.KAITI_FONT, 16)
+                        # 括号字号随所在位置：主标题内二号，其余三号。
+                        size = 22 if paragraph.style.name == generator.STYLE_TITLE else 16
+                        self.assert_mixed_font(run, generator.KAITI_FONT, size)
                     else:
                         self.assertEqual(run._r.rPr.rFonts.get(qn('w:ascii')),
                                          generator.WESTERN_FONT)
-            self.assertEqual(len(parenthetical_runs), 6)
+            self.assertEqual(len(parenthetical_runs), 5)
             heading4 = next(p for p in doc.paragraphs if p.text == '（1）工作要求')
             self.assertTrue(all(run.bold for run in heading4.runs))
-            self.assertEqual(heading4.runs[-1]._r.rPr.rFonts.get(qn('w:eastAsia')),
-                             generator.BODY_FONT)
+            # 四级标题序号"（1）"随标题用仿宋_GB2312加粗，不改楷体。
+            self.assertEqual(heading4.runs[0].text, '（1）工作要求')
+            self.assert_mixed_font(heading4.runs[0], generator.BODY_FONT, 16)
+            body = next(p for p in doc.paragraphs if p.text.startswith('正文'))
+            self.assertEqual(body.text, '正文（说明ABC 123）结束')  # 全角已转半角
             cells = [p for row in doc.tables[0].rows for c in row.cells
                      for p in c.paragraphs]
             self.assertEqual([p.text for p in cells],
                              ['项目', '占比（%）', '研发投入（2026年）', '12.5%'])
-            for paragraph in cells:
+            for index, paragraph in enumerate(cells):
                 for run in paragraph.runs:
                     east = (generator.KAITI_FONT if run.text.startswith('（')
                             else generator.BODY_FONT)
                     self.assert_mixed_font(run, east, 10.5)
-                    self.assertFalse(run.bold)
+                    self.assertEqual(bool(run.bold), index < 2)  # 仅表头加粗
+            header_row = doc.tables[0].rows[0]._tr.trPr
+            self.assertIsNotNone(header_row.find(qn('w:tblHeader')))
+            self.assertIsNotNone(header_row.find(qn('w:cantSplit')))
+            issuer = next(p for p in doc.paragraphs if p.text == '某某公司（集团）')
+            date = next(p for p in doc.paragraphs if p.text == '2026年9月14日')
+            self.assertAlmostEqual(issuer.paragraph_format.right_indent.pt, 64, places=1)
+            # 日期以署名为准居中：右缩进 = 4字 + (署名宽 − 日期宽) / 2。
+            expected = 64 + (generator.text_width_pt('某某公司（集团）')
+                             - generator.text_width_pt('2026年9月14日')) / 2
+            self.assertAlmostEqual(date.paragraph_format.right_indent.pt, expected, places=1)
             title = next(p for p in doc.paragraphs if p.text.startswith('关于'))
             self.assertEqual(title.runs[0].font.size.pt, 22)
             section = doc.sections[0]
