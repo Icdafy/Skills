@@ -21,6 +21,40 @@ CUSTOM_BANNED_FILE = SKILL_DIR / "glossary" / "banned-phrases.txt"
 HALFWIDTH_PUNCT_NEAR_CJK = re.compile(
     r"[一-鿿][,;:?!()]|[,;:?!()][一-鿿]"
 )
+# 数字千位分隔：整数部分四位及以上须自个位起每三位加半角逗号，如“2,350万元”“1,234.56”。
+# 年份、日期、文号、编号、代码、电话、证件号、标准号等标识性数字不分节，不命中；
+# 十一位及以上的纯数字串按编号处理。
+_UNGROUPED_DIGITS = re.compile(
+    r"(?<![\d,.A-Za-z_〔\[])(?<![A-Za-z][ \-/])(?<!\d[-－/:：])[1-9]\d{3,9}(?![\d,A-Za-z_〕\]])")
+_YEAR_CONTEXT = re.compile(
+    r"\s*(?:年|届|级|版|款|[-－/.]\d|[、，,和及与至到—–\-－~～]\s*(?:19|20)\d{2}(?!\d)|[|｜)）]|$)")
+_STANDARD_PREFIX = re.compile(r"[A-Za-z][A-Za-z/]*\s?[\d.]+\s?[—–\-－]$")
+_ID_PREFIX = re.compile(
+    r"(?:代码|编号|编码|证号|账号|帐号|文号|型号|序号|批号|邮编|电话|手机|传真|注册号|登记号|专利号|"
+    r"合同号|订单号|No\.?|NO\.?)[:：]?\s*$")
+_ID_SUFFIX = re.compile(r"\s*(?:号|\.[A-Za-z])")
+
+
+class _UngroupedNumber:
+    """整数部分四位及以上、未按三位分节加千位分隔符的数字（接口同 re.Pattern）。"""
+
+    def finditer(self, text):
+        for m in _UNGROUPED_DIGITS.finditer(text):
+            digits = m.group(0)
+            if len(digits) == 4 and 1900 <= int(digits) <= 2099 and (
+                    _YEAR_CONTEXT.match(text, m.end())
+                    or _STANDARD_PREFIX.search(text[max(0, m.start() - 20):m.start()])):
+                continue
+            if _ID_PREFIX.search(text[max(0, m.start() - 8):m.start()]) or _ID_SUFFIX.match(text, m.end()):
+                continue
+            yield m
+
+    def search(self, text):
+        return next(self.finditer(text), None)
+
+
+UNGROUPED_NUMBER = _UngroupedNumber()
+
 INTERVIEW_METADATA = ("访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：")
 SUMMARY_MARKERS = (
     "完整总结概述",
@@ -363,6 +397,19 @@ def validate(
             errors.append(
                 f"第 {line_number} 行中文内容中混用了半角标点（…{found.group()}…），"
                 "公文正文应使用全角标点。"
+            )
+
+    # 数字千位分隔：整数部分四位及以上须每三位加半角逗号；标识性数字已由规则豁免，
+    # 其余误判（如转录稿原话中的编号）可用 --allow-line 放行。
+    for line_number, line in visible:
+        if line_number in allowed_lines:
+            continue
+        found = UNGROUPED_NUMBER.search(line.removeprefix(INDENT).strip())
+        if found:
+            errors.append(
+                f"第 {line_number} 行数字未加千位分隔符（…{found.group()}…），整数部分四位及以上"
+                "应自个位起每三位加半角逗号，如 1,234.56、2,350万元；确为编号等标识性数字时，"
+                f"用 --allow-line {line_number} 放行。"
             )
 
     # 纪要内部重复问答：几乎相同的两问多为起草时的重复粘贴。

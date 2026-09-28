@@ -239,6 +239,21 @@ class YitiTextCheckTests(unittest.TestCase):
         self.assertIn('语气偏激进', proc.stdout)
         self.assertIn('语气偏保守', proc.stdout)
 
+    def test_numbers_without_thousands_separators_are_hard_hits(self):
+        for sentence in ('当期实缴出资总额1980万元。',
+                         '本期管理费拟计提141583.56元。',
+                         '| 净利润（万元） | 245766.75 |'):
+            with self.subTest(sentence=sentence):
+                proc = self.run_checker(sentence)
+                self.assertEqual(proc.returncode, 1, proc.stdout)
+                self.assertIn('千位分隔符', proc.stdout)
+        grouped = ('该基金于2026年4月14日完成备案，2026年度计费周期共计261天，当期实缴出资总额1,980万元，'
+                   '本期管理费拟计提141,583.56元。\n'
+                   '依据X国资发〔2025〕8号文，2026年1—6月净利润为245,766.75元。\n')
+        proc = self.run_checker(grouped)
+        self.assertEqual(proc.returncode, 0, proc.stdout)
+        self.assertNotIn('千位分隔符', proc.stdout)
+
     def test_bundled_exit_example_is_clean(self):
         proc = subprocess.run([sys.executable, str(CHECKER), str(EXIT_SPEC)], capture_output=True,
                               text=True, encoding='utf-8', errors='replace')

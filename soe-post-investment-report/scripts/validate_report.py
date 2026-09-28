@@ -214,6 +214,43 @@ PARENTHESIS_FONT = "楷体_GB2312"
 H4_SERIAL_PATTERN = re.compile(r"^[（(]\d+[）)]")
 # Full-width digits, Latin letters and ％ must be half-width so Times New Roman applies.
 FULLWIDTH_ALNUM_PATTERN = re.compile(r"[０-９Ａ-Ｚａ-ｚ％]")
+# Comma-level clauses split on full-width "，" and on a half-width "," that is not a
+# thousands separator, so 2,350万元 stays one clause.
+COMMA_CLAUSE_SPLIT = re.compile(r"(?:[，。！？；;\r\n]|(?<!\d),|,(?!\d{3}(?!\d)))+")
+
+# 数字千位分隔：整数部分四位及以上须自个位起每三位加半角逗号，如“2,350万元”“1,234.56”。
+# 年份、日期、文号、编号、代码、电话、证件号、标准号等标识性数字不分节，不命中；
+# 十一位及以上的纯数字串按编号处理。
+_UNGROUPED_DIGITS = re.compile(
+    r"(?<![\d,.A-Za-z_〔\[])(?<![A-Za-z][ \-/])(?<!\d[-－/:：])[1-9]\d{3,9}(?![\d,A-Za-z_〕\]])")
+_YEAR_CONTEXT = re.compile(
+    r"\s*(?:年|届|级|版|款|[-－/.]\d|[、，,和及与至到—–\-－~～]\s*(?:19|20)\d{2}(?!\d)|[|｜)）]|$)")
+_STANDARD_PREFIX = re.compile(r"[A-Za-z][A-Za-z/]*\s?[\d.]+\s?[—–\-－]$")
+_ID_PREFIX = re.compile(
+    r"(?:代码|编号|编码|证号|账号|帐号|文号|型号|序号|批号|邮编|电话|手机|传真|注册号|登记号|专利号|"
+    r"合同号|订单号|No\.?|NO\.?)[:：]?\s*$")
+_ID_SUFFIX = re.compile(r"\s*(?:号|\.[A-Za-z])")
+
+
+class _UngroupedNumber:
+    """整数部分四位及以上、未按三位分节加千位分隔符的数字（接口同 re.Pattern）。"""
+
+    def finditer(self, text):
+        for m in _UNGROUPED_DIGITS.finditer(text):
+            digits = m.group(0)
+            if len(digits) == 4 and 1900 <= int(digits) <= 2099 and (
+                    _YEAR_CONTEXT.match(text, m.end())
+                    or _STANDARD_PREFIX.search(text[max(0, m.start() - 20):m.start()])):
+                continue
+            if _ID_PREFIX.search(text[max(0, m.start() - 8):m.start()]) or _ID_SUFFIX.match(text, m.end()):
+                continue
+            yield m
+
+    def search(self, text):
+        return next(self.finditer(text), None)
+
+
+UNGROUPED_NUMBER = _UngroupedNumber()
 
 
 def parenthesis_mask(text: str) -> list[bool]:
@@ -618,6 +655,24 @@ def validate_halfwidth_alphanumerics(spec: dict[str, Any], findings: Findings) -
             findings.error(
                 f"{location}: 全角数字、字母或％须改为半角（“{match.group(0)}”），"
                 "以便统一设为 Times New Roman"
+            )
+
+
+def validate_thousands_separators(spec: dict[str, Any], findings: Findings) -> None:
+    """Quantities with four or more integer digits carry half-width thousands separators.
+
+    The shared 公文格式标准 writes 1,234.56 and 2,350万元.  Identifiers such as years,
+    dates, 文号, phone numbers and codes are not quantities and stay ungrouped.
+    """
+
+    for location, text in iter_rendered_spec_texts(spec):
+        if location in {"document.document_number", "document.contact_phone"}:
+            continue
+        match = UNGROUPED_NUMBER.search(text)
+        if match is not None:
+            findings.error(
+                f"{location}: 数字须加千位分隔符（“{match.group(0)}”），整数部分四位及以上"
+                "自个位起每三位加半角逗号，如 1,234.56、2,350万元"
             )
 
 
@@ -1060,7 +1115,7 @@ def status_claim_clauses(payload: str) -> list[str]:
 
     return [
         item.strip()
-        for item in re.split(r"[，,。！？；;\r\n]+", payload)
+        for item in COMMA_CLAUSE_SPLIT.split(payload)
         if item.strip() and STATUS_CLAIM_PATTERN.search(item)
     ]
 
@@ -1201,7 +1256,7 @@ def validate_block_fact_references(
             if not (template_mode and TEMPLATE_MARKER_PATTERN.search(payload)):
                 factual_clauses = [
                     item.strip()
-                    for item in re.split(r"[，,。！？；;\r\n]+", payload)
+                    for item in COMMA_CLAUSE_SPLIT.split(payload)
                     if item.strip()
                 ]
                 for clause_number, clause in enumerate(factual_clauses, start=1):
@@ -1474,6 +1529,7 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
     validate_imprint_metadata(document, findings)
     validate_official_style(spec, findings)
     validate_halfwidth_alphanumerics(spec, findings)
+    validate_thousands_separators(spec, findings)
 
     main_blocks = spec.get("main_blocks") or []
     main_headings = block_headings(main_blocks)

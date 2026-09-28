@@ -91,6 +91,20 @@ class HalfwidthPunctTests(unittest.TestCase):
         doc = document("访谈纪要", "一、总体情况", "全年营收1,234万元符合预期。")
         errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
         self.assertFalse(any("半角标点" in error for error in errors))
+        self.assertFalse(any("千位分隔符" in error for error in errors))
+
+    def test_ungrouped_number_flagged_and_identifiers_exempt(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "全年营收1234万元，交付12000台。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+        self.assertTrue(any("千位分隔符" in error for error in errors))
+        released = QUALITY_CHECK.validate(doc, "minutes", frozenset({3}), [])
+        self.assertFalse(any("千位分隔符" in error for error in released))
+        identifiers = document(
+            "访谈纪要", "一、总体情况",
+            "2026年9月28日14:00，依据〔2026〕12号文，2025—2030年规划产能1,200台。",
+        )
+        errors = QUALITY_CHECK.validate(identifiers, "minutes", frozenset(), [])
+        self.assertFalse(any("千位分隔符" in error for error in errors))
 
 
 class DuplicateQuestionTests(unittest.TestCase):

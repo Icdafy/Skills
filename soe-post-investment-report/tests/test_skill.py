@@ -313,7 +313,7 @@ class SkillRegressionTests(unittest.TestCase):
             body_paragraph = next(
                 paragraph
                 for paragraph in document_root.findall(".//w:body/w:p", namespace)
-                if "认缴及实缴出资均为1000万元" in text_of(paragraph)
+                if "认缴及实缴出资均为1,000万元" in text_of(paragraph)
             )
             body_indent = body_paragraph.find("w:pPr/w:ind", namespace)
             self.assertIsNotNone(body_indent)
@@ -369,7 +369,7 @@ class SkillRegressionTests(unittest.TestCase):
         body_paragraph = next(
             paragraph
             for paragraph in root.findall(".//w:body/w:p", namespace)
-            if "认缴及实缴出资均为1000万元" in text_of(paragraph)
+            if "认缴及实缴出资均为1,000万元" in text_of(paragraph)
         )
         for run_properties in body_paragraph.findall(".//w:rPr", namespace):
             size = run_properties.find("w:sz", namespace)
@@ -421,7 +421,7 @@ class SkillRegressionTests(unittest.TestCase):
         body_paragraph = next(
             paragraph
             for paragraph in document.paragraphs
-            if "认缴及实缴出资均为1000万元" in paragraph.text
+            if "认缴及实缴出资均为1,000万元" in paragraph.text
         )
         indent = body_paragraph._p.get_or_add_pPr().find(qn("w:ind"))
         self.assertIsNotNone(indent)
@@ -808,12 +808,12 @@ class SkillRegressionTests(unittest.TestCase):
         target = next(
             paragraph
             for paragraph in body.findall("w:p", namespace)
-            if "资产总额4200万元" in "".join(paragraph.xpath(".//w:t/text()", namespaces=namespace))
+            if "资产总额4,200万元" in "".join(paragraph.xpath(".//w:t/text()", namespaces=namespace))
         )
         correct_copy = copy.deepcopy(target)
         for text_node in target.findall(".//w:t", namespace):
-            if text_node.text and "4200" in text_node.text:
-                text_node.text = text_node.text.replace("4200", "9999", 1)
+            if text_node.text and "4,200" in text_node.text:
+                text_node.text = text_node.text.replace("4,200", "9,999", 1)
                 break
         target.addnext(correct_copy)
         mutated_xml = etree.tostring(root, encoding="UTF-8", xml_declaration=True, standalone=True)
@@ -892,11 +892,11 @@ class SkillRegressionTests(unittest.TestCase):
         paragraph = next(
             block
             for block in swapped["main_blocks"]
-            if "资产总额4200万元、净资产1850万元" in str(block.get("text") or "")
+            if "资产总额4,200万元、净资产1,850万元" in str(block.get("text") or "")
         )
         paragraph["text"] = paragraph["text"].replace(
-            "资产总额4200万元、净资产1850万元",
-            "资产总额1850万元、净资产4200万元",
+            "资产总额4,200万元、净资产1,850万元",
+            "资产总额1,850万元、净资产4,200万元",
         )
         swapped_path = self.write_spec(swapped, "swapped-values.json")
         swapped_result = self.run_script("validate_report.py", "--spec", swapped_path)
@@ -936,7 +936,7 @@ class SkillRegressionTests(unittest.TestCase):
         claim_block = next(
             block
             for block in invented_claim["main_blocks"]
-            if "资产总额4200万元、净资产1850万元" in str(block.get("text") or "")
+            if "资产总额4,200万元、净资产1,850万元" in str(block.get("text") or "")
         )
         claim_block["text"] = str(claim_block["text"]).rstrip("。") + "，管理团队具有全国领先优势。"
         claim_path = self.write_spec(invented_claim, "invented-qualitative-claim.json")
@@ -1427,6 +1427,28 @@ class SkillRegressionTests(unittest.TestCase):
         )
         self.assertIn("公文表示时间点应使用“截至”", result.stdout)
         self.assertIn("数字或西文与其后的全角标点之间存在多余空格", result.stdout)
+
+    def test_numbers_require_thousands_separators(self) -> None:
+        ungrouped = copy.deepcopy(self.spec)
+        for block in ungrouped["main_blocks"]:
+            text = str(block.get("text") or "")
+            if "8,200万元" in text:
+                block["text"] = text.replace("8,200万元", "8200万元")
+                break
+        else:
+            self.fail("example spec no longer carries 8,200万元")
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(ungrouped, "ungrouped-numbers.json")
+        )
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("数字须加千位分隔符（“8200”）", result.stdout)
+
+    def test_grouped_numbers_stay_whole_in_comma_clauses(self) -> None:
+        # 2,350万元 must not split into the clauses "2" and "350万元" during assertion matching.
+        result = self.run_script("validate_report.py", "--spec", self.write_spec())
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("千位分隔符", result.stdout)
+        self.assertNotIn("Unsupported factual clause", result.stdout)
 
     def test_fixed_heading_contract_accepts_only_consecutive_spv_slots(self) -> None:
         gap = copy.deepcopy(self.spec)

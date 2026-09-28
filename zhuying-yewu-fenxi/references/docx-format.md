@@ -82,7 +82,7 @@ powershell -ExecutionPolicy Bypass -File <技能目录>/scripts/ensure-fonts.ps1
 4. 表格框线：黑色全框线单线；表头行加粗、不加底纹；单元格单倍行距——与 yiti-skill 及 hangye-fenxi、gongsi-qingkuang 统一，由 `scripts/build_docx.py` 自动套用；
 5. **单元格内容一律水平居中 + 垂直居中**（所有列、所有行，含表头、文字、数字、百分号）——段落 `jc: center`，单元格 `vAlign: center`；
 6. 表格上方保留一句引导语（正文样式）；"单位：万元"用 `tnote` 块放表格上方右对齐，"注：""数据来源："用 `tnote` 块放表格下方左对齐（均为仿宋_GB2312 五号）；
-7. 表内金额千分位、两位小数，与正文数据规则一致。
+7. 表内全部数值千分位（金额另保留两位小数），与正文数据规则一致；年份、编号等标识性数字不加逗号。
 
 ## 五、统一渲染脚本（必须使用，禁止手写排版代码）
 

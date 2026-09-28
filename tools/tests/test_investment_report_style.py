@@ -82,6 +82,25 @@ class ReportStyleTests(unittest.TestCase):
                 with self.subTest(skill=skill, accepted=text):
                     self.assertFalse(any(rule.search(text) for _, rule in module.RULES))
 
+    def test_numbers_use_thousands_separators(self):
+        """Quantities of four or more integer digits take a half-width comma every three digits."""
+        rejected = ['2025年度实现营业收入2350万元。', '投前估值12000万元。', '净利润-1234.56万元。',
+                    '年产能12000台。', '员工1200人。', '市场规模约1000亿—1500亿元。']
+        accepted = ['2025年度实现营业收入2,350万元。', '投前估值12,000万元，持股1,234,567股。', '净利润-1,234.56万元。',
+                    '截至2026年9月28日，公司员工128人。', '2026—2030年进入专业应用阶段。', '2023、2024和2025年收入持续增长。',
+                    '依据控股字〔2026〕12号文，执行GB/T 19001—2016标准。', '股票代码：688001，证券简称为示例科技。',
+                    '2021-01-05完成工商变更。', '毛利率为35.1234%。']
+        for skill in SKILLS:
+            spec = importlib.util.spec_from_file_location('style_' + skill, ROOT / skill / 'scripts/style_check.py')
+            module = importlib.util.module_from_spec(spec)
+            spec.loader.exec_module(module)
+            for text in rejected:
+                with self.subTest(skill=skill, rejected=text):
+                    self.assertTrue(any(rule.search(text) for _, rule in module.RULES))
+            for text in accepted:
+                with self.subTest(skill=skill, accepted=text):
+                    self.assertFalse(any(rule.search(text) for _, rule in module.RULES))
+
     def test_industry_and_business_chapters_reject_investment_stance(self):
         for skill in ('hangye-fenxi', 'zhuying-yewu-fenxi'):
             spec = importlib.util.spec_from_file_location(

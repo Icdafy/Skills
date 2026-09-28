@@ -19,7 +19,7 @@ class StyleCheckBehavior(unittest.TestCase):
                                   capture_output=True, encoding='utf-8')
 
     def test_internal_report_and_real_model_are_allowed(self):
-        result = self.scan('公司拟融资1200万元，投前估值8800万元。\n'
+        result = self.scan('公司拟融资1,200万元，投前估值8,800万元。\n'
                            '相关协议已约定知识产权归公司所有。\n'
                            '设备型号为V10.0，按GB/T 19001—2016执行。\n'
                            '供应商核查结果已归档，应收账款核查结果亦已归档。')
@@ -62,6 +62,19 @@ class StyleCheckBehavior(unittest.TestCase):
         self.assertEqual(warn.returncode, 0)
         self.assertIn('时点不明', warn.stdout)
         self.assertNotIn('时点不明', self.scan('公司目前为小批量交付阶段。').stdout)
+
+    def test_ungrouped_numbers_are_flagged_in_text_and_tables(self):
+        result = self.scan('公司拟融资1200万元，投前估值8800万元。')
+        self.assertEqual(result.returncode, 1)
+        self.assertIn('千位分隔符', result.stdout)
+        table = self.scan({'blocks': [{'type': 'table', 'header': ['项目', '2025年'],
+                                        'rows': [['营业收入（万元）', '3763.27']]}]})
+        self.assertEqual(table.returncode, 1)
+        self.assertIn('table.cell', table.stdout)
+        grouped = self.scan({'blocks': [{'type': 'table', 'header': ['项目', '2025年'],
+                                          'rows': [['营业收入（万元）', '3,763.27']]},
+                                         {'type': 'p', 'text': '2021年8月30日，公司注册资本增至1,200万元。'}]})
+        self.assertEqual(grouped.returncode, 0, grouped.stdout)
 
     def test_existing_rules_and_editorial_notes_remain_detectable(self):
         for text in ['标的公司具有优势。', '公司不仅提供产品，而且提供服务。',

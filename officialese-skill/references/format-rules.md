@@ -128,6 +128,7 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - Do not place punctuation between consecutive book-title marks or quotation marks.
 - Avoid decorative formatting, colored text, emojis, underlines, and unnecessary bold.
 - Keep one formatting system throughout the document; do not mix Microsoft YaHei/SimSun body text unless required by source material.
+- Thousands separators (千位分隔符): every Arabic number whose integer part has four or more digits takes a half-width Western comma `,` every three digits counted from the units digit, with a half-width point `.` as the decimal mark (US/UK style): `1,234.56`、`2,350万元`、`245,766.75`、`1,000,000`; write `2,350万元`, never `2350万元`. This applies everywhere — title, body, headings, parentheses, tables, attachments and signature. The decimal part is not grouped, and the separator is never a full-width `，`, a space or a point. Identifiers are not quantities and stay ungrouped: years (`2026年`), dates, times, 发文字号 (`〔2026〕12号`), page numbers, phone and ID numbers, 统一社会信用代码, stock codes, contract/patent/order numbers, model, version and standard numbers (`GB/T 9704-2012`). When redrafting, add missing separators to the source's numbers.
 - Use Chinese six-angle brackets `〔〕` for 发文年度 in 发文字号, e.g. `未城产投发〔2026〕1号`; do not use square brackets or `【】` for this role.
 
 ## Final Format Checklist
@@ -143,6 +144,7 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - All round-parenthesized spans, including delimiters, are 楷体_GB2312 at the size of their position: 二号 in the main/attachment title, 五号 inside tables, 三号 elsewhere.
 - All table text is 五号; only the header row is bold, with no shading; the header repeats and rows do not split.
 - No full-width digits, Latin letters or `％` remain.
+- Every quantity with four or more integer digits carries half-width thousands separators (`2,350万元`, `1,234.56`); years, dates, 文号 and other identifiers do not.
 - Every digit, Latin letter and `%` outside the footer is Times New Roman, including inside parentheses and tables; Chinese characters keep their Chinese faces.
 - Title lines and numbered headings have exactly 30 pt spacing; body, 附件说明 and signature have exactly 28 pt spacing.
 - All body paragraphs and body headings have a two-character first-line indent.

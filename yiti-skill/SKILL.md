@@ -50,6 +50,7 @@ Apply fonts in this order, exactly as in the manual Word workflow:
 3. Tables: every character 五号; outside parentheses 仿宋_GB2312, inside parentheses 楷体_GB2312; centered horizontally and vertically; header row bold and repeated across pages.
 4. Footer: `-1-`, both hyphens and the PAGE field all 四号宋体 in every font slot; always on; odd/even pages different (odd right, even left).
 5. Last pass: Times New Roman for the whole body — every digit, Latin letter and symbol such as `%` `.` `:` becomes Times New Roman, inside parentheses and tables too, while Chinese characters keep the fonts above. The footer is excluded and stays 四号宋体. Full-width digits and `％` are converted to half-width first so the pass reaches them.
+6. Numbers (千位分隔符): every Arabic number whose integer part has four or more digits takes a half-width comma every three digits counted from the units digit, with a half-width point as the decimal mark (US/UK style): `1,234.56`、`2,350万元`、`141,583.56元`、`1,000,000`; write `1,980万元`, never `1980万元`. This applies in the title, body, parentheses, tables and attachments. The decimal part is not grouped, and the separator is never a full-width `，`, a space or a point. Identifiers are not quantities and stay ungrouped: years (`2026年`), dates, times, 文号 (`〔2026〕12号`), page numbers, phone and ID numbers, 统一社会信用代码, stock codes, contract/patent/order numbers, model, version and standard numbers. `scripts/check_yiti_text.py` flags ungrouped numbers as a 硬规则.
 
 Layout:
 

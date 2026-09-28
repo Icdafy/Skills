@@ -5,7 +5,7 @@ style_check.py —— 公司情况章节语言与口吻扫描。
 
 对成稿（含拖延判断套话检查；Markdown / 纯文本 / build_docx 用的 content.json）扫描语言红线、
 外部指导口吻、材料版本和机械来源。仅扫描报告正文，不扫描来源台账或本方核查清单。
-另扫公文数字（数值范围两端带量级）、半角括号、不规范用词；排他论断与任职时点不明给警告。
+另扫公文数字（整数四位及以上加千位分隔符、数值范围两端带量级）、半角括号、不规范用词；排他论断与任职时点不明给警告。
 机械命中是复核入口；法律义务、真实产品型号等按上下文判断，不盲目替换。
 来源重复给出警告，需人工检查作用域；不因减少重复而取消必要的证据归属。
 
@@ -35,6 +35,39 @@ except Exception:
 # 数值范围：前一个数缺少“万/亿/%”而后一个数带有，如“7—10万元”“15—30%”；
 # “8—10台”“2—3天”“7万—10万元”“15%—30%”不命中。
 NUMBER_RANGE = re.compile(r"(?<![\d.,，])\d[\d,，.]*\s*[—–~～\-－]{1,2}\s*\d[\d,，.]*\s*(?:万|亿|%|％)")
+# 数字千位分隔：整数部分四位及以上须自个位起每三位加半角逗号，如“2,350万元”“1,234.56”。
+# 年份、日期、文号、编号、代码、电话、证件号、标准号等标识性数字不分节，不命中；
+# 十一位及以上的纯数字串按编号处理。
+_UNGROUPED_DIGITS = re.compile(
+    r"(?<![\d,.A-Za-z_〔\[])(?<![A-Za-z][ \-/])(?<!\d[-－/:：])[1-9]\d{3,9}(?![\d,A-Za-z_〕\]])")
+_YEAR_CONTEXT = re.compile(
+    r"\s*(?:年|届|级|版|款|[-－/.]\d|[、，,和及与至到—–\-－~～]\s*(?:19|20)\d{2}(?!\d)|[|｜)）]|$)")
+_STANDARD_PREFIX = re.compile(r"[A-Za-z][A-Za-z/]*\s?[\d.]+\s?[—–\-－]$")
+_ID_PREFIX = re.compile(
+    r"(?:代码|编号|编码|证号|账号|帐号|文号|型号|序号|批号|邮编|电话|手机|传真|注册号|登记号|专利号|"
+    r"合同号|订单号|No\.?|NO\.?)[:：]?\s*$")
+_ID_SUFFIX = re.compile(r"\s*(?:号|\.[A-Za-z])")
+
+
+class _UngroupedNumber:
+    """整数部分四位及以上、未按三位分节加千位分隔符的数字（接口同 re.Pattern）。"""
+
+    def finditer(self, text):
+        for m in _UNGROUPED_DIGITS.finditer(text):
+            digits = m.group(0)
+            if len(digits) == 4 and 1900 <= int(digits) <= 2099 and (
+                    _YEAR_CONTEXT.match(text, m.end())
+                    or _STANDARD_PREFIX.search(text[max(0, m.start() - 20):m.start()])):
+                continue
+            if _ID_PREFIX.search(text[max(0, m.start() - 8):m.start()]) or _ID_SUFFIX.match(text, m.end()):
+                continue
+            yield m
+
+    def search(self, text):
+        return next(self.finditer(text), None)
+
+
+UNGROUPED_NUMBER = _UngroupedNumber()
 # 半角括号紧跟中文或括住中文，如“方案(电池+燃料电池)”“能量密度(Wh/kg)”
 HALF_WIDTH_PAREN = re.compile(r"[\u4e00-\u9fff]\s*\([^()（）\n]{0,40}\)|\([^()（）\n]*[\u4e00-\u9fff][^()（）\n]*\)")
 
@@ -76,6 +109,7 @@ RULES = [
      re.compile(r"这部分(?:整体)?(?:都)?(?:需要|重新)|写的有点乱|写得有点乱|"
                 r"(?:ai|AI)[，,你].{0,20}(?:意见|重写)|你别再给意见")),
     ("数值范围省略量级或百分号（写成'7万—10万元''15%—30%'）", NUMBER_RANGE),
+    ("数字未加千位分隔符（整数四位及以上写成'2,350万元''1,234.56'）", UNGROUPED_NUMBER),
     ("中文语境使用半角括号（改为全角'（）'）", HALF_WIDTH_PAREN),
     ("不规范用词（'来自于'改'来自'，'粘度/粘性/粘稠'改'黏度/黏性/黏稠'）",
      re.compile(r"来自于|粘度|粘性|粘稠")),

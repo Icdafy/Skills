@@ -67,6 +67,11 @@ zhuying-yewu-fenxi/
 - 正文不附算式、资料文件名和问题编号，算式留底稿；
 - `style_check.py` 新增方法论/告诫句与内部资料痕迹扫描；`build_docx.py` 段落块支持 `lead`。
 
+## 数字千位分隔（2026-09-28）
+
+- 公文格式硬规则新增第 8 条：阿拉伯数字按英美通行写法三位分节，整数部分四位及以上自个位起每三位加半角逗号、小数点用半角点（`1,234.56`、`2,350万元`、`1,000,000`），正文、表格、括注、附件一律适用；年份、日期、文号、编号、代码、电话、证件号、标准号等标识性数字不加逗号；
+- `style_check.py` 新增未分节数字扫描（硬规则），参考资料和范例中的数字同步改为分节写法。
+
 ## 跨 Agent 安装与调用
 
 [下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip)。Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
