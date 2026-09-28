@@ -31,6 +31,7 @@ from docx.oxml.ns import qn
 SKILL_ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = SKILL_ROOT / "scripts"
 EXAMPLE_SPEC = SKILL_ROOT / "assets" / "report-spec.example.json"
+INTERNAL_EXAMPLE_SPEC = SKILL_ROOT / "assets" / "report-spec.internal.example.json"
 MANDATORY_QUESTIONS = (
     "项目是否有变动？",
     "变动的地方在哪里？",
@@ -1611,6 +1612,196 @@ class SkillRegressionTests(unittest.TestCase):
         self.assertIn(
             "must read 一、<报告期间>股权投资完成总体情况", malformed_result.stdout
         )
+
+
+def production_spec_from_internal_example() -> dict:
+    """Scrub the synthetic 内部报告式 example into a clean production fixture."""
+
+    spec = copy.deepcopy(json.loads(INTERNAL_EXAMPLE_SPEC.read_text(encoding="utf-8-sig")))
+    spec["template_only"] = False
+
+    def scrub(value: object) -> object:
+        if isinstance(value, str):
+            return (
+                value.replace("合成示例", "经确认")
+                .replace("示例", "甲")
+                .replace("Synthetic", "Verified")
+                .replace("synthetic", "verified")
+                .replace("template demonstration", "regression validation")
+            )
+        if isinstance(value, list):
+            return [scrub(item) for item in value]
+        if isinstance(value, dict):
+            return {key: scrub(item) for key, item in value.items()}
+        return value
+
+    spec = scrub(spec)
+    assert isinstance(spec, dict)
+    for source in spec["sources"]:
+        source["status"] = "confirmed"
+    return spec
+
+
+class InternalReportFormTests(unittest.TestCase):
+    """内部报告式：定稿半年报的版式（无红头、标题下成文年月、项目台账）。"""
+
+    run_script = SkillRegressionTests.run_script
+    write_spec = SkillRegressionTests.write_spec
+    build_docx = SkillRegressionTests.build_docx
+
+    def setUp(self) -> None:
+        self._temporary_directory = tempfile.TemporaryDirectory()
+        self.work = Path(self._temporary_directory.name)
+        self.example_spec = json.loads(INTERNAL_EXAMPLE_SPEC.read_text(encoding="utf-8-sig"))
+        self.spec = production_spec_from_internal_example()
+
+    def tearDown(self) -> None:
+        self._temporary_directory.cleanup()
+
+    def validate(self, spec: dict, name: str) -> subprocess.CompletedProcess[str]:
+        return self.run_script("validate_report.py", "--spec", self.write_spec(spec, name))
+
+    def test_internal_example_is_synthetic_and_validates_in_template_mode(self) -> None:
+        self.assertEqual(self.example_spec["document"]["report_form"], "内部报告式")
+        path = self.write_spec(self.example_spec, "internal-example.json")
+        accepted = self.run_script("validate_report.py", "--spec", path, "--template-mode")
+        self.assertEqual(accepted.returncode, 0, accepted.stdout)
+        self.assertIn("Summary: 0 error(s), 0 warning(s)", accepted.stdout)
+        rejected = self.run_script("validate_report.py", "--spec", path)
+        self.assertNotEqual(rejected.returncode, 0, rejected.stdout)
+
+    def test_internal_production_docx_follows_the_approved_form(self) -> None:
+        spec_path, docx_path = self.build_docx(self.spec)
+        result = self.run_script(
+            "validate_report.py", "--spec", spec_path, "--docx", docx_path, "--public-safe"
+        )
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("Summary: 0 error(s), 0 warning(s)", result.stdout)
+
+        document = Document(docx_path)
+        texts = [paragraph.text for paragraph in document.paragraphs if paragraph.text.strip()]
+        self.assertEqual(texts[0], "关于2026年上半年股权投资项目\n投后管理情况的报告")
+        self.assertEqual(texts[1], "2026年9月")
+        self.assertEqual(texts[2], self.spec["document"]["legal_basis"])
+        self.assertEqual(texts[3], "一、项目整体情况")
+        month = next(p for p in document.paragraphs if p.text == "2026年9月")
+        self.assertEqual(month.alignment, WD_ALIGN_PARAGRAPH.CENTER)
+        self.assertEqual(month.runs[0]._r.rPr.rFonts.get(qn("w:eastAsia")), "楷体_GB2312")
+        joined = "\n".join(texts)
+        self.assertNotIn("文件\n", joined)
+        self.assertNotIn("签发人", joined)
+        self.assertNotIn("印发", joined)
+        self.assertNotIn(self.spec["document"]["issue_date"], joined)
+        self.assertIn("二、项目台账", joined)
+        ledger = document.tables[0]
+        self.assertEqual(ledger.cell(0, 0).text, "项目名称")
+        self.assertIsNotNone(ledger.rows[0]._tr.trPr.find(qn("w:tblHeader")))
+        self.assertEqual(ledger.rows[-1].cells[0].text, "合计")
+        attachment_list = [text for text in texts if re.match(r"^(?:附件：)?\d+\..+投后管理报告$", text)]
+        self.assertEqual(len(attachment_list), len(self.spec["attachments"]))
+
+    def test_internal_docx_without_spec_is_recognised_by_its_headings(self) -> None:
+        _, docx_path = self.build_docx(self.spec)
+        result = self.run_script("validate_report.py", "--docx", docx_path)
+        self.assertNotIn("Required main heading", result.stdout)
+        self.assertNotIn("Unexpected first-level heading structure", result.stdout)
+        self.assertNotIn("Unexpected second-level heading structure", result.stdout)
+
+    def test_internal_form_rejects_red_head_envelope_fields(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        spec["document"].update(
+            document_number="甲字〔2026〕1号",
+            recipient="上级单位：",
+            printer="甲办公室",
+            print_date="2026年9月28日",
+        )
+        result = self.validate(spec, "internal-envelope.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        for key in ("document_number", "recipient", "printer", "print_date"):
+            self.assertIn(f"document.{key} is not rendered by 内部报告式", result.stdout)
+
+    def test_internal_form_requires_the_ledger_table_after_a_lead_sentence(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        spec["main_blocks"] = [block for block in spec["main_blocks"] if block.get("type") != "table"]
+        result = self.validate(spec, "internal-no-ledger.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("二、项目台账 must contain the project ledger table block", result.stdout)
+
+        reordered = copy.deepcopy(self.spec)
+        blocks = reordered["main_blocks"]
+        ledger_index = next(i for i, block in enumerate(blocks) if block.get("type") == "table")
+        blocks[ledger_index - 1], blocks[ledger_index] = blocks[ledger_index], blocks[ledger_index - 1]
+        result = self.validate(reordered, "internal-ledger-first.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("must open with a lead paragraph", result.stdout)
+
+    def test_internal_form_locks_its_own_headings_and_categories(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        for key in ("fixed_main_headings", "source_fixed_main_headings"):
+            spec["document"][key][1] = "（一）存续基金"
+        result = self.validate(spec, "internal-wrong-heading.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("must preserve the 内部报告式 template heading: （一）参股基金", result.stdout)
+
+        category = copy.deepcopy(self.spec)
+        category["project_registry"][0]["category"] = "存续基金"
+        result = self.validate(category, "internal-wrong-category.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("unsupported category 存续基金 for report_form 内部报告式", result.stdout)
+
+    def test_switching_from_a_red_head_base_template_requires_authorization(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        spec["document"]["source_report_form"] = "文件式"
+        spec["document"]["source_fixed_main_headings"] = [
+            "一、年度股权投资完成总体情况",
+            "（一）存续基金",
+            "（二）新设基金",
+            "（三）参股公司",
+            "（四）甲银行SPV项目",
+            "（五）甲空天SPV项目",
+            "二、重大投资项目进展情况",
+        ]
+        result = self.validate(spec, "internal-switch-unauthorized.json")
+        self.assertNotEqual(result.returncode, 0, result.stdout)
+        self.assertIn("without document.heading_change_authorized=true", result.stdout)
+
+        spec["document"]["heading_change_authorized"] = True
+        spec["document"]["heading_change_note"] = (
+            "按定稿内部报告式调整：一级标题改为一、项目整体情况及二、项目台账，二级类别改为参股基金、双GP基金。"
+        )
+        result = self.validate(spec, "internal-switch-authorized.json")
+        self.assertEqual(result.returncode, 0, result.stdout)
+
+    def test_expression_checks_flag_patterns_changed_during_proofreading(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        blocks = spec["main_blocks"]
+        fund_paragraph = next(b for b in blocks if "累计实缴规模" in str(b.get("text")))
+        fund_paragraph["text"] = fund_paragraph["text"].replace("有限合伙人", "LP")
+        exit_paragraph = next(b for b in blocks if "达成回购意向" in str(b.get("text")))
+        exit_paragraph["text"] = exit_paragraph["text"].replace("实际控制人", "实控人")
+        dividend = next(b for b in blocks if "召开股东大会3次" in str(b.get("text")))
+        dividend["text"] = dividend["text"].replace("报告期内，甲证券召开股东大会3次", "报告期内，甲证券于2026年8月召开股东大会3次")
+        spv_heading = next(b for b in blocks if b.get("text") == "（五）甲空天SPV项目")
+        spv_heading["text"] = "（五）甲股份SPV项目"
+        for key in ("fixed_main_headings", "source_fixed_main_headings"):
+            spec["document"][key][5] = "（五）甲股份SPV项目"
+        ledger = next(b for b in blocks if b.get("type") == "table")
+        ledger["rows"][-1][5] = "1,400.00"
+        for fact in spec["fact_ledger"]:
+            fact["assertions"] = [
+                a.replace("有限合伙人", "LP").replace("实际控制人", "实控人")
+                .replace("报告期内，甲证券召开股东大会3次", "报告期内，甲证券于2026年8月召开股东大会3次")
+                .replace("甲证券召开股东大会3次", "甲证券于2026年8月召开股东大会3次")
+                .replace("合计|—|—|63,860.00|64,854.30|1,500.00|—", "合计|—|—|63,860.00|64,854.30|1,400.00|—")
+                for a in fact["assertions"]
+            ]
+            fact["value"] = str(fact["value"]).replace("1,500.00；—", "1,400.00；—")
+        result = self.validate(spec, "internal-expression.json")
+        self.assertIn("“LP”应写作“有限合伙人”", result.stdout)
+        self.assertIn("应写作“实际控制人”", result.stdout)
+        self.assertIn("“报告期内”所述事项日期 2026年8月 晚于数据截止日期", result.stdout)
+        self.assertIn("标题中的项目名称“甲股份”未在本节正文出现", result.stdout)
+        self.assertIn("合计行“累计退出资金（万元）”为 1,400.00，而分项之和为 1,500.00", result.stdout)
 
 
 if __name__ == "__main__":

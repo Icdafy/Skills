@@ -56,6 +56,34 @@ REPORT_PERIODS: dict[str, tuple[str, tuple[int, int]]] = {
 }
 REPORT_PERIOD_EXPRESSION = re.compile(r"20\d{2}年(?:度|上半年|下半年|第[一二三四]季度)")
 
+# 报告形式。文件式 is the red-head 上行文 of the original 控股 template (发文机关标志、
+# 文号／签发人、主送单位、落款、版记). 内部报告式 is the form of the proofed and
+# approved half-year report: no red head, a two-line title with a 楷体 month line
+# beneath it, no recipient or signature block, and a 项目台账 as the closing
+# first-level section.  A spec without report_form keeps the 文件式 contract.
+DEFAULT_REPORT_FORM = "文件式"
+INTERNAL_REPORT_FORM = "内部报告式"
+REPORT_FORMS = (DEFAULT_REPORT_FORM, INTERNAL_REPORT_FORM)
+# Envelope fields that only the 文件式 renders; 内部报告式 rejects them instead of
+# silently dropping them.
+INTERNAL_FORBIDDEN_FIELDS = (
+    "document_number",
+    "signer",
+    "recipient",
+    "issuer",
+    "contact_name",
+    "contact_phone",
+    "printer",
+    "print_date",
+)
+
+
+def report_form_of(document: Any) -> str:
+    """Return the declared report form, falling back to 文件式 when absent or unknown."""
+
+    value = str((document or {}).get("report_form") or "").strip() if isinstance(document, dict) else ""
+    return value if value in REPORT_FORMS else DEFAULT_REPORT_FORM
+
 
 def report_period_label(report_year: Any, report_period: Any) -> str:
     """Return the period phrase used in the title and the opening basis."""
@@ -68,9 +96,26 @@ def report_period_label(report_year: Any, report_period: Any) -> str:
     return f"{year}{suffix}"
 
 
-def report_title(company: Any, report_year: Any, report_period: Any) -> str:
+def internal_title_lines(label: str) -> tuple[str, str]:
+    """内部报告式大标题：两行，于“股权投资项目”后回行。"""
+
+    return f"关于{label}股权投资项目", "投后管理情况的报告"
+
+
+def report_title(
+    company: Any, report_year: Any, report_period: Any, form: str = DEFAULT_REPORT_FORM
+) -> str:
     label = report_period_label(report_year, report_period)
+    if form == INTERNAL_REPORT_FORM:
+        return "".join(internal_title_lines(label))
     return f"{str(company or '').strip()}关于{label}股权投资项目投后情况报告"
+
+
+def issue_month_line(issue_date: Any) -> str:
+    """内部报告式标题下的成文年月（YYYY年M月），取自 document.issue_date。"""
+
+    match = re.fullmatch(r"(\d{4})年(\d{1,2})月\d{1,2}日", str(issue_date or "").strip())
+    return f"{match.group(1)}年{int(match.group(2))}月" if match else ""
 
 
 def periods_for_cutoff(cutoff: date) -> list[str]:
@@ -103,11 +148,28 @@ FIXED_LAST_H1 = "二、重大投资项目进展情况"
 SPV_SLOT_ORDINALS = ("四", "五", "六", "七", "八", "九", "十")
 MIN_FIXED_MAIN_HEADINGS = len(FIXED_LEADING_H2) + 3
 MAX_FIXED_MAIN_HEADINGS = MIN_FIXED_MAIN_HEADINGS + len(SPV_SLOT_ORDINALS) - 1
+# 内部报告式 fixes its own opening and closing first-level headings and category
+# names, taken from the approved half-year report; the SPV slots repeat the same way.
+INTERNAL_FIRST_H1 = "一、项目整体情况"
+FORM_LEADING_H2 = {
+    DEFAULT_REPORT_FORM: FIXED_LEADING_H2,
+    INTERNAL_REPORT_FORM: ("（一）参股基金", "（二）双GP基金", "（三）参股公司"),
+}
+FORM_LEADING_CATEGORIES = {
+    DEFAULT_REPORT_FORM: ("存续基金", "新设基金", "参股公司"),
+    INTERNAL_REPORT_FORM: ("参股基金", "双GP基金", "参股公司"),
+}
+FORM_LAST_H1 = {
+    DEFAULT_REPORT_FORM: FIXED_LAST_H1,
+    INTERNAL_REPORT_FORM: "二、项目台账",
+}
 
 
-def first_h1_for_period(report_period: Any) -> str:
-    """The opening first-level heading names the reporting period."""
+def first_h1_for_period(report_period: Any, form: str = DEFAULT_REPORT_FORM) -> str:
+    """The 文件式 opening heading names the reporting period; 内部报告式 fixes it."""
 
+    if form == INTERNAL_REPORT_FORM:
+        return INTERNAL_FIRST_H1
     period = str(report_period or "").strip()
     if period not in REPORT_PERIODS:
         period = DEFAULT_REPORT_PERIOD
@@ -134,11 +196,13 @@ def fixed_main_heading_kinds(count: int) -> tuple[str, ...]:
 
 
 def default_fixed_main_headings(
-    spv_slots: int = 1, report_period: Any = DEFAULT_REPORT_PERIOD
+    spv_slots: int = 1,
+    report_period: Any = DEFAULT_REPORT_PERIOD,
+    form: str = DEFAULT_REPORT_FORM,
 ) -> tuple[str, ...]:
-    headings = [first_h1_for_period(report_period), *FIXED_LEADING_H2]
+    headings = [first_h1_for_period(report_period, form), *FORM_LEADING_H2[form]]
     headings.extend(f"（{SPV_SLOT_ORDINALS[index]}）SPV项目" for index in range(spv_slots))
-    headings.append(FIXED_LAST_H1)
+    headings.append(FORM_LAST_H1[form])
     return tuple(headings)
 
 
@@ -176,7 +240,9 @@ STATUS_CLAIM_PATTERN = re.compile(
 )
 VALID_FACT_STATUSES = {"confirmed", "calculated", "conflicting", "stale", "missing"}
 VALID_FACT_DESTINATIONS = {"main body", "attachment", "both", "excluded", "pending user decision"}
-VALID_PROJECT_CATEGORIES = {"存续基金", "新设基金", "参股公司", "SPV项目"}
+VALID_PROJECT_CATEGORIES = {
+    category for categories in FORM_LEADING_CATEGORIES.values() for category in categories
+} | {"SPV项目"}
 BLOCK_TYPES = {"h1", "h2", "h3", "h4", "p", "caption", "tnote", "table", "pagebreak", "blank"}
 FIXED_CATEGORY_SECTIONS = tuple(
     zip(REQUIRED_MAIN_HEADINGS[1:-1], ("存续基金", "新设基金", "参股公司", "SPV项目"))
@@ -194,6 +260,8 @@ PUBLIC_PATTERNS = {
 TEMPLATE_TYPOGRAPHY = {
     "redhead": ("方正小标宋简体", 68.0, True, None),
     "title": ("方正小标宋简体", 22.0, False, 30.0),
+    # 内部报告式标题下的成文年月：三号楷体_GB2312，居中，固定 30 磅。
+    "dateline": ("楷体_GB2312", 16.0, False, 30.0),
     "h1": ("黑体", 16.0, False, 30.0),
     "h2": ("楷体_GB2312", 16.0, True, 30.0),
     "h3": ("仿宋_GB2312", 16.0, True, 30.0),
@@ -319,7 +387,11 @@ def required_main_blocks_from_document(document: dict[str, Any]) -> tuple[tuple[
     if not isinstance(values, list) or not (
         MIN_FIXED_MAIN_HEADINGS <= len(values) <= MAX_FIXED_MAIN_HEADINGS
     ):
-        return REQUIRED_MAIN_BLOCKS
+        form = report_form_of(document)
+        if form == DEFAULT_REPORT_FORM:
+            return REQUIRED_MAIN_BLOCKS
+        headings = default_fixed_main_headings(1, document.get("report_period"), form)
+        return tuple(zip(fixed_main_heading_kinds(len(headings)), headings))
     return tuple(
         (kind, str(text or "").strip())
         for kind, text in zip(fixed_main_heading_kinds(len(values)), values)
@@ -332,12 +404,26 @@ def fixed_category_sections_from_document(
     """Return (heading, category) pairs for every fixed category section."""
 
     blocks = required_main_blocks_from_document(document)
+    categories = FORM_LEADING_CATEGORIES[report_form_of(document)]
     sections = [
         (text, category)
-        for (_kind, text), category in zip(blocks[1:4], ("存续基金", "新设基金", "参股公司"))
+        for (_kind, text), category in zip(blocks[1:4], categories)
     ]
     sections.extend((text, "SPV项目") for _kind, text in blocks[4:-1])
     return tuple(sections)
+
+
+def infer_report_form(heading_entries: list[tuple[str, str]]) -> str:
+    """Recognise 内部报告式 from its fixed first-level headings."""
+
+    internal_h1 = {
+        normalize_heading(INTERNAL_FIRST_H1),
+        normalize_heading(FORM_LAST_H1[INTERNAL_REPORT_FORM]),
+    }
+    for kind, text in heading_entries:
+        if kind == "h1" and normalize_heading(text) in internal_h1:
+            return INTERNAL_REPORT_FORM
+    return DEFAULT_REPORT_FORM
 
 
 def infer_fixed_main_blocks(
@@ -351,25 +437,35 @@ def infer_fixed_main_blocks(
     as-is; reconciling them with the source template still requires --spec.
     """
 
+    form = infer_report_form(heading_entries)
+    leading_h2 = FORM_LEADING_H2[form]
+    last_h1 = FORM_LAST_H1[form]
     section_one: list[str] = []
-    first_h1 = first_h1_for_period(DEFAULT_REPORT_PERIOD)
+    first_h1 = first_h1_for_period(DEFAULT_REPORT_PERIOD, form)
     for kind, text in heading_entries:
         normalized = normalize_heading(text)
-        if kind == "h1" and normalized == normalize_heading(FIXED_LAST_H1):
+        if kind == "h1" and normalized == normalize_heading(last_h1):
             break
-        if kind == "h1" and period_of_first_h1(normalized) and not section_one:
+        if (
+            form == DEFAULT_REPORT_FORM
+            and kind == "h1"
+            and period_of_first_h1(normalized)
+            and not section_one
+        ):
             first_h1 = normalized
         if kind == "h2":
             section_one.append(normalized)
     slots: list[str] = []
     for offset, ordinal in enumerate(SPV_SLOT_ORDINALS):
-        index = len(FIXED_LEADING_H2) + offset
+        index = len(leading_h2) + offset
         if index >= len(section_one) or not spv_slot_pattern(ordinal).fullmatch(section_one[index]):
             break
         slots.append(section_one[index])
     if not slots:
-        return REQUIRED_MAIN_BLOCKS
-    headings = [first_h1, *FIXED_LEADING_H2, *slots, FIXED_LAST_H1]
+        if form == DEFAULT_REPORT_FORM:
+            return REQUIRED_MAIN_BLOCKS
+        slots = ["（四）SPV项目"]
+    headings = [first_h1, *leading_h2, *slots, last_h1]
     return tuple(zip(fixed_main_heading_kinds(len(headings)), headings))
 
 
@@ -379,20 +475,25 @@ def validate_heading_contract_list(
     findings: Findings,
     *,
     expected_period: str | None = None,
+    form: str = DEFAULT_REPORT_FORM,
 ) -> list[str] | None:
     """Validate one source/effective fixed-heading contract list.
 
     The list is the first-level heading, the three fixed categories, one or more
-    consecutive SPV slots, and the closing first-level heading.
+    consecutive SPV slots, and the closing first-level heading.  The fixed texts
+    come from the declared report form.
     """
 
+    leading_h2 = FORM_LEADING_H2[form]
+    last_h1 = FORM_LAST_H1[form]
     if not isinstance(values, list) or not (
         MIN_FIXED_MAIN_HEADINGS <= len(values) <= MAX_FIXED_MAIN_HEADINGS
     ):
         findings.error(
             f"document.{field_name} must contain between {MIN_FIXED_MAIN_HEADINGS} and "
-            f"{MAX_FIXED_MAIN_HEADINGS} headings (one first-level heading, 存续基金／新设基金／参股公司, "
-            "one or more SPV slots, and the closing first-level heading)"
+            f"{MAX_FIXED_MAIN_HEADINGS} headings (one first-level heading, "
+            + "／".join(FORM_LEADING_CATEGORIES[form])
+            + ", one or more SPV slots, and the closing first-level heading)"
         )
         return None
     headings = [str(item or "").strip() for item in values]
@@ -403,35 +504,42 @@ def validate_heading_contract_list(
     if len(normalized) != len(set(normalized)):
         findings.error(f"document.{field_name} must be unique after normalization")
 
-    invariant = {index + 1: text for index, text in enumerate(FIXED_LEADING_H2)}
-    invariant[len(normalized) - 1] = FIXED_LAST_H1
+    invariant = {index + 1: text for index, text in enumerate(leading_h2)}
+    invariant[len(normalized) - 1] = last_h1
     for index, expected in invariant.items():
         if normalized[index] != normalize_heading(expected):
             findings.error(
-                f"document.{field_name}[{index}] must preserve the template heading: {expected}"
+                f"document.{field_name}[{index}] must preserve the {form} template heading: {expected}"
             )
 
-    # The opening first-level heading names the reporting period.  A source
-    # snapshot may legitimately name the previous period; the effective list
-    # must name the period this report declares.
-    observed_period = period_of_first_h1(normalized[0])
-    if observed_period is None:
-        findings.error(
-            f"document.{field_name}[0] must read 一、<报告期间>股权投资完成总体情况 with 报告期间 in "
-            + "、".join(REPORT_PERIODS)
-            + f"; got {headings[0]}"
-        )
-    elif expected_period is not None and observed_period != expected_period:
-        findings.error(
-            f"document.{field_name}[0] names 报告期间 {observed_period} but document.report_period "
-            f"is {expected_period}; expected {first_h1_for_period(expected_period)}"
-        )
-    spv_headings = normalized[len(FIXED_LEADING_H2) + 1 : -1]
+    if form == INTERNAL_REPORT_FORM:
+        # 内部报告式 carries the period in the title and opening only.
+        if normalized[0] != normalize_heading(INTERNAL_FIRST_H1):
+            findings.error(
+                f"document.{field_name}[0] must read {INTERNAL_FIRST_H1} in 内部报告式; got {headings[0]}"
+            )
+    else:
+        # The opening first-level heading names the reporting period.  A source
+        # snapshot may legitimately name the previous period; the effective list
+        # must name the period this report declares.
+        observed_period = period_of_first_h1(normalized[0])
+        if observed_period is None:
+            findings.error(
+                f"document.{field_name}[0] must read 一、<报告期间>股权投资完成总体情况 with 报告期间 in "
+                + "、".join(REPORT_PERIODS)
+                + f"; got {headings[0]}"
+            )
+        elif expected_period is not None and observed_period != expected_period:
+            findings.error(
+                f"document.{field_name}[0] names 报告期间 {observed_period} but document.report_period "
+                f"is {expected_period}; expected {first_h1_for_period(expected_period)}"
+            )
+    spv_headings = normalized[len(leading_h2) + 1 : -1]
     for offset, heading in enumerate(spv_headings):
         ordinal = SPV_SLOT_ORDINALS[offset]
         if not spv_slot_pattern(ordinal).fullmatch(heading):
             findings.error(
-                f"document.{field_name}[{offset + len(FIXED_LEADING_H2) + 1}] must preserve the "
+                f"document.{field_name}[{offset + len(leading_h2) + 1}] must preserve the "
                 f"source SPV slot as （{ordinal}）SPV项目 or （{ordinal}）<项目名称>SPV项目"
             )
     return headings
@@ -692,16 +800,28 @@ def validate_fixed_heading_contract(document: dict[str, Any], findings: Findings
     """Lock effective headings to the source snapshot unless change was authorized."""
 
     report_period = str(document.get("report_period") or "").strip() or None
+    form = report_form_of(document)
+    # The base template may be of the other form (for example last year's 文件式
+    # report feeding this year's 内部报告式).  The snapshot is then checked against
+    # its own form and the switch counts as an authorized heading change.
+    source_form = str(document.get("source_report_form") or "").strip() or form
+    if source_form not in REPORT_FORMS:
+        findings.error(
+            "document.source_report_form must be one of " + "、".join(REPORT_FORMS) + f"; got {source_form}"
+        )
+        source_form = form
     source_headings = validate_heading_contract_list(
         document.get("source_fixed_main_headings"),
         "source_fixed_main_headings",
         findings,
+        form=source_form,
     )
     effective_headings = validate_heading_contract_list(
         document.get("fixed_main_headings"),
         "fixed_main_headings",
         findings,
         expected_period=report_period if report_period in REPORT_PERIODS else None,
+        form=form,
     )
     if source_headings is None or effective_headings is None:
         return
@@ -713,7 +833,7 @@ def validate_fixed_heading_contract(document: dict[str, Any], findings: Findings
     comparable_effective = list(effective_headings)
     if period_of_first_h1(comparable_source[0]) and period_of_first_h1(comparable_effective[0]):
         comparable_source[0] = comparable_effective[0] = ""
-    changed = comparable_source != comparable_effective
+    changed = source_form != form or comparable_source != comparable_effective
     authorized = document.get("heading_change_authorized")
     if not isinstance(authorized, bool):
         findings.error("document.heading_change_authorized must be true or false")
@@ -1005,6 +1125,205 @@ def validate_fixed_category_sections(
         elif zero_statements:
             findings.error(
                 f"Registry has {project_count} {category} project(s), but section {heading} contains a zero-project declaration"
+            )
+
+
+def validate_ledger_section(main_blocks: list[dict[str, Any]], findings: Findings) -> None:
+    """内部报告式的“二、项目台账”须由一段引导句和一张台账表构成。"""
+
+    last_h1 = normalize_heading(FORM_LAST_H1[INTERNAL_REPORT_FORM])
+    section: list[dict[str, Any]] | None = None
+    for block in main_blocks:
+        block_type = str(block.get("type") or "").lower()
+        if block_type == "h1":
+            section = [] if normalize_heading(str(block.get("text") or "")) == last_h1 else None
+            continue
+        if section is not None:
+            section.append(block)
+    if section is None:
+        return  # the heading-sequence check reports the missing heading
+    types = [str(block.get("type") or "").lower() for block in section]
+    if "table" not in types:
+        findings.error(f"{FORM_LAST_H1[INTERNAL_REPORT_FORM]} must contain the project ledger table block")
+    elif "p" not in types[: types.index("table")]:
+        findings.error(
+            f"{FORM_LAST_H1[INTERNAL_REPORT_FORM]} must open with a lead paragraph (for example "
+            "截至YYYY年M月D日，我司股权投资项目台账如下：) before the ledger table"
+        )
+
+
+# 表述规范：来自定稿报告逐轮校改中反复出现的改动，作为警告逐条人工判断。
+EXPRESSION_STYLE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
+    (re.compile(r"(?<![A-Za-z])LP(?![A-Za-z])"), "正式文本中“LP”应写作“有限合伙人”"),
+    (
+        re.compile(r"(?<![双A-Za-z])GP(?![A-Za-z]|基金)"),
+        "正式文本中“GP”应写作“普通合伙人”或“基金管理人”（类别名“双GP基金”除外）",
+    ),
+    (re.compile(r"实控人"), "应写作“实际控制人”"),
+    (re.compile(r"资管计划"), "应写作“资产管理计划”"),
+    (re.compile(r"投行(?!业务)"), "应写作“投资银行业务”"),
+    (
+        re.compile(r"截至(?:目前|当前|报告更新时|本报告出具日|报告日|现在)"),
+        "时点应写明具体年月，如“截至2026年9月”",
+    ),
+    (re.compile(r"20\d{2}半年度"), "年份后缺“年”字，应写作“YYYY年上半年”或“YYYY年半年度”"),
+    (re.compile(r"分别同比"), "语序应为“同比分别……”"),
+    (re.compile(r"我方"), "报告自称宜统一为“我司”；需区分主体时写明主体简称"),
+    (
+        re.compile(r"(?:整体|总体)?风险(?:总体|整体)?可控"),
+        "“风险可控”属结论性判断，须有指标或处置进展支撑，否则改为“运营总体正常”等客观表述",
+    ),
+)
+ABBREVIATION_PATTERN = re.compile(r"（(?:以下)?简称“([^”]+)”）")
+CHINESE_MONTH_DATE = re.compile(r"(20\d{2})年(\d{1,2})月(?:(\d{1,2})日)?")
+NUMERIC_CELL = re.compile(r"^\s*([-+]?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?)")
+
+
+def _block_scopes(spec: dict[str, Any]) -> list[tuple[str, list[dict[str, Any]]]]:
+    scopes: list[tuple[str, list[dict[str, Any]]]] = [("main body", spec.get("main_blocks") or [])]
+    scopes.extend(
+        (f"attachment {attachment.get('id')}", attachment.get("blocks") or [])
+        for attachment in spec.get("attachments") or []
+    )
+    return scopes
+
+
+def _numeric_cell(value: Any) -> Decimal | None:
+    text = str(value or "").strip()
+    if text in {"", "—", "——", "-", "/", "／", "无"}:
+        return Decimal(0)
+    match = NUMERIC_CELL.match(text)
+    if match is None:
+        return None
+    try:
+        return Decimal(match.group(1).replace(",", ""))
+    except InvalidOperation:
+        return None
+
+
+def validate_table_totals(scope: str, index: int, block: dict[str, Any], findings: Findings) -> None:
+    """合计行须等于各分项之和：分项数据更正后，合计与由其计算的比率必须联动重算。"""
+
+    header = [str(item or "") for item in block.get("header") or []]
+    rows = [list(row) for row in block.get("rows") or [] if isinstance(row, list)]
+    total_rows = [row for row in rows if row and re.match(r"^\s*(?:合计|总计)", str(row[0] or ""))]
+    if len(total_rows) != 1 or len(header) < 2:
+        return
+    total = total_rows[0]
+    items = [row for row in rows if row is not total]
+    for column in range(1, len(header)):
+        label = header[column]
+        if re.search(r"率|比例|占比|%|％|期限|时间|日期|序号|单价|倍", label):
+            continue
+        if re.search(r"净值|估值", label) and "元" not in label:
+            continue  # 基金净值、估值倍数等比值列不求和
+        column_values = [str(row[column] if column < len(row) else "") for row in items]
+        if any("%" in value for value in column_values):
+            continue
+        total_cell = str(total[column] if column < len(total) else "").strip()
+        expected_total = _numeric_cell(total_cell)
+        if not total_cell or total_cell in {"—", "——", "-", "/"} or expected_total is None:
+            continue
+        numbers = [_numeric_cell(value) for value in column_values]
+        if any(number is None for number in numbers):
+            continue
+        observed = sum(numbers, Decimal(0))
+        decimals = [
+            len(match.group(1))
+            for value in [*column_values, total_cell]
+            if (match := re.search(r"\.(\d+)", value))
+        ]
+        places = max(decimals or [0])
+        tolerance = Decimal(1).scaleb(-places) * max(1, len(numbers)) / 2
+        if abs(observed - expected_total) > tolerance:
+            findings.warning(
+                f"{scope} block {index}: 合计行“{label}”为 {total_cell}，而分项之和为 "
+                f"{observed:,.{places}f}；分项更正后须同步重算合计及由其计算的比率"
+            )
+
+
+def validate_expression_style(spec: dict[str, Any], findings: Findings) -> None:
+    """Warn on wording that the approved report's proofreading rounds consistently changed."""
+
+    reported: set[tuple[str, str]] = set()
+    texts = list(iter_spec_texts(spec))
+    texts.extend(
+        (f"attachment {attachment.get('id')} title", str(attachment.get("title") or ""))
+        for attachment in spec.get("attachments") or []
+    )
+    for location, text in texts:
+        for pattern, message in EXPRESSION_STYLE_RULES:
+            match = pattern.search(text)
+            if match is None or (location, message) in reported:
+                continue
+            reported.add((location, message))
+            findings.warning(f"{location}: {message}（“{match.group(0)}”）")
+
+    document = spec.get("document") or {}
+    cutoff = parse_chinese_date(str(document.get("cutoff_date") or ""))
+    for scope, blocks in _block_scopes(spec):
+        # 简称：同一范围内只定义一次，定义后须实际使用。
+        prose = "\n".join(
+            str(block.get("text") or "")
+            for block in blocks
+            if str(block.get("type") or "").lower() in {"p", "tnote"}
+        )
+        if scope == "main body":
+            prose = str(document.get("legal_basis") or "") + "\n" + prose
+        definitions = [(match.group(1), match.end()) for match in ABBREVIATION_PATTERN.finditer(prose)]
+        counts = Counter(name for name, _end in definitions)
+        for name, count in counts.items():
+            if count > 1:
+                findings.warning(f"{scope}: 简称“{name}”定义了{count}次，同一范围内只在首次出现时定义")
+        for name, end in definitions:
+            if counts[name] == 1 and name not in prose[end:]:
+                findings.warning(f"{scope}: 简称“{name}”定义后未再使用，可删去简称定义")
+
+        for index, block in enumerate(blocks, start=1):
+            block_type = str(block.get("type") or "").lower()
+            if block_type == "table":
+                validate_table_totals(scope, index, block, findings)
+                continue
+            if block_type not in {"p", "tnote"} or cutoff is None:
+                continue
+            # “报告期内”只能统领报告期内发生的事项；期后事项用“截至YYYY年M月”。
+            for sentence in report_sentences(str(block.get("text") or "")):
+                if "报告期内" not in sentence:
+                    continue
+                for match in CHINESE_MONTH_DATE.finditer(sentence):
+                    year, month = int(match.group(1)), int(match.group(2))
+                    day = int(match.group(3)) if match.group(3) else 1
+                    try:
+                        when = date(year, month, day)
+                    except ValueError:
+                        continue
+                    if when > cutoff:
+                        findings.warning(
+                            f"{scope} block {index}: “报告期内”所述事项日期 {match.group(0)} 晚于数据截止日期，"
+                            "应改为“截至YYYY年M月”或另句说明期后进展"
+                        )
+                        break
+
+    # SPV 标题中的项目名称须与本节正文所用名称或简称一致。
+    main_blocks = spec.get("main_blocks") or []
+    for position, block in enumerate(main_blocks):
+        if str(block.get("type") or "").lower() != "h2":
+            continue
+        match = re.fullmatch(
+            r"（[一二三四五六七八九十]+）(.+)SPV项目", normalize_heading(str(block.get("text") or ""))
+        )
+        if match is None:
+            continue
+        name = match.group(1)
+        section_text = ""
+        for follower in main_blocks[position + 1 :]:
+            if str(follower.get("type") or "").lower() in {"h1", "h2"}:
+                break
+            section_text += str(follower.get("text") or "")
+        if section_text and name not in section_text:
+            findings.warning(
+                f"main body heading {block.get('text')}: 标题中的项目名称“{name}”未在本节正文出现，"
+                "核对标题与正文所用简称是否一致"
             )
 
 
@@ -1502,21 +1821,35 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
             findings.error(f"layout.{key} must be a positive number")
 
     document = spec.get("document") or {}
-    for key in (
+    declared_form = str(document.get("report_form") or "").strip()
+    if declared_form and declared_form not in REPORT_FORMS:
+        findings.error(
+            "document.report_form must be one of " + "、".join(REPORT_FORMS) + f"; got {declared_form}"
+        )
+    form = report_form_of(document)
+    required_keys = [
         "company",
         "report_year",
         "report_period",
         "cutoff_date",
-        "document_number",
-        "recipient",
         "legal_basis",
-        "issuer",
         "issue_date",
         "heading_contract_source",
         "heading_change_note",
-    ):
+    ]
+    if form == DEFAULT_REPORT_FORM:
+        required_keys[4:4] = ["document_number", "recipient"]
+        required_keys.insert(-3, "issuer")
+    for key in required_keys:
         if not str(document.get(key) or "").strip():
             findings.error(f"Missing document.{key}")
+    if form == INTERNAL_REPORT_FORM:
+        for key in INTERNAL_FORBIDDEN_FIELDS:
+            if str(document.get(key) or "").strip():
+                findings.error(
+                    f"document.{key} is not rendered by 内部报告式 (no 红头、文号、签发人、主送单位、"
+                    "落款或版记); remove it or declare report_form 文件式"
+                )
     validate_fixed_heading_contract(document, findings)
     report_year = str(document.get("report_year") or "")
     if not re.fullmatch(r"20\d{2}", report_year):
@@ -1604,10 +1937,11 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
             if not str(project.get(key) or "").strip():
                 findings.error(f"Project {project_id} is missing {key}")
         category = str(project.get("category") or "").strip()
-        if category and category not in VALID_PROJECT_CATEGORIES:
+        allowed_categories = (*FORM_LEADING_CATEGORIES[form], "SPV项目")
+        if category and category not in allowed_categories:
             findings.error(
-                f"Project {project_id} has unsupported category {category}; expected one of "
-                + ", ".join(sorted(VALID_PROJECT_CATEGORIES))
+                f"Project {project_id} has unsupported category {category} for report_form {form}; "
+                "expected one of " + ", ".join(allowed_categories)
             )
         attachment_id = str(project.get("attachment_id") or "")
         if attachment_id and attachment_id not in valid_attachment_ids:
@@ -1619,6 +1953,9 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
         findings,
         fixed_sections=fixed_category_sections_from_document(document),
     )
+    if form == INTERNAL_REPORT_FORM:
+        validate_ledger_section(main_blocks, findings)
+    validate_expression_style(spec, findings)
 
     sources = spec.get("sources") or []
     valid_project_ids = set(project_ids) | {"portfolio"}
@@ -1829,7 +2166,7 @@ def docx_scoped_items(
         if kind == "p":
             compact = re.sub(r"[\s\u3000]+", "", value)
             # Attachment page labels: 附件： (single attachment) or 附件1：附件2：…
-            match = re.fullmatch(r"附件(\d+)?[：:]", compact)
+            match = re.fullmatch(r"附件(\d+)?[：:]?", compact)
             if match:
                 number = int(match.group(1)) if match.group(1) else (1 if attachment_count == 1 else 0)
                 next_scope = number_to_scope.get(number)
@@ -1954,45 +2291,60 @@ def validate_scoped_docx_content(
         signer = str(document.get("signer") or "").strip()
         recipient = str(document.get("recipient") or "").strip()
         legal_basis = str(document.get("legal_basis") or "").strip()
-        expected_prefix = [
-            normalized_item("p", [f"{company}文件"]),
-            normalized_item("table", [document_number, signer]),
-            normalized_item(
-                "p",
-                [report_title(company, report_year, report_period)],
-            ),
-        ]
-        expected_prefix.extend(
-            normalized_item("p", [value])
-            for value in (recipient, legal_basis)
-            if value
-        )
+        form = report_form_of(document)
+        if form == INTERNAL_REPORT_FORM:
+            expected_prefix = [
+                normalized_item("p", [report_title(company, report_year, report_period, form)])
+            ]
+            month_line = issue_month_line(document.get("issue_date"))
+            if month_line:
+                expected_prefix.append(normalized_item("p", [month_line]))
+            if legal_basis:
+                expected_prefix.append(normalized_item("p", [legal_basis]))
+            envelope_description = "two-line title, month line, opening, and first fixed heading order"
+        else:
+            expected_prefix = [
+                normalized_item("p", [f"{company}文件"]),
+                normalized_item("table", [document_number, signer]),
+                normalized_item(
+                    "p",
+                    [report_title(company, report_year, report_period)],
+                ),
+            ]
+            expected_prefix.extend(
+                normalized_item("p", [value])
+                for value in (recipient, legal_basis)
+                if value
+            )
+            envelope_description = (
+                "red head, document row, two-line title, recipient, opening, and first fixed heading order"
+            )
         expected_prefix.append(main_expected[0])
         if main_actual[: len(expected_prefix)] != expected_prefix:
             findings.error(
-                "DOCX main-body opening envelope must exactly preserve the red head, document row, "
-                "two-line title, recipient, opening, and first fixed heading order"
+                "DOCX main-body opening envelope must exactly preserve the " + envelope_description
             )
 
         attachments = expected_spec.get("attachments") or []
         suffix_items: list[str] = [
             normalized_item("p", [line]) for line in attachment_list_lines(attachments)
         ]
-        issuer = str(document.get("issuer") or document.get("company") or "").strip()
-        issue_date = str(document.get("issue_date") or "").strip()
-        if issuer:
-            suffix_items.append(normalized_item("p", [issuer]))
-        if issue_date:
-            suffix_items.append(normalized_item("p", [issue_date]))
-        contact_parts: list[str] = []
-        contact_name = str(document.get("contact_name") or "").strip()
-        contact_phone = str(document.get("contact_phone") or "").strip()
-        if contact_name:
-            contact_parts.append(f"联系人：{contact_name}")
-        if contact_phone:
-            contact_parts.append(f"联系电话：{contact_phone}")
-        if contact_parts:
-            suffix_items.append(normalized_item("p", [f"（{'  '.join(contact_parts)}）"]))
+        if form == DEFAULT_REPORT_FORM:
+            issuer = str(document.get("issuer") or document.get("company") or "").strip()
+            issue_date = str(document.get("issue_date") or "").strip()
+            if issuer:
+                suffix_items.append(normalized_item("p", [issuer]))
+            if issue_date:
+                suffix_items.append(normalized_item("p", [issue_date]))
+            contact_parts: list[str] = []
+            contact_name = str(document.get("contact_name") or "").strip()
+            contact_phone = str(document.get("contact_phone") or "").strip()
+            if contact_name:
+                contact_parts.append(f"联系人：{contact_name}")
+            if contact_phone:
+                contact_parts.append(f"联系电话：{contact_phone}")
+            if contact_parts:
+                suffix_items.append(normalized_item("p", [f"（{'  '.join(contact_parts)}）"]))
 
         try:
             final_main_index = len(main_actual) - 1 - main_actual[::-1].index(main_expected[-1])
@@ -2276,6 +2628,7 @@ def validate_docx_typography(
     metadata = expected_spec.get("document") or {}
     company = str(metadata.get("company") or "").strip()
     year = str(metadata.get("report_year") or "").strip()
+    form = report_form_of(metadata)
     paragraphs = list(doc.paragraphs)
 
     def find_paragraph(text: str, start: int = 0) -> tuple[int, Paragraph] | None:
@@ -2286,8 +2639,10 @@ def validate_docx_typography(
         return None
 
     redhead_text = f"{company}文件"
-    redhead_match = find_paragraph(redhead_text)
-    if redhead_match is None:
+    redhead_match = find_paragraph(redhead_text) if form == DEFAULT_REPORT_FORM else None
+    if form == INTERNAL_REPORT_FORM:
+        pass
+    elif redhead_match is None:
         findings.error("DOCX typography check cannot locate the red-head issuer line")
     else:
         _index, redhead = redhead_match
@@ -2311,7 +2666,7 @@ def validate_docx_typography(
                     "DOCX red-head issuer must preserve w:w=37 and w:fitText=8195"
                 )
 
-    title_text = report_title(company, year, metadata.get("report_period"))
+    title_text = report_title(company, year, metadata.get("report_period"), form)
     title_match = find_paragraph(title_text)
     if title_match is None:
         findings.error("DOCX typography check cannot locate the two-line main title")
@@ -2319,17 +2674,35 @@ def validate_docx_typography(
         _validate_paragraph_typography(
             doc, title_match[1], label="main title", kind="title", findings=findings
         )
+        month_line = issue_month_line(metadata.get("issue_date"))
+        if form == INTERNAL_REPORT_FORM and month_line:
+            month_match = find_paragraph(month_line, title_match[0] + 1)
+            if month_match is None or month_match[0] != title_match[0] + 1:
+                findings.error(
+                    f"DOCX 内部报告式 must place the month line {month_line} directly under the title"
+                )
+            else:
+                _validate_paragraph_typography(
+                    doc, month_match[1], label="month line", kind="dateline", findings=findings
+                )
+                if month_match[1].alignment != WD_ALIGN_PARAGRAPH.CENTER:
+                    findings.error("DOCX month line under the title must be centered")
 
     envelope_paragraphs: list[tuple[str, str, dict[str, Any]]] = [
-        ("recipient", str(metadata.get("recipient") or "").strip(), {}),
         (
             "opening basis",
             str(metadata.get("legal_basis") or "").strip(),
             {"first_line_chars_override": 2.0},
         ),
-        ("issuer signature", str(metadata.get("issuer") or company).strip(), {}),
-        ("issue date", str(metadata.get("issue_date") or "").strip(), {}),
     ]
+    if form == DEFAULT_REPORT_FORM:
+        envelope_paragraphs[:0] = [("recipient", str(metadata.get("recipient") or "").strip(), {})]
+        envelope_paragraphs.extend(
+            [
+                ("issuer signature", str(metadata.get("issuer") or company).strip(), {}),
+                ("issue date", str(metadata.get("issue_date") or "").strip(), {}),
+            ]
+        )
     attachments = expected_spec.get("attachments") or []
     # 附件说明 hangs each wrapped name under its own name column, so the list uses
     # point indents rather than the two-character first-line indent.
@@ -2383,7 +2756,9 @@ def validate_docx_typography(
         ),
         None,
     )
-    if document_row is None:
+    if form == INTERNAL_REPORT_FORM:
+        pass
+    elif document_row is None:
         findings.error("DOCX typography check cannot locate the document-number/signer row")
     else:
         _validate_paragraph_typography(
@@ -2493,8 +2868,10 @@ def validate_docx_typography(
 
     table_blocks = [
         block
-        for attachment in attachments
-        for block in attachment.get("blocks") or []
+        for block in [
+            *(expected_spec.get("main_blocks") or []),
+            *(item for attachment in attachments for item in attachment.get("blocks") or []),
+        ]
         if str(block.get("type") or "").lower() == "table"
     ]
     unused_tables = list(doc.tables)
@@ -2662,6 +3039,7 @@ def validate_docx(
         validate_docx_typography(doc, expected_spec, findings)
         normalized_doc_text = re.sub(r"[\s\u3000]+", "", full_text)
         document_metadata = expected_spec.get("document") or {}
+        internal_form = report_form_of(document_metadata) == INTERNAL_REPORT_FORM
         for key in (
             "company",
             "report_year",
@@ -2678,7 +3056,11 @@ def validate_docx(
             "printer",
             "print_date",
         ):
+            if internal_form and key == "company":
+                continue  # 内部报告式 has no red head or signature naming the issuer
             value = str(document_metadata.get(key) or "").strip()
+            if internal_form and key == "issue_date":
+                value = issue_month_line(value)
             if value and re.sub(r"[\s\u3000]+", "", value) not in normalized_doc_text:
                 findings.error(f"DOCX does not contain expected document.{key}: {value}")
 
@@ -2906,6 +3288,7 @@ def validate_pdf(
             findings.error(message)
     else:
         document_metadata = expected_spec.get("document") or {}
+        internal_form = report_form_of(document_metadata) == INTERNAL_REPORT_FORM
         for key in (
             "company",
             "report_year",
@@ -2922,7 +3305,11 @@ def validate_pdf(
             "printer",
             "print_date",
         ):
+            if internal_form and key == "company":
+                continue  # 内部报告式 has no red head or signature naming the issuer
             value = str(document_metadata.get(key) or "").strip()
+            if internal_form and key == "issue_date":
+                value = issue_month_line(value)
             if value and re.sub(r"[\s\u3000]+", "", value) not in normalized_pdf_text:
                 findings.error(f"PDF does not contain expected document.{key}: {value}")
         for scope, blocks in [
@@ -2971,10 +3358,16 @@ def validate_pdf(
             findings.error(message)
     else:
         main_pages = first_attachment_page - 1
+        internal_form = (
+            expected_spec is not None
+            and report_form_of(expected_spec.get("document") or {}) == INTERNAL_REPORT_FORM
+        )
+        normal_pages = {5, 6, 7} if internal_form else {5, 6}
         if main_pages > 10:
             findings.error(f"Main body is {main_pages} pages; hard maximum is 10")
-        elif main_pages not in {5, 6}:
-            findings.warning(f"Main body is {main_pages} pages; normal target is 5–6")
+        elif main_pages not in normal_pages:
+            target = "5–7 (内部报告式含项目台账)" if internal_form else "5–6"
+            findings.warning(f"Main body is {main_pages} pages; normal target is {target}")
         findings.note(f"Rendered pages: main body {main_pages}, total {total_pages}")
     if total_pages == 0:
         findings.error("PDF contains no pages")

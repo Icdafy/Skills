@@ -1,0 +1,2263 @@
+{
+  "schema_version": "1.0",
+  "template_only": true,
+  "layout": {
+    "page_width_cm": 21.0,
+    "page_height_cm": 29.7,
+    "top_margin_cm": 3.7,
+    "bottom_margin_cm": 3.5,
+    "left_margin_cm": 2.8,
+    "right_margin_cm": 2.6,
+    "header_distance_cm": 1.5,
+    "footer_distance_cm": 1.75,
+    "source": "sanitized source-derived template contract"
+  },
+  "document": {
+    "company": "示例产业投资有限责任公司",
+    "report_form": "内部报告式",
+    "report_year": "2026",
+    "report_period": "上半年",
+    "cutoff_date": "2026年6月30日",
+    "issue_date": "2026年9月28日",
+    "legal_basis": "为加强股权投资项目投后管理、防范投资风险，按照我司投后管理工作安排，现将2026年上半年股权投资项目投后管理情况报告如下。本报告财务数据截至2026年6月30日，重大事项进展更新至2026年9月。",
+    "fixed_main_headings": [
+      "一、项目整体情况",
+      "（一）参股基金",
+      "（二）双GP基金",
+      "（三）参股公司",
+      "（四）示例银行SPV项目",
+      "（五）示例空天SPV项目",
+      "二、项目台账"
+    ],
+    "source_fixed_main_headings": [
+      "一、项目整体情况",
+      "（一）参股基金",
+      "（二）双GP基金",
+      "（三）参股公司",
+      "（四）示例银行SPV项目",
+      "（五）示例空天SPV项目",
+      "二、项目台账"
+    ],
+    "heading_contract_source": "Sanitized heading sequence of the approved 内部报告式 half-year report (two named SPV slots) for this synthetic reference.",
+    "heading_change_authorized": false,
+    "heading_change_note": "未调整固定标题；本公开参考件按定稿内部报告式保留两个具名SPV固定位置，项目名称均为合成示例。"
+  },
+  "sources": [
+    {
+      "source_id": "S01",
+      "project_ids": [
+        "FUND-A",
+        "FUND-B"
+      ],
+      "filename": "合成示例_参股基金2026年第二季度管理报告.pdf",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 基金管理人季度报告",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S02",
+      "project_ids": [
+        "FUND-C"
+      ],
+      "filename": "合成示例_双GP基金2026年第二季度管理工作报告.pdf",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 基金管理人季度报告",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S03",
+      "project_ids": [
+        "EQ-A"
+      ],
+      "filename": "合成示例_参股证券公司2026年半年度合并财务快报.xlsx",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 企业财务快报",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S04",
+      "project_ids": [
+        "EQ-B"
+      ],
+      "filename": "合成示例_参股科技企业2026年半年度报表及投后访谈记录.docx",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 企业未审计报表及访谈",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S05",
+      "project_ids": [
+        "SPV-A"
+      ],
+      "filename": "合成示例_SPV执行事务合伙人2026年上半年运营情况报告.pdf",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 执行事务合伙人报告",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S06",
+      "project_ids": [
+        "SPV-B"
+      ],
+      "filename": "合成示例_SPV被投企业2026年半年度经营分析及滚动预测.xlsx",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 企业经营分析",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    },
+    {
+      "source_id": "S07",
+      "project_ids": [
+        "portfolio",
+        "FUND-A",
+        "FUND-B",
+        "FUND-C",
+        "EQ-A",
+        "EQ-B",
+        "SPV-A",
+        "SPV-B"
+      ],
+      "filename": "合成示例_股权投资项目台账2026年6月30日.xlsx",
+      "period": "2026年上半年；期后事项截至2026年9月",
+      "document_date": "2026年9月15日",
+      "approval_status": "synthetic approved example",
+      "authority_level": "synthetic 本单位投后台账",
+      "status": "synthetic",
+      "note": "Synthetic source record for template demonstration only; no real entity or transaction is represented."
+    }
+  ],
+  "project_registry": [
+    {
+      "project_id": "FUND-A",
+      "official_name": "示例甲号股权投资基金合伙企业（有限合伙）",
+      "category": "参股基金",
+      "status": "退出期",
+      "investment_entity": "示例产业投资有限责任公司",
+      "commitment": "1,200.00万元",
+      "paid_in": "1,200.00万元",
+      "interest": "60.00%",
+      "attachment_id": "A1",
+      "change_flag": "quantitative-refresh",
+      "reporting_period": "截至2026年6月30日"
+    },
+    {
+      "project_id": "FUND-B",
+      "official_name": "示例乙号股权投资合伙企业（有限合伙）",
+      "category": "参股基金",
+      "status": "退出期",
+      "investment_entity": "示例产业投资有限责任公司",
+      "commitment": "600.00万元",
+      "paid_in": "600.00万元",
+      "interest": "40.00%",
+      "attachment_id": "A1",
+      "change_flag": "quantitative-refresh",
+      "reporting_period": "截至2026年6月30日"
+    },
+    {
+      "project_id": "FUND-C",
+      "official_name": "示例丙号股权投资基金合伙企业（有限合伙）",
+      "category": "双GP基金",
+      "status": "投资期",
+      "investment_entity": "示例产业投资有限责任公司",
+      "commitment": "2,000.00万元",
+      "paid_in": "1,000.00万元",
+      "interest": "50.00%",
+      "attachment_id": "A2",
+      "change_flag": "new",
+      "reporting_period": "截至2026年6月30日"
+    },
+    {
+      "project_id": "EQ-A",
+      "official_name": "示例证券股份有限公司",
+      "category": "参股公司",
+      "status": "存续",
+      "investment_entity": "示例产业投资有限责任公司",
+      "commitment": "30,000.00万元",
+      "paid_in": "30,000.00万元",
+      "interest": "1.2000%",
+      "attachment_id": "A3",
+      "change_flag": "quantitative-refresh",
+      "reporting_period": "截至2026年6月30日"
+    },
+    {
+      "project_id": "EQ-B",
+      "official_name": "示例智能科技有限公司",
+      "category": "参股公司",
+      "status": "拟退出",
+      "investment_entity": "示例投资管理有限公司",
+      "commitment": "60.00万元",
+      "paid_in": "60.00万元",
+      "interest": "6.00%",
+      "attachment_id": "A4",
+      "change_flag": "risk-change",
+      "reporting_period": "截至2026年6月30日"
+    },
+    {
+      "project_id": "SPV-A",
+      "official_name": "示例资产投资合伙企业（有限合伙）",
+      "category": "SPV项目",
+      "status": "存续",
+      "investment_entity": "示例产业投资有限责任公司",
+      "commitment": "30,000.00万元",
+      "paid_in": "30,000.00万元",
+      "interest": "3.75%",
+      "attachment_id": "A5",
+      "change_flag": "quantitative-refresh",
+      "reporting_period": "截至2026年6月30日"
+    },
+    {
+      "project_id": "SPV-B",
+      "official_name": "示例创投企业管理合伙企业（有限合伙）",
+      "category": "SPV项目",
+      "status": "存续",
+      "investment_entity": "示例产业投资有限责任公司、示例投资管理有限公司",
+      "commitment": "1,000.00万元",
+      "paid_in": "1,000.00万元",
+      "interest": "间接约1.7000%",
+      "attachment_id": "A6",
+      "change_flag": "quantitative-refresh",
+      "reporting_period": "截至2026年6月30日"
+    }
+  ],
+  "fact_ledger": [
+    {
+      "fact_id": "FACT-001",
+      "project_id": "FUND-A",
+      "metric": "参股基金数量、阶段及名称",
+      "assertions": [
+        "截至2026年6月30日",
+        "我司参股基金共2支",
+        "均已进入退出期",
+        "分别为示例甲号股权投资基金合伙企业（有限合伙）（以下简称“甲号基金”）、示例乙号股权投资合伙企业（有限合伙）（以下简称“乙号基金”）"
+      ],
+      "value": "截至2026年6月30日；我司参股基金共2支",
+      "unit": "股/支",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-002",
+      "project_id": "FUND-A",
+      "metric": "参股基金实缴规模、我司实缴、公允价值及基金净值",
+      "assertions": [
+        "甲号基金、乙号基金累计实缴规模分别为2,000.00万元、1,500.00万元",
+        "其中我司作为有限合伙人累计实缴分别为1,200.00万元、600.00万元",
+        "截至2026年6月30日",
+        "两支基金公允价值（含已分配及退出部分）分别为2,540.50万元、1,650.00万元",
+        "基金净值分别为1.27、1.10"
+      ],
+      "value": "甲号基金、乙号基金累计实缴规模分别为2,000.00万元、1,500.00万元；其中我司作为有限合伙人累计实缴分别为1,200.00万元、600.00万元；截至2026年6月30日；两支基金公允价值（含已分配及退出部分）分别为2,540.50万元、1,650.00万元；基金净值分别为1.27、1.10",
+      "unit": "万元/支",
+      "period": "2026年上半年",
+      "scope": "基金口径；公允价值=账面净资产+已分配本金",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "基金净值=公允价值÷累计实缴规模",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-003",
+      "project_id": "FUND-A",
+      "metric": "报告期内参股基金退出及本金返还",
+      "assertions": [
+        "两支基金未发生项目退出",
+        "甲号基金实施本金返还1次",
+        "我司收回本金240.00万元",
+        "基金运营总体正常"
+      ],
+      "value": "甲号基金实施本金返还1次；我司收回本金240.00万元",
+      "unit": "万元/支/次",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-004",
+      "project_id": "FUND-C",
+      "metric": "双GP基金备案、规模结构、投向及阶段",
+      "assertions": [
+        "2026年4月10日",
+        "我司联合示例私募基金管理有限公司完成示例丙号股权投资基金合伙企业（有限合伙）（以下简称“丙号基金”）中基协备案",
+        "丙号基金认缴规模4,000.00万元",
+        "已完成首期实缴2,000.00万元",
+        "其中我司实缴1,000.00万元",
+        "该基金重点投向先进制造、低空经济等领域",
+        "目前处于项目调研阶段",
+        "尚未开展对外投资",
+        "已完成2个项目立项"
+      ],
+      "value": "2026年4月10日；丙号基金认缴规模4,000.00万元；已完成首期实缴2,000.00万元；其中我司实缴1,000.00万元；已完成2个项目立项",
+      "unit": "万元/股/个",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S02",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-005",
+      "project_id": "EQ-A",
+      "metric": "投资与持股、上半年经营业绩及期末资产负债",
+      "assertions": [
+        "示例证券股份有限公司（以下简称“示例证券”）初始股权投资金额为3亿元",
+        "我司现持有示例证券60,000,000股",
+        "持股比例1.2000%",
+        "2026年上半年",
+        "示例证券实现营业收入10.20亿元、利润总额3.30亿元、净利润2.70亿元",
+        "同比分别下降15.20%、22.40%、20.10%",
+        "截至2026年6月30日",
+        "资产总额520.00亿元、负债总额380.00亿元、所有者权益140.00亿元"
+      ],
+      "value": "示例证券股份有限公司（以下简称“示例证券”）初始股权投资金额为3亿元；我司现持有示例证券60,000,000股；持股比例1.2000%；2026年上半年；示例证券实现营业收入10.20亿元、利润总额3.30亿元、净利润2.70亿元；同比分别下降15.20%、22.40%、20.10%；截至2026年6月30日；资产总额520.00亿元、负债总额380.00亿元、所有者权益140.00亿元",
+      "unit": "亿元/%/股",
+      "period": "2026年上半年",
+      "scope": "示例证券合并口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-006",
+      "project_id": "EQ-A",
+      "metric": "业绩变动原因及累计分红",
+      "assertions": [
+        "示例证券经纪业务、投资银行业务手续费净收入同比分别增长35.00%、28.00%",
+        "但受投资收益下降、公允价值变动收益减少等因素影响",
+        "营业收入和利润同比下滑",
+        "自投资以来",
+        "我司累计取得现金分红1,260.00万元",
+        "其中按照示例证券2025年度利润分配方案于2026年6月取得300.00万元（含税）"
+      ],
+      "value": "示例证券经纪业务、投资银行业务手续费净收入同比分别增长35.00%、28.00%；我司累计取得现金分红1,260.00万元；其中按照示例证券2025年度利润分配方案于2026年6月取得300.00万元（含税）",
+      "unit": "万元/%",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "累计分红=上期累计960.00万元+本期300.00万元",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-007",
+      "project_id": "EQ-A",
+      "metric": "存量仲裁、股东大会履职及下一步安排",
+      "assertions": [
+        "截至2026年9月",
+        "示例证券涉及的一项存量仲裁案件仍在执行",
+        "已计提预计负债约1,500万元",
+        "尚未实际支付赔偿款",
+        "示例证券召开股东大会3次",
+        "我司对应召开投资决策委员会会议3次",
+        "对全部议案审议并形成表决意见",
+        "我司将跟踪示例证券预算执行、投资收益及净资产变化、分红落实、仲裁执行和合规风险等情况",
+        "研究优化所持股权投资收益的可行路径"
+      ],
+      "value": "截至2026年9月；已计提预计负债约1,500万元；示例证券召开股东大会3次；我司对应召开投资决策委员会会议3次",
+      "unit": "万元/股/支/次",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-008",
+      "project_id": "EQ-B",
+      "metric": "投资主体、持股及未审计财务数据",
+      "assertions": [
+        "我司下属示例投资管理有限公司（以下简称“投管公司”）以自有资金60.00万元投资示例智能科技有限公司（以下简称“示例智能”）",
+        "持股比例6.00%",
+        "截至2026年6月30日",
+        "示例智能未经审计的资产总额150.20万元、负债总额5.10万元、所有者权益145.10万元",
+        "2026年上半年实现营业收入12.30万元",
+        "净利润-20.50万元",
+        "经营活动现金流量净额-22.80万元"
+      ],
+      "value": "我司下属示例投资管理有限公司（以下简称“投管公司”）以自有资金60.00万元投资示例智能科技有限公司（以下简称“示例智能”）；持股比例6.00%；截至2026年6月30日；示例智能未经审计的资产总额150.20万元、负债总额5.10万元、所有者权益145.10万元；2026年上半年实现营业收入12.30万元；净利润-20.50万元；经营活动现金流量净额-22.80万元",
+      "unit": "万元/%/股",
+      "period": "2026年上半年",
+      "scope": "示例智能未经审计报表口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-009",
+      "project_id": "EQ-B",
+      "metric": "经营研判及回购条款触发风险",
+      "assertions": [
+        "2026年以来",
+        "示例智能核心产品推广进度不及预期",
+        "新产品多处于样机验证或小批量交付阶段",
+        "收入转化缓慢",
+        "经营活动和现金流持续承压",
+        "根据2026年9月投后访谈及经营情况研判",
+        "示例智能全年营业收入预计难以达到《增资协议》约定的200万元目标",
+        "年末触发回购条款的风险较高"
+      ],
+      "value": "2026年以来；根据2026年9月投后访谈及经营情况研判；示例智能全年营业收入预计难以达到《增资协议》约定的200万元目标",
+      "unit": "万元",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-010",
+      "project_id": "EQ-B",
+      "metric": "已采取的退出措施、回购定价原则及下一步程序",
+      "assertions": [
+        "为防范投资本金损失",
+        "投管公司已与示例智能实际控制人就退出事项进行初步沟通并达成回购意向",
+        "回购价格按照原始投资金额60.00万元与经审计、评估确认的最新估值所对应股权价值孰高原则确定",
+        "我司将按程序推进退出方案审议、审计评估、逐级报批、国资备案及产权交易等工作"
+      ],
+      "value": "回购价格按照原始投资金额60.00万元与经审计、评估确认的最新估值所对应股权价值孰高原则确定",
+      "unit": "万元/股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-011",
+      "project_id": "SPV-A",
+      "metric": "SPV决策依据、投资主体、出资及收益约定",
+      "assertions": [
+        "按照上级单位专题会议纪要要求",
+        "由上级单位示例城市建设控股有限公司指定我司作为投资主体",
+        "投资示例资产投资合伙企业（有限合伙）",
+        "受让示例银行风险资产专项投资载体（SPV）份额",
+        "2025年12月18日完成协议签署",
+        "2025年12月19日按照协议约定足额支付出资款3亿元",
+        "按照协议约定享有年化3.5%的投资收益"
+      ],
+      "value": "2025年12月18日完成协议签署；2025年12月19日按照协议约定足额支付出资款3亿元；按照协议约定享有年化3.5%的投资收益",
+      "unit": "亿元/%/股/支",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S05",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-012",
+      "project_id": "SPV-A",
+      "metric": "合伙企业规模、我司份额、交易对价及下一步安排",
+      "assertions": [
+        "截至2026年6月30日",
+        "示例资产投资合伙企业（有限合伙）实缴出资合计80.00亿元",
+        "其中我司作为优先级有限合伙人实缴出资3亿元",
+        "出资比例3.75%",
+        "合伙企业已付清不良资产包全部交易对价",
+        "并委托示例银行开展清收处置",
+        "我司将跟进示例银行SPV项目清收回款及本金、收益分配进展"
+      ],
+      "value": "截至2026年6月30日；示例资产投资合伙企业（有限合伙）实缴出资合计80.00亿元；其中我司作为优先级有限合伙人实缴出资3亿元；出资比例3.75%",
+      "unit": "亿元/%",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S05",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "出资比例=3亿元÷80.00亿元",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-013",
+      "project_id": "SPV-B",
+      "metric": "SPV结构及穿透持股",
+      "assertions": [
+        "本项目由我司及投管公司与示例科创投资有限公司共同设立专项投资载体示例创投企业管理合伙企业（有限合伙）",
+        "投资示例空天科技股份有限公司（以下简称“示例空天”）",
+        "根据2026年9月10日股东名册",
+        "该专项投资载体持有示例空天2.0000%股权",
+        "按出资比例穿透测算",
+        "我司两家主体合计间接对应示例空天约1.7000%股权"
+      ],
+      "value": "根据2026年9月10日股东名册；该专项投资载体持有示例空天2.0000%股权；我司两家主体合计间接对应示例空天约1.7000%股权",
+      "unit": "%/股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "穿透持股=专项投资载体持股比例×我司两家主体合计出资比例",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-014",
+      "project_id": "SPV-B",
+      "metric": "上半年经营业绩、期末资产负债及原因",
+      "assertions": [
+        "2026年上半年",
+        "示例空天实现营业收入4,200.00万元",
+        "同比下降20.00%",
+        "净利润-3,100.00万元",
+        "同比增亏900.00万元",
+        "经营活动现金流量净额-6,500.00万元",
+        "截至2026年6月30日",
+        "示例空天合并口径资产总额40,000.00万元、负债总额30,000.00万元、所有者权益10,000.00万元",
+        "资产负债率75.00%",
+        "因项目验收集中于下半年",
+        "叠加售后成本增加及费用投入较高",
+        "示例空天经营业绩和现金流承压"
+      ],
+      "value": "2026年上半年；示例空天实现营业收入4,200.00万元；同比下降20.00%；净利润-3,100.00万元；同比增亏900.00万元；经营活动现金流量净额-6,500.00万元；截至2026年6月30日；示例空天合并口径资产总额40,000.00万元、负债总额30,000.00万元、所有者权益10,000.00万元；资产负债率75.00%",
+      "unit": "万元/%",
+      "period": "2026年上半年",
+      "scope": "示例空天合并口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-015",
+      "project_id": "SPV-B",
+      "metric": "全年滚动预测、期后融资、挂牌进展及下一步安排",
+      "assertions": [
+        "根据示例空天2026年8月25日滚动预测",
+        "预计全年实现营业收入26,000.00万元、净利润-900.00万元",
+        "完成年度预算目标存在较大压力",
+        "截至2026年9月",
+        "示例空天已完成新一轮融资3,000.00万元",
+        "投后估值12.00亿元",
+        "新三板挂牌申报材料正在完善",
+        "我司将跟踪示例空天重点项目交付验收、回款及毛利情况",
+        "重点关注应收账款和存货占用、全年业绩预测兑现及挂牌申报进度"
+      ],
+      "value": "根据示例空天2026年8月25日滚动预测；预计全年实现营业收入26,000.00万元、净利润-900.00万元；截至2026年9月；示例空天已完成新一轮融资3,000.00万元；投后估值12.00亿元",
+      "unit": "亿元/万元",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-016",
+      "project_id": "portfolio",
+      "metric": "项目台账引导句",
+      "assertions": [
+        "截至2026年6月30日",
+        "我司股权投资项目台账如下："
+      ],
+      "value": "截至2026年6月30日",
+      "unit": "股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S07",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-017",
+      "project_id": "FUND-A",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例甲号股权投资基金合伙企业（有限合伙）|2022年2月|7|1,200.00|1,284.30|240.00|27.03%"
+      ],
+      "value": "示例甲号股权投资基金合伙企业（有限合伙）；2022年2月；7；1,200.00；1,284.30；240.00；27.03%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S01",
+      "locator": "项目台账!示例甲号股权投资基金合伙企业（有限合伙）",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-018",
+      "project_id": "FUND-B",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例乙号股权投资合伙企业（有限合伙）|2022年9月|5|600.00|660.00|0.00|10.00%"
+      ],
+      "value": "示例乙号股权投资合伙企业（有限合伙）；2022年9月；5；600.00；660.00；0.00；10.00%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S01",
+      "locator": "项目台账!示例乙号股权投资合伙企业（有限合伙）",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-019",
+      "project_id": "FUND-C",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例丙号股权投资基金合伙企业（有限合伙）|2026年4月|7|1,000.00|1,000.00|0.00|0.00%"
+      ],
+      "value": "示例丙号股权投资基金合伙企业（有限合伙）；2026年4月；7；1,000.00；1,000.00；0.00；0.00%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S02",
+      "locator": "项目台账!示例丙号股权投资基金合伙企业（有限合伙）",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-020",
+      "project_id": "EQ-A",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例证券股份有限公司|2021年7月|—|30,000.00|30,000.00|1,260.00|4.20%"
+      ],
+      "value": "示例证券股份有限公司；2021年7月；—；30,000.00；30,000.00；1,260.00；4.20%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S03",
+      "locator": "项目台账!示例证券股份有限公司",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-021",
+      "project_id": "EQ-B",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例智能科技有限公司|2024年12月|5|60.00|60.00|0.00|0.00%"
+      ],
+      "value": "示例智能科技有限公司；2024年12月；5；60.00；60.00；0.00；0.00%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S04",
+      "locator": "项目台账!示例智能科技有限公司",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-022",
+      "project_id": "SPV-A",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例资产投资合伙企业（有限合伙）|2025年12月|10|30,000.00|30,000.00|0.00|0.00%"
+      ],
+      "value": "示例资产投资合伙企业（有限合伙）；2025年12月；10；30,000.00；30,000.00；0.00；0.00%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S05",
+      "locator": "项目台账!示例资产投资合伙企业（有限合伙）",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-023",
+      "project_id": "SPV-B",
+      "metric": "项目台账行",
+      "assertions": [
+        "示例创投企业管理合伙企业（有限合伙）|2026年5月|7|1,000.00|1,850.00（暂估）|0.00|85.00%"
+      ],
+      "value": "示例创投企业管理合伙企业（有限合伙）；2026年5月；7；1,000.00；1,850.00（暂估）；0.00；85.00%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S06",
+      "locator": "项目台账!示例创投企业管理合伙企业（有限合伙）",
+      "status": "calculated",
+      "formula": "累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-024",
+      "project_id": "portfolio",
+      "metric": "项目台账合计行",
+      "assertions": [
+        "合计|—|—|63,860.00|64,854.30|1,500.00|—"
+      ],
+      "value": "合计；—；—；63,860.00；64,854.30；1,500.00；—",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S07",
+      "locator": "项目台账!合计行",
+      "status": "calculated",
+      "formula": "合计=各项目对应列之和",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-025",
+      "project_id": "portfolio",
+      "metric": "项目台账口径说明",
+      "assertions": [
+        "注：累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资",
+        "标注“暂估”的账面净值按最近一轮融资估值测算"
+      ],
+      "value": "定性事实，见断言",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "我司出资口径",
+      "source_id": "S07",
+      "locator": "项目台账!口径说明",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "main body",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-026",
+      "project_id": "FUND-A",
+      "metric": "附件披露口径",
+      "assertions": [
+        "本报告披露信息为截至2026年6月30日我司参股基金的财务数据情况"
+      ],
+      "value": "本报告披露信息为截至2026年6月30日我司参股基金的财务数据情况",
+      "unit": "股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-027",
+      "project_id": "FUND-A",
+      "metric": "参股基金构成及投资、退出项目数",
+      "assertions": [
+        "我司共有2支参股基金",
+        "分别为示例甲号股权投资基金合伙企业（有限合伙）（以下简称“甲号基金”）、示例乙号股权投资合伙企业（有限合伙）（以下简称“乙号基金”）",
+        "截至2026年6月30日",
+        "两支基金累计投资项目5个",
+        "退出项目1个"
+      ],
+      "value": "我司共有2支参股基金；截至2026年6月30日；两支基金累计投资项目5个；退出项目1个",
+      "unit": "股/支/个",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-028",
+      "project_id": "FUND-A",
+      "metric": "甲号基金期限结构、规模、分配及净值",
+      "assertions": [
+        "甲号基金设立日期为2022年2月16日",
+        "期限结构为4年投资期、3年退出期",
+        "基金总规模2,000.00万元",
+        "已完成全部实缴",
+        "我司份额占60.00%",
+        "甲号基金向投资者分配本金400.00万元",
+        "其中向我司分配240.00万元",
+        "截至2026年6月30日",
+        "基金账面净资产为2,140.50万元",
+        "加计已分配本金400.00万元",
+        "合计为2,540.50万元",
+        "累计基金净值为1.27"
+      ],
+      "value": "甲号基金设立日期为2022年2月16日；期限结构为4年投资期、3年退出期；基金总规模2,000.00万元；我司份额占60.00%；甲号基金向投资者分配本金400.00万元；其中向我司分配240.00万元；截至2026年6月30日；基金账面净资产为2,140.50万元；加计已分配本金400.00万元；合计为2,540.50万元；累计基金净值为1.27",
+      "unit": "万元/%",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "公允价值=账面净资产+已分配本金；基金净值=公允价值÷实缴规模",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-029",
+      "project_id": "FUND-B",
+      "metric": "乙号基金期限结构、规模及净值",
+      "assertions": [
+        "乙号基金设立日期为2022年9月27日",
+        "期限结构为1年投资期、4年退出期",
+        "基金总规模1,500.00万元",
+        "已完成全部实缴",
+        "我司份额占40.00%",
+        "截至2026年6月30日",
+        "基金账面净资产为1,650.00万元",
+        "累计基金净值为1.10"
+      ],
+      "value": "乙号基金设立日期为2022年9月27日；期限结构为1年投资期、4年退出期；基金总规模1,500.00万元；我司份额占40.00%；截至2026年6月30日；基金账面净资产为1,650.00万元；累计基金净值为1.10",
+      "unit": "万元/%",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-030",
+      "project_id": "FUND-A",
+      "metric": "基金已投项目进展",
+      "assertions": [
+        "示例甲科技股份有限公司|甲号基金|750.00|0.4500%|北交所上市辅导中"
+      ],
+      "value": "示例甲科技股份有限公司；甲号基金；750.00；0.4500%；北交所上市辅导中",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-031",
+      "project_id": "FUND-A",
+      "metric": "基金已投项目进展",
+      "assertions": [
+        "示例乙制造股份有限公司|甲号基金|750.00|0.3300%|保荐机构已完成内部立项"
+      ],
+      "value": "示例乙制造股份有限公司；甲号基金；750.00；0.3300%；保荐机构已完成内部立项",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-032",
+      "project_id": "FUND-A",
+      "metric": "基金已投项目进展",
+      "assertions": [
+        "示例丙材料股份有限公司|甲号基金|500.00|0.8600%|计划2026年11月申报北交所"
+      ],
+      "value": "示例丙材料股份有限公司；甲号基金；500.00；0.8600%；计划2026年11月申报北交所",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-033",
+      "project_id": "FUND-A",
+      "metric": "基金已投项目进展",
+      "assertions": [
+        "示例丁电子股份有限公司|乙号基金|1,125.00|0.9500%|拟申报创业板上市"
+      ],
+      "value": "示例丁电子股份有限公司；乙号基金；1,125.00；0.9500%；拟申报创业板上市",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-034",
+      "project_id": "FUND-A",
+      "metric": "基金已投项目进展",
+      "assertions": [
+        "示例戊智能科技有限公司|甲号基金|—|—|已于2024年4月以回购方式退出"
+      ],
+      "value": "示例戊智能科技有限公司；甲号基金；—；—；已于2024年4月以回购方式退出",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S01",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-035",
+      "project_id": "FUND-C",
+      "metric": "双GP基金备案及出资状态",
+      "assertions": [
+        "2026年4月10日",
+        "我司联合示例私募基金管理有限公司完成示例丙号股权投资基金合伙企业（有限合伙）（以下简称“丙号基金”）中基协备案",
+        "截至2026年6月30日",
+        "丙号基金已完成首期出资",
+        "尚未开展对外投资"
+      ],
+      "value": "2026年4月10日；截至2026年6月30日",
+      "unit": "股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S02",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-036",
+      "project_id": "FUND-C",
+      "metric": "双GP基金成立、存续期、规模及管理人",
+      "assertions": [
+        "丙号基金于2026年3月31日成立",
+        "存续期7年",
+        "认缴规模4,000.00万元",
+        "实缴2,000.00万元",
+        "基金管理人为示例私募基金管理有限公司"
+      ],
+      "value": "丙号基金于2026年3月31日成立；存续期7年；认缴规模4,000.00万元；实缴2,000.00万元",
+      "unit": "万元",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S02",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-037",
+      "project_id": "FUND-C",
+      "metric": "双GP基金报告期运行及净资产",
+      "assertions": [
+        "基金未召开投资决策委员会会议",
+        "未形成对外投资项目",
+        "未发生项目退出及收益分配",
+        "截至2026年6月30日",
+        "基金净资产2,001.20万元",
+        "报告期收入为银行存款利息1.20万元"
+      ],
+      "value": "截至2026年6月30日；基金净资产2,001.20万元；报告期收入为银行存款利息1.20万元",
+      "unit": "万元",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S02",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-038",
+      "project_id": "FUND-C",
+      "metric": "双GP基金后续工作",
+      "assertions": [
+        "我司将持续跟踪基金资金管理和项目调研进展",
+        "按照合伙协议履行项目尽调及投资决策程序",
+        "做好基金对外投资与日常投后管理工作"
+      ],
+      "value": "定性事实，见断言",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S02",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-039",
+      "project_id": "EQ-A",
+      "metric": "附件依据、资料来源及双时点口径",
+      "assertions": [
+        "按照股权投资项目投后管理工作安排",
+        "我司根据示例证券股份有限公司（以下简称“示例证券”）提供的2026年半年度合并财务快报及经营分析材料",
+        "对其经营发展、重大事项及风险情况进行了梳理",
+        "财务及经营数据为2026年上半年口径",
+        "诉讼及股东大会事项进展更新至2026年9月"
+      ],
+      "value": "我司根据示例证券股份有限公司（以下简称“示例证券”）提供的2026年半年度合并财务快报及经营分析材料；财务及经营数据为2026年上半年口径；诉讼及股东大会事项进展更新至2026年9月",
+      "unit": "股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-040",
+      "project_id": "EQ-A",
+      "metric": "投资金额及持股",
+      "assertions": [
+        "示例证券初始股权投资金额为3亿元",
+        "我司持有示例证券60,000,000股",
+        "持股比例为1.2000%"
+      ],
+      "value": "示例证券初始股权投资金额为3亿元；我司持有示例证券60,000,000股；持股比例为1.2000%",
+      "unit": "亿元/%/股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-041",
+      "project_id": "EQ-A",
+      "metric": "上半年业绩及预算完成进度",
+      "assertions": [
+        "2026年上半年",
+        "示例证券实现营业收入10.20亿元",
+        "同比下降15.20%",
+        "利润总额3.30亿元",
+        "同比下降22.40%",
+        "净利润2.70亿元",
+        "同比下降20.10%",
+        "按照2026年度营业收入25.00亿元的预算口径测算",
+        "上半年完成年度预算的40.80%",
+        "低于半年度序时进度"
+      ],
+      "value": "2026年上半年；示例证券实现营业收入10.20亿元；同比下降15.20%；利润总额3.30亿元；同比下降22.40%；净利润2.70亿元；同比下降20.10%；按照2026年度营业收入25.00亿元的预算口径测算；上半年完成年度预算的40.80%",
+      "unit": "亿元/%",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "预算完成率=10.20亿元÷25.00亿元",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-042",
+      "project_id": "EQ-A",
+      "metric": "分红及存量仲裁风险",
+      "assertions": [
+        "根据示例证券2025年度利润分配方案",
+        "我司于2026年6月取得现金分红300.00万元（含税）",
+        "自投资以来",
+        "我司累计取得现金分红1,260.00万元",
+        "截至2026年9月",
+        "示例证券涉及的一项存量仲裁案件仍在执行",
+        "已计提预计负债约1,500万元",
+        "若相关资产清算不足",
+        "示例证券可能承担相应现金支出"
+      ],
+      "value": "根据示例证券2025年度利润分配方案；我司于2026年6月取得现金分红300.00万元（含税）；我司累计取得现金分红1,260.00万元；截至2026年9月；已计提预计负债约1,500万元",
+      "unit": "万元/支",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-043",
+      "project_id": "EQ-A",
+      "metric": "下一步工作安排",
+      "assertions": [
+        "一是跟踪年度预算执行和重点业务发展",
+        "二是跟踪现金分红落实情况",
+        "三是持续关注仲裁执行及合规管理情况",
+        "四是研究优化所持股权投资收益的可行路径"
+      ],
+      "value": "定性事实，见断言",
+      "unit": "股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S03",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-044",
+      "project_id": "EQ-B",
+      "metric": "在手合同及回款",
+      "assertions": [
+        "截至2026年6月30日",
+        "示例智能科技有限公司（以下简称“示例智能”）在手合同4个",
+        "合同金额合计210.00万元",
+        "其中2个项目累计回款35.00万元",
+        "相关交付、验收及研发工作正在推进"
+      ],
+      "value": "截至2026年6月30日；示例智能科技有限公司（以下简称“示例智能”）在手合同4个；合同金额合计210.00万元；其中2个项目累计回款35.00万元",
+      "unit": "万元/个",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-045",
+      "project_id": "EQ-B",
+      "metric": "未审计财务数据",
+      "assertions": [
+        "截至2026年6月30日",
+        "示例智能未经审计的资产总额150.20万元、负债总额5.10万元、所有者权益145.10万元",
+        "2026年上半年实现营业收入12.30万元",
+        "净利润-20.50万元",
+        "经营活动现金流量净额-22.80万元"
+      ],
+      "value": "截至2026年6月30日；示例智能未经审计的资产总额150.20万元、负债总额5.10万元、所有者权益145.10万元；2026年上半年实现营业收入12.30万元；净利润-20.50万元；经营活动现金流量净额-22.80万元",
+      "unit": "万元",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-046",
+      "project_id": "EQ-B",
+      "metric": "业绩目标、回购约定及研判",
+      "assertions": [
+        "《增资协议》约定",
+        "示例智能2026年度营业收入应达到200万元及以上",
+        "约定期限内业绩目标未达成的",
+        "投资者有权要求实际控制人回购股权",
+        "根据2026年9月投后访谈研判",
+        "示例智能2026年度营业收入预计难以达到约定目标",
+        "年末触发回购条款的风险较高"
+      ],
+      "value": "示例智能2026年度营业收入应达到200万元及以上；根据2026年9月投后访谈研判；示例智能2026年度营业收入预计难以达到约定目标",
+      "unit": "万元/股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-047",
+      "project_id": "EQ-B",
+      "metric": "回购沟通及定价原则",
+      "assertions": [
+        "我司下属示例投资管理有限公司（以下简称“投管公司”）已与示例智能实际控制人就退出事宜进行初步沟通",
+        "对方已同意回购",
+        "回购价格以原始投资金额60.00万元为基准",
+        "以经审计、评估确认的最新估值所对应股权价值为参照",
+        "按照两者孰高原则确定",
+        "最终价格以审计、评估结论及国资备案结果为准"
+      ],
+      "value": "回购价格以原始投资金额60.00万元为基准",
+      "unit": "万元/股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-048",
+      "project_id": "EQ-B",
+      "metric": "退出程序安排",
+      "assertions": [
+        "投管公司将按程序提请审议启动退出及聘请审计、资产评估机构等事项",
+        "依次履行内部决策和国资备案程序后",
+        "推进回购协议签署、产权交易及工商变更登记等工作"
+      ],
+      "value": "定性事实，见断言",
+      "unit": "次",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S04",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-049",
+      "project_id": "SPV-A",
+      "metric": "合伙企业实缴及我司份额",
+      "assertions": [
+        "截至2026年6月30日",
+        "示例资产投资合伙企业（有限合伙）（以下简称“合伙企业”）实缴出资合计80.00亿元",
+        "我司作为优先级有限合伙人认缴并实缴出资3亿元",
+        "实缴出资比例3.75%"
+      ],
+      "value": "截至2026年6月30日；示例资产投资合伙企业（有限合伙）（以下简称“合伙企业”）实缴出资合计80.00亿元；我司作为优先级有限合伙人认缴并实缴出资3亿元；实缴出资比例3.75%",
+      "unit": "亿元/%",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S05",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-050",
+      "project_id": "SPV-A",
+      "metric": "交易对价及委托处置",
+      "assertions": [
+        "合伙企业已付清不良资产包全部交易对价",
+        "并于2026年5月与示例银行签订《不良资产委托处置协议》",
+        "委托其开展清收处置",
+        "截至2026年6月30日",
+        "过渡期清收处置回款已划付合伙企业账户1次",
+        "双方正在对账"
+      ],
+      "value": "并于2026年5月与示例银行签订《不良资产委托处置协议》；截至2026年6月30日；过渡期清收处置回款已划付合伙企业账户1次",
+      "unit": "次",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S05",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-051",
+      "project_id": "SPV-A",
+      "metric": "合伙人大会",
+      "assertions": [
+        "截至2026年6月30日",
+        "合伙企业累计召开合伙人大会2次",
+        "全部议案经全体合伙人一致同意通过",
+        "未发现侵害和影响我司权益的情形"
+      ],
+      "value": "截至2026年6月30日；合伙企业累计召开合伙人大会2次",
+      "unit": "次",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S05",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-052",
+      "project_id": "SPV-A",
+      "metric": "总体评价及后续跟踪",
+      "assertions": [
+        "合伙企业出资到位、交易对价付清、治理程序规范",
+        "运营情况总体正常",
+        "我司将持续跟踪清收处置进度及回款分配安排",
+        "通过合伙人大会依法行使表决权"
+      ],
+      "value": "定性事实，见断言",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S05",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-053",
+      "project_id": "SPV-B",
+      "metric": "附件开头",
+      "assertions": [
+        "根据我司投后管理工作安排",
+        "现将示例空天科技股份有限公司（以下简称“示例空天”）2026年上半年经营情况及融资、资本市场进展报告如下："
+      ],
+      "value": "现将示例空天科技股份有限公司（以下简称“示例空天”）2026年上半年经营情况及融资、资本市场进展报告如下：",
+      "unit": "股",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-054",
+      "project_id": "SPV-B",
+      "metric": "主要财务指标",
+      "assertions": [
+        "营业收入|5,250.00|4,200.00|-20.00%"
+      ],
+      "value": "营业收入；5,250.00；4,200.00；-20.00%",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-055",
+      "project_id": "SPV-B",
+      "metric": "主要财务指标",
+      "assertions": [
+        "净利润|-2,200.00|-3,100.00|增亏900.00万元"
+      ],
+      "value": "净利润；-2,200.00；-3,100.00；增亏900.00万元",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-056",
+      "project_id": "SPV-B",
+      "metric": "主要财务指标",
+      "assertions": [
+        "经营活动现金流量净额|-5,000.00|-6,500.00|净流出增加1,500.00万元"
+      ],
+      "value": "经营活动现金流量净额；-5,000.00；-6,500.00；净流出增加1,500.00万元",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应表格行",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-057",
+      "project_id": "SPV-B",
+      "metric": "主要财务指标（表头期间）",
+      "assertions": [
+        "2025年上半年",
+        "2026年上半年"
+      ],
+      "value": "2025年上半年；2026年上半年",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应表头",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-058",
+      "project_id": "SPV-B",
+      "metric": "业绩变动原因及下半年兑现要求",
+      "assertions": [
+        "上半年收入下降主要受三方面影响：一是项目交付验收和结算集中于下半年",
+        "二是历史项目售后成本增加",
+        "三是人员、研发和管理投入保持较高水平",
+        "若实现全年滚动预测",
+        "下半年需实现营业收入21,800.00万元",
+        "约为上半年收入的5.19倍"
+      ],
+      "value": "下半年需实现营业收入21,800.00万元；约为上半年收入的5.19倍",
+      "unit": "万元/倍",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "calculated",
+      "formula": "下半年需实现营业收入=全年预测26,000.00万元-上半年4,200.00万元",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-059",
+      "project_id": "SPV-B",
+      "metric": "新一轮融资",
+      "assertions": [
+        "示例空天近期完成新一轮增资",
+        "按照11.70亿元投前估值合计增资3,000.00万元",
+        "投后估值12.00亿元"
+      ],
+      "value": "按照11.70亿元投前估值合计增资3,000.00万元；投后估值12.00亿元",
+      "unit": "亿元/万元",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    },
+    {
+      "fact_id": "FACT-060",
+      "project_id": "SPV-B",
+      "metric": "挂牌路径、进展及下一步",
+      "assertions": [
+        "示例空天资本市场路径为先行完成新三板挂牌",
+        "后续择机申报北交所",
+        "截至2026年9月",
+        "挂牌申报材料正在完善",
+        "我司将持续跟踪重点项目交付验收、回款及毛利情况",
+        "及时掌握影响投资价值的重大事项"
+      ],
+      "value": "截至2026年9月",
+      "unit": "文本",
+      "period": "2026年上半年",
+      "scope": "合成示例口径",
+      "source_id": "S06",
+      "locator": "合成示例来源对应段落",
+      "status": "confirmed",
+      "formula": "Direct transcription of the synthetic source record.",
+      "destination": "attachment",
+      "note": "Synthetic fact for demonstrating traceability; replace with confirmed source data in a real report."
+    }
+  ],
+  "main_blocks": [
+    {
+      "type": "h1",
+      "text": "一、项目整体情况"
+    },
+    {
+      "type": "h2",
+      "text": "（一）参股基金"
+    },
+    {
+      "type": "p",
+      "text": "截至2026年6月30日，我司参股基金共2支，均已进入退出期，分别为示例甲号股权投资基金合伙企业（有限合伙）（以下简称“甲号基金”）、示例乙号股权投资合伙企业（有限合伙）（以下简称“乙号基金”）。",
+      "fact_ids": [
+        "FACT-001"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "甲号基金、乙号基金累计实缴规模分别为2,000.00万元、1,500.00万元，其中我司作为有限合伙人累计实缴分别为1,200.00万元、600.00万元。截至2026年6月30日，两支基金公允价值（含已分配及退出部分）分别为2,540.50万元、1,650.00万元，基金净值分别为1.27、1.10。",
+      "fact_ids": [
+        "FACT-002"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "报告期内，两支基金未发生项目退出，甲号基金实施本金返还1次，我司收回本金240.00万元，基金运营总体正常。",
+      "fact_ids": [
+        "FACT-003"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "（二）双GP基金"
+    },
+    {
+      "type": "p",
+      "text": "2026年4月10日，我司联合示例私募基金管理有限公司完成示例丙号股权投资基金合伙企业（有限合伙）（以下简称“丙号基金”）中基协备案。丙号基金认缴规模4,000.00万元，已完成首期实缴2,000.00万元，其中我司实缴1,000.00万元。该基金重点投向先进制造、低空经济等领域，目前处于项目调研阶段，尚未开展对外投资，已完成2个项目立项。",
+      "fact_ids": [
+        "FACT-004"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "（三）参股公司"
+    },
+    {
+      "type": "h3",
+      "text": "1.示例证券股份有限公司"
+    },
+    {
+      "type": "p",
+      "text": "示例证券股份有限公司（以下简称“示例证券”）初始股权投资金额为3亿元，我司现持有示例证券60,000,000股，持股比例1.2000%。2026年上半年，示例证券实现营业收入10.20亿元、利润总额3.30亿元、净利润2.70亿元，同比分别下降15.20%、22.40%、20.10%；截至2026年6月30日，资产总额520.00亿元、负债总额380.00亿元、所有者权益140.00亿元。",
+      "fact_ids": [
+        "FACT-005"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "报告期内，示例证券经纪业务、投资银行业务手续费净收入同比分别增长35.00%、28.00%，但受投资收益下降、公允价值变动收益减少等因素影响，营业收入和利润同比下滑。自投资以来，我司累计取得现金分红1,260.00万元，其中按照示例证券2025年度利润分配方案于2026年6月取得300.00万元（含税）。",
+      "fact_ids": [
+        "FACT-006"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "截至2026年9月，示例证券涉及的一项存量仲裁案件仍在执行，已计提预计负债约1,500万元，尚未实际支付赔偿款；报告期内，示例证券召开股东大会3次，我司对应召开投资决策委员会会议3次，对全部议案审议并形成表决意见。下一步，我司将跟踪示例证券预算执行、投资收益及净资产变化、分红落实、仲裁执行和合规风险等情况，研究优化所持股权投资收益的可行路径。",
+      "fact_ids": [
+        "FACT-007"
+      ]
+    },
+    {
+      "type": "h3",
+      "text": "2.示例智能科技有限公司"
+    },
+    {
+      "type": "p",
+      "text": "我司下属示例投资管理有限公司（以下简称“投管公司”）以自有资金60.00万元投资示例智能科技有限公司（以下简称“示例智能”），持股比例6.00%。截至2026年6月30日，示例智能未经审计的资产总额150.20万元、负债总额5.10万元、所有者权益145.10万元；2026年上半年实现营业收入12.30万元，净利润-20.50万元，经营活动现金流量净额-22.80万元。",
+      "fact_ids": [
+        "FACT-008"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "2026年以来，示例智能核心产品推广进度不及预期，新产品多处于样机验证或小批量交付阶段，收入转化缓慢，经营活动和现金流持续承压。根据2026年9月投后访谈及经营情况研判，示例智能全年营业收入预计难以达到《增资协议》约定的200万元目标，年末触发回购条款的风险较高。",
+      "fact_ids": [
+        "FACT-009"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "为防范投资本金损失，投管公司已与示例智能实际控制人就退出事项进行初步沟通并达成回购意向，回购价格按照原始投资金额60.00万元与经审计、评估确认的最新估值所对应股权价值孰高原则确定。下一步，我司将按程序推进退出方案审议、审计评估、逐级报批、国资备案及产权交易等工作。",
+      "fact_ids": [
+        "FACT-010"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "（四）示例银行SPV项目"
+    },
+    {
+      "type": "p",
+      "text": "按照上级单位专题会议纪要要求，由上级单位示例城市建设控股有限公司指定我司作为投资主体，投资示例资产投资合伙企业（有限合伙），受让示例银行风险资产专项投资载体（SPV）份额。2025年12月18日完成协议签署，2025年12月19日按照协议约定足额支付出资款3亿元，按照协议约定享有年化3.5%的投资收益。",
+      "fact_ids": [
+        "FACT-011"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "截至2026年6月30日，示例资产投资合伙企业（有限合伙）实缴出资合计80.00亿元，其中我司作为优先级有限合伙人实缴出资3亿元，出资比例3.75%。合伙企业已付清不良资产包全部交易对价，并委托示例银行开展清收处置。下一步，我司将跟进示例银行SPV项目清收回款及本金、收益分配进展。",
+      "fact_ids": [
+        "FACT-012"
+      ]
+    },
+    {
+      "type": "h2",
+      "text": "（五）示例空天SPV项目"
+    },
+    {
+      "type": "p",
+      "text": "本项目由我司及投管公司与示例科创投资有限公司共同设立专项投资载体示例创投企业管理合伙企业（有限合伙），投资示例空天科技股份有限公司（以下简称“示例空天”）。根据2026年9月10日股东名册，该专项投资载体持有示例空天2.0000%股权；按出资比例穿透测算，我司两家主体合计间接对应示例空天约1.7000%股权。",
+      "fact_ids": [
+        "FACT-013"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "2026年上半年，示例空天实现营业收入4,200.00万元，同比下降20.00%；净利润-3,100.00万元，同比增亏900.00万元；经营活动现金流量净额-6,500.00万元。截至2026年6月30日，示例空天合并口径资产总额40,000.00万元、负债总额30,000.00万元、所有者权益10,000.00万元，资产负债率75.00%。因项目验收集中于下半年，叠加售后成本增加及费用投入较高，示例空天经营业绩和现金流承压。",
+      "fact_ids": [
+        "FACT-014"
+      ]
+    },
+    {
+      "type": "p",
+      "text": "根据示例空天2026年8月25日滚动预测，预计全年实现营业收入26,000.00万元、净利润-900.00万元，完成年度预算目标存在较大压力。截至2026年9月，示例空天已完成新一轮融资3,000.00万元，投后估值12.00亿元；新三板挂牌申报材料正在完善。下一步，我司将跟踪示例空天重点项目交付验收、回款及毛利情况，重点关注应收账款和存货占用、全年业绩预测兑现及挂牌申报进度。",
+      "fact_ids": [
+        "FACT-015"
+      ]
+    },
+    {
+      "type": "h1",
+      "text": "二、项目台账"
+    },
+    {
+      "type": "p",
+      "text": "截至2026年6月30日，我司股权投资项目台账如下：",
+      "fact_ids": [
+        "FACT-016"
+      ]
+    },
+    {
+      "type": "table",
+      "header": [
+        "项目名称",
+        "首次出资时间",
+        "投资期限（年）",
+        "实缴投资（万元）",
+        "账面净值（万元）",
+        "累计退出资金（万元）",
+        "累计收益率（账面）"
+      ],
+      "rows": [
+        [
+          "示例甲号股权投资基金合伙企业（有限合伙）",
+          "2022年2月",
+          "7",
+          "1,200.00",
+          "1,284.30",
+          "240.00",
+          "27.03%"
+        ],
+        [
+          "示例乙号股权投资合伙企业（有限合伙）",
+          "2022年9月",
+          "5",
+          "600.00",
+          "660.00",
+          "0.00",
+          "10.00%"
+        ],
+        [
+          "示例丙号股权投资基金合伙企业（有限合伙）",
+          "2026年4月",
+          "7",
+          "1,000.00",
+          "1,000.00",
+          "0.00",
+          "0.00%"
+        ],
+        [
+          "示例证券股份有限公司",
+          "2021年7月",
+          "—",
+          "30,000.00",
+          "30,000.00",
+          "1,260.00",
+          "4.20%"
+        ],
+        [
+          "示例智能科技有限公司",
+          "2024年12月",
+          "5",
+          "60.00",
+          "60.00",
+          "0.00",
+          "0.00%"
+        ],
+        [
+          "示例资产投资合伙企业（有限合伙）",
+          "2025年12月",
+          "10",
+          "30,000.00",
+          "30,000.00",
+          "0.00",
+          "0.00%"
+        ],
+        [
+          "示例创投企业管理合伙企业（有限合伙）",
+          "2026年5月",
+          "7",
+          "1,000.00",
+          "1,850.00（暂估）",
+          "0.00",
+          "85.00%"
+        ],
+        [
+          "合计",
+          "—",
+          "—",
+          "63,860.00",
+          "64,854.30",
+          "1,500.00",
+          "—"
+        ]
+      ],
+      "row_fact_ids": [
+        [
+          "FACT-017"
+        ],
+        [
+          "FACT-018"
+        ],
+        [
+          "FACT-019"
+        ],
+        [
+          "FACT-020"
+        ],
+        [
+          "FACT-021"
+        ],
+        [
+          "FACT-022"
+        ],
+        [
+          "FACT-023"
+        ],
+        [
+          "FACT-024"
+        ]
+      ],
+      "widths": [
+        3.4,
+        2.2,
+        1.3,
+        1.9,
+        1.9,
+        1.9,
+        1.6
+      ],
+      "fact_ids": [
+        "FACT-017",
+        "FACT-018",
+        "FACT-019",
+        "FACT-020",
+        "FACT-021",
+        "FACT-022",
+        "FACT-023",
+        "FACT-024"
+      ]
+    },
+    {
+      "type": "tnote",
+      "text": "注：累计收益率（账面）=（账面净值+累计退出资金-实缴投资）÷实缴投资；标注“暂估”的账面净值按最近一轮融资估值测算。",
+      "align": "left",
+      "fact_ids": [
+        "FACT-025"
+      ]
+    }
+  ],
+  "attachments": [
+    {
+      "id": "A1",
+      "number": 1,
+      "title": "参股基金2026年上半年投后管理报告",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "本报告披露信息为截至2026年6月30日我司参股基金的财务数据情况。",
+          "fact_ids": [
+            "FACT-026"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "一、整体情况"
+        },
+        {
+          "type": "p",
+          "text": "我司共有2支参股基金，分别为示例甲号股权投资基金合伙企业（有限合伙）（以下简称“甲号基金”）、示例乙号股权投资合伙企业（有限合伙）（以下简称“乙号基金”）。截至2026年6月30日，两支基金累计投资项目5个，退出项目1个。",
+          "fact_ids": [
+            "FACT-027"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "二、各基金情况"
+        },
+        {
+          "type": "h2",
+          "text": "（一）甲号基金"
+        },
+        {
+          "type": "p",
+          "text": "甲号基金设立日期为2022年2月16日，期限结构为4年投资期、3年退出期，基金总规模2,000.00万元，已完成全部实缴，我司份额占60.00%。报告期内，甲号基金向投资者分配本金400.00万元，其中向我司分配240.00万元。截至2026年6月30日，基金账面净资产为2,140.50万元，加计已分配本金400.00万元，合计为2,540.50万元，累计基金净值为1.27。",
+          "fact_ids": [
+            "FACT-028"
+          ]
+        },
+        {
+          "type": "h2",
+          "text": "（二）乙号基金"
+        },
+        {
+          "type": "p",
+          "text": "乙号基金设立日期为2022年9月27日，期限结构为1年投资期、4年退出期，基金总规模1,500.00万元，已完成全部实缴，我司份额占40.00%。截至2026年6月30日，基金账面净资产为1,650.00万元，累计基金净值为1.10。",
+          "fact_ids": [
+            "FACT-029"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "三、基金投资项目情况"
+        },
+        {
+          "type": "caption",
+          "text": "基金已投项目进展情况表"
+        },
+        {
+          "type": "table",
+          "header": [
+            "项目名称",
+            "所属基金",
+            "投资金额（万元）",
+            "当前持股比例",
+            "当前进展"
+          ],
+          "rows": [
+            [
+              "示例甲科技股份有限公司",
+              "甲号基金",
+              "750.00",
+              "0.4500%",
+              "北交所上市辅导中"
+            ],
+            [
+              "示例乙制造股份有限公司",
+              "甲号基金",
+              "750.00",
+              "0.3300%",
+              "保荐机构已完成内部立项"
+            ],
+            [
+              "示例丙材料股份有限公司",
+              "甲号基金",
+              "500.00",
+              "0.8600%",
+              "计划2026年11月申报北交所"
+            ],
+            [
+              "示例丁电子股份有限公司",
+              "乙号基金",
+              "1,125.00",
+              "0.9500%",
+              "拟申报创业板上市"
+            ],
+            [
+              "示例戊智能科技有限公司",
+              "甲号基金",
+              "—",
+              "—",
+              "已于2024年4月以回购方式退出"
+            ]
+          ],
+          "row_fact_ids": [
+            [
+              "FACT-030"
+            ],
+            [
+              "FACT-031"
+            ],
+            [
+              "FACT-032"
+            ],
+            [
+              "FACT-033"
+            ],
+            [
+              "FACT-034"
+            ]
+          ],
+          "fact_ids": [
+            "FACT-030",
+            "FACT-031",
+            "FACT-032",
+            "FACT-033",
+            "FACT-034"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A2",
+      "number": 2,
+      "title": "双GP基金2026年上半年投后管理报告",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "2026年4月10日，我司联合示例私募基金管理有限公司完成示例丙号股权投资基金合伙企业（有限合伙）（以下简称“丙号基金”）中基协备案。截至2026年6月30日，丙号基金已完成首期出资，尚未开展对外投资。",
+          "fact_ids": [
+            "FACT-035"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "一、基金基本情况"
+        },
+        {
+          "type": "p",
+          "text": "丙号基金于2026年3月31日成立，存续期7年，认缴规模4,000.00万元，实缴2,000.00万元，基金管理人为示例私募基金管理有限公司。",
+          "fact_ids": [
+            "FACT-036"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "二、基金运行情况"
+        },
+        {
+          "type": "p",
+          "text": "报告期内，基金未召开投资决策委员会会议，未形成对外投资项目，未发生项目退出及收益分配。截至2026年6月30日，基金净资产2,001.20万元，报告期收入为银行存款利息1.20万元。",
+          "fact_ids": [
+            "FACT-037"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "三、后续工作"
+        },
+        {
+          "type": "p",
+          "text": "我司将持续跟踪基金资金管理和项目调研进展，按照合伙协议履行项目尽调及投资决策程序，做好基金对外投资与日常投后管理工作。",
+          "fact_ids": [
+            "FACT-038"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A3",
+      "number": 3,
+      "title": "示例证券股份有限公司2026年上半年投后管理报告",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "按照股权投资项目投后管理工作安排，我司根据示例证券股份有限公司（以下简称“示例证券”）提供的2026年半年度合并财务快报及经营分析材料，对其经营发展、重大事项及风险情况进行了梳理。财务及经营数据为2026年上半年口径，诉讼及股东大会事项进展更新至2026年9月。",
+          "fact_ids": [
+            "FACT-039"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "一、投资及企业基本情况"
+        },
+        {
+          "type": "p",
+          "text": "示例证券初始股权投资金额为3亿元，我司持有示例证券60,000,000股，持股比例为1.2000%。",
+          "fact_ids": [
+            "FACT-040"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "二、上半年经营财务情况"
+        },
+        {
+          "type": "p",
+          "text": "2026年上半年，示例证券实现营业收入10.20亿元，同比下降15.20%；利润总额3.30亿元，同比下降22.40%；净利润2.70亿元，同比下降20.10%。按照2026年度营业收入25.00亿元的预算口径测算，上半年完成年度预算的40.80%，低于半年度序时进度。",
+          "fact_ids": [
+            "FACT-041"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "三、重大事项及主要风险"
+        },
+        {
+          "type": "p",
+          "text": "根据示例证券2025年度利润分配方案，我司于2026年6月取得现金分红300.00万元（含税）；自投资以来，我司累计取得现金分红1,260.00万元。截至2026年9月，示例证券涉及的一项存量仲裁案件仍在执行，已计提预计负债约1,500万元；若相关资产清算不足，示例证券可能承担相应现金支出。",
+          "fact_ids": [
+            "FACT-042"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "四、投后管理情况及下一步安排"
+        },
+        {
+          "type": "p",
+          "text": "下一步，一是跟踪年度预算执行和重点业务发展；二是跟踪现金分红落实情况；三是持续关注仲裁执行及合规管理情况；四是研究优化所持股权投资收益的可行路径。",
+          "fact_ids": [
+            "FACT-043"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A4",
+      "number": 4,
+      "title": "示例智能科技有限公司2026年上半年投后管理报告",
+      "blocks": [
+        {
+          "type": "h1",
+          "text": "一、经营情况"
+        },
+        {
+          "type": "p",
+          "text": "截至2026年6月30日，示例智能科技有限公司（以下简称“示例智能”）在手合同4个，合同金额合计210.00万元，其中2个项目累计回款35.00万元，相关交付、验收及研发工作正在推进。",
+          "fact_ids": [
+            "FACT-044"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "二、财务情况"
+        },
+        {
+          "type": "p",
+          "text": "截至2026年6月30日，示例智能未经审计的资产总额150.20万元、负债总额5.10万元、所有者权益145.10万元；2026年上半年实现营业收入12.30万元，净利润-20.50万元，经营活动现金流量净额-22.80万元。",
+          "fact_ids": [
+            "FACT-045"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "三、投资协议约定及履行情况"
+        },
+        {
+          "type": "p",
+          "text": "《增资协议》约定，示例智能2026年度营业收入应达到200万元及以上；约定期限内业绩目标未达成的，投资者有权要求实际控制人回购股权。根据2026年9月投后访谈研判，示例智能2026年度营业收入预计难以达到约定目标，年末触发回购条款的风险较高。",
+          "fact_ids": [
+            "FACT-046"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "四、退出工作进展及下一步安排"
+        },
+        {
+          "type": "p",
+          "text": "我司下属示例投资管理有限公司（以下简称“投管公司”）已与示例智能实际控制人就退出事宜进行初步沟通，对方已同意回购。回购价格以原始投资金额60.00万元为基准，以经审计、评估确认的最新估值所对应股权价值为参照，按照两者孰高原则确定，最终价格以审计、评估结论及国资备案结果为准。",
+          "fact_ids": [
+            "FACT-047"
+          ]
+        },
+        {
+          "type": "p",
+          "text": "下一步，投管公司将按程序提请审议启动退出及聘请审计、资产评估机构等事项，依次履行内部决策和国资备案程序后，推进回购协议签署、产权交易及工商变更登记等工作。",
+          "fact_ids": [
+            "FACT-048"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A5",
+      "number": 5,
+      "title": "示例银行SPV项目2026年上半年投后管理报告",
+      "blocks": [
+        {
+          "type": "h1",
+          "text": "一、合伙人及出资情况"
+        },
+        {
+          "type": "p",
+          "text": "截至2026年6月30日，示例资产投资合伙企业（有限合伙）（以下简称“合伙企业”）实缴出资合计80.00亿元，我司作为优先级有限合伙人认缴并实缴出资3亿元，实缴出资比例3.75%。",
+          "fact_ids": [
+            "FACT-049"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "二、不良资产交易及委托处置情况"
+        },
+        {
+          "type": "p",
+          "text": "合伙企业已付清不良资产包全部交易对价，并于2026年5月与示例银行签订《不良资产委托处置协议》，委托其开展清收处置。截至2026年6月30日，过渡期清收处置回款已划付合伙企业账户1次，双方正在对账。",
+          "fact_ids": [
+            "FACT-050"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "三、合伙人大会及决策执行情况"
+        },
+        {
+          "type": "p",
+          "text": "截至2026年6月30日，合伙企业累计召开合伙人大会2次，全部议案经全体合伙人一致同意通过，未发现侵害和影响我司权益的情形。",
+          "fact_ids": [
+            "FACT-051"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "四、总体评价"
+        },
+        {
+          "type": "p",
+          "text": "报告期内，合伙企业出资到位、交易对价付清、治理程序规范，运营情况总体正常。我司将持续跟踪清收处置进度及回款分配安排，通过合伙人大会依法行使表决权。",
+          "fact_ids": [
+            "FACT-052"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "A6",
+      "number": 6,
+      "title": "示例空天SPV项目2026年上半年投后管理报告",
+      "blocks": [
+        {
+          "type": "p",
+          "text": "根据我司投后管理工作安排，现将示例空天科技股份有限公司（以下简称“示例空天”）2026年上半年经营情况及融资、资本市场进展报告如下：",
+          "fact_ids": [
+            "FACT-053"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "一、经营情况"
+        },
+        {
+          "type": "caption",
+          "text": "示例空天主要财务指标表"
+        },
+        {
+          "type": "tnote",
+          "text": "单位：万元（比例指标除外）",
+          "align": "right",
+          "evidence_exempt_reason": "unit-label"
+        },
+        {
+          "type": "table",
+          "header": [
+            "项目",
+            "2025年上半年",
+            "2026年上半年",
+            "同比变动"
+          ],
+          "rows": [
+            [
+              "营业收入",
+              "5,250.00",
+              "4,200.00",
+              "-20.00%"
+            ],
+            [
+              "净利润",
+              "-2,200.00",
+              "-3,100.00",
+              "增亏900.00万元"
+            ],
+            [
+              "经营活动现金流量净额",
+              "-5,000.00",
+              "-6,500.00",
+              "净流出增加1,500.00万元"
+            ]
+          ],
+          "row_fact_ids": [
+            [
+              "FACT-054"
+            ],
+            [
+              "FACT-055"
+            ],
+            [
+              "FACT-056"
+            ]
+          ],
+          "fact_ids": [
+            "FACT-054",
+            "FACT-055",
+            "FACT-056",
+            "FACT-057"
+          ]
+        },
+        {
+          "type": "p",
+          "text": "上半年收入下降主要受三方面影响：一是项目交付验收和结算集中于下半年；二是历史项目售后成本增加；三是人员、研发和管理投入保持较高水平。若实现全年滚动预测，下半年需实现营业收入21,800.00万元，约为上半年收入的5.19倍。",
+          "fact_ids": [
+            "FACT-058"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "二、融资情况"
+        },
+        {
+          "type": "p",
+          "text": "示例空天近期完成新一轮增资，按照11.70亿元投前估值合计增资3,000.00万元，投后估值12.00亿元。",
+          "fact_ids": [
+            "FACT-059"
+          ]
+        },
+        {
+          "type": "h1",
+          "text": "三、资本市场进展"
+        },
+        {
+          "type": "p",
+          "text": "示例空天资本市场路径为先行完成新三板挂牌，后续择机申报北交所；截至2026年9月，挂牌申报材料正在完善。下一步，我司将持续跟踪重点项目交付验收、回款及毛利情况，及时掌握影响投资价值的重大事项。",
+          "fact_ids": [
+            "FACT-060"
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -653,6 +653,38 @@ def add_redhead(doc: Document, metadata: dict[str, Any]) -> None:
     )
 
 
+def add_internal_title(doc: Document, metadata: dict[str, Any]) -> None:
+    """内部报告式首部：两行大标题（二号方正小标宋简体，于“股权投资项目”后回行），
+    其下居中一行三号楷体_GB2312 成文年月，再空一行接开头段；不设红头、文号和主送单位。"""
+
+    from validate_report import internal_title_lines, issue_month_line
+
+    first, second = internal_title_lines(_period_label(metadata) or "〔报告期间〕")
+    title = doc.add_paragraph()
+    format_paragraph(
+        title,
+        align=WD_ALIGN_PARAGRAPH.CENTER,
+        line_pt=TITLE_LINE_PT,
+        first_line_chars=None,
+        keep_with_next=True,
+    )
+    add_text_runs(title, first, FONT_TITLE, TITLE_PT)
+    title.runs[-1].add_break(WD_BREAK.LINE)
+    add_text_runs(title, second, FONT_TITLE, TITLE_PT)
+    month_line = issue_month_line(metadata.get("issue_date"))
+    if month_line:
+        add_paragraph(
+            doc,
+            month_line,
+            font=FONT_KAITI,
+            align=WD_ALIGN_PARAGRAPH.CENTER,
+            line_pt=TITLE_LINE_PT,
+            first_line_chars=None,
+            keep_with_next=True,
+        )
+    add_paragraph(doc, "", first_line_chars=None, keep_with_next=True)
+
+
 HEADING_FORMATS = {
     1: (FONT_HEITI, False),  # 一、黑体，不加粗
     2: (FONT_KAITI, True),  # （一）楷体_GB2312，加粗
@@ -914,18 +946,28 @@ def add_attachment(doc: Document, attachment: dict[str, Any], fallback_number: i
 
 
 def build_report(spec: dict[str, Any], output: Path, *, force: bool = False) -> Path:
+    from validate_report import INTERNAL_REPORT_FORM, report_form_of, report_title
+
     metadata = spec.get("document") or {}
+    internal = report_form_of(metadata) == INTERNAL_REPORT_FORM
     doc = Document()
     setup_document(doc, spec.get("layout") or {})
-    doc.core_properties.title = (
-        f"{metadata.get('company', '')}关于{_period_label(metadata)}股权投资项目投后情况报告"
+    doc.core_properties.title = report_title(
+        metadata.get("company"),
+        metadata.get("report_year"),
+        metadata.get("report_period"),
+        report_form_of(metadata),
     )
     doc.core_properties.identifier = f"soe-post-investment-report:sha256:{spec_fingerprint(spec)}"
 
-    add_redhead(doc, metadata)
-    recipient = str(metadata.get("recipient") or "")
-    if recipient:
-        add_paragraph(doc, recipient, first_line_chars=None, keep_with_next=True)
+    if internal:
+        # 内部报告式：无红头、文号、签发人、主送单位、落款和版记。
+        add_internal_title(doc, metadata)
+    else:
+        add_redhead(doc, metadata)
+        recipient = str(metadata.get("recipient") or "")
+        if recipient:
+            add_paragraph(doc, recipient, first_line_chars=None, keep_with_next=True)
     legal_basis = str(metadata.get("legal_basis") or "")
     if legal_basis:
         add_paragraph(doc, legal_basis)
@@ -933,12 +975,14 @@ def build_report(spec: dict[str, Any], output: Path, *, force: bool = False) -> 
     render_blocks(doc, spec.get("main_blocks") or [])
     attachments = sorted(spec.get("attachments") or [], key=lambda item: int(item.get("number") or 0))
     add_attachment_list(doc, attachments)
-    add_signature(doc, metadata)
+    if not internal:
+        add_signature(doc, metadata)
 
     for index, attachment in enumerate(attachments, start=1):
         add_attachment(doc, attachment, index, len(attachments))
 
-    add_imprint(doc, metadata)
+    if not internal:
+        add_imprint(doc, metadata)
 
     output = output.resolve()
     output.parent.mkdir(parents=True, exist_ok=True)
