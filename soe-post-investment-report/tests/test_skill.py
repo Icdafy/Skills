@@ -1816,7 +1816,7 @@ class InternalReportFormTests(unittest.TestCase):
             fact["value"] = str(fact["value"]).replace("1,500.00；—", "1,400.00；—")
         result = self.validate(spec, "internal-expression.json")
         self.assertIn("“LP”应写作“有限合伙人”", result.stdout)
-        self.assertIn("应写作“实际控制人”", result.stdout)
+        self.assertNotIn("应写作“实际控制人”", result.stdout)  # 实控人为通用简称，不提示
         self.assertIn("“报告期内”所述事项日期 2026年8月 晚于数据截止日期", result.stdout)
         self.assertIn("标题中的项目名称“甲股份”未在本节正文出现", result.stdout)
         self.assertIn("合计行“项目退出资金（万元）”为 1,400.00，而分项之和为 1,500.00", result.stdout)
