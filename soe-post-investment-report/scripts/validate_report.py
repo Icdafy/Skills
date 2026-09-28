@@ -1145,11 +1145,28 @@ def validate_ledger_section(main_blocks: list[dict[str, Any]], findings: Finding
     types = [str(block.get("type") or "").lower() for block in section]
     if "table" not in types:
         findings.error(f"{FORM_LAST_H1[INTERNAL_REPORT_FORM]} must contain the project ledger table block")
-    elif "p" not in types[: types.index("table")]:
+        return
+    table_index = types.index("table")
+    if "p" not in types[:table_index]:
         findings.error(
             f"{FORM_LAST_H1[INTERNAL_REPORT_FORM]} must open with a lead paragraph (for example "
             "截至YYYY年M月D日，我司股权投资项目台账如下：) before the ledger table"
         )
+    # A column such as 设立/投资时间 carries two meanings (fund set-up date vs our
+    # investment date); the approved report was inconsistent until each row
+    # followed a stated convention, so such a column needs an explanatory note.
+    notes = "".join(
+        str(block.get("text") or "")
+        for block in section[table_index + 1 :]
+        if str(block.get("type") or "").lower() == "tnote"
+    )
+    for label in section[table_index].get("header") or []:
+        label = re.sub(r"[（(][^）)]*[）)]", "", str(label or "")).strip()
+        if re.search(r"[/／]", label) and label not in notes:
+            findings.warning(
+                f"项目台账“{label}”一列含两种口径，须在表注中写明各类项目取哪一种（如“参股基金、"
+                "双GP基金为基金设立日期，其余项目为我司出资日期”），并逐行与正文、附件核对"
+            )
 
 
 # 表述规范：来自定稿报告逐轮校改中反复出现的改动，作为警告逐条人工判断。
@@ -1168,7 +1185,10 @@ EXPRESSION_STYLE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
     ),
     (re.compile(r"20\d{2}半年度"), "年份后缺“年”字，应写作“YYYY年上半年”或“YYYY年半年度”"),
     (re.compile(r"分别同比"), "语序应为“同比分别……”"),
-    (re.compile(r"我方"), "报告自称宜统一为“我司”；需区分主体时写明主体简称"),
+    (
+        re.compile(r"我方"),
+        "“我方”须按所指换成实际主体：指本单位写“我司”，指基金写基金简称，指被投企业（如合同一方）写企业简称",
+    ),
     (
         re.compile(r"(?:整体|总体)?风险(?:总体|整体)?可控"),
         "“风险可控”属结论性判断，须有指标或处置进展支撑，否则改为“运营总体正常”等客观表述",

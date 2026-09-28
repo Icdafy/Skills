@@ -1772,6 +1772,24 @@ class InternalReportFormTests(unittest.TestCase):
         result = self.validate(spec, "internal-switch-authorized.json")
         self.assertEqual(result.returncode, 0, result.stdout)
 
+    def test_ledger_date_column_with_two_meanings_needs_a_note(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        note = next(
+            block
+            for block in spec["main_blocks"]
+            if block.get("type") == "tnote" and "设立/投资时间" in str(block.get("text"))
+        )
+        spec["main_blocks"].remove(note)
+        spec["fact_ledger"] = [
+            fact for fact in spec["fact_ledger"] if fact["fact_id"] not in note["fact_ids"]
+        ]
+        result = self.validate(spec, "internal-ledger-no-note.json")
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertIn("项目台账“设立/投资时间”一列含两种口径，须在表注中写明", result.stdout)
+
+        noted = self.validate(self.spec, "internal-ledger-noted.json")
+        self.assertNotIn("一列含两种口径", noted.stdout)
+
     def test_expression_checks_flag_patterns_changed_during_proofreading(self) -> None:
         spec = copy.deepcopy(self.spec)
         blocks = spec["main_blocks"]
@@ -1801,7 +1819,7 @@ class InternalReportFormTests(unittest.TestCase):
         self.assertIn("应写作“实际控制人”", result.stdout)
         self.assertIn("“报告期内”所述事项日期 2026年8月 晚于数据截止日期", result.stdout)
         self.assertIn("标题中的项目名称“甲股份”未在本节正文出现", result.stdout)
-        self.assertIn("合计行“累计退出资金（万元）”为 1,400.00，而分项之和为 1,500.00", result.stdout)
+        self.assertIn("合计行“项目退出资金（万元）”为 1,400.00，而分项之和为 1,500.00", result.stdout)
 
 
 if __name__ == "__main__":
