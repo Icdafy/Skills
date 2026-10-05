@@ -1,0 +1,22 @@
+$ python tools/package_skills.py --check
+exit=0
+[OK] hangye-fenxi: metadata, resources and links (33 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] hangye-fenxi: downloadable archive matches current source
+[OK] zhuying-yewu-fenxi: metadata, resources and links (32 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] zhuying-yewu-fenxi: downloadable archive matches current source
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] gongsi-qingkuang: downloadable archive matches current source
+[OK] officialese-skill: metadata, resources and links (19 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] officialese-skill: downloadable archive matches current source
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] yiti-skill: downloadable archive matches current source
+[OK] meeting-minutes-pro: metadata, resources and links (57 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] meeting-minutes-pro: downloadable archive matches current source
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] soe-post-investment-report: downloadable archive matches current source

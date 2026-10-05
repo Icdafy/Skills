@@ -4,14 +4,13 @@
 公文字体检测与安装脚本（三技能统一版，跨平台）。
 
 在生成 .docx 公文前，检测本机是否已安装立项报告所需的三款公文字体：
-仿宋_GB2312、楷体_GB2312、方正小标宋简体。若缺失，从本技能自带的
-assets/fonts 目录做用户级安装（无需管理员权限）。
+仿宋_GB2312、楷体_GB2312、方正小标宋简体。若缺失，仅从用户显式指定的
+ICDAFY_FONT_DIR 授权目录做用户级安装（无需管理员权限）。
 
 Windows 上除复制字体文件外，还会写入 HKCU 字体注册表——只复制不注册
 Word 看不到字体。安装后已打开的 Word 需重启才生效。
 
-说明：assets/fonts 中的字体为受版权保护的商用/系统字体，随本私有技能仅供
-本人使用，请勿再分发。
+说明：受版权保护的商用/系统字体不随技能分发；用户自行确认安装和嵌入许可。
 
 用法：
     python ensure_fonts.py            # 检测并按需安装
@@ -21,6 +20,10 @@ import os
 import sys
 import shutil
 import platform
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from local_fonts import resolve_fonts
 
 # 需要的字体族：族名关键字（检测用）-> 候选文件名（不同技能打包的文件名不同，取先找到的）
 REQUIRED_FONTS = [
@@ -116,12 +119,13 @@ def check():
 
 
 def _src_file(item):
-    """在 assets/fonts 中找该字体的候选文件，返回第一个存在的路径。"""
-    for fname in item["files"]:
-        p = os.path.join(FONT_SRC_DIR, fname)
-        if os.path.isfile(p):
-            return p
-    return None
+    """Installation sources must be explicitly provided by the licensed user."""
+    configured = os.environ.get("ICDAFY_FONT_DIR")
+    if configured is None:
+        return None
+    return next((str(Path(configured) / f) for f in item["files"]
+                 if (Path(configured) / f).is_file()), None)
+
 
 
 def install(missing):
@@ -133,7 +137,7 @@ def install(missing):
     for item in missing:
         src = _src_file(item)
         if src is None:
-            print(f"  [跳过] 技能 assets/fonts 内未找到 {item['family']} 的字体文件"
+            print(f"  [跳过] 本机授权目录未找到 {item['family']} 的字体文件"
                   f"（候选：{'、'.join(item['files'])}）", file=sys.stderr)
             continue
         dst = os.path.join(dest_dir, os.path.basename(src))
@@ -164,13 +168,13 @@ def main():
     if check_only:
         return 1
 
-    print(f"从技能自带目录安装（{FONT_SRC_DIR}）……")
+    print("请自行准备授权字体并设置 ICDAFY_FONT_DIR；公开技能不附带字体文件。")
     done = install(missing)
     if done:
         print("\n[OK] 安装完成（用户级，无需管理员权限）。若 Word 已打开，请重启后生效。")
         return 0
     else:
-        print("\n[X] 未能安装任何字体，请检查 assets/fonts 目录。", file=sys.stderr)
+        print("\n[X] 未能安装任何字体，请检查 ICDAFY_FONT_DIR 授权字体目录。", file=sys.stderr)
         return 2
 
 

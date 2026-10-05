@@ -1,0 +1,6 @@
+当前目录未找到尽调资料，请先补充两项：
+
+1. 本项目采用**早前期（2026-09终稿范式）**还是**中后期（因诺科技）**模板？
+2. 请提供尽调资料的本地文件路径，或直接粘贴资料内容。
+
+[公司情况技能](<C:/Users/30649/Documents/Codex/2026-10-05/icdafy-skills-blocked-md-progress-md/work/客户端 验证 中文/.agents/skills/gongsi-qingkuang/SKILL.md>)要求“等待用户回答后再起草”，因此需要先明确模板阶段，不能按融资轮次自行推断。

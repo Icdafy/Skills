@@ -1,0 +1,535 @@
+{
+  "date": "2026-10-05",
+  "request": "Bundle four exact fonts independently in all seven skills and require their actual use.",
+  "fonts": [
+    {
+      "requested_family": "仿宋_GB2312",
+      "filename": "simfang.ttf",
+      "source": "user-provided",
+      "bytes": 3996872,
+      "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+      "fsType": 0,
+      "matches_baseline_restricted_font": true,
+      "name_records": {
+        "0": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "(C) Copyright GreatWall Computer Co. 1994"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "(C) Copyright GreatWall Computer Co. 1994"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "(C) Copyright GreatWall Computer Co. 1994"
+          }
+        ],
+        "1": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "FangSong_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "FangSong_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "仿宋_GB2312"
+          }
+        ],
+        "2": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "Regular"
+          }
+        ],
+        "4": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "FangSong_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "FangSong_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "仿宋_GB2312"
+          }
+        ],
+        "6": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "FangSong_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "FangSong_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "仿宋_GB2312"
+          }
+        ]
+      },
+      "redistribution_authorization_confirmed": false,
+      "no_embedding_without_additional_permission": false
+    },
+    {
+      "requested_family": "方正小标宋简体",
+      "filename": "方正小标宋简体.ttf",
+      "source": "user-provided",
+      "bytes": 3806520,
+      "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+      "fsType": 2,
+      "matches_baseline_restricted_font": true,
+      "name_records": {
+        "0": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "Copyright(c) Founder Corporation.1998"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "Copyright(c) Founder Corporation.1998"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "Copyright(c) Founder Corporation.1998"
+          }
+        ],
+        "1": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "FZXiaoBiaoSong-B05S"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "FZXiaoBiaoSong-B05S"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "方正小标宋简体"
+          }
+        ],
+        "2": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "Regular"
+          }
+        ],
+        "4": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "FZXiaoBiaoSong-B05S"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "FZXiaoBiaoSong-B05S"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "方正小标宋简体"
+          }
+        ],
+        "6": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "FZXBSJW--GB1-0"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "FZXBSJW--GB1-0"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "FZXBSJW--GB1-0"
+          }
+        ]
+      },
+      "redistribution_authorization_confirmed": false,
+      "no_embedding_without_additional_permission": true
+    },
+    {
+      "requested_family": "楷体_GB2312",
+      "filename": "楷体_GB2312.ttf",
+      "source": "user-provided",
+      "bytes": 4135804,
+      "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+      "fsType": 0,
+      "matches_baseline_restricted_font": true,
+      "name_records": {
+        "0": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "(C) Copyright GreatWall Computer Co. 1994"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "(C) Copyright GreatWall Computer Co. 1994"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "(C) Copyright GreatWall Computer Co. 1994"
+          }
+        ],
+        "1": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "KaiTi_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "KaiTi_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "楷体_GB2312"
+          }
+        ],
+        "2": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "Regular"
+          }
+        ],
+        "4": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "KaiTi_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "KaiTi_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "楷体_GB2312"
+          }
+        ],
+        "6": [
+          {
+            "platform": 1,
+            "language": 0,
+            "text": "KaiTi_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "KaiTi_GB2312"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "楷体_GB2312"
+          }
+        ]
+      },
+      "redistribution_authorization_confirmed": false,
+      "no_embedding_without_additional_permission": false
+    },
+    {
+      "requested_family": "黑体",
+      "filename": "simhei.ttf",
+      "source": "existing-Windows-file-not-uploaded",
+      "bytes": 9745792,
+      "sha256": "9b1959db3b3abeb7efdaec26edf7dfe871a6039de8d614af7248575207be629e",
+      "fsType": 8,
+      "matches_baseline_restricted_font": false,
+      "name_records": {
+        "2": [
+          {
+            "platform": 3,
+            "language": 1027,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1029,
+            "text": "obyčejné"
+          },
+          {
+            "platform": 3,
+            "language": 1030,
+            "text": "normal"
+          },
+          {
+            "platform": 3,
+            "language": 1031,
+            "text": "Standard"
+          },
+          {
+            "platform": 3,
+            "language": 1032,
+            "text": "Κανονικά"
+          },
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 1034,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1035,
+            "text": "Normaali"
+          },
+          {
+            "platform": 3,
+            "language": 1036,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1038,
+            "text": "Normál"
+          },
+          {
+            "platform": 3,
+            "language": 1040,
+            "text": "Normale"
+          },
+          {
+            "platform": 3,
+            "language": 1043,
+            "text": "Standaard"
+          },
+          {
+            "platform": 3,
+            "language": 1044,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1045,
+            "text": "Normalny"
+          },
+          {
+            "platform": 3,
+            "language": 1046,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1049,
+            "text": "Обычный"
+          },
+          {
+            "platform": 3,
+            "language": 1051,
+            "text": "Normálne"
+          },
+          {
+            "platform": 3,
+            "language": 1053,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1055,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 1060,
+            "text": "Navadno"
+          },
+          {
+            "platform": 3,
+            "language": 1069,
+            "text": "Arrunta"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "Regular"
+          },
+          {
+            "platform": 3,
+            "language": 2058,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 2070,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 3082,
+            "text": "Normal"
+          },
+          {
+            "platform": 3,
+            "language": 3084,
+            "text": "Normal"
+          }
+        ],
+        "0": [
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "© Beijing ZhongYi Electronics Co., 1995-2005, All rights reserved"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "字体数据由北京中易中标电子信息技术有限公司提供。"
+          }
+        ],
+        "1": [
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "SimHei"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "黑体"
+          }
+        ],
+        "4": [
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "SimHei"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "黑体"
+          }
+        ],
+        "6": [
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "SimHei"
+          },
+          {
+            "platform": 3,
+            "language": 2052,
+            "text": "黑体"
+          }
+        ],
+        "13": [
+          {
+            "platform": 3,
+            "language": 1033,
+            "text": "Microsoft supplied font. You may use this font to create, display, and print content as permitted by the license terms or terms of use, of the Microsoft product, service, or content in which this font was included. You may only (i) embed this font in content as permitted by the embedding restrictions included in this font; and (ii) temporarily download this font to a printer or other output device to help print content. Any other use is prohibited."
+          }
+        ]
+      },
+      "redistribution_authorization_confirmed": false,
+      "no_embedding_without_additional_permission": false
+    }
+  ],
+  "skill_ids": [
+    "hangye-fenxi",
+    "zhuying-yewu-fenxi",
+    "gongsi-qingkuang",
+    "officialese-skill",
+    "yiti-skill",
+    "meeting-minutes-pro",
+    "soe-post-investment-report"
+  ],
+  "constraints_pending": [
+    "Copyright-holder permission for public redistribution of complete font files; embedding permission where required",
+    "Licensed assets for retained 宋体 and Times New Roman if the target machine has no fonts at all"
+  ],
+  "implementation_status": "Blocked by absent or uncertain copyright-holder redistribution permission; input audit and plan only. No fonts copied to repository or ZIPs, installed, or uploaded.",
+  "official_sources": [
+    "https://learn.microsoft.com/en-us/typography/fonts/font-faq",
+    "https://learn.microsoft.com/en-us/typography/opentype/spec/os2#fstype",
+    "https://www.foundertype.com/index.php/About/userAuth.html"
+  ],
+  "user_confirmations": {
+    "chinese_primary_families": [
+      "黑体",
+      "方正小标宋简体",
+      "楷体_GB2312",
+      "仿宋_GB2312"
+    ],
+    "footer_family": "宋体",
+    "latin_numeric_family": "Times New Roman",
+    "font_mapping_reply": "保留页码、数字和英文原字体，仅规范中文主要字体",
+    "authorization_reply_received": "全部统一",
+    "authorization_reply_resolves_public_redistribution": false,
+    "clarification": "The follow-up reply states that redistribution authorization is absent or uncertain. No further answer is pending; requested public font bundling is blocked.",
+    "authorization_followup_reply": "没有此授权，或尚不清楚"
+  },
+  "blocker": "B4"
+}

@@ -24,6 +24,19 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from font_fixture import FontFixture
+
+
+def setUpModule():
+    global FONT_FIXTURE, TEST_FONT_DIR
+    FONT_FIXTURE = FontFixture()
+    TEST_FONT_DIR = FONT_FIXTURE.__enter__()
+
+
+def tearDownModule():
+    FONT_FIXTURE.__exit__()
+
+
 REPO = Path(__file__).resolve().parents[2]
 SKILLS = ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi",
           "officialese-skill", "yiti-skill")

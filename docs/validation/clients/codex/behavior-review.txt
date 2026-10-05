@@ -1,0 +1,23 @@
+{"cases": 21, "route_passed": 21, "passed_all_requested_behavior": 18, "post_report_strict_four_question_failures": 3}
+hangye-fenxi-explicit exit=0 route=True behavior=True
+hangye-fenxi-natural exit=0 route=True behavior=True
+hangye-fenxi-adjacent exit=0 route=True behavior=True
+zhuying-yewu-fenxi-explicit exit=0 route=True behavior=True
+zhuying-yewu-fenxi-natural exit=0 route=True behavior=True
+zhuying-yewu-fenxi-adjacent exit=0 route=True behavior=True
+gongsi-qingkuang-explicit exit=0 route=True behavior=True
+gongsi-qingkuang-natural exit=0 route=True behavior=True
+gongsi-qingkuang-adjacent exit=0 route=True behavior=True
+officialese-skill-explicit exit=0 route=True behavior=True
+officialese-skill-natural exit=0 route=True behavior=True
+officialese-skill-adjacent exit=0 route=True behavior=True
+yiti-skill-explicit exit=0 route=True behavior=True
+yiti-skill-natural exit=0 route=True behavior=True
+yiti-skill-adjacent exit=0 route=True behavior=False
+meeting-minutes-pro-explicit exit=0 route=True behavior=True
+meeting-minutes-pro-natural exit=0 route=True behavior=True
+meeting-minutes-pro-adjacent exit=0 route=True behavior=True
+soe-post-investment-report-explicit exit=0 route=True behavior=False
+soe-post-investment-report-natural exit=0 route=True behavior=False
+soe-post-investment-report-adjacent exit=0 route=True behavior=True
+exit=1

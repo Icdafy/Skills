@@ -1,0 +1,213 @@
+{
+  "commit": "bf6f7d8cfb99265fc55ee45da5ea54150fff876d",
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\30649\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+  "tracked_files": 237,
+  "skills": [
+    "gongsi-qingkuang",
+    "hangye-fenxi",
+    "meeting-minutes-pro",
+    "officialese-skill",
+    "soe-post-investment-report",
+    "yiti-skill",
+    "zhuying-yewu-fenxi"
+  ],
+  "restricted_fonts": 18,
+  "results": [
+    {
+      "label": "tools-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "tools/tests"
+      ],
+      "exit": 0,
+      "tests": 50,
+      "skips": []
+    },
+    {
+      "label": "minutes-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "meeting-minutes-pro/tests"
+      ],
+      "exit": 0,
+      "tests": 258,
+      "skips": []
+    },
+    {
+      "label": "soe-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "soe-post-investment-report/tests"
+      ],
+      "exit": 0,
+      "tests": 56,
+      "skips": [
+        "test_source_inventory_skips_symlink_that_resolves_outside_material_root (test_skill.SkillRegressionTests.test_source_inventory_skips_symlink_that_resolves_outside_material_root) ... skipped \"symlink creation is unavailable on this host: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\\\\\Users\\\\\\\\30649\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmps383t64d\\\\\\\\outside-secret.txt' -> 'C:\\\\\\\\Users\\\\\\\\30649\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmps383t64d\\\\\\\\sources\\\\\\\\linked-secret.txt'\""
+      ]
+    },
+    {
+      "label": "company-evals",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "gongsi-qingkuang/evals"
+      ],
+      "exit": 0,
+      "tests": 8,
+      "skips": []
+    },
+    {
+      "label": "official-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "officialese-skill/scripts",
+        "-p",
+        "test_create_official_docx.py"
+      ],
+      "exit": 0,
+      "tests": 3,
+      "skips": []
+    },
+    {
+      "label": "shared",
+      "command": [
+        "python",
+        "tools/check_shared_scripts.py"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "packages",
+      "command": [
+        "python",
+        "tools/package_skills.py",
+        "--check"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "gongsi-qingkuang-smoke",
+      "command": [
+        "python",
+        "gongsi-qingkuang/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "hangye-fenxi-smoke",
+      "command": [
+        "python",
+        "hangye-fenxi/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "meeting-minutes-pro-smoke",
+      "command": [
+        "python",
+        "meeting-minutes-pro/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "officialese-skill-smoke",
+      "command": [
+        "python",
+        "officialese-skill/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "soe-post-investment-report-smoke",
+      "command": [
+        "python",
+        "soe-post-investment-report/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "yiti-skill-smoke",
+      "command": [
+        "python",
+        "yiti-skill/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    },
+    {
+      "label": "zhuying-yewu-fenxi-smoke",
+      "command": [
+        "python",
+        "zhuying-yewu-fenxi/scripts/skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0,
+      "tests": null,
+      "skips": []
+    }
+  ]
+}

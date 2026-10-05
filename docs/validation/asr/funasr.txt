@@ -1,0 +1,85 @@
+$ F:\ASR模型\runtime\venv\Scripts\python.exe C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\skills\meeting-minutes-pro\scripts\transcribe.py --input "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\语音 验证\合成验收.wav" --output-dir "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\语音 验证\funasr" --engine funasr --offline --device cuda
+F:\ASR模型\runtime\venv\Lib\site-packages\pydub\utils.py:170: RuntimeWarning: Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work
+  warn("Couldn't find ffmpeg or avconv - defaulting to ffmpeg, but may not work", RuntimeWarning)
+2026-10-05 13:55:40,714 | WARNING | modelscope_hub.download | Cannot confirm the cached file is for revision: master
+2026-10-05 13:55:40,716 | WARNING | modelscope_hub.download | Cannot confirm the cached file is for revision: master
+2026-10-05 13:55:40,717 | WARNING | modelscope_hub.download | Cannot confirm the cached file is for revision: master
+{"progress": {"stage": "load", "engine": "funasr", "device": "cuda:0"}}
+2026-10-05 13:55:40,717 [INFO] download models from model hub: ms
+2026-10-05 13:55:40,731 [WARNING] trust_remote_code: False
+2026-10-05 13:55:41,949 [INFO] Loading pretrained params from F:\ASR模型\models\modelscope\models\iic--speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch\snapshots\master\model.pt
+2026-10-05 13:55:41,964 [INFO] ckpt: F:\ASR模型\models\modelscope\models\iic--speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch\snapshots\master\model.pt
+2026-10-05 13:55:42,818 [INFO] scope_map: ['module.', 'None']
+2026-10-05 13:55:42,818 [INFO] excludes: None
+2026-10-05 13:55:42,888 [INFO] Loading ckpt: F:\ASR模型\models\modelscope\models\iic--speech_seaco_paraformer_large_asr_nat-zh-cn-16k-common-vocab8404-pytorch\snapshots\master\model.pt, status: <All keys matched successfully>
+2026-10-05 13:55:42,902 [INFO] Building VAD model.
+2026-10-05 13:55:42,903 [INFO] download models from model hub: ms
+2026-10-05 13:55:42,910 [WARNING] trust_remote_code: False
+2026-10-05 13:55:42,914 [INFO] Loading pretrained params from F:\ASR模型\models\modelscope\models\iic--speech_fsmn_vad_zh-cn-16k-common-pytorch\snapshots\master\model.pt
+2026-10-05 13:55:42,915 [INFO] ckpt: F:\ASR模型\models\modelscope\models\iic--speech_fsmn_vad_zh-cn-16k-common-pytorch\snapshots\master\model.pt
+2026-10-05 13:55:42,918 [INFO] scope_map: ['module.', 'None']
+2026-10-05 13:55:42,918 [INFO] excludes: None
+2026-10-05 13:55:42,921 [INFO] Loading ckpt: F:\ASR模型\models\modelscope\models\iic--speech_fsmn_vad_zh-cn-16k-common-pytorch\snapshots\master\model.pt, status: <All keys matched successfully>
+2026-10-05 13:55:42,921 [INFO] Building punc model.
+2026-10-05 13:55:42,921 [INFO] download models from model hub: ms
+2026-10-05 13:55:42,927 [WARNING] trust_remote_code: False
+Building prefix dict from the default dictionary ...
+2026-10-05 13:55:44,162 [DEBUG] Building prefix dict from the default dictionary ...
+Loading model from cache F:\ASR模型\runtime-temp\jieba.cache
+2026-10-05 13:55:44,162 [DEBUG] Loading model from cache F:\ASR模型\runtime-temp\jieba.cache
+Loading model cost 0.414 seconds.
+2026-10-05 13:55:44,575 [DEBUG] Loading model cost 0.414 seconds.
+Prefix dict has been built successfully.
+2026-10-05 13:55:44,576 [DEBUG] Prefix dict has been built successfully.
+2026-10-05 13:55:56,539 [INFO] Loading pretrained params from F:\ASR模型\models\modelscope\models\iic--punc_ct-transformer_cn-en-common-vocab471067-large\snapshots\master\model.pt
+2026-10-05 13:55:56,539 [INFO] ckpt: F:\ASR模型\models\modelscope\models\iic--punc_ct-transformer_cn-en-common-vocab471067-large\snapshots\master\model.pt
+2026-10-05 13:55:57,610 [INFO] scope_map: ['module.', 'None']
+2026-10-05 13:55:57,610 [INFO] excludes: None
+2026-10-05 13:55:57,667 [INFO] Loading ckpt: F:\ASR模型\models\modelscope\models\iic--punc_ct-transformer_cn-en-common-vocab471067-large\snapshots\master\model.pt, status: <All keys matched successfully>
+Notice: ffmpeg is not installed. torchaudio is used to load audio
+If you want to use ffmpeg backend to load audio, please install it by:
+	sudo apt install ffmpeg # ubuntu
+	# brew install ffmpeg # mac
+funasr version: 1.4.1.
+{
+  "ok": true,
+  "engine": "funasr",
+  "model": "paraformer-zh",
+  "device": "cuda:0",
+  "language": "Chinese",
+  "duration_seconds": 13.675,
+  "timestamps": false,
+  "speaker_labels": false,
+  "outputs": {
+    "txt": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\语音 验证\\funasr\\合成验收.txt",
+    "md": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\语音 验证\\funasr\\合成验收.md",
+    "json": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\语音 验证\\funasr\\合成验收.json"
+  },
+  "source_sha256": "efbbcdf57e9536b070d45ef84a60ba04b68c0cdd37dad87f775a35f433a874e1",
+  "clip_start_seconds": 0.0,
+  "is_partial": false,
+  "recognition_config": {
+    "engine": "funasr",
+    "language": "auto",
+    "context": "",
+    "model": null,
+    "aligner": "Qwen/Qwen3-ForcedAligner-0.6B",
+    "device": "cuda",
+    "timestamps": false,
+    "diarize": false,
+    "speakers": null,
+    "enhance": false,
+    "offline": true,
+    "clip_start": 0.0,
+    "clip_duration": null,
+    "sample": null,
+    "max_new_tokens": null,
+    "chunk_seconds": null,
+    "no_resume": false
+  },
+  "elapsed_seconds": 27.1,
+  "realtime_factor": 1.98,
+  "media_duration_seconds": 13.67
+}
+
+exit=0

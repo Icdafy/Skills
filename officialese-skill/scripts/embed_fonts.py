@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Embed the bundled GB2312 fonts into a generated DOCX so it renders faithfully
+"""Embed locally authorized GB2312 fonts into a generated DOCX so it renders faithfully
 on machines that do not have 仿宋_GB2312 / 楷体_GB2312 installed.
 
 Self-contained (no cross-skill imports); a byte-identical copy lives in each
@@ -25,11 +25,14 @@ import os
 from pathlib import Path
 import re
 import struct
+import sys
 import uuid
 import zipfile
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-FONT_DIR = SCRIPT_DIR.parent / "assets" / "fonts"
+FONT_DIR = SCRIPT_DIR.parent / "assets" / "fonts"  # legacy argument only, no distributed fonts
+sys.path.insert(0, str(SCRIPT_DIR))
+from local_fonts import resolve_fonts
 
 OBFUSCATED_FONT_CT = "application/vnd.openxmlformats-officedocument.obfuscatedFont"
 FONT_REL_TYPE = "http://schemas.openxmlformats.org/officeDocument/2006/relationships/font"
@@ -315,21 +318,19 @@ def verify_embedded_fonts(docx_path: Path) -> dict:
 
 
 def resolve_bundled_fonts(font_dir: Path | None = None) -> dict[str, Path]:
-    """{run_name: bundled TTF path} for the fonts present in this skill's
-    assets/fonts (by candidate filename)."""
-    font_dir = Path(font_dir) if font_dir else FONT_DIR
-    resolved: dict[str, Path] = {}
-    for run_name, candidates in EMBED_TARGETS.items():
-        for filename in candidates:
-            candidate = font_dir / filename
-            if candidate.is_file():
-                resolved[run_name] = candidate
-                break
-    return resolved
+    """Compatibility name: resolve only local authorized fonts or an explicit directory."""
+    if font_dir is None:
+        return resolve_fonts(EMBED_TARGETS)
+    return {name: candidate for name, files in EMBED_TARGETS.items()
+            for candidate in [next((Path(font_dir) / f for f in files if (Path(font_dir) / f).is_file()), None)]
+            if candidate is not None}
+
 
 
 def embed_bundled_fonts(docx_path: Path, font_dir: Path | None = None) -> dict:
-    """Embed this skill's embeddable bundled fonts into ``docx_path`` in place.
+    """Embed locally licensed fonts into ``docx_path`` in place.
+
+    The legacy function name is retained for callers; no fonts are distributed.
 
     Safe: embeds into a temp file and only replaces the original when
     verification passes, so the delivered DOCX is never left worse than the
@@ -338,9 +339,9 @@ def embed_bundled_fonts(docx_path: Path, font_dir: Path | None = None) -> dict:
     docx_path = Path(docx_path)
     fonts = resolve_bundled_fonts(font_dir)
     if not fonts:
-        print("未找到可嵌入的随附字体，跳过嵌入。")
+        print("缺少本机授权字体：仿宋_GB2312、楷体_GB2312；可设置 ICDAFY_FONT_DIR。保留未嵌入草稿，正式交付须检查实际版式。")
         return {"ok": None, "embedded": [], "skipped": [],
-                "reason": "assets/fonts 中未找到目标字体"}
+                "reason": "本机或 ICDAFY_FONT_DIR 中未找到目标字体；字体不随技能分发"}
     tmp: Path | None = None
     try:
         # 临时路径的计算也放进 try：任何异常都不得外泄破坏正常生成。

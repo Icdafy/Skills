@@ -1,0 +1,110 @@
+[
+  {
+    "path": "gongsi-qingkuang/assets/fonts/simfang.ttf",
+    "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "bytes": 3996872,
+    "fsType": 0
+  },
+  {
+    "path": "gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf",
+    "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "bytes": 3806520,
+    "fsType": 2
+  },
+  {
+    "path": "gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf",
+    "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "bytes": 4135804,
+    "fsType": 0
+  },
+  {
+    "path": "hangye-fenxi/assets/fonts/simfang.ttf",
+    "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "bytes": 3996872,
+    "fsType": 0
+  },
+  {
+    "path": "hangye-fenxi/assets/fonts/方正小标宋简体.ttf",
+    "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "bytes": 3806520,
+    "fsType": 2
+  },
+  {
+    "path": "hangye-fenxi/assets/fonts/楷体_GB2312.ttf",
+    "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "bytes": 4135804,
+    "fsType": 0
+  },
+  {
+    "path": "meeting-minutes-pro/assets/fonts/simfang.ttf",
+    "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "bytes": 3996872,
+    "fsType": 0
+  },
+  {
+    "path": "meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf",
+    "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "bytes": 3806520,
+    "fsType": 2
+  },
+  {
+    "path": "meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf",
+    "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "bytes": 4135804,
+    "fsType": 0
+  },
+  {
+    "path": "officialese-skill/assets/fonts/simfang.ttf",
+    "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "bytes": 3996872,
+    "fsType": 0
+  },
+  {
+    "path": "officialese-skill/assets/fonts/方正小标宋简体.ttf",
+    "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "bytes": 3806520,
+    "fsType": 2
+  },
+  {
+    "path": "officialese-skill/assets/fonts/楷体_GB2312.ttf",
+    "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "bytes": 4135804,
+    "fsType": 0
+  },
+  {
+    "path": "yiti-skill/assets/fonts/simfang.ttf",
+    "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "bytes": 3996872,
+    "fsType": 0
+  },
+  {
+    "path": "yiti-skill/assets/fonts/方正小标宋简体.ttf",
+    "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "bytes": 3806520,
+    "fsType": 2
+  },
+  {
+    "path": "yiti-skill/assets/fonts/楷体_GB2312.ttf",
+    "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "bytes": 4135804,
+    "fsType": 0
+  },
+  {
+    "path": "zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf",
+    "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "bytes": 3806520,
+    "fsType": 2
+  },
+  {
+    "path": "zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf",
+    "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "bytes": 4135804,
+    "fsType": 0
+  },
+  {
+    "path": "zhuying-yewu-fenxi/assets/fonts/simfang.ttf",
+    "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "bytes": 3996872,
+    "fsType": 0
+  }
+]

@@ -1,3 +1,67 @@
+# 公司情况（gongsi-qingkuang）
+
+当前分发版本：**2.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 用途与边界
+
+公司主体、股权、团队、资质、融资和财务快照；不代写行业或主营业务章节。
+
+## 输入和输出
+
+输入：BP、尽调资料、访谈/会议纪要、工商/财务/股权资料与项目阶段。
+
+输出：证据可追溯的公司情况正文、表格和 DOCX；缺口按原规则留底。
+
+## 依赖与字体
+
+Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `requirements.txt` 中的 python-docx。
+
+单技能ZIP和安装器输出不含字体。GitHub源码按维护者要求保留原main三份字体，见 [字体说明](assets/fonts/README.md)；其公开再分发授权仍未确认。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
+
+## 完整安装例子
+
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip) 下载，解压后进入 `gongsi-qingkuang`；不要只复制 SKILL.md。本 PR 合并前可从当前分支 `gongsi-qingkuang/` 安装。
+
+```powershell
+cd "C:/下载/技能包/gongsi-qingkuang"
+python -m pip install -r requirements.txt
+python scripts/skill_portability.py check --smoke
+python scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目"
+python scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目" --apply
+```
+
+Claude Code 把 `--agent codex` 换成 `--agent claude-code`。其他客户端及安装器目录表见 [跨客户端安装](references/agent-compatibility.md)。运行路径以本次实际加载的 SKILL.md 目录为根；脚本和输入输出使用绝对路径时可在任意任务目录执行。
+
+## 调用例子
+
+安装后新建会话，在 Codex 输入：
+
+```text
+$gongsi-qingkuang 帮我写立项报告的公司情况；这是本期尽调资料，阶段尚未确定。
+```
+
+Claude Code 输入 `/gongsi-qingkuang 帮我写立项报告的公司情况；这是本期尽调资料，阶段尚未确定。`；自然语言直接使用“帮我写立项报告的公司情况；这是本期尽调资料，阶段尚未确定。”。先回答“早前期”或“中后期”，再填写该阶段的原固定模板。
+
+## 已验证环境
+
+Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
+
+Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。
+
+Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。
+
+## 升级入口
+
+维护者只改 `gongsi-qingkuang/`，同步受影响的共享副本后执行 `python tools/package_skills.py --skill gongsi-qingkuang`（在整库根运行）；源码版本见 [VERSION](VERSION)，记录见 [CHANGELOG.md](CHANGELOG.md)。全部维护步骤见 [维护说明](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md)。
+
+用户将新版解压到另一个目录，再用同样的 install 命令更新指定项目。已有安装先备份到 skills 目录外的 `skill-backups/`；出现多余文件会停止，手工确认后 `--replace --apply` 把旧目录移入备份。额外本地文件保留在备份中；确认内容后再决定是否迁入新版。源码保持在仓库根目录 `<仓库>/gongsi-qingkuang/`；GitHub 源码地址及安装后的英文目录名不变。
+
+## 许可
+
+[Apache-2.0](LICENSE)；[NOTICE](NOTICE) 保留署名、维护者素材授权确认和本机字体说明。
+
+## 原业务说明与历史记录
+
 # gongsi-qingkuang — 立项报告「公司情况」章节生成技能
 
 ## 两阶段固定模板
@@ -64,7 +128,7 @@
 | `scripts/reconcile_check.py` | 机械勾稽核验：股权求和=100%、人员分项=总数、客户合计、资产负债恒等式、毛利率反算等 |
 | `scripts/extract_docx.py` | 读取 .docx 资料包，逐块输出段落与表格便于建台账 |
 | `assets/content_skeleton.json` | content.json 骨架样例 |
-| `assets/fonts/` | 三款公文字体（私有技能专用，勿再分发） |
+| `assets/fonts/` | 原main历史字体保留及本机授权字体说明（单技能ZIP不含字体） |
 | `evals/evals.json` | 骨架及证据边界回归场景，以及修订、融资简写、财务和订单分析的虚构用例 |
 
 ## 脚本用法

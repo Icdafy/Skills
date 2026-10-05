@@ -1,0 +1,7 @@
+$ F:\ASR模型\runtime\venv\Scripts\python.exe C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\skills\meeting-minutes-pro\scripts\transcribe.py --input "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\语音 验证\合成验收.wav" --output-dir "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\语音 验证\qwen" --engine qwen --offline --device cuda
+{
+  "ok": false,
+  "error": "CUDA was requested but is unavailable"
+}
+
+exit=1

@@ -1,0 +1,9 @@
+$ python C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\skills\meeting-minutes-pro\scripts\check_all.py "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\客户端 验证 中文\纪要 文本验收\会议纪要.txt" --transcript "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\客户端 验证 中文\纪要 文本验收\虚构转录稿.json" --ledger "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\客户端 验证 中文\纪要 文本验收\coverage.txt" --mode qa-summary
+exit=0
+[通过] quality_check
+[通过] audit_coverage
+[通过] qa_reconcile
+[通过] fact_check
+校验汇总已写入：C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\客户端 验证 中文\纪要 文本验收\checks-summary.json
+- 尚未提交 --review：事实实例、警告和人工裁决尚未归档。
+总体状态：needs_review；正式交付可用：False

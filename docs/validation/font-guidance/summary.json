@@ -1,0 +1,183 @@
+{
+  "results": [
+    {
+      "label": "system-font-check",
+      "command": [
+        "python",
+        "officialese-skill/scripts/ensure_fonts.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "resource-officialese-skill-present",
+      "command": [
+        "C:\\Users\\30649\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\Skills\\officialese-skill\\scripts\\create_official_docx.py",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\字体 资源 正负 中文 空格 5z9jx6zn\\officialese-skill-present.docx",
+        "--title",
+        "关于2026年5G项目管理的通知",
+        "--subtitle",
+        "综合办公室",
+        "--recipient",
+        "各部门：",
+        "--body",
+        "2026年投入 3000 万元，由 COO 牵头，A4 幅面归档。",
+        "--attachment",
+        "附件一",
+        "--attachment",
+        "附件二",
+        "--issuer",
+        "某某公司",
+        "--date",
+        "2026年7月19日"
+      ],
+      "exit": 0,
+      "input_font_source": "present",
+      "embedded_entries": [
+        [
+          "仿宋_GB2312",
+          "86"
+        ],
+        [
+          "楷体_GB2312",
+          "86"
+        ]
+      ],
+      "system_uninstalled_hint_observed": false
+    },
+    {
+      "label": "resource-officialese-skill-missing",
+      "command": [
+        "C:\\Users\\30649\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\Skills\\officialese-skill\\scripts\\create_official_docx.py",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\字体 资源 正负 中文 空格 5z9jx6zn\\officialese-skill-missing.docx",
+        "--title",
+        "关于2026年5G项目管理的通知",
+        "--subtitle",
+        "综合办公室",
+        "--recipient",
+        "各部门：",
+        "--body",
+        "2026年投入 3000 万元，由 COO 牵头，A4 幅面归档。",
+        "--attachment",
+        "附件一",
+        "--attachment",
+        "附件二",
+        "--issuer",
+        "某某公司",
+        "--date",
+        "2026年7月19日"
+      ],
+      "exit": 0,
+      "input_font_source": "missing",
+      "embedded_entries": [],
+      "system_uninstalled_hint_observed": false
+    },
+    {
+      "label": "resource-yiti-skill-present",
+      "command": [
+        "C:\\Users\\30649\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\Skills\\yiti-skill\\scripts\\create_yiti_docx.py",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\字体 资源 正负 中文 空格 5z9jx6zn\\yiti.json",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\字体 资源 正负 中文 空格 5z9jx6zn\\yiti-skill-present.docx"
+      ],
+      "exit": 0,
+      "input_font_source": "present",
+      "embedded_entries": [
+        [
+          "仿宋_GB2312",
+          "86"
+        ],
+        [
+          "楷体_GB2312",
+          "86"
+        ]
+      ],
+      "system_uninstalled_hint_observed": false
+    },
+    {
+      "label": "resource-yiti-skill-missing",
+      "command": [
+        "C:\\Users\\30649\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+        "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\Skills\\yiti-skill\\scripts\\create_yiti_docx.py",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\字体 资源 正负 中文 空格 5z9jx6zn\\yiti.json",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\字体 资源 正负 中文 空格 5z9jx6zn\\yiti-skill-missing.docx"
+      ],
+      "exit": 0,
+      "input_font_source": "missing",
+      "embedded_entries": [],
+      "system_uninstalled_hint_observed": false
+    },
+    {
+      "label": "resource-shared",
+      "command": [
+        "python",
+        "tools/check_shared_scripts.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "resource-catalog",
+      "command": [
+        "python",
+        "tools/sync_catalog.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "resource-affected-six-packages",
+      "command": [
+        "python",
+        "tools/package_skills.py",
+        "--skill",
+        "gongsi-qingkuang",
+        "--skill",
+        "hangye-fenxi",
+        "--skill",
+        "zhuying-yewu-fenxi",
+        "--skill",
+        "officialese-skill",
+        "--skill",
+        "yiti-skill",
+        "--skill",
+        "meeting-minutes-pro"
+      ],
+      "exit": 0
+    }
+  ],
+  "passed": true,
+  "original_tests_changed": 0,
+  "before_archive_sha256": {
+    "hangye-fenxi": "d7dfda6480dd4e98cd2cb20cb24a08fa00300b530dd8926953bea003c03bdc83",
+    "zhuying-yewu-fenxi": "4e6d9b5601772334d40136b64928685c5b618f9ec228072483d942eef9b55ad1",
+    "gongsi-qingkuang": "3acaa7de04926ad355a7c0c7761b3e539242a2ea4c09a33ca2a238383fd09d5c",
+    "officialese-skill": "eb2e3ea48c74483c15f4c39d080adbb95326039f462a6ca416d36ce43f2f553a",
+    "yiti-skill": "e25bf970d0373347b8d222a9ac81d20afe4bcee29a08cc065e2b1f55a70027c6",
+    "meeting-minutes-pro": "5173df4629e532b1180dbefc248ad25e55b7c4f87ff953cb854d7658d45de205",
+    "soe-post-investment-report": "c42da93be330890deb15c510738d5932f9dbe1a975e39fbfb7925d806bd76239"
+  },
+  "after_archive_sha256": {
+    "hangye-fenxi": "0a0902b8e8e544e9e4fc0419bf4cd3e4b2531ba898ded04352f19992b993f565",
+    "zhuying-yewu-fenxi": "8544eafa9f335518a6fa7812d78da762d277164dcc406875321ac76f4b437359",
+    "gongsi-qingkuang": "9d02738c1a8c9cd1102a76171f9426f95bb75428b7df13f41500b4bdc740c65f",
+    "officialese-skill": "8dc6688dfcee7424814235c519e5377157da1507cee7c63f9215c6cab0fe1e73",
+    "yiti-skill": "8dc7df165c612e76ec088ae7b90e387a050144f4617231aebe450ce4efaaee7b",
+    "meeting-minutes-pro": "690cea1111bb834158df71eb972e255392c39406985ca363c4342129b873033e",
+    "soe-post-investment-report": "c42da93be330890deb15c510738d5932f9dbe1a975e39fbfb7925d806bd76239"
+  },
+  "affected": [
+    "gongsi-qingkuang",
+    "hangye-fenxi",
+    "zhuying-yewu-fenxi",
+    "officialese-skill",
+    "yiti-skill",
+    "meeting-minutes-pro"
+  ],
+  "unaffected_post_archive_unchanged": true,
+  "renderer_body_equal_except_exact_font_hint": 2,
+  "other_renderer_files_byte_identical": 6,
+  "system_uninstalled_hint_runtime": "Not observed: all three font families are already registered. The old failed probe is retained. The exact literal is verified by a whole-file baseline comparison; no function/registry mock or font installation.",
+  "note": "Four real CLI embedding-resource probes use synthetic SFNT inputs; not new Word rendering, model calls or ASR inference."
+}

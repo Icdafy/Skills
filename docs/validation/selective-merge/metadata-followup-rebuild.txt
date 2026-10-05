@@ -1,0 +1,6 @@
+[OK] hangye-fenxi: metadata, resources and links (33 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\investment-report-skills\hangye-fenxi.zip (167406 bytes) SHA256=2da5a7e2d2686e7d337e5de2c9f4072691ef0292cb5455d78bebb5e049c2f4f4
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\office-skills\soe-post-investment-report.zip (488507 bytes) SHA256=6698ca49287a593cdda86618742452a9b2431b451e45c3e3338db68c503d971b
+command=python tools/package_skills.py --skill hangye-fenxi --skill soe-post-investment-report; exit=0

@@ -1,0 +1,7 @@
+$ python tools/check_library.py
+exit=1
+[OK] Index, Chinese catalog and marketplace agree: 7 skills
+[OK] Retained source fonts: 18 exact paths/SHA-256; unchanged
+[OK] Distribution scan: 744 other files including ZIP/OOXML/CFB streams; restricted-font hits=0
+[INFO] Source font redistribution authorization remains unresolved; see BLOCKED.md. Validation does not certify public licensing.
+[FAIL] Missing resources: references/template-early.md

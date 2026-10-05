@@ -34,12 +34,13 @@ import tempfile
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
+from skill_catalog import source_path
 PROBE_NAME = "VerifyProbeFS"
 FALLBACK_HINTS = ("SimSun", "NSimSun", "MicrosoftYaHei", "DejaVuSans", "FangSong")
 
 
 def load_embed_fonts(skill: str):
-    path = REPO / skill / "scripts" / "embed_fonts.py"
+    path = source_path(skill, REPO) / "scripts" / "embed_fonts.py"
     if not path.is_file():
         raise SystemExit(f"找不到 {path}")
     spec = importlib.util.spec_from_file_location(f"ef_{skill.replace('-', '_')}", path)
@@ -148,7 +149,11 @@ def main() -> int:
     args = parser.parse_args()
 
     embed = load_embed_fonts(args.skill)
-    source = REPO / args.skill / "assets" / "fonts" / "simfang.ttf"
+    module = load_embed_fonts(args.skill)
+    paths = module.default_font_paths() if hasattr(module, "default_font_paths") else module.resolve_bundled_fonts()
+    source = paths.get("仿宋_GB2312")
+    if source is None:
+        raise SystemExit("缺少本机授权仿宋字体；先设置 ICDAFY_FONT_DIR，字体不随仓库分发")
     if not source.is_file():
         raise SystemExit(f"找不到随附字体：{source}")
     render = render_with_word if args.renderer == "word" else render_with_soffice

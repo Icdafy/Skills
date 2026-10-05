@@ -1,0 +1,23 @@
+{
+  "before": {
+    "hangye-fenxi": "0a0902b8e8e544e9e4fc0419bf4cd3e4b2531ba898ded04352f19992b993f565",
+    "zhuying-yewu-fenxi": "8544eafa9f335518a6fa7812d78da762d277164dcc406875321ac76f4b437359",
+    "gongsi-qingkuang": "9d02738c1a8c9cd1102a76171f9426f95bb75428b7df13f41500b4bdc740c65f",
+    "officialese-skill": "8dc6688dfcee7424814235c519e5377157da1507cee7c63f9215c6cab0fe1e73",
+    "yiti-skill": "8dc7df165c612e76ec088ae7b90e387a050144f4617231aebe450ce4efaaee7b",
+    "meeting-minutes-pro": "690cea1111bb834158df71eb972e255392c39406985ca363c4342129b873033e",
+    "soe-post-investment-report": "c42da93be330890deb15c510738d5932f9dbe1a975e39fbfb7925d806bd76239"
+  },
+  "after": {
+    "hangye-fenxi": "0a0902b8e8e544e9e4fc0419bf4cd3e4b2531ba898ded04352f19992b993f565",
+    "zhuying-yewu-fenxi": "8544eafa9f335518a6fa7812d78da762d277164dcc406875321ac76f4b437359",
+    "gongsi-qingkuang": "9d02738c1a8c9cd1102a76171f9426f95bb75428b7df13f41500b4bdc740c65f",
+    "officialese-skill": "8dc6688dfcee7424814235c519e5377157da1507cee7c63f9215c6cab0fe1e73",
+    "yiti-skill": "d6af66835262f9d8f756940c5ab18ee3a6ebfb817f7c32ebeb4dfe508daacfb4",
+    "meeting-minutes-pro": "690cea1111bb834158df71eb972e255392c39406985ca363c4342129b873033e",
+    "soe-post-investment-report": "c42da93be330890deb15c510738d5932f9dbe1a975e39fbfb7925d806bd76239"
+  },
+  "changed": [
+    "yiti-skill"
+  ]
+}

@@ -1,0 +1,1294 @@
+{
+  "previous_commit": "3e314cd653a09ff3f3481518411b3038df0ee21c",
+  "normalization": "Text checkout CRLF/LF only; README and CHANGELOG intentionally updated",
+  "files": 214,
+  "skill_instructions_unchanged": 7,
+  "failures": [],
+  "results": [
+    {
+      "old": "skills/hangye-fenxi/LICENSE",
+      "current": "hangye-fenxi/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/hangye-fenxi/NOTICE",
+      "current": "hangye-fenxi/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/hangye-fenxi/SKILL.md",
+      "current": "hangye-fenxi/SKILL.md",
+      "equal": true,
+      "sha256": "59423cd4e52233050e2582247d39b4627597886825b549de12fd871e3cffa08a"
+    },
+    {
+      "old": "skills/hangye-fenxi/VERSION",
+      "current": "hangye-fenxi/VERSION",
+      "equal": true,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "old": "skills/hangye-fenxi/agents/openai.yaml",
+      "current": "hangye-fenxi/agents/openai.yaml",
+      "equal": true,
+      "sha256": "c90216fee21dae774154c3fec25ef3584f8637dc61ef4c860d5494c0a7342b85"
+    },
+    {
+      "old": "skills/hangye-fenxi/assets/fonts/README.md",
+      "current": "hangye-fenxi/assets/fonts/README.md",
+      "equal": true,
+      "sha256": "44053e79938f35a71ed2358f4d618129691849a9c754823518be73d6e20e9523"
+    },
+    {
+      "old": "skills/hangye-fenxi/assets/templates/early.json",
+      "current": "hangye-fenxi/assets/templates/early.json",
+      "equal": true,
+      "sha256": "d4b2de70ad127ef151deec8b1046e62d321afc05968d853593813e86a8fbcd3c"
+    },
+    {
+      "old": "skills/hangye-fenxi/assets/templates/mid-late.json",
+      "current": "hangye-fenxi/assets/templates/mid-late.json",
+      "equal": true,
+      "sha256": "93148329347deb93d0b4eaac358fdf053c29793934cda487c1fa044c238628df"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/01-framework.md",
+      "current": "hangye-fenxi/references/01-framework.md",
+      "equal": true,
+      "sha256": "815ad0079dbc0adfbdd9692a0602a64311208364f32bddca9f35d73c33113608"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/02-writing-style.md",
+      "current": "hangye-fenxi/references/02-writing-style.md",
+      "equal": true,
+      "sha256": "f170f506a6bea2c4ef4c28b7352d2710a453a02ede480157590d46930764fde2"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/03-data-rules.md",
+      "current": "hangye-fenxi/references/03-data-rules.md",
+      "equal": true,
+      "sha256": "6b50c46c93cc30833df319b6c74ccf65b5da31f0da7db0450c90705ba308d864"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/04-tables-charts.md",
+      "current": "hangye-fenxi/references/04-tables-charts.md",
+      "equal": true,
+      "sha256": "52adecc9d305ddd40368d11a4d4de3f8ed1078d3c366c60757e2aa8e2156f24f"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/05-quality-checklist.md",
+      "current": "hangye-fenxi/references/05-quality-checklist.md",
+      "equal": true,
+      "sha256": "4279da227a71791a07d76d16ff327f2bfae02091ac0902099c094ec9e0eff64f"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/06-red-flags.md",
+      "current": "hangye-fenxi/references/06-red-flags.md",
+      "equal": true,
+      "sha256": "addf8e01beccbea89893537c37e7e6498f4984b5d5ff133d92fbf97f0ab08413"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/07-benchmark-lessons.md",
+      "current": "hangye-fenxi/references/07-benchmark-lessons.md",
+      "equal": true,
+      "sha256": "0d6f6c505efabde13023b6e26092f0f05e37dc3dd26d456e21708015c929fb57"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/08-chanlian-deep-dive.md",
+      "current": "hangye-fenxi/references/08-chanlian-deep-dive.md",
+      "equal": true,
+      "sha256": "1b1f270b88b283ed7b4884a7d2b461d833ef7ab437f5d53935a34d2e036d4f53"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/agent-compatibility.md",
+      "current": "hangye-fenxi/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/investment-logic-review.md",
+      "current": "hangye-fenxi/references/investment-logic-review.md",
+      "equal": true,
+      "sha256": "470b8af9a7211b29924d423d40931e71e731b151c4f223a51cc8ed3496aa49b4"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/stage-template-workflow.md",
+      "current": "hangye-fenxi/references/stage-template-workflow.md",
+      "equal": true,
+      "sha256": "e38a2b4415934f0ff299b254fba3ed1ace879b030a20d28e5e80de6d2bb21b75"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/template-early.md",
+      "current": "hangye-fenxi/references/template-early.md",
+      "equal": true,
+      "sha256": "c662f5b9acd16ca58b9bbff41ccfc30885a496e62f27c49a15ac6613e5c54c3d"
+    },
+    {
+      "old": "skills/hangye-fenxi/references/template-mid-late.md",
+      "current": "hangye-fenxi/references/template-mid-late.md",
+      "equal": true,
+      "sha256": "78e92f86595c5bedfc376b3b178b831ee762dd0ca69b25e68f803f16185378df"
+    },
+    {
+      "old": "skills/hangye-fenxi/requirements.txt",
+      "current": "hangye-fenxi/requirements.txt",
+      "equal": true,
+      "sha256": "050d1bda13a66af7954d3bc0c3a5ae7d2d997ebe5b62f04b9eac6b3c69c3abe3"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/build_docx.py",
+      "current": "hangye-fenxi/scripts/build_docx.py",
+      "equal": true,
+      "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/docx_format_helpers.py",
+      "current": "hangye-fenxi/scripts/docx_format_helpers.py",
+      "equal": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/embed_fonts.py",
+      "current": "hangye-fenxi/scripts/embed_fonts.py",
+      "equal": true,
+      "sha256": "b79ea1d748c8f38745fcad1c4c466734eb4140def7ba15a02b1a2cf413da2960"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/ensure_fonts.py",
+      "current": "hangye-fenxi/scripts/ensure_fonts.py",
+      "equal": true,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/local_fonts.py",
+      "current": "hangye-fenxi/scripts/local_fonts.py",
+      "equal": true,
+      "sha256": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/reconcile_check.py",
+      "current": "hangye-fenxi/scripts/reconcile_check.py",
+      "equal": true,
+      "sha256": "ee0b9ed50759d8fefec4e75bd27b934d8dccf053d88e4c6ea7e808413105af88"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/skill_portability.py",
+      "current": "hangye-fenxi/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/stage_template.py",
+      "current": "hangye-fenxi/scripts/stage_template.py",
+      "equal": true,
+      "sha256": "cc57fb013b84a890d5e5a6c7f7eca4e0c3dd43bd1e76c53e3a2cbc67fe635e51"
+    },
+    {
+      "old": "skills/hangye-fenxi/scripts/style_check.py",
+      "current": "hangye-fenxi/scripts/style_check.py",
+      "equal": true,
+      "sha256": "d501afff1b629ec077d6efc2c84390b4e58e72cfe0b646c00882a29e9ad40f13"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/LICENSE",
+      "current": "zhuying-yewu-fenxi/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/NOTICE",
+      "current": "zhuying-yewu-fenxi/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/SKILL.md",
+      "current": "zhuying-yewu-fenxi/SKILL.md",
+      "equal": true,
+      "sha256": "5107481d018175a2bcfd53010ff7f8d74a3e1aa17ad3e405c9c84fe5c51771a9"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/VERSION",
+      "current": "zhuying-yewu-fenxi/VERSION",
+      "equal": true,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/agents/openai.yaml",
+      "current": "zhuying-yewu-fenxi/agents/openai.yaml",
+      "equal": true,
+      "sha256": "08f4ba1713b89a1144dd156b97a7f4d34d90767842a2aa78ca1de82175cd9b0a"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/assets/fonts/README.md",
+      "current": "zhuying-yewu-fenxi/assets/fonts/README.md",
+      "equal": true,
+      "sha256": "44053e79938f35a71ed2358f4d618129691849a9c754823518be73d6e20e9523"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/assets/templates/early.json",
+      "current": "zhuying-yewu-fenxi/assets/templates/early.json",
+      "equal": true,
+      "sha256": "5cb58b6bebd7bd2090f4ee61134e37fdc6034958d8c72aa2a76254a987e3b4b8"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/assets/templates/mid-late.json",
+      "current": "zhuying-yewu-fenxi/assets/templates/mid-late.json",
+      "equal": true,
+      "sha256": "e64c57ffe607558d8bdbb85e982cc0d76d383f8b22253c91f4e296f70a690d88"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/agent-compatibility.md",
+      "current": "zhuying-yewu-fenxi/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/chapter-template.md",
+      "current": "zhuying-yewu-fenxi/references/chapter-template.md",
+      "equal": true,
+      "sha256": "b5f7ca12ec458148d403a1a0f985cc1dd5ef5ec0b9fc2fa5993939bb22c8758e"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/docx-format.md",
+      "current": "zhuying-yewu-fenxi/references/docx-format.md",
+      "equal": true,
+      "sha256": "a70f3c677be47f4f1e4674f12e2a53a931831731144b790e93dd472d23e76f81"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/investment-logic-review.md",
+      "current": "zhuying-yewu-fenxi/references/investment-logic-review.md",
+      "equal": true,
+      "sha256": "470b8af9a7211b29924d423d40931e71e731b151c4f223a51cc8ed3496aa49b4"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/language-style.md",
+      "current": "zhuying-yewu-fenxi/references/language-style.md",
+      "equal": true,
+      "sha256": "cc37a724198554e968abb8e5fe3f474a939801c3100cb2a9770953ee0c5da94c"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/metrics-formulas.md",
+      "current": "zhuying-yewu-fenxi/references/metrics-formulas.md",
+      "equal": true,
+      "sha256": "9679a86ae15a540798d574d23cc60ff9637d8637a0f4006a913cae5f02fff9bc"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/quality-checklist.md",
+      "current": "zhuying-yewu-fenxi/references/quality-checklist.md",
+      "equal": true,
+      "sha256": "e3543536c2a5e19f2c2c1deae2d271991d43e168365993d9b59085a9a351d430"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/research-protocol.md",
+      "current": "zhuying-yewu-fenxi/references/research-protocol.md",
+      "equal": true,
+      "sha256": "e011261487b3eda350575b6d75e143adb0b9cd66a71a85e3071c9089d1314b6e"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/stage-template-workflow.md",
+      "current": "zhuying-yewu-fenxi/references/stage-template-workflow.md",
+      "equal": true,
+      "sha256": "e38a2b4415934f0ff299b254fba3ed1ace879b030a20d28e5e80de6d2bb21b75"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/template-early.md",
+      "current": "zhuying-yewu-fenxi/references/template-early.md",
+      "equal": true,
+      "sha256": "7c489f72b0b0fed52a4c0f5c3af5cc04a91fb88e67dec54f26ea9f4d16b08159"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/template-mid-late.md",
+      "current": "zhuying-yewu-fenxi/references/template-mid-late.md",
+      "equal": true,
+      "sha256": "5c03abd134aa81ce52660146a9537ea24b3192bbeafbf5ea9c3eb7842e56505d"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/references/writing-dna.md",
+      "current": "zhuying-yewu-fenxi/references/writing-dna.md",
+      "equal": true,
+      "sha256": "f2da9ac5d71590dbf95878875137a67d453b6ad52da6105795b11b004424538b"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/requirements.txt",
+      "current": "zhuying-yewu-fenxi/requirements.txt",
+      "equal": true,
+      "sha256": "050d1bda13a66af7954d3bc0c3a5ae7d2d997ebe5b62f04b9eac6b3c69c3abe3"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/build_docx.py",
+      "current": "zhuying-yewu-fenxi/scripts/build_docx.py",
+      "equal": true,
+      "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/docx_format_helpers.py",
+      "current": "zhuying-yewu-fenxi/scripts/docx_format_helpers.py",
+      "equal": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/embed_fonts.py",
+      "current": "zhuying-yewu-fenxi/scripts/embed_fonts.py",
+      "equal": true,
+      "sha256": "b79ea1d748c8f38745fcad1c4c466734eb4140def7ba15a02b1a2cf413da2960"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/ensure-fonts.ps1",
+      "current": "zhuying-yewu-fenxi/scripts/ensure-fonts.ps1",
+      "equal": true,
+      "sha256": "8fe7bbeb6e81094342efadf2e863bedbaccabaf3390f0a0d7e8a11272b551997"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/ensure_fonts.py",
+      "current": "zhuying-yewu-fenxi/scripts/ensure_fonts.py",
+      "equal": true,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/local_fonts.py",
+      "current": "zhuying-yewu-fenxi/scripts/local_fonts.py",
+      "equal": true,
+      "sha256": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/skill_portability.py",
+      "current": "zhuying-yewu-fenxi/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/stage_template.py",
+      "current": "zhuying-yewu-fenxi/scripts/stage_template.py",
+      "equal": true,
+      "sha256": "cc57fb013b84a890d5e5a6c7f7eca4e0c3dd43bd1e76c53e3a2cbc67fe635e51"
+    },
+    {
+      "old": "skills/zhuying-yewu-fenxi/scripts/style_check.py",
+      "current": "zhuying-yewu-fenxi/scripts/style_check.py",
+      "equal": true,
+      "sha256": "d501afff1b629ec077d6efc2c84390b4e58e72cfe0b646c00882a29e9ad40f13"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/LICENSE",
+      "current": "gongsi-qingkuang/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/NOTICE",
+      "current": "gongsi-qingkuang/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/SKILL.md",
+      "current": "gongsi-qingkuang/SKILL.md",
+      "equal": true,
+      "sha256": "224b6f2e5cc449d6608a774bf5fea87154f8aa92fa744f5591458cfe66c95be3"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/VERSION",
+      "current": "gongsi-qingkuang/VERSION",
+      "equal": true,
+      "sha256": "fe840f52fb5578d3f77eb497115eb02c6036601c3a53e60df7995c7276baa77a"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/agents/openai.yaml",
+      "current": "gongsi-qingkuang/agents/openai.yaml",
+      "equal": true,
+      "sha256": "b692153ed29acfdddf8d70c58486f6e9a4e9ae3cc431a11fc1de123f1c416248"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/assets/content_skeleton.json",
+      "current": "gongsi-qingkuang/assets/content_skeleton.json",
+      "equal": true,
+      "sha256": "9621a0fd6333ab2b5a8a1b1e540766e87e418d89ba4cc02d857405a12558fe7c"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/assets/fonts/README.md",
+      "current": "gongsi-qingkuang/assets/fonts/README.md",
+      "equal": true,
+      "sha256": "44053e79938f35a71ed2358f4d618129691849a9c754823518be73d6e20e9523"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/assets/templates/early.json",
+      "current": "gongsi-qingkuang/assets/templates/early.json",
+      "equal": true,
+      "sha256": "97401147b4db0719d7fe0d9ca12370736556542969b7a7b4c4f6cac57dd96ce6"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/assets/templates/mid-late.json",
+      "current": "gongsi-qingkuang/assets/templates/mid-late.json",
+      "equal": true,
+      "sha256": "7f537d49aab4fca123ec299cd6dd691f7b93316ae821df3c1dbf0796f52aa3ea"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/evals/evals.json",
+      "current": "gongsi-qingkuang/evals/evals.json",
+      "equal": true,
+      "sha256": "0ad7f91f73a8364fbb82497596f80bb421ecf170270eadb0e2705b7e6afdf242"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/evals/test_style_check.py",
+      "current": "gongsi-qingkuang/evals/test_style_check.py",
+      "equal": true,
+      "sha256": "99b647618a0bc21c9d79f5d4acb5a36237d32d98f6d376cb7b44692311412800"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/agent-compatibility.md",
+      "current": "gongsi-qingkuang/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/data-and-tables.md",
+      "current": "gongsi-qingkuang/references/data-and-tables.md",
+      "equal": true,
+      "sha256": "10cc1e7f3b7f9a9895cde7f60d88b41553e5f76ece22e0554e94f6aa6bff5828"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/gold-examples.md",
+      "current": "gongsi-qingkuang/references/gold-examples.md",
+      "equal": true,
+      "sha256": "e087107387948f10b5699566662b4f0b9ae8aa285e735f11eabafc5bed462dca"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/investment-logic-review.md",
+      "current": "gongsi-qingkuang/references/investment-logic-review.md",
+      "equal": true,
+      "sha256": "470b8af9a7211b29924d423d40931e71e731b151c4f223a51cc8ed3496aa49b4"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/red-flags.md",
+      "current": "gongsi-qingkuang/references/red-flags.md",
+      "equal": true,
+      "sha256": "5953dc8c5d4662fa1716cbf72316dc42bdbe81eec57a39bf197bd3c11cfdf9a5"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/review-feedback.md",
+      "current": "gongsi-qingkuang/references/review-feedback.md",
+      "equal": true,
+      "sha256": "a0c5675afa7a4a02eebcbe49cd4b3b0d98df8b6d90a6adc1e894ff3b91619af4"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/stage-template-workflow.md",
+      "current": "gongsi-qingkuang/references/stage-template-workflow.md",
+      "equal": true,
+      "sha256": "e38a2b4415934f0ff299b254fba3ed1ace879b030a20d28e5e80de6d2bb21b75"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/structure.md",
+      "current": "gongsi-qingkuang/references/structure.md",
+      "equal": true,
+      "sha256": "fd2e44d9eac200b013bc39aca2326c718f92d02ebdb042a6990d7b50259d1484"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/template-early.md",
+      "current": "gongsi-qingkuang/references/template-early.md",
+      "equal": true,
+      "sha256": "805732cf103e0570210fd27c1914a795c3bdd7b462c1e9d7aa700d243cb5b1cc"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/template-mid-late.md",
+      "current": "gongsi-qingkuang/references/template-mid-late.md",
+      "equal": true,
+      "sha256": "eb838820b1e83e43013a261397884824e3d6172586d185afde134ff708407a13"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/references/writing-craft.md",
+      "current": "gongsi-qingkuang/references/writing-craft.md",
+      "equal": true,
+      "sha256": "eb1be957f17e7f96d3acb6bf1d50298ba65df4f56fb391ab0035f96b74db6e80"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/requirements.txt",
+      "current": "gongsi-qingkuang/requirements.txt",
+      "equal": true,
+      "sha256": "050d1bda13a66af7954d3bc0c3a5ae7d2d997ebe5b62f04b9eac6b3c69c3abe3"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/build_docx.py",
+      "current": "gongsi-qingkuang/scripts/build_docx.py",
+      "equal": true,
+      "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/docx_format_helpers.py",
+      "current": "gongsi-qingkuang/scripts/docx_format_helpers.py",
+      "equal": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/embed_fonts.py",
+      "current": "gongsi-qingkuang/scripts/embed_fonts.py",
+      "equal": true,
+      "sha256": "b79ea1d748c8f38745fcad1c4c466734eb4140def7ba15a02b1a2cf413da2960"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/ensure_fonts.py",
+      "current": "gongsi-qingkuang/scripts/ensure_fonts.py",
+      "equal": true,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/extract_docx.py",
+      "current": "gongsi-qingkuang/scripts/extract_docx.py",
+      "equal": true,
+      "sha256": "052df0522e98865bffec98296900f88637de6b05fd3fb16f6695c1ba3b7e8bf6"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/local_fonts.py",
+      "current": "gongsi-qingkuang/scripts/local_fonts.py",
+      "equal": true,
+      "sha256": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/reconcile_check.py",
+      "current": "gongsi-qingkuang/scripts/reconcile_check.py",
+      "equal": true,
+      "sha256": "13da3b03ee6d2590fc1a3d998461f5e313fb42f1f0e80ca6fcd8f69fd589c7fc"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/skill_portability.py",
+      "current": "gongsi-qingkuang/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/stage_template.py",
+      "current": "gongsi-qingkuang/scripts/stage_template.py",
+      "equal": true,
+      "sha256": "cc57fb013b84a890d5e5a6c7f7eca4e0c3dd43bd1e76c53e3a2cbc67fe635e51"
+    },
+    {
+      "old": "skills/gongsi-qingkuang/scripts/style_check.py",
+      "current": "gongsi-qingkuang/scripts/style_check.py",
+      "equal": true,
+      "sha256": "cc46f3793cfdceb056822bb625a145868559874e348f31ff10603e2ef51299f2"
+    },
+    {
+      "old": "skills/officialese-skill/LICENSE",
+      "current": "officialese-skill/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/officialese-skill/NOTICE",
+      "current": "officialese-skill/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/officialese-skill/SKILL.md",
+      "current": "officialese-skill/SKILL.md",
+      "equal": true,
+      "sha256": "2ad8fb842aecf211d476ac13f36492c783268049d824d205d0126d247ce7c966"
+    },
+    {
+      "old": "skills/officialese-skill/VERSION",
+      "current": "officialese-skill/VERSION",
+      "equal": true,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "old": "skills/officialese-skill/agents/openai.yaml",
+      "current": "officialese-skill/agents/openai.yaml",
+      "equal": true,
+      "sha256": "16a35bc33df9a2ceaebdd31f4b9167a45573812cd7e852fc5ec753f5e09be1f9"
+    },
+    {
+      "old": "skills/officialese-skill/assets/fonts/README.md",
+      "current": "officialese-skill/assets/fonts/README.md",
+      "equal": true,
+      "sha256": "44053e79938f35a71ed2358f4d618129691849a9c754823518be73d6e20e9523"
+    },
+    {
+      "old": "skills/officialese-skill/assets/templates/文件字体格式.doc",
+      "current": "officialese-skill/assets/templates/文件字体格式.doc",
+      "equal": true,
+      "sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925"
+    },
+    {
+      "old": "skills/officialese-skill/references/agent-compatibility.md",
+      "current": "officialese-skill/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/officialese-skill/references/format-rules.md",
+      "current": "officialese-skill/references/format-rules.md",
+      "equal": true,
+      "sha256": "bc7fb6a96a00525cfa88daf81707bebe330af36f7e7b5755a92fc34d7e12aa80"
+    },
+    {
+      "old": "skills/officialese-skill/references/writing-patterns.md",
+      "current": "officialese-skill/references/writing-patterns.md",
+      "equal": true,
+      "sha256": "efb2e158e4fe51fd558160491944511cfbb3a13146ffaceba1d86fe22317fc99"
+    },
+    {
+      "old": "skills/officialese-skill/requirements.txt",
+      "current": "officialese-skill/requirements.txt",
+      "equal": true,
+      "sha256": "050d1bda13a66af7954d3bc0c3a5ae7d2d997ebe5b62f04b9eac6b3c69c3abe3"
+    },
+    {
+      "old": "skills/officialese-skill/scripts/create_official_docx.py",
+      "current": "officialese-skill/scripts/create_official_docx.py",
+      "equal": true,
+      "sha256": "5dda29763a1eb02de7359fb0bc8166cfad245e89b2b17e48e73d35472c3a14ae"
+    },
+    {
+      "old": "skills/officialese-skill/scripts/embed_fonts.py",
+      "current": "officialese-skill/scripts/embed_fonts.py",
+      "equal": true,
+      "sha256": "b79ea1d748c8f38745fcad1c4c466734eb4140def7ba15a02b1a2cf413da2960"
+    },
+    {
+      "old": "skills/officialese-skill/scripts/ensure_fonts.py",
+      "current": "officialese-skill/scripts/ensure_fonts.py",
+      "equal": true,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "old": "skills/officialese-skill/scripts/local_fonts.py",
+      "current": "officialese-skill/scripts/local_fonts.py",
+      "equal": true,
+      "sha256": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125"
+    },
+    {
+      "old": "skills/officialese-skill/scripts/skill_portability.py",
+      "current": "officialese-skill/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/officialese-skill/scripts/test_create_official_docx.py",
+      "current": "officialese-skill/scripts/test_create_official_docx.py",
+      "equal": true,
+      "sha256": "002eaf1467e375c761321ca694ad3c44e586bd870f708b2ac52b45245326688a"
+    },
+    {
+      "old": "skills/yiti-skill/LICENSE",
+      "current": "yiti-skill/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/yiti-skill/NOTICE",
+      "current": "yiti-skill/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/yiti-skill/SKILL.md",
+      "current": "yiti-skill/SKILL.md",
+      "equal": true,
+      "sha256": "dec3f8d2a976fb17f2914faa139eb2a0ae4f45c2413e6312ae2e4af4bda51914"
+    },
+    {
+      "old": "skills/yiti-skill/VERSION",
+      "current": "yiti-skill/VERSION",
+      "equal": true,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "old": "skills/yiti-skill/agents/openai.yaml",
+      "current": "yiti-skill/agents/openai.yaml",
+      "equal": true,
+      "sha256": "d04e1b373194906425556c97e0c2d06ad1edfd295c2a2ba4c17e6b86729dd8a1"
+    },
+    {
+      "old": "skills/yiti-skill/assets/examples/exit-yiti-spec.json",
+      "current": "yiti-skill/assets/examples/exit-yiti-spec.json",
+      "equal": true,
+      "sha256": "48589647f5c11d02eab480d7c8e153ccc34e02710ef5b8bfb98d86ef22a0c7ee"
+    },
+    {
+      "old": "skills/yiti-skill/assets/fonts/README.md",
+      "current": "yiti-skill/assets/fonts/README.md",
+      "equal": true,
+      "sha256": "44053e79938f35a71ed2358f4d618129691849a9c754823518be73d6e20e9523"
+    },
+    {
+      "old": "skills/yiti-skill/assets/templates/文件字体格式.doc",
+      "current": "yiti-skill/assets/templates/文件字体格式.doc",
+      "equal": true,
+      "sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925"
+    },
+    {
+      "old": "skills/yiti-skill/references/agent-compatibility.md",
+      "current": "yiti-skill/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/yiti-skill/references/exit-writing-logic.md",
+      "current": "yiti-skill/references/exit-writing-logic.md",
+      "equal": true,
+      "sha256": "7c1a8e89941ffc15c921a97ba78fc33ce3a2a8cec73196ef95ef07b5ac772dc1"
+    },
+    {
+      "old": "skills/yiti-skill/references/format-rules.md",
+      "current": "yiti-skill/references/format-rules.md",
+      "equal": true,
+      "sha256": "3d0d15c67ad09eb3819ecabd75d696c10267385d7c5fc7f82dc2c0a5814da2bc"
+    },
+    {
+      "old": "skills/yiti-skill/references/gold-examples.md",
+      "current": "yiti-skill/references/gold-examples.md",
+      "equal": true,
+      "sha256": "3cb109a429b669067dffcab02630ff10a9f9ac8d601c45b70c840ab511a1097d"
+    },
+    {
+      "old": "skills/yiti-skill/references/writing-logic.md",
+      "current": "yiti-skill/references/writing-logic.md",
+      "equal": true,
+      "sha256": "c6bda90301ce85f0d1af87a8c0db647b92da9223a22690757ce2f3b8be5ec004"
+    },
+    {
+      "old": "skills/yiti-skill/requirements.txt",
+      "current": "yiti-skill/requirements.txt",
+      "equal": true,
+      "sha256": "050d1bda13a66af7954d3bc0c3a5ae7d2d997ebe5b62f04b9eac6b3c69c3abe3"
+    },
+    {
+      "old": "skills/yiti-skill/scripts/check_yiti_text.py",
+      "current": "yiti-skill/scripts/check_yiti_text.py",
+      "equal": true,
+      "sha256": "76909dad5b3dca441a5ade312c9a5ee0d82ecd00eaaf9fb683b066b105674961"
+    },
+    {
+      "old": "skills/yiti-skill/scripts/create_yiti_docx.py",
+      "current": "yiti-skill/scripts/create_yiti_docx.py",
+      "equal": true,
+      "sha256": "8199aaee861a1417a7242d348c9e5d4b22ca6e3ae46b69209ecbac9da0bd0cba"
+    },
+    {
+      "old": "skills/yiti-skill/scripts/embed_fonts.py",
+      "current": "yiti-skill/scripts/embed_fonts.py",
+      "equal": true,
+      "sha256": "b79ea1d748c8f38745fcad1c4c466734eb4140def7ba15a02b1a2cf413da2960"
+    },
+    {
+      "old": "skills/yiti-skill/scripts/ensure_fonts.py",
+      "current": "yiti-skill/scripts/ensure_fonts.py",
+      "equal": true,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "old": "skills/yiti-skill/scripts/local_fonts.py",
+      "current": "yiti-skill/scripts/local_fonts.py",
+      "equal": true,
+      "sha256": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125"
+    },
+    {
+      "old": "skills/yiti-skill/scripts/skill_portability.py",
+      "current": "yiti-skill/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/LICENSE",
+      "current": "meeting-minutes-pro/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/NOTICE",
+      "current": "meeting-minutes-pro/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/SKILL.md",
+      "current": "meeting-minutes-pro/SKILL.md",
+      "equal": true,
+      "sha256": "34d12a3238ecd244304bdd20a07f1d5e911c9e53ae2d1de4306c6fcc59acd7ab"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/VERSION",
+      "current": "meeting-minutes-pro/VERSION",
+      "equal": true,
+      "sha256": "59854984853104df5c353e2f681a15fc7924742f9a2e468c29af248dce45ce03"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/agents/openai.yaml",
+      "current": "meeting-minutes-pro/agents/openai.yaml",
+      "equal": true,
+      "sha256": "1fe10d812ec36c13caa9350946d0040a0fb4e3014e4b03c084c727c7791341f1"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/assets/fonts/README.md",
+      "current": "meeting-minutes-pro/assets/fonts/README.md",
+      "equal": true,
+      "sha256": "44053e79938f35a71ed2358f4d618129691849a9c754823518be73d6e20e9523"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/assets/templates/文件字体格式.doc",
+      "current": "meeting-minutes-pro/assets/templates/文件字体格式.doc",
+      "equal": true,
+      "sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/glossary/README.md",
+      "current": "meeting-minutes-pro/glossary/README.md",
+      "equal": true,
+      "sha256": "e20e11d43959a829c3e409f094e3eaf980da4b8f3ae86155b7ef1df2c5b6b007"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/glossary/industry/低空经济.txt",
+      "current": "meeting-minutes-pro/glossary/industry/低空经济.txt",
+      "equal": true,
+      "sha256": "40fe20127207e03a59a63849df2188f5076ef3ce7d6541a0ff4f97e2b61e6408"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/glossary/industry/商业航天.txt",
+      "current": "meeting-minutes-pro/glossary/industry/商业航天.txt",
+      "equal": true,
+      "sha256": "12e9ae51095fa709bd08824fa37bd9607585d1ff136a01432f3cf429ff13fa91"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/references/agent-compatibility.md",
+      "current": "meeting-minutes-pro/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/references/architecture.md",
+      "current": "meeting-minutes-pro/references/architecture.md",
+      "equal": true,
+      "sha256": "a1a6bd2b7524f41086888735378c2d038b6b30db93631e65b9f1766a1604a5c6"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/references/evidence-and-release.md",
+      "current": "meeting-minutes-pro/references/evidence-and-release.md",
+      "equal": true,
+      "sha256": "4390ba592f48a95bb1260c6c4cbb833130de0c2c9c43b3f78ef75c9289fe5341"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/references/format-and-output.md",
+      "current": "meeting-minutes-pro/references/format-and-output.md",
+      "equal": true,
+      "sha256": "f25d96dd8538aac87894dafa9df58ec10c0b7681e72e3aa891fab1298b0938a6"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/references/platforms.md",
+      "current": "meeting-minutes-pro/references/platforms.md",
+      "equal": true,
+      "sha256": "1ae46ec8de699a5284803575bf7414c14ab7d09e28b46163e1abe253ceef43d1"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/references/runtime.md",
+      "current": "meeting-minutes-pro/references/runtime.md",
+      "equal": true,
+      "sha256": "fa4ba547cf7e1ab3eab33e23195259a8d72fac31fb5016a419c3562ca6d23d38"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/audit_coverage.py",
+      "current": "meeting-minutes-pro/scripts/audit_coverage.py",
+      "equal": true,
+      "sha256": "757d32c946fe68281b2a6a4e96ec11e6cd11908fac10c4f3af060fc045f65262"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/bootstrap_runtime.py",
+      "current": "meeting-minutes-pro/scripts/bootstrap_runtime.py",
+      "equal": true,
+      "sha256": "51db04c049598bfa120c864b6f042cea2ab7364d7261b4fa7d189ed076909c5d"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/check_all.py",
+      "current": "meeting-minutes-pro/scripts/check_all.py",
+      "equal": true,
+      "sha256": "be41db8c7c61a9d0c47b6a6587d878e526090267800fb027c3f9f6b94a6a7507"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/create_minutes_docx.py",
+      "current": "meeting-minutes-pro/scripts/create_minutes_docx.py",
+      "equal": true,
+      "sha256": "d7b07673155a42d81f54bc9f94d134739dea0003cff5ce427379cdd01d8c0785"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/docx_format_helpers.py",
+      "current": "meeting-minutes-pro/scripts/docx_format_helpers.py",
+      "equal": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/docx_style_check.py",
+      "current": "meeting-minutes-pro/scripts/docx_style_check.py",
+      "equal": true,
+      "sha256": "0930b1ae948bc3f21ff857f947ee91bcf20ff835ad091ecc997e1bb32466d95d"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/embed_fonts.py",
+      "current": "meeting-minutes-pro/scripts/embed_fonts.py",
+      "equal": true,
+      "sha256": "9f5ef723be5de17828f0f91261062987aff3e63fa00b5c1b9289038f7a0b89ac"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/fact_check.py",
+      "current": "meeting-minutes-pro/scripts/fact_check.py",
+      "equal": true,
+      "sha256": "6b17cb441937a72ae483e321a0e7713316f481514b1d7f1173b1517231b51e6f"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/font_preflight.py",
+      "current": "meeting-minutes-pro/scripts/font_preflight.py",
+      "equal": true,
+      "sha256": "681a830b7347d4437a067dd0ac0634fe41f6d956d9fe8bc146c0712a93263a9a"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/format_spec.py",
+      "current": "meeting-minutes-pro/scripts/format_spec.py",
+      "equal": true,
+      "sha256": "9455a58814df65641665f9a9a0c578401b932143ffe18398aa283644d752d4d2"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/install_skill.py",
+      "current": "meeting-minutes-pro/scripts/install_skill.py",
+      "equal": true,
+      "sha256": "b3f35d37807051ebf8b6a9c00bcb20ffc7d7f5d7e4379b5ae474da8a9504e5c2"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/local_fonts.py",
+      "current": "meeting-minutes-pro/scripts/local_fonts.py",
+      "equal": true,
+      "sha256": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/qa_reconcile.py",
+      "current": "meeting-minutes-pro/scripts/qa_reconcile.py",
+      "equal": true,
+      "sha256": "77cf3dba61dbdf981dd05438cd22c8a31d8c930253659d642bf9b05a91a13e2c"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/quality_check.py",
+      "current": "meeting-minutes-pro/scripts/quality_check.py",
+      "equal": true,
+      "sha256": "541b33c69b937aac20767aa7fc7daf09b9b4b7e9ec631ffd82419a1a4ee8c402"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/refine_transcript.py",
+      "current": "meeting-minutes-pro/scripts/refine_transcript.py",
+      "equal": true,
+      "sha256": "08c1ea9b84134f0fc9fd1d36948a44fef5f5445fea5ad7c93bca6bdcc17f76ed"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/render_docx.py",
+      "current": "meeting-minutes-pro/scripts/render_docx.py",
+      "equal": true,
+      "sha256": "624fb11dece6df59b9e72b21169cf3a2be687843869ff712a6d24f5749c9e10f"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/requirements-funasr.txt",
+      "current": "meeting-minutes-pro/scripts/requirements-funasr.txt",
+      "equal": true,
+      "sha256": "0aca9676b1c3b7071e117eb57f65985a513dfc9d7bdb31fa16939c1693743c56"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/requirements-qwen.txt",
+      "current": "meeting-minutes-pro/scripts/requirements-qwen.txt",
+      "equal": true,
+      "sha256": "147b1fd83d1ea2d2d0de09cf3c1550fce8dc0d1d76d2ff72345ae4aa0ba2d065"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/requirements-runtime.txt",
+      "current": "meeting-minutes-pro/scripts/requirements-runtime.txt",
+      "equal": true,
+      "sha256": "24ef776147a7a18c54c59fb2cb2cbe5f99971604617d75da3faf1b4e0547ca59"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/review_gate.py",
+      "current": "meeting-minutes-pro/scripts/review_gate.py",
+      "equal": true,
+      "sha256": "7d589f32469e4ec5cefaa2ff1d537c1744ef6f7d14100e27e234967981df3bcd"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/run_state.py",
+      "current": "meeting-minutes-pro/scripts/run_state.py",
+      "equal": true,
+      "sha256": "2492c861c15fe458b0ddc9279b35b27c4a2096da5acdfa49c32d073a1c1088fb"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/skill_portability.py",
+      "current": "meeting-minutes-pro/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/scripts/transcribe.py",
+      "current": "meeting-minutes-pro/scripts/transcribe.py",
+      "equal": true,
+      "sha256": "d721f0ca7aba45f7a94cae4a742d564c3d7cc521aa0f194400ef78790c56b921"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/font_fixture.py",
+      "current": "meeting-minutes-pro/tests/font_fixture.py",
+      "equal": true,
+      "sha256": "fda6064d3305e731859d378a3c15336455836b31e11489f3233425f310eb0ea3"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_attachment_format.py",
+      "current": "meeting-minutes-pro/tests/test_attachment_format.py",
+      "equal": true,
+      "sha256": "80413790754fda373e5cb294ab29a13cfaf3d62900be55c94852da132cb421ae"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_audit_coverage.py",
+      "current": "meeting-minutes-pro/tests/test_audit_coverage.py",
+      "equal": true,
+      "sha256": "cec06dcc5b5ca502fe265a424349b2b1fa0a73a671ee982eb526fd1961621abd"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_check_all.py",
+      "current": "meeting-minutes-pro/tests/test_check_all.py",
+      "equal": true,
+      "sha256": "530051aea0a14d5a1a7785be5786b0239fd572310d9fa5aa06fb2a9aa1b1acfa"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_create_minutes_docx.py",
+      "current": "meeting-minutes-pro/tests/test_create_minutes_docx.py",
+      "equal": true,
+      "sha256": "cefcfaa8feb50a21709da02fff453a69a22e33d6ed4e6924183f34e62c76447a"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_docx_style_check.py",
+      "current": "meeting-minutes-pro/tests/test_docx_style_check.py",
+      "equal": true,
+      "sha256": "e087509cc1854c67016f5d6044e35bb1389cb5a9af71a217de67af798ed94fb5"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_embed_fonts.py",
+      "current": "meeting-minutes-pro/tests/test_embed_fonts.py",
+      "equal": true,
+      "sha256": "3ded3f538ba5e3ec4c304a6e12ad86252745c86e063b07402a25a67494990eb1"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_evidence_regressions.py",
+      "current": "meeting-minutes-pro/tests/test_evidence_regressions.py",
+      "equal": true,
+      "sha256": "e00737569377b58abfeafac76555d6d34a2d0988d781f481495f949d749a7529"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_fact_check.py",
+      "current": "meeting-minutes-pro/tests/test_fact_check.py",
+      "equal": true,
+      "sha256": "842cfe8cc928ed6ee2894c619f9d22a6d7ff3ac854d1ee0e5e8d6bc851ebe051"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_format_spec.py",
+      "current": "meeting-minutes-pro/tests/test_format_spec.py",
+      "equal": true,
+      "sha256": "9d8e940db0eea974741caf40c0fd25a37c921f508f5ae588628ae0f307e92fc2"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_hardware_tier.py",
+      "current": "meeting-minutes-pro/tests/test_hardware_tier.py",
+      "equal": true,
+      "sha256": "f6dec186ec7bf3af392041f45df13debc9388237516f2c195428058f0ff3b4b7"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_qa_reconcile.py",
+      "current": "meeting-minutes-pro/tests/test_qa_reconcile.py",
+      "equal": true,
+      "sha256": "02466fdea9e954f65cf3a0e59a6a627c2ff0d3183ac97e8d884586292887a360"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_quality_check.py",
+      "current": "meeting-minutes-pro/tests/test_quality_check.py",
+      "equal": true,
+      "sha256": "9a9af3bec570df622542f975b8713d09f226c0ac4fb866ec305da4fee92ebf26"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_refine_transcript.py",
+      "current": "meeting-minutes-pro/tests/test_refine_transcript.py",
+      "equal": true,
+      "sha256": "f764c8686e0729c1718ef3ecbd62dcae47fa76906af55b315610ead53077772c"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_render_docx.py",
+      "current": "meeting-minutes-pro/tests/test_render_docx.py",
+      "equal": true,
+      "sha256": "9b15e5ba62ebe0ec97886bd46e711730cb67051c539185a2e9b2b19c92628602"
+    },
+    {
+      "old": "skills/meeting-minutes-pro/tests/test_transcribe_helpers.py",
+      "current": "meeting-minutes-pro/tests/test_transcribe_helpers.py",
+      "equal": true,
+      "sha256": "7505cb03752e1fa22421302f6f694e05ccfce03b66d389de307b56d8eaaf8986"
+    },
+    {
+      "old": "skills/soe-post-investment-report/LICENSE",
+      "current": "soe-post-investment-report/LICENSE",
+      "equal": true,
+      "sha256": "26d087d6001a2119f32bfceaae4b63aa548ea8e8c89ff9bf05bdb31db2aae376"
+    },
+    {
+      "old": "skills/soe-post-investment-report/NOTICE",
+      "current": "soe-post-investment-report/NOTICE",
+      "equal": true,
+      "sha256": "3c4f7cdaeb33dd0404887b707c2b1eab131e0cfcc0c1c27185e580ed5b76aac7"
+    },
+    {
+      "old": "skills/soe-post-investment-report/SKILL.md",
+      "current": "soe-post-investment-report/SKILL.md",
+      "equal": true,
+      "sha256": "635e20c567ace500bb63d839088d013e57e92091086472de97518d80d04e3a81"
+    },
+    {
+      "old": "skills/soe-post-investment-report/VERSION",
+      "current": "soe-post-investment-report/VERSION",
+      "equal": true,
+      "sha256": "c03e3824001f39b9518249b8d6522422fc4de7227e12a568c0164662b03b7758"
+    },
+    {
+      "old": "skills/soe-post-investment-report/agents/openai.yaml",
+      "current": "soe-post-investment-report/agents/openai.yaml",
+      "equal": true,
+      "sha256": "01ffbe42a2f2ad86e70bb4e5769d37de2d8da90d197cc1973423d9e3326939f3"
+    },
+    {
+      "old": "skills/soe-post-investment-report/assets/preview.png",
+      "current": "soe-post-investment-report/assets/preview.png",
+      "equal": true,
+      "sha256": "b0e9abb903238ac8d5964ab57ae7844f4db3938eac7450e73d08007332908ae5"
+    },
+    {
+      "old": "skills/soe-post-investment-report/assets/reference-template.docx",
+      "current": "soe-post-investment-report/assets/reference-template.docx",
+      "equal": true,
+      "sha256": "4165afc2cb84cf81899b8d59c0e984ac035cf498fa9726b20047beba573b2790"
+    },
+    {
+      "old": "skills/soe-post-investment-report/assets/report-spec.example.json",
+      "current": "soe-post-investment-report/assets/report-spec.example.json",
+      "equal": true,
+      "sha256": "545a5fe4b0f697530ea708828de7eafe50246a54dd68bb8f1dfa200db8a72cf8"
+    },
+    {
+      "old": "skills/soe-post-investment-report/assets/report-spec.internal.example.json",
+      "current": "soe-post-investment-report/assets/report-spec.internal.example.json",
+      "equal": true,
+      "sha256": "32cc2b88f412e7c4be58788a2c75518a2d95785cdf54af71d965e0f43a9c5300"
+    },
+    {
+      "old": "skills/soe-post-investment-report/evals/evals.json",
+      "current": "soe-post-investment-report/evals/evals.json",
+      "equal": true,
+      "sha256": "19ffeac7fdd4633451332e1e4036fbd29a112dfecbed42eccc0dce85548405c2"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/agent-compatibility.md",
+      "current": "soe-post-investment-report/references/agent-compatibility.md",
+      "equal": true,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/data-requirements.md",
+      "current": "soe-post-investment-report/references/data-requirements.md",
+      "equal": true,
+      "sha256": "debfe3acf632666fb355ae1d2ad376232ca5b56f279790505a0afdbd151d51f8"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/expression-playbook.md",
+      "current": "soe-post-investment-report/references/expression-playbook.md",
+      "equal": true,
+      "sha256": "00b2a8a8740e7d8947fcefc4e89d6047864a36fc85aade68a1f4aced9d75a1b1"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/platform-compatibility.md",
+      "current": "soe-post-investment-report/references/platform-compatibility.md",
+      "equal": true,
+      "sha256": "38978b9fd5fa62d4741c6bc0059968b3d5a9f9aa2d145985e74413213375d4c3"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/quality-gates.md",
+      "current": "soe-post-investment-report/references/quality-gates.md",
+      "equal": true,
+      "sha256": "8bf31b78cbe6c43408c657dce4585d0051a721cae78ea69e8c9ef524672a46d0"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/source-intake-and-fact-ledger.md",
+      "current": "soe-post-investment-report/references/source-intake-and-fact-ledger.md",
+      "equal": true,
+      "sha256": "79e32eaae4031b1d2c7f50007996c1871ed9a6ce55111dcf2843f135a027740e"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/template-contract.md",
+      "current": "soe-post-investment-report/references/template-contract.md",
+      "equal": true,
+      "sha256": "4474731c4f198ee97b6c4b35d6c85d4eb434902f2b0d4477f6d27a488aacf455"
+    },
+    {
+      "old": "skills/soe-post-investment-report/references/writing-and-compression.md",
+      "current": "soe-post-investment-report/references/writing-and-compression.md",
+      "equal": true,
+      "sha256": "95059dd0c24fdbe4da92edcf659554dc13259c92a8cc5e7bc1f432bb91f8db3b"
+    },
+    {
+      "old": "skills/soe-post-investment-report/requirements.txt",
+      "current": "soe-post-investment-report/requirements.txt",
+      "equal": true,
+      "sha256": "b2c1ecabbff02b6646755e56413d2551f8dbeccb2925eaf99f4a722923e86623"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/build_report.py",
+      "current": "soe-post-investment-report/scripts/build_report.py",
+      "equal": true,
+      "sha256": "7fcd89bad07cbbfa70773b381bff7ec4b6cb9d86db991280e7b55d96416d61df"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/font_preflight.py",
+      "current": "soe-post-investment-report/scripts/font_preflight.py",
+      "equal": true,
+      "sha256": "253acac508be0a8314548296311816f9f268e1b28f9cdc16c38c1e972a1ae76d"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/install_skill.py",
+      "current": "soe-post-investment-report/scripts/install_skill.py",
+      "equal": true,
+      "sha256": "146d110cac5239da4cbebbec4041b79bd812ceb3d2f98b9850e036642650dee0"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/render_docx.py",
+      "current": "soe-post-investment-report/scripts/render_docx.py",
+      "equal": true,
+      "sha256": "7b1bf5271adfdb2b5e7e42331d5e8175d1e21aed6ce8c18df0d0fd1b2d520edd"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/skill_portability.py",
+      "current": "soe-post-investment-report/scripts/skill_portability.py",
+      "equal": true,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/source_inventory.py",
+      "current": "soe-post-investment-report/scripts/source_inventory.py",
+      "equal": true,
+      "sha256": "02ebe415bfda8eaca29bbfc4c3c9909ffb33cbdfa1e9f29c869c96f045db3a8d"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/stamp_report.py",
+      "current": "soe-post-investment-report/scripts/stamp_report.py",
+      "equal": true,
+      "sha256": "6ce32f55de7863f32319d5a2233f3f06d6c2556ad4291abd8f777eb57411a662"
+    },
+    {
+      "old": "skills/soe-post-investment-report/scripts/validate_report.py",
+      "current": "soe-post-investment-report/scripts/validate_report.py",
+      "equal": true,
+      "sha256": "eab4970aa692cbf500e77b4d5f48cdde5416ea19a339c850a56539f63d8deb25"
+    },
+    {
+      "old": "skills/soe-post-investment-report/tests/test_skill.py",
+      "current": "soe-post-investment-report/tests/test_skill.py",
+      "equal": true,
+      "sha256": "1e63582c09c8d1837ca53370a397de62f78be9b1e4ea5bf732fbaf6171fe1c0d"
+    }
+  ],
+  "client_evidence": "Prior actual client installs remain .agents/skills/<id>; seven SKILL.md and supporting runtime content unchanged. No repeated model or ASR runs claimed."
+}

@@ -12,6 +12,19 @@ import unittest
 import zipfile
 from pathlib import Path
 
+from font_fixture import FontFixture
+
+
+def setUpModule():
+    global FONT_FIXTURE, TEST_FONT_DIR
+    FONT_FIXTURE = FontFixture()
+    TEST_FONT_DIR = FONT_FIXTURE.__enter__()
+
+
+def tearDownModule():
+    FONT_FIXTURE.__exit__()
+
+
 
 SCRIPT = Path(__file__).parents[1] / "scripts" / "embed_fonts.py"
 SPEC = importlib.util.spec_from_file_location("embed_fonts", SCRIPT)
@@ -48,19 +61,19 @@ class ObfuscationTests(unittest.TestCase):
 
 class FsTypeGateTests(unittest.TestCase):
     def test_bundled_fangsong_is_embeddable(self) -> None:
-        raw = (EF.FONT_DIR / "simfang.ttf").read_bytes()
+        raw = (TEST_FONT_DIR / "simfang.ttf").read_bytes()
         self.assertEqual(EF.read_fs_type(raw), 0)
         self.assertTrue(EF.is_embeddable(EF.read_fs_type(raw)))
 
     def test_title_face_is_restricted(self) -> None:
-        raw = (EF.FONT_DIR / "方正小标宋简体.ttf").read_bytes()
+        raw = (TEST_FONT_DIR / "方正小标宋简体.ttf").read_bytes()
         self.assertEqual(EF.read_fs_type(raw) & 0x0002, 0x0002)
         self.assertFalse(EF.is_embeddable(EF.read_fs_type(raw)))
 
     def test_none_and_signature(self) -> None:
         self.assertFalse(EF.is_embeddable(None))
         self.assertFalse(EF.is_sfnt(b"not a font"))
-        self.assertTrue(EF.is_sfnt((EF.FONT_DIR / "simfang.ttf").read_bytes()))
+        self.assertTrue(EF.is_sfnt((TEST_FONT_DIR / "simfang.ttf").read_bytes()))
 
 
 class FontDescriptorTests(unittest.TestCase):
@@ -68,7 +81,7 @@ class FontDescriptorTests(unittest.TestCase):
     face serves; without the descriptor it silently falls back to a system font."""
 
     def test_gb2312_charset_is_derived_from_os2(self) -> None:
-        descriptor = EF.font_descriptor((EF.FONT_DIR / "simfang.ttf").read_bytes())
+        descriptor = EF.font_descriptor((TEST_FONT_DIR / "simfang.ttf").read_bytes())
         self.assertIn('<w:charset w:val="86"/>', descriptor)  # GB2312
         self.assertIn("<w:panose1 ", descriptor)
         self.assertIn("<w:sig ", descriptor)
@@ -121,7 +134,7 @@ class EmbedIntoDocxTests(unittest.TestCase):
             docx_path = Path(tmp) / "m.docx"
             self._make_docx(docx_path)
             report = EF.embed_fonts_into_docx(
-                docx_path, {"仿宋_GB2312": EF.FONT_DIR / "simfang.ttf"})
+                docx_path, {"仿宋_GB2312": TEST_FONT_DIR / "simfang.ttf"})
             self.assertEqual([e["font"] for e in report["embedded"]], ["仿宋_GB2312"])
             verify = EF.verify_embedded_fonts(docx_path)
             self.assertTrue(verify["ok"])
@@ -142,7 +155,7 @@ class EmbedIntoDocxTests(unittest.TestCase):
             docx_path = Path(tmp) / "m.docx"
             self._make_docx(docx_path)
             report = EF.embed_fonts_into_docx(
-                docx_path, {"方正小标宋简体": EF.FONT_DIR / "方正小标宋简体.ttf"})
+                docx_path, {"方正小标宋简体": TEST_FONT_DIR / "方正小标宋简体.ttf"})
             self.assertEqual(report["embedded"], [])
             self.assertEqual(len(report["skipped"]), 1)
             self.assertIn("fsType", report["skipped"][0]["reason"])

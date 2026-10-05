@@ -1,0 +1,4 @@
+$ python tools/check_library.py
+exit=1
+[OK] Index, Chinese catalog and marketplace agree: 7 skills
+[FAIL] Restricted font distribution: yiti-skill/assets/fonts/reintroduced.bin

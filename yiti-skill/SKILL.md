@@ -16,7 +16,7 @@ Use this skill to draft 投管公司报送投委会的"议题"文书 and render 
 | A. 会议参会表决议题 | 被投企业/基金管理人发来的会议通知、议案、表决票 | `references/writing-logic.md` | 例一至例五 |
 | B. 投资项目退出议题 | 投资决策文件、增资协议对赌回购条款、投后经营数据、与实际控制人沟通情况 | `references/exit-writing-logic.md` | 例六 |
 
-Rules come from the gold examples in `references/gold-examples.md` (例六 is a desensitized 2026-09 项目退出议题终稿), the company format sample `assets/templates/文件字体格式.doc`, and the bundled fonts.
+Rules come from the gold examples in `references/gold-examples.md` (例六 is a desensitized 2026-09 项目退出议题终稿), the company format sample `assets/templates/文件字体格式.doc`, and the original font requirements.
 
 ## 调用与跨 Agent 运行
 
@@ -38,7 +38,7 @@ Rules come from the gold examples in `references/gold-examples.md` (例六 is a 
 4. End every paragraph with a fact or a conclusion. Never close a paragraph with "需要后续进行判断""有待进一步研判""后续持续关注""视情况而定" or any similar deferral sentence.
 5. State what things are and why they are necessary, directly. Never use "不是……而是""并非……而是""不仅……而且""而非" or other set-up-then-negate patterns.
 6. Put the JSON spec through `scripts/check_yiti_text.py spec.json`; fix every 硬规则 hit, review each 警告 in context.
-7. Run `scripts/ensure_fonts.py` once per machine: it installs the bundled 仿宋_GB2312, 楷体_GB2312 and 方正小标宋简体 per-user when missing (Windows registry included, no admin rights). 方正小标宋简体's licence forbids embedding it in the .docx, so the machine that opens the file must have it installed.
+7. Run `scripts/ensure_fonts.py` once per machine: it detects 仿宋_GB2312, 楷体_GB2312 and 方正小标宋简体 and installs only user-supplied licensed files from ICDAFY_FONT_DIR per-user when missing (Windows registry included, no admin rights). 方正小标宋简体's licence forbids embedding it in the .docx, so the machine that opens the file must have it installed.
 8. Render with `scripts/create_yiti_docx.py spec.json out.docx` (see `assets/examples/exit-yiti-spec.json` for a complete B 类 spec), then open the file in Word and check font fallback, line spacing, table layout, attachment alignment and page numbers.
 
 ## Required Format Priorities
@@ -66,12 +66,12 @@ Layout:
 - `references/exit-writing-logic.md`: B 类 skeleton, section logic, connective and data sentence bank, 退出方案 template and self-check list.
 - `references/gold-examples.md`: six annotated 议题 (券商股东会两例、基金合伙人会议三例、项目退出一例).
 - `assets/examples/exit-yiti-spec.json`: complete desensitized B 类 spec (正文、附件说明、落款、退出方案附件及流程表).
-- `assets/fonts/`: 方正小标宋简体、楷体_GB2312、仿宋_GB2312 (simfang.ttf), installed by `scripts/ensure_fonts.py`.
+- `assets/fonts/`: 方正小标宋简体、楷体_GB2312、仿宋_GB2312 (simfang.ttf), not distributed; use installed licensed fonts or ICDAFY_FONT_DIR.
 - `assets/templates/文件字体格式.doc`: original company format sample.
-- `scripts/create_yiti_docx.py`: deterministic DOCX generator. Spec fields: `kind` (`meeting`/`exit`), `title` (use `\n` to break lines), `submit_line`, `recipient` (empty string omits it), `intro` (string or list of paragraphs), `blocks` (`h1` `h2` `h3` `h4` `para` `table` `blank`; `**...**` for inline bold), `attachments`, `signature` {`issuer`, `date`}, `appendices` [{`title`, `blocks`}], `page_numbers` (default true). Embeds the bundled 仿宋_GB2312/楷体_GB2312 on save and prints the text-check result.
+- `scripts/create_yiti_docx.py`: deterministic DOCX generator. Spec fields: `kind` (`meeting`/`exit`), `title` (use `\n` to break lines), `submit_line`, `recipient` (empty string omits it), `intro` (string or list of paragraphs), `blocks` (`h1` `h2` `h3` `h4` `para` `table` `blank`; `**...**` for inline bold), `attachments`, `signature` {`issuer`, `date`}, `appendices` [{`title`, `blocks`}], `page_numbers` (default true). Embeds locally licensed 仿宋_GB2312/楷体_GB2312 on save and prints the text-check result.
 - `scripts/check_yiti_text.py`: language scanner for JSON specs or text drafts (deferral endings, set-up-then-negate patterns, stock phrases, tone warnings); exit code 1 on hard hits.
 - `references/agent-compatibility.md`: installation, invocation, runtime adaptation and acceptance checks for each supported client.
 - `scripts/skill_portability.py`: stdlib-only package checker, DOCX smoke test, client-folder installer and ZIP packager.
 - `requirements.txt`: Python dependency for DOCX output.
-- `scripts/ensure_fonts.py`: checks the three official-document fonts and installs missing ones per-user from `assets/fonts/` (`--check` only reports). The generator prints a reminder when any is missing.
+- `scripts/ensure_fonts.py`: checks the three official-document fonts and installs missing ones per-user only from the user-supplied ICDAFY_FONT_DIR (`--check` only reports). The generator prints a reminder when any is missing.
 - `scripts/embed_fonts.py`: font embedder used by the generator; `python scripts/embed_fonts.py --docx out.docx --verify` re-checks an existing file.

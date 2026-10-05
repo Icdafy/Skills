@@ -1,0 +1,7 @@
+$ python "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 jizyho_4\下载 独立包\soe-post-investment-report\scripts\skill_portability.py" install --agent codex --scope project --project-dir "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 jizyho_4\项目 安装 soe-post-investment-report" --apply
+exit=1
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] Package SHA-256 manifest matches
+[PLAN] Install soe-post-investment-report -> C:\Users\30649\AppData\Local\Temp\技能 解压 空格 jizyho_4\项目 安装 soe-post-investment-report\.agents\skills\soe-post-investment-report
+[BACKUP] C:\Users\30649\AppData\Local\Temp\技能 解压 空格 jizyho_4\项目 安装 soe-post-investment-report\.agents\skill-backups\soe-post-investment-report-20261005T121021573141Z
+[FAIL] Existing skill has extra files; preserved with backup. Resolve these, or rerun with --replace to move the old folder aside: personal-notes.txt

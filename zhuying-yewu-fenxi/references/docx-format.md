@@ -15,16 +15,16 @@
 python <技能目录>/scripts/ensure_fonts.py
 ```
 
-Windows 备用方案（含 assets 缺失时从 GitHub 下载兜底）：
+Windows PowerShell 兼容入口（调用同目录Python脚本，不下载字体）：
 
 ```
 powershell -ExecutionPolicy Bypass -File <技能目录>/scripts/ensure-fonts.ps1
 ```
 
-- 逻辑：逐个检测 仿宋_GB2312、楷体_GB2312、方正小标宋简体 是否已安装（查 HKLM/HKCU 字体注册表，中英文族名都查）；已安装直接用；未安装从技能 `assets/fonts/` 复制做用户级安装（无需管理员权限）；assets 缺失时通过 `gh api` 从 GitHub 仓库下载后安装；
+- 逻辑：逐个检测 仿宋_GB2312、楷体_GB2312、方正小标宋简体 是否已安装（查 HKLM/HKCU 字体注册表，中英文族名都查）；已安装直接用；未安装时只从用户自行准备的 ICDAFY_FONT_DIR 授权目录做用户级安装（无需管理员权限）；不从网络下载字体；
 - 字体文件与族名对照：
 
-| 文件（assets/fonts/） | 中文族名 | 英文族名 | 用途 |
+| 用户自行准备的授权文件（仓库外） | 中文族名 | 英文族名 | 用途 |
 | --- | --- | --- | --- |
 | simfang.ttf | 仿宋_GB2312 | FangSong_GB2312 | 正文、三级标题、表格 |
 | KaiTi_GB2312.ttf | 楷体_GB2312 | KaiTi_GB2312 | 二级标题、副标题 |

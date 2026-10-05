@@ -1,0 +1,608 @@
+{
+  "baseline": "bf6f7d8cfb99265fc55ee45da5ea54150fff876d",
+  "unchanged_business_scripts": [
+    {
+      "path": "gongsi-qingkuang/scripts/build_docx.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/docx_format_helpers.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/extract_docx.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "052df0522e98865bffec98296900f88637de6b05fd3fb16f6695c1ba3b7e8bf6"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/reconcile_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "13da3b03ee6d2590fc1a3d998461f5e313fb42f1f0e80ca6fcd8f69fd589c7fc"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/stage_template.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "cc57fb013b84a890d5e5a6c7f7eca4e0c3dd43bd1e76c53e3a2cbc67fe635e51"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/style_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "cc46f3793cfdceb056822bb625a145868559874e348f31ff10603e2ef51299f2"
+    },
+    {
+      "path": "hangye-fenxi/scripts/build_docx.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
+    },
+    {
+      "path": "hangye-fenxi/scripts/docx_format_helpers.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "path": "hangye-fenxi/scripts/reconcile_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "ee0b9ed50759d8fefec4e75bd27b934d8dccf053d88e4c6ea7e808413105af88"
+    },
+    {
+      "path": "hangye-fenxi/scripts/stage_template.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "cc57fb013b84a890d5e5a6c7f7eca4e0c3dd43bd1e76c53e3a2cbc67fe635e51"
+    },
+    {
+      "path": "hangye-fenxi/scripts/style_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "d501afff1b629ec077d6efc2c84390b4e58e72cfe0b646c00882a29e9ad40f13"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/audit_coverage.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "757d32c946fe68281b2a6a4e96ec11e6cd11908fac10c4f3af060fc045f65262"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/bootstrap_runtime.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "51db04c049598bfa120c864b6f042cea2ab7364d7261b4fa7d189ed076909c5d"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/check_all.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "be41db8c7c61a9d0c47b6a6587d878e526090267800fb027c3f9f6b94a6a7507"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/docx_format_helpers.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/docx_style_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "0930b1ae948bc3f21ff857f947ee91bcf20ff835ad091ecc997e1bb32466d95d"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/fact_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "6b17cb441937a72ae483e321a0e7713316f481514b1d7f1173b1517231b51e6f"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/format_spec.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "9455a58814df65641665f9a9a0c578401b932143ffe18398aa283644d752d4d2"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/install_skill.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "b3f35d37807051ebf8b6a9c00bcb20ffc7d7f5d7e4379b5ae474da8a9504e5c2"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/qa_reconcile.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "77cf3dba61dbdf981dd05438cd22c8a31d8c930253659d642bf9b05a91a13e2c"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/quality_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "541b33c69b937aac20767aa7fc7daf09b9b4b7e9ec631ffd82419a1a4ee8c402"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/refine_transcript.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "08c1ea9b84134f0fc9fd1d36948a44fef5f5445fea5ad7c93bca6bdcc17f76ed"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/render_docx.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "624fb11dece6df59b9e72b21169cf3a2be687843869ff712a6d24f5749c9e10f"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/review_gate.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "7d589f32469e4ec5cefaa2ff1d537c1744ef6f7d14100e27e234967981df3bcd"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/run_state.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "2492c861c15fe458b0ddc9279b35b27c4a2096da5acdfa49c32d073a1c1088fb"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/transcribe.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "d721f0ca7aba45f7a94cae4a742d564c3d7cc521aa0f194400ef78790c56b921"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/build_report.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "7fcd89bad07cbbfa70773b381bff7ec4b6cb9d86db991280e7b55d96416d61df"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/font_preflight.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "253acac508be0a8314548296311816f9f268e1b28f9cdc16c38c1e972a1ae76d"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/install_skill.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "146d110cac5239da4cbebbec4041b79bd812ceb3d2f98b9850e036642650dee0"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/render_docx.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "7b1bf5271adfdb2b5e7e42331d5e8175d1e21aed6ce8c18df0d0fd1b2d520edd"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/source_inventory.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "02ebe415bfda8eaca29bbfc4c3c9909ffb33cbdfa1e9f29c869c96f045db3a8d"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/stamp_report.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "6ce32f55de7863f32319d5a2233f3f06d6c2556ad4291abd8f777eb57411a662"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/validate_report.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "eab4970aa692cbf500e77b4d5f48cdde5416ea19a339c850a56539f63d8deb25"
+    },
+    {
+      "path": "yiti-skill/scripts/check_yiti_text.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "76909dad5b3dca441a5ade312c9a5ee0d82ecd00eaaf9fb683b066b105674961"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/build_docx.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/docx_format_helpers.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/stage_template.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "cc57fb013b84a890d5e5a6c7f7eca4e0c3dd43bd1e76c53e3a2cbc67fe635e51"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/style_check.py",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "d501afff1b629ec077d6efc2c84390b4e58e72cfe0b646c00882a29e9ad40f13"
+    }
+  ],
+  "changed_resource_scripts": [
+    {
+      "path": "gongsi-qingkuang/scripts/embed_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7ff9e90ad56bc7a3f310e51445cd871cb8fb8d6a98df7ac99e73bf3b9da1ece2"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/ensure_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "path": "gongsi-qingkuang/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "path": "hangye-fenxi/scripts/embed_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7ff9e90ad56bc7a3f310e51445cd871cb8fb8d6a98df7ac99e73bf3b9da1ece2"
+    },
+    {
+      "path": "hangye-fenxi/scripts/ensure_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "path": "hangye-fenxi/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/create_minutes_docx.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "d7b07673155a42d81f54bc9f94d134739dea0003cff5ce427379cdd01d8c0785"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/embed_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9f5ef723be5de17828f0f91261062987aff3e63fa00b5c1b9289038f7a0b89ac"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/font_preflight.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "681a830b7347d4437a067dd0ac0634fe41f6d956d9fe8bc146c0712a93263a9a"
+    },
+    {
+      "path": "meeting-minutes-pro/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "path": "officialese-skill/scripts/create_official_docx.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "0216d0c5bef5b8bb5871d50371cac0f32cda16a3b826a93be5bd4991eca5c17a"
+    },
+    {
+      "path": "officialese-skill/scripts/embed_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7ff9e90ad56bc7a3f310e51445cd871cb8fb8d6a98df7ac99e73bf3b9da1ece2"
+    },
+    {
+      "path": "officialese-skill/scripts/ensure_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "path": "officialese-skill/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "path": "soe-post-investment-report/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "path": "yiti-skill/scripts/create_yiti_docx.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "1c92e628d0c1997d66f8f20ea27fd4179319db32eb6a952eb9fdfba6934705cb"
+    },
+    {
+      "path": "yiti-skill/scripts/embed_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7ff9e90ad56bc7a3f310e51445cd871cb8fb8d6a98df7ac99e73bf3b9da1ece2"
+    },
+    {
+      "path": "yiti-skill/scripts/ensure_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "path": "yiti-skill/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/embed_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7ff9e90ad56bc7a3f310e51445cd871cb8fb8d6a98df7ac99e73bf3b9da1ece2"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/ensure-fonts.ps1",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "8fe7bbeb6e81094342efadf2e863bedbaccabaf3390f0a0d7e8a11272b551997"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/ensure_fonts.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "fd3ff23ba0958242d17142ba8acd028dc5afe5adc90a30a4b93912dda17f815d"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/scripts/skill_portability.py",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "9b1e14c5466e18cc1a4d550731396b65fba8dec542d7e3caedbf7299c6e4f3ab"
+    }
+  ],
+  "unchanged_references": [
+    {
+      "path": "gongsi-qingkuang/references/data-and-tables.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "10cc1e7f3b7f9a9895cde7f60d88b41553e5f76ece22e0554e94f6aa6bff5828"
+    },
+    {
+      "path": "gongsi-qingkuang/references/gold-examples.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "e087107387948f10b5699566662b4f0b9ae8aa285e735f11eabafc5bed462dca"
+    },
+    {
+      "path": "gongsi-qingkuang/references/investment-logic-review.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "470b8af9a7211b29924d423d40931e71e731b151c4f223a51cc8ed3496aa49b4"
+    },
+    {
+      "path": "gongsi-qingkuang/references/red-flags.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "5953dc8c5d4662fa1716cbf72316dc42bdbe81eec57a39bf197bd3c11cfdf9a5"
+    },
+    {
+      "path": "gongsi-qingkuang/references/review-feedback.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "a0c5675afa7a4a02eebcbe49cd4b3b0d98df8b6d90a6adc1e894ff3b91619af4"
+    },
+    {
+      "path": "gongsi-qingkuang/references/stage-template-workflow.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "e38a2b4415934f0ff299b254fba3ed1ace879b030a20d28e5e80de6d2bb21b75"
+    },
+    {
+      "path": "gongsi-qingkuang/references/structure.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "fd2e44d9eac200b013bc39aca2326c718f92d02ebdb042a6990d7b50259d1484"
+    },
+    {
+      "path": "gongsi-qingkuang/references/template-early.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "805732cf103e0570210fd27c1914a795c3bdd7b462c1e9d7aa700d243cb5b1cc"
+    },
+    {
+      "path": "gongsi-qingkuang/references/template-mid-late.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "eb838820b1e83e43013a261397884824e3d6172586d185afde134ff708407a13"
+    },
+    {
+      "path": "gongsi-qingkuang/references/writing-craft.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "eb1be957f17e7f96d3acb6bf1d50298ba65df4f56fb391ab0035f96b74db6e80"
+    },
+    {
+      "path": "hangye-fenxi/references/01-framework.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "815ad0079dbc0adfbdd9692a0602a64311208364f32bddca9f35d73c33113608"
+    },
+    {
+      "path": "hangye-fenxi/references/02-writing-style.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "f170f506a6bea2c4ef4c28b7352d2710a453a02ede480157590d46930764fde2"
+    },
+    {
+      "path": "hangye-fenxi/references/03-data-rules.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "6b50c46c93cc30833df319b6c74ccf65b5da31f0da7db0450c90705ba308d864"
+    },
+    {
+      "path": "hangye-fenxi/references/04-tables-charts.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "52adecc9d305ddd40368d11a4d4de3f8ed1078d3c366c60757e2aa8e2156f24f"
+    },
+    {
+      "path": "hangye-fenxi/references/05-quality-checklist.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "4279da227a71791a07d76d16ff327f2bfae02091ac0902099c094ec9e0eff64f"
+    },
+    {
+      "path": "hangye-fenxi/references/06-red-flags.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "addf8e01beccbea89893537c37e7e6498f4984b5d5ff133d92fbf97f0ab08413"
+    },
+    {
+      "path": "hangye-fenxi/references/07-benchmark-lessons.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "0d6f6c505efabde13023b6e26092f0f05e37dc3dd26d456e21708015c929fb57"
+    },
+    {
+      "path": "hangye-fenxi/references/08-chanlian-deep-dive.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "1b1f270b88b283ed7b4884a7d2b461d833ef7ab437f5d53935a34d2e036d4f53"
+    },
+    {
+      "path": "hangye-fenxi/references/investment-logic-review.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "470b8af9a7211b29924d423d40931e71e731b151c4f223a51cc8ed3496aa49b4"
+    },
+    {
+      "path": "hangye-fenxi/references/stage-template-workflow.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "e38a2b4415934f0ff299b254fba3ed1ace879b030a20d28e5e80de6d2bb21b75"
+    },
+    {
+      "path": "hangye-fenxi/references/template-early.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "c662f5b9acd16ca58b9bbff41ccfc30885a496e62f27c49a15ac6613e5c54c3d"
+    },
+    {
+      "path": "hangye-fenxi/references/template-mid-late.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "78e92f86595c5bedfc376b3b178b831ee762dd0ca69b25e68f803f16185378df"
+    },
+    {
+      "path": "meeting-minutes-pro/references/architecture.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "a1a6bd2b7524f41086888735378c2d038b6b30db93631e65b9f1766a1604a5c6"
+    },
+    {
+      "path": "meeting-minutes-pro/references/evidence-and-release.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "4390ba592f48a95bb1260c6c4cbb833130de0c2c9c43b3f78ef75c9289fe5341"
+    },
+    {
+      "path": "meeting-minutes-pro/references/runtime.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "fa4ba547cf7e1ab3eab33e23195259a8d72fac31fb5016a419c3562ca6d23d38"
+    },
+    {
+      "path": "officialese-skill/references/format-rules.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "bc7fb6a96a00525cfa88daf81707bebe330af36f7e7b5755a92fc34d7e12aa80"
+    },
+    {
+      "path": "officialese-skill/references/writing-patterns.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "efb2e158e4fe51fd558160491944511cfbb3a13146ffaceba1d86fe22317fc99"
+    },
+    {
+      "path": "soe-post-investment-report/references/data-requirements.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "debfe3acf632666fb355ae1d2ad376232ca5b56f279790505a0afdbd151d51f8"
+    },
+    {
+      "path": "soe-post-investment-report/references/expression-playbook.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "00b2a8a8740e7d8947fcefc4e89d6047864a36fc85aade68a1f4aced9d75a1b1"
+    },
+    {
+      "path": "soe-post-investment-report/references/platform-compatibility.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "38978b9fd5fa62d4741c6bc0059968b3d5a9f9aa2d145985e74413213375d4c3"
+    },
+    {
+      "path": "soe-post-investment-report/references/quality-gates.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "8bf31b78cbe6c43408c657dce4585d0051a721cae78ea69e8c9ef524672a46d0"
+    },
+    {
+      "path": "soe-post-investment-report/references/source-intake-and-fact-ledger.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "79e32eaae4031b1d2c7f50007996c1871ed9a6ce55111dcf2843f135a027740e"
+    },
+    {
+      "path": "soe-post-investment-report/references/template-contract.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "4474731c4f198ee97b6c4b35d6c85d4eb434902f2b0d4477f6d27a488aacf455"
+    },
+    {
+      "path": "soe-post-investment-report/references/writing-and-compression.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "95059dd0c24fdbe4da92edcf659554dc13259c92a8cc5e7bc1f432bb91f8db3b"
+    },
+    {
+      "path": "yiti-skill/references/exit-writing-logic.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "7c1a8e89941ffc15c921a97ba78fc33ce3a2a8cec73196ef95ef07b5ac772dc1"
+    },
+    {
+      "path": "yiti-skill/references/gold-examples.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "3cb109a429b669067dffcab02630ff10a9f9ac8d601c45b70c840ab511a1097d"
+    },
+    {
+      "path": "yiti-skill/references/writing-logic.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "c6bda90301ce85f0d1af87a8c0db647b92da9223a22690757ce2f3b8be5ec004"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/chapter-template.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "b5f7ca12ec458148d403a1a0f985cc1dd5ef5ec0b9fc2fa5993939bb22c8758e"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/investment-logic-review.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "470b8af9a7211b29924d423d40931e71e731b151c4f223a51cc8ed3496aa49b4"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/language-style.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "cc37a724198554e968abb8e5fe3f474a939801c3100cb2a9770953ee0c5da94c"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/metrics-formulas.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "9679a86ae15a540798d574d23cc60ff9637d8637a0f4006a913cae5f02fff9bc"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/quality-checklist.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "e3543536c2a5e19f2c2c1deae2d271991d43e168365993d9b59085a9a351d430"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/research-protocol.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "e011261487b3eda350575b6d75e143adb0b9cd66a71a85e3071c9089d1314b6e"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/stage-template-workflow.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "e38a2b4415934f0ff299b254fba3ed1ace879b030a20d28e5e80de6d2bb21b75"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/template-early.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "7c489f72b0b0fed52a4c0f5c3af5cc04a91fb88e67dec54f26ea9f4d16b08159"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/template-mid-late.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "5c03abd134aa81ce52660146a9537ea24b3192bbeafbf5ea9c3eb7842e56505d"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/writing-dna.md",
+      "byte_identical_after_checkout_line_endings": true,
+      "sha256": "f2da9ac5d71590dbf95878875137a67d453b6ad52da6105795b11b004424538b"
+    }
+  ],
+  "changed_installation_or_font_references": [
+    {
+      "path": "gongsi-qingkuang/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "hangye-fenxi/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "meeting-minutes-pro/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "meeting-minutes-pro/references/format-and-output.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "f25d96dd8538aac87894dafa9df58ec10c0b7681e72e3aa891fab1298b0938a6"
+    },
+    {
+      "path": "meeting-minutes-pro/references/platforms.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "21f0b36d2d2814da162cd95f4730e9de7708203943f94b6878e03d5c1920aa73"
+    },
+    {
+      "path": "officialese-skill/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "soe-post-investment-report/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "yiti-skill/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "yiti-skill/references/format-rules.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "3d0d15c67ad09eb3819ecabd75d696c10267385d7c5fc7f82dc2c0a5814da2bc"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/agent-compatibility.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "7bc62e03c1cd0307fb039288305fe503fef78c5124546ea2a58620b97500907d"
+    },
+    {
+      "path": "zhuying-yewu-fenxi/references/docx-format.md",
+      "byte_identical_after_checkout_line_endings": false,
+      "sha256": "caa97d4d358d3ab1e7defa5b68ca27832cb4f5c2fb49b7f0ffb7257488595b2d"
+    }
+  ],
+  "failures": [],
+  "reference_review": "All four non-installation reference diffs were read; changes are font source/preflight preparation only. Stage templates, layout values, fact verification, language and source rules remain byte-identical in the remaining references."
+}

@@ -14,6 +14,7 @@ import sys
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from local_fonts import resolve_fonts
 from format_spec import FONT_CATALOG  # noqa: E402  (needs the path shim above)
 
 
@@ -107,9 +108,9 @@ def _install_windows(specs: list[dict[str, Any]]) -> list[str]:
     registry_path = r"Software\Microsoft\Windows NT\CurrentVersion\Fonts"
     with winreg.CreateKey(winreg.HKEY_CURRENT_USER, registry_path) as key:
         for spec in specs:
-            source = FONT_DIR / spec["asset"]
-            if not source.is_file():
-                raise FileNotFoundError(f"找不到字体资源：{source}")
+            source = resolve_fonts({spec["family"]: (spec["asset"],)}).get(spec["family"])
+            if source is None or not source.is_file():
+                raise FileNotFoundError(f"缺少本机授权字体：{spec['family']}；请设置 ICDAFY_FONT_DIR，字体不随技能分发")
             destination = destination_dir / source.name
             if not destination.exists() or source.read_bytes() != destination.read_bytes():
                 shutil.copy2(source, destination)
@@ -139,9 +140,9 @@ def _install_portable(specs: list[dict[str, Any]]) -> list[str]:
     destination_dir.mkdir(parents=True, exist_ok=True)
     installed: list[str] = []
     for spec in specs:
-        source = FONT_DIR / spec["asset"]
-        if not source.is_file():
-            raise FileNotFoundError(f"找不到字体资源：{source}")
+        source = resolve_fonts({spec["family"]: (spec["asset"],)}).get(spec["family"])
+        if source is None or not source.is_file():
+            raise FileNotFoundError(f"缺少本机授权字体：{spec['family']}；请设置 ICDAFY_FONT_DIR，字体不随技能分发")
         shutil.copy2(source, destination_dir / source.name)
         installed.append(spec["family"])
     cache_command = shutil.which("fc-cache")
@@ -169,7 +170,7 @@ def main() -> int:
     action.add_argument(
         "--install-user",
         action="store_true",
-        help="install bundled fonts for the current user; obtain permission first",
+        help="install fonts from the user-supplied licensed directory for the current user; obtain permission first",
     )
     args = parser.parse_args()
 

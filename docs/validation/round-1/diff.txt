@@ -1,0 +1,11 @@
+$ git diff --check
+exit=0
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/gongsi-qingkuang/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/hangye-fenxi/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/meeting-minutes-pro/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/officialese-skill/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/soe-post-investment-report/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/yiti-skill/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/zhuying-yewu-fenxi/scripts/skill_portability.py', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tools/package_skills.py', LF will be replaced by CRLF the next time Git touches it

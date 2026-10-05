@@ -1,0 +1,4 @@
+$ C:\Users\30649\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\yiti-skill\scripts\create_yiti_docx.py "C:\Users\30649\AppData\Local\Temp\字体 资源 正负 中文 空格 5z9jx6zn\yiti.json" "C:\Users\30649\AppData\Local\Temp\字体 资源 正负 中文 空格 5z9jx6zn\yiti-skill-present.docx"
+exit=0
+已嵌入字体：仿宋_GB2312、楷体_GB2312；未嵌入：方正小标宋简体（fsType=2 不允许嵌入）
+Saved: C:\Users\30649\AppData\Local\Temp\字体 资源 正负 中文 空格 5z9jx6zn\yiti-skill-present.docx

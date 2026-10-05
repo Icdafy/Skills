@@ -1,0 +1,386 @@
+{
+  "schema_version": 1,
+  "skills": [
+    {
+      "id": "hangye-fenxi",
+      "name_zh": "所属行业分析",
+      "category": "立项报告",
+      "source": "hangye-fenxi",
+      "version": "1.0.1",
+      "readme": "hangye-fenxi/README.md",
+      "archive": "distributions/investment-report-skills/hangye-fenxi.zip",
+      "distribution": "investment-report-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json"
+      },
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+    },
+    {
+      "id": "zhuying-yewu-fenxi",
+      "name_zh": "主营业务分析",
+      "category": "立项报告",
+      "source": "zhuying-yewu-fenxi",
+      "version": "1.0.1",
+      "readme": "zhuying-yewu-fenxi/README.md",
+      "archive": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
+      "distribution": "investment-report-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json"
+      },
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+    },
+    {
+      "id": "gongsi-qingkuang",
+      "name_zh": "公司情况",
+      "category": "立项报告",
+      "source": "gongsi-qingkuang",
+      "version": "2.0.2",
+      "readme": "gongsi-qingkuang/README.md",
+      "archive": "distributions/investment-report-skills/gongsi-qingkuang.zip",
+      "distribution": "investment-report-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json"
+      },
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+    },
+    {
+      "id": "officialese-skill",
+      "name_zh": "国企公文写作与排版",
+      "category": "公文与会议",
+      "source": "officialese-skill",
+      "version": "1.0.1",
+      "readme": "officialese-skill/README.md",
+      "archive": "distributions/office-skills/officialese-skill.zip",
+      "distribution": "office-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json"
+      },
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+    },
+    {
+      "id": "yiti-skill",
+      "name_zh": "投委会议题",
+      "category": "公文与会议",
+      "source": "yiti-skill",
+      "version": "1.0.1",
+      "readme": "yiti-skill/README.md",
+      "archive": "distributions/office-skills/yiti-skill.zip",
+      "distribution": "office-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json"
+      },
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+    },
+    {
+      "id": "meeting-minutes-pro",
+      "name_zh": "会议转录与正式纪要",
+      "category": "公文与会议",
+      "source": "meeting-minutes-pro",
+      "version": "1.0.1",
+      "readme": "meeting-minutes-pro/README.md",
+      "archive": "distributions/office-skills/meeting-minutes-pro.zip",
+      "distribution": "office-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json",
+        "text_generation": "Codex真实生成及四项检查通过；仅文本draft",
+        "asr": "真实FunASR及Qwen0.6B离线推理通过（13.675秒合成语音）；Qwen CUDA失败、CPU通过；真实会议未实测"
+      },
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+    },
+    {
+      "id": "soe-post-investment-report",
+      "name_zh": "国企股权投资投后报告",
+      "category": "投后管理",
+      "source": "soe-post-investment-report",
+      "version": "1.5.4",
+      "readme": "soe-post-investment-report/README.md",
+      "archive": "distributions/office-skills/soe-post-investment-report.zip",
+      "distribution": "office-skills",
+      "verification": {
+        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过；严格首轮只四问未通过（有额外进度/依据说明）",
+        "claude_code": "未实测：当前环境无可运行客户端",
+        "other_clients": "未实测",
+        "evidence": "docs/validation.md",
+        "codex_evidence": "docs/validation/clients/codex/summary.json"
+      },
+      "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体"
+    }
+  ],
+  "shared_groups": [
+    {
+      "file": "scripts/stage_template.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "gongsi-qingkuang"
+      ],
+      "note": "阶段模板初始化与标题检查"
+    },
+    {
+      "file": "references/stage-template-workflow.md",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "gongsi-qingkuang"
+      ],
+      "note": "用户阶段选择及固定模板填空"
+    },
+    {
+      "file": "references/investment-logic-review.md",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "gongsi-qingkuang"
+      ],
+      "note": "固定标题下的投资逻辑复核"
+    },
+    {
+      "file": "scripts/skill_portability.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "officialese-skill",
+        "yiti-skill",
+        "meeting-minutes-pro",
+        "soe-post-investment-report"
+      ],
+      "note": "跨 Agent 完整性检查、打包与目录安装"
+    },
+    {
+      "file": "references/agent-compatibility.md",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "officialese-skill",
+        "yiti-skill",
+        "meeting-minutes-pro",
+        "soe-post-investment-report"
+      ],
+      "note": "跨 Agent 安装与真实调用验收"
+    },
+    {
+      "file": "scripts/ensure_fonts.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "yiti-skill",
+        "officialese-skill"
+      ],
+      "note": "公文字体检测与用户级安装"
+    },
+    {
+      "file": "requirements.txt",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "officialese-skill",
+        "yiti-skill"
+      ],
+      "note": "Word 运行依赖"
+    },
+    {
+      "file": "scripts/docx_format_helpers.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "meeting-minutes-pro"
+      ],
+      "note": "括号片段与附件名称规范化"
+    },
+    {
+      "file": "scripts/build_docx.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi"
+      ],
+      "note": "立项报告三技能统一公文渲染器"
+    },
+    {
+      "file": "scripts/embed_fonts.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "gongsi-qingkuang",
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "officialese-skill",
+        "yiti-skill"
+      ],
+      "note": "公文 DOCX 字体嵌入器（meeting-minutes-pro 版本由 format_spec 驱动，不在此组）"
+    },
+    {
+      "file": "scripts/local_fonts.py",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "gongsi-qingkuang",
+        "officialese-skill",
+        "yiti-skill",
+        "meeting-minutes-pro"
+      ],
+      "note": "只查找本机授权字体；不包含排版规则或字体二进制"
+    }
+  ],
+  "font_policy": {
+    "baseline_commit": "bf6f7d8cfb99265fc55ee45da5ea54150fff876d",
+    "retained_source_fonts": [
+      {
+        "path": "gongsi-qingkuang/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "hangye-fenxi/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "hangye-fenxi/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "hangye-fenxi/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "meeting-minutes-pro/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "officialese-skill/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "officialese-skill/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "officialese-skill/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "yiti-skill/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "yiti-skill/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "yiti-skill/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "zhuying-yewu-fenxi/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      }
+    ],
+    "single_skill_zip_fonts": false,
+    "redistribution_authorization_confirmed": false,
+    "reason": "2026-10-05维护者要求保留原main六技能各三款字体，共18份，路径和字节不变；其他PR内容合并。保留不代表取得字体公开再分发授权。"
+  }
+}

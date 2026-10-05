@@ -1,3 +1,69 @@
+# 国企股权投资投后报告（soe-post-investment-report）
+
+当前分发版本：**1.5.4**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+
+## 用途与边界
+
+国企股权投资半年度/年度投后情况报告；先四问，沿用上期框架，不代写单个立项章节。
+
+## 输入和输出
+
+输入：上期定稿、项目名册、投后材料、财务与经营数据、报告期间及四问答复。
+
+输出：正文不超过10页的报告/附件 DOCX；完整渲染闭环后才认证，未认证草稿如实标注。
+
+## 依赖与字体
+
+Python 3.10+；安装和资料盘点使用标准库，DOCX 生成需 `requirements.txt` 中的依赖。最终认证另需 pypdf、Microsoft Word 或 LibreOffice 及 Poppler，完整依赖说明保留在下方。
+
+公开包不含字体。在出文机器准备合法授权的准确字体，运行 `python scripts/font_preflight.py` 做只读检测。本技能不使用 ICDAFY_FONT_DIR；未完成字体及实际渲染闭环时，只能交付未认证草稿。原版式规则保留。
+
+## 完整安装例子
+
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip) 下载，解压后进入 `soe-post-investment-report`；不要只复制 SKILL.md。本 PR 合并前可从当前分支 `soe-post-investment-report/` 安装。
+
+```powershell
+cd "C:/下载/技能包/soe-post-investment-report"
+python -m pip install -r requirements.txt
+python scripts/skill_portability.py check --smoke
+python scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目"
+python scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目" --apply
+```
+
+Claude Code 把 `--agent codex` 换成 `--agent claude-code`。其他客户端及安装器目录表见 [跨客户端安装](references/agent-compatibility.md)。运行路径以本次实际加载的 SKILL.md 目录为根；脚本和输入输出使用绝对路径时可在任意任务目录执行。
+
+## 调用例子
+
+安装后新建会话，在 Codex 输入：
+
+```text
+$soe-post-investment-report 用这些本期投后资料更新半年度投后情况报告，先确认变化事项。
+```
+
+Claude Code 输入 `/soe-post-investment-report 用这些本期投后资料更新半年度投后情况报告，先确认变化事项。`；自然语言直接使用“用这些本期投后资料更新半年度投后情况报告，先确认变化事项。”。首轮只按 SKILL.md 提出四项变更确认，再据回复更新。
+
+## 已验证环境
+
+Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
+
+Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。**严格首轮只四问未通过**：三例均正确提出原四问，但另有进度或技能依据说明；已记录到仓库BLOCKED.md，未修改冻结业务规则来掩盖。
+
+Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。
+
+## 升级入口
+
+维护者只改 `soe-post-investment-report/`，同步受影响的共享副本后执行 `python tools/package_skills.py --skill soe-post-investment-report`（在整库根运行）；源码版本见 [VERSION](VERSION)，记录见 [CHANGELOG.md](CHANGELOG.md)。全部维护步骤见 [维护说明](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md)。
+
+用户将新版解压到另一个目录，再用同样的 install 命令更新指定项目。已有安装先备份到 skills 目录外的 `skill-backups/`；出现多余文件会停止，手工确认后 `--replace --apply` 把旧目录移入备份。额外本地文件保留在备份中；确认内容后再决定是否迁入新版。源码保持在仓库根目录 `<仓库>/soe-post-investment-report/`；GitHub 源码地址及安装后的英文目录名不变。
+
+## 许可
+
+[Apache-2.0](LICENSE)；[NOTICE](NOTICE) 保留署名、维护者素材授权确认和本机字体说明。
+
+## 原业务说明与历史记录
+
+下方保留原业务用法与历史。旧 `install_skill.py` 供兼容初次安装；更新已有版本请使用上方项目安装命令，以获得备份和本地数据保留检查。
+
 # 国企股权投资投后报告
 
 `soe-post-investment-report` 是一项以中文编写、以中文交互并输出中文正式文件的 Agent Skill。它把上期报告模板与本期基金、参股企业、SPV、治理、财务、经营和风险资料，整理为适合向国资监管机构或上级单位报送的国企股权投资项目投后情况报告及 DOCX。
@@ -106,7 +172,7 @@ python -X utf8 scripts/font_preflight.py
 python -X utf8 scripts/skill_portability.py agents
 python -X utf8 scripts/skill_portability.py check --smoke
 python -X utf8 scripts/skill_portability.py install --agent claude-code --agent codex --apply
-python -X utf8 scripts/skill_portability.py install --detect --apply
+python -X utf8 scripts/skill_portability.py install --detect
 ```
 
 原安装脚本保留兼容（`--target codex` 现写入新版 Codex 与 ChatGPT 桌面版读取的 `~/.agents/skills/`）：

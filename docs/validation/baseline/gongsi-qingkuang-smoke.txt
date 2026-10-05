@@ -1,0 +1,5 @@
+$ python gongsi-qingkuang/scripts/skill_portability.py check --smoke
+exit=0
+[OK] gongsi-qingkuang: metadata, resources and links (33 files)
+[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed
+[INFO] This checks package execution, not model invocation in a target client or visual font rendering

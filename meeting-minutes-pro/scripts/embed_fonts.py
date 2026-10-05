@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Embed the bundled GB2312 fonts into a minutes DOCX.
+"""Embed locally authorized GB2312 fonts into a minutes DOCX.
 
 A delivered DOCX must render identically on a machine that does not have
 仿宋_GB2312 / 楷体_GB2312 installed. This module embeds those faces directly
@@ -28,6 +28,7 @@ import uuid
 import zipfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from local_fonts import resolve_fonts
 from format_spec import embeddable_fonts  # noqa: E402  (needs path shim)
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
@@ -317,7 +318,8 @@ def verify_embedded_fonts(docx_path: Path) -> dict:
 
 def default_font_paths() -> dict[str, Path]:
     """{run_name: bundled TTF path} for the embeddable bundled faces."""
-    return {name: FONT_DIR / asset for name, asset in embeddable_fonts().items()}
+    return resolve_fonts({name: (asset, "KaiTi_GB2312.ttf") if name == "楷体_GB2312" else (asset,)
+                          for name, asset in embeddable_fonts().items()})
 
 
 def main() -> int:

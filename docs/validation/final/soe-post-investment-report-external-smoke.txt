@@ -1,0 +1,6 @@
+$ python "C:\Users\30649\AppData\Local\Temp\最终 技能 解压 空格 5uvqeil6\soe-post-investment-report\soe-post-investment-report\scripts\skill_portability.py" check --smoke
+exit=0
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] Package SHA-256 manifest matches
+[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed
+[INFO] This checks package execution, not model invocation in a target client or visual font rendering

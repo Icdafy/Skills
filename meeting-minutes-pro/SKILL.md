@@ -222,7 +222,7 @@ python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目
 <runtime-python> <skill-dir>/scripts/font_preflight.py --check
 ```
 
-缺少随技能提供的字体时，说明安装会修改当前用户字体目录；取得用户许可后运行 `<runtime-python> <skill-dir>/scripts/font_preflight.py --install-user`。缺少黑体或 Times New Roman 时提示用户安装，不在字体替换状态下继续生成。字体检查通过后运行；含问答的纪要统一使用 `qa-summary`（`qa` 仅作为向后兼容别名，仍会按 `qa-summary` 校验），无问答纪要使用 `minutes` 或 `auto`：
+缺少用户自行准备的授权字体时，说明安装会修改当前用户字体目录；取得用户许可后运行 `<runtime-python> <skill-dir>/scripts/font_preflight.py --install-user`。缺少黑体或 Times New Roman 时提示用户安装，不在字体替换状态下继续生成。字体检查通过后运行；含问答的纪要统一使用 `qa-summary`（`qa` 仅作为向后兼容别名，仍会按 `qa-summary` 校验），无问答纪要使用 `minutes` 或 `auto`：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/create_minutes_docx.py `
@@ -232,7 +232,7 @@ python <skill-dir>/scripts/check_all.py 会议纪要.txt --transcript <输出目
   --mode qa-summary
 ```
 
-脚本会再次执行文本校验（文本校验用过 `--allow-line` 时此处传入相同参数），并依据公司样例设置 A4 页面、页边距、字体、字号、固定行距、两字缩进、括号片段楷体_GB2312、`|…|` 表格五号仿宋_GB2312（括号五号楷体_GB2312）、加粗的四级标题、问答组间空行，最后对全文正文与表格统一执行一次 Times New Roman 西文字体设置（数字、字母、% 等为 Times New Roman，汉字字体不变，页脚除外），以及完整采用四号宋体的 `-1-` 页码（左短横线、PAGE 域显示数字、右短横线分别直接格式化，并设置 Footer 样式和页脚段落默认字符属性作为域刷新兜底；奇数页居右、偶数页居左，页眉不设内容）。版式规约集中在 `scripts/format_spec.py`，与文本校验共用同一份层级与字体定义。生成后默认把 fsType 允许嵌入的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使文件在未安装这两款字体的机器上仍忠实呈现（`--no-embed` 关闭；方正小标宋因许可禁止嵌入，与其在 PDF 中走轮廓一致，自动跳过）；可用 `python <skill-dir>/scripts/embed_fonts.py --docx 会议纪要.docx --verify` 复核嵌入字体。生成后运行渲染检查：
+脚本会再次执行文本校验（文本校验用过 `--allow-line` 时此处传入相同参数），并依据公司样例设置 A4 页面、页边距、字体、字号、固定行距、两字缩进、括号片段楷体_GB2312、`|…|` 表格五号仿宋_GB2312（括号五号楷体_GB2312）、加粗的四级标题、问答组间空行，最后对全文正文与表格统一执行一次 Times New Roman 西文字体设置（数字、字母、% 等为 Times New Roman，汉字字体不变，页脚除外），以及完整采用四号宋体的 `-1-` 页码（左短横线、PAGE 域显示数字、右短横线分别直接格式化，并设置 Footer 样式和页脚段落默认字符属性作为域刷新兜底；奇数页居右、偶数页居左，页眉不设内容）。版式规约集中在 `scripts/format_spec.py`，与文本校验共用同一份层级与字体定义。生成后默认把 fsType 允许嵌入的本机授权字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使文件在未安装这两款字体的机器上仍忠实呈现（`--no-embed` 关闭；方正小标宋因许可禁止嵌入，与其在 PDF 中走轮廓一致，自动跳过）；可用 `python <skill-dir>/scripts/embed_fonts.py --docx 会议纪要.docx --verify` 复核嵌入字体。生成后运行渲染检查：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/render_docx.py --input "会议纪要.docx"
@@ -280,11 +280,11 @@ DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段�
 - `scripts/fact_check.py`：核对纪要中的数字与转录稿一致（支持中文数字、万/亿换算、百分比、月份日期、二〇二五式年份，以及三成/三个点/千分之五等口语形态），`--show-matches` 输出转录稿侧依据上下文并按语境绑定分排序——纪要语境与依据语境相似度低的数字标记“疑似移用”置顶，`--glossary` 给出热词改写提示，并支持双转录稿交叉核验（含数字顺序比对）。
 - `tests/`：以上校验与规划逻辑的回归测试（quality_check、fact_check、audit_coverage、qa_reconcile、refine_transcript、transcribe 辅助函数）。
 - `scripts/format_spec.py`：排版规约的唯一真源——层级识别正则、角色→字体/字号/加粗映射、西文段规则、页面几何与字体清单；`quality_check.py`（校验）、`create_minutes_docx.py`（渲染）、`render_docx.py`、`font_preflight.py`、`embed_fonts.py` 全部从此导入，校验与渲染判定不会漂移。
-- `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX（版式取自 `format_spec.py`，首行缩进用字符单位 `w:firstLineChars` 随字号自适应），并默认将可嵌入的随附字体嵌入 DOCX（`--no-embed` 关闭）。
-- `scripts/embed_fonts.py`：按 ECMA-376 混淆字体机制把 fsType 允许的随附字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使其在未装字体的机器上忠实呈现（渲染器无关，不依赖 Word/LibreOffice）；`--verify` 反混淆各嵌入部件并校验为有效字体；方正小标宋 fsType 受限，不嵌入。
+- `scripts/create_minutes_docx.py`：以固定公文版式生成 DOCX（版式取自 `format_spec.py`，首行缩进用字符单位 `w:firstLineChars` 随字号自适应），并默认将可嵌入的本机授权字体嵌入 DOCX（`--no-embed` 关闭）。
+- `scripts/embed_fonts.py`：按 ECMA-376 混淆字体机制把 fsType 允许的本机授权字体（楷体_GB2312、仿宋_GB2312）嵌入 DOCX，使其在未装字体的机器上忠实呈现（渲染器无关，不依赖 Word/LibreOffice）；`--verify` 反混淆各嵌入部件并校验为有效字体；方正小标宋 fsType 受限，不嵌入。
 - `scripts/docx_style_check.py`：交付时 DOCX 样式回读——逐段依 `format_spec` 重新推导应有字体/字号/加粗并核对各 run，同时机械核验页眉为空、页脚 PAGE 域格式、四号宋体和奇右偶左；不渲染即可拦截样式回归，已并入 `check_all.py --docx`。
 - `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，并用文字坐标自动核验页码奇右偶左（`page_number_check`），用于交付前逐页检查。
-- `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装随技能提供的字体。
+- `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装用户自行准备的授权字体。
 - `glossary/`：按项目或公司维护的热词术语文件，跨会议复用（仅本地，不入库）；`glossary/industry/`：随技能分发的行业术语库（低空经济、商业航天），供相关行业会议挑选热词并作规范写法参照。
-- `assets/fonts/`：方正小标宋简体、楷体_GB2312、仿宋_GB2312 字体文件。
+- `assets/fonts/`：本机授权字体准备说明，单技能ZIP和安装器输出不含字体文件；源码保留原main历史字体，许可待决见该目录README。
 - `assets/templates/文件字体格式.doc`：公司格式样例。发生格式冲突时，以样例和 `references/format-and-output.md` 为准。

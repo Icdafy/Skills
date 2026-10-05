@@ -598,7 +598,7 @@ def main() -> None:
         missing = []
     if missing:
         print(f"本机未安装：{'、'.join(missing)}，Word 打开会用替代字体显示；"
-              f"运行 python {Path(__file__).with_name('ensure_fonts.py')} 从技能自带字体安装。",
+              f"运行 python {Path(__file__).with_name('ensure_fonts.py')} --check 检测本机字体；缺失时自行准备授权文件并设置 ICDAFY_FONT_DIR。",
               file=sys.stderr)
     hard, warn = scan_spec(data)
     if hard or warn:

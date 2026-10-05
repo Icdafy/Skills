@@ -27,59 +27,9 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 
-SHARED_GROUPS: tuple[dict, ...] = (
-    {'file': 'scripts/stage_template.py', 'canonical': 'gongsi-qingkuang', 'skills': ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang'), 'note': '阶段模板初始化与标题检查'},
-    {'file': 'references/stage-template-workflow.md', 'canonical': 'gongsi-qingkuang', 'skills': ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang'), 'note': '用户阶段选择及固定模板填空'},
-    {'file': 'references/investment-logic-review.md', 'canonical': 'gongsi-qingkuang', 'skills': ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang'), 'note': '固定标题下的投资逻辑复核'},
-    {
-        "file": "scripts/skill_portability.py",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "officialese-skill",
-                   "yiti-skill", "meeting-minutes-pro", "soe-post-investment-report"),
-        "note": "跨 Agent 完整性检查、打包与目录安装",
-    },
-    {
-        "file": "references/agent-compatibility.md",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "officialese-skill",
-                   "yiti-skill", "meeting-minutes-pro", "soe-post-investment-report"),
-        "note": "跨 Agent 安装与真实调用验收",
-    },
-    {
-        "file": "scripts/ensure_fonts.py",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "yiti-skill",
-                   "officialese-skill"),
-        "note": "公文字体检测与用户级安装",
-    },
-    {
-        "file": "requirements.txt",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi", "officialese-skill",
-                   "yiti-skill"),
-        "note": "Word 运行依赖",
-    },
-    {
-        "file": "scripts/docx_format_helpers.py",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi",
-                   "meeting-minutes-pro"),
-        "note": "括号片段与附件名称规范化",
-    },
-    {
-        "file": "scripts/build_docx.py",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi"),
-        "note": "立项报告三技能统一公文渲染器",
-    },
-    {
-        "file": "scripts/embed_fonts.py",
-        "canonical": "gongsi-qingkuang",
-        "skills": ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi",
-                   "officialese-skill", "yiti-skill"),
-        "note": "公文 DOCX 字体嵌入器（meeting-minutes-pro 版本由 format_spec 驱动，不在此组）",
-    },
-)
+from skill_catalog import load_index, source_path
+
+SHARED_GROUPS = tuple(load_index()["shared_groups"])
 
 
 def digest(path: Path) -> str | None:
@@ -91,7 +41,7 @@ def digest(path: Path) -> str | None:
 def check_group(group: dict, sync: bool) -> tuple[bool, list[str]]:
     """返回 (是否一致, 消息列表)。sync=True 时以 canonical 覆盖其余副本。"""
     relative = group["file"]
-    canonical_path = REPO_ROOT / group["canonical"] / relative
+    canonical_path = source_path(group["canonical"], REPO_ROOT) / relative
     messages: list[str] = []
     canonical_hash = digest(canonical_path)
     if canonical_hash is None:
@@ -101,7 +51,7 @@ def check_group(group: dict, sync: bool) -> tuple[bool, list[str]]:
     for skill in group["skills"]:
         if skill == group["canonical"]:
             continue
-        target = REPO_ROOT / skill / relative
+        target = source_path(skill, REPO_ROOT) / relative
         target_hash = digest(target)
         if target_hash == canonical_hash:
             continue
@@ -135,7 +85,7 @@ def main() -> int:
             for message in messages:
                 print(message)
 
-    if args.sync:
+    if args.sync and all(source_path(g["canonical"], REPO_ROOT).joinpath(g["file"]).is_file() for g in SHARED_GROUPS):
         print("\n同步完成；请复核改动并一并提交全部副本。")
         return 0
     if all_consistent:

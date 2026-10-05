@@ -1,0 +1,7 @@
+{
+  "thread_id": "01a10a63-8494-7272-849d-394d2b8c18df",
+  "message_id": "msg_0b8baa93178b43c2016ac32daa317087d0a81a1e56b69f8577",
+  "line_count": 7,
+  "text": "开工回执（基线已核对）：\n1. 目标：七个技能统一到 `skills/`，中文首页、安装、升级和下载包保持一致。\n2. 版本：远端及本地基线均为 `bf6f7d8`；分支为 `chore/skills-library-20261005`。\n3. 测试：50＋258＋56＋8＋3＝375 项；374 通过，原 Windows 符号链接测试跳过 1 项。\n4. 校验：10 组共享副本一致、7 个 ZIP 一致、7/7 运行检查通过，退出码均为 0。\n5. 顺序：盘点与迁移 → 入口和升级 → 许可与字体 → 客户端和反向验证 → PR。\n6. 最大风险：现有模板、范文的公开授权缺少来源证明；会明确记录待决项。\n",
+  "note": "Exact original receipt after baseline verification. The later root-level layout request supersedes its original skills/ layout."
+}

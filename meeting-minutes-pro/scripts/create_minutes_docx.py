@@ -416,9 +416,14 @@ def embed_bundled_fonts(output: Path) -> dict:
     caller still hard-fails, but on the intact un-embedded file rather than a
     half-written one.
     """
+    fonts = default_font_paths()
+    missing = {"仿宋_GB2312", "楷体_GB2312"} - set(fonts)
+    if missing:
+        raise SystemExit("缺少本机可嵌入授权字体：" + "、".join(sorted(missing)) +
+                         "；请设置 ICDAFY_FONT_DIR，或用 --no-embed 生成待检查草稿。")
     tmp = output.with_suffix(output.suffix + ".embed.tmp")
     try:
-        report = embed_fonts_into_docx(output, default_font_paths(), tmp)
+        report = embed_fonts_into_docx(output, fonts, tmp)
         report["verify"] = verify_embedded_fonts(tmp)
         if report["verify"]["ok"]:
             os.replace(tmp, output)
@@ -440,7 +445,7 @@ def main() -> None:
     parser.add_argument(
         "--no-embed",
         action="store_true",
-        help="不把随附字体嵌入 DOCX（默认嵌入，使文件在未装字体的机器上仍忠实呈现）",
+        help="不嵌入本机授权字体（默认尝试嵌入；缺资源时明确失败，保留草稿）",
     )
     parser.add_argument(
         "--allow-line",
@@ -463,7 +468,7 @@ def main() -> None:
             "缺少固定版式所需字体："
             + "、".join(missing_fonts)
             + "。先运行 font_preflight.py --check；取得用户许可后可运行 "
-            "font_preflight.py --install-user 安装随技能提供的字体。"
+            "font_preflight.py --install-user 安装 ICDAFY_FONT_DIR 中自行准备的授权字体；字体不随技能分发。"
         )
     lines = read_lines(args.input)
     title = next((line.strip() for line in lines if line.strip()), None)

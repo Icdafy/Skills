@@ -1,0 +1,44 @@
+{
+  "client_exit": 0,
+  "executor_recheck_exit": 0,
+  "checks_passed": true,
+  "release_ready": false,
+  "input_kind": "fictional existing transcript, no audio",
+  "question_answer_groups": 2,
+  "coverage_windows": 3,
+  "numeric_checks": 24,
+  "waivers": [],
+  "checked_unmodified_script_count": 19,
+  "unmodified_scripts": [
+    "audit_coverage.py",
+    "bootstrap_runtime.py",
+    "check_all.py",
+    "create_minutes_docx.py",
+    "docx_format_helpers.py",
+    "docx_style_check.py",
+    "embed_fonts.py",
+    "fact_check.py",
+    "font_preflight.py",
+    "format_spec.py",
+    "install_skill.py",
+    "local_fonts.py",
+    "qa_reconcile.py",
+    "quality_check.py",
+    "refine_transcript.py",
+    "render_docx.py",
+    "review_gate.py",
+    "run_state.py",
+    "transcribe.py"
+  ],
+  "known_installation_snapshot_difference": {
+    "skill_portability.py": "Installation snapshot predates maintainer LF normalization for VERSION/LICENSE/NOTICE; exact single-line diff verified. Not used by text checks."
+  },
+  "artifact_sha256": {
+    "checks-summary.json": "04c8c8c7c1d5070add7cfee8f3b4b14f4ab5cf17cb5c684a16b378723d6b552c",
+    "coverage.txt": "b5272a3a1debe8ef421bc7123ef4b12f88ba2a3c6a218b82bc13d88abc8aca62",
+    "review.json": "e9244fe489c3d1ec4b096d021c3b5b2c5e3110cf7c4168345fcfe0596dcff992",
+    "会议纪要.txt": "02bda47534341183e76f95be2fc149c682c90164b2a0facb2c27cc50548eb6de",
+    "虚构转录稿.json": "a815e291b109f3cc0ed37dedeb0683e083901a4329d1994fbccd1a94e5419ae8",
+    "虚构转录稿.txt": "a89d8adf96f726c558905b630deb821c5c61d28abfaab912a0505b11c86feddd"
+  }
+}

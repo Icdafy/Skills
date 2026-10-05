@@ -1,0 +1,85 @@
+{
+  "schema_version": 2,
+  "created_at": "2026-10-05T05:54:32.374330+00:00",
+  "minutes": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt",
+  "transcript": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.json",
+  "mode": "qa-summary",
+  "all_passed": true,
+  "checks_passed": true,
+  "release_ready": false,
+  "status": "checks_passed",
+  "stage": "draft",
+  "inputs": {
+    "minutes": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt",
+      "sha256": "02bda47534341183e76f95be2fc149c682c90164b2a0facb2c27cc50548eb6de"
+    },
+    "transcript": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.json",
+      "sha256": "a815e291b109f3cc0ed37dedeb0683e083901a4329d1994fbccd1a94e5419ae8"
+    },
+    "transcript_txt": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.txt",
+      "sha256": "a89d8adf96f726c558905b630deb821c5c61d28abfaab912a0505b11c86feddd"
+    },
+    "ledger": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\coverage.txt",
+      "sha256": "b5272a3a1debe8ef421bc7123ef4b12f88ba2a3c6a218b82bc13d88abc8aca62"
+    }
+  },
+  "evidence_errors": [],
+  "review_errors": [],
+  "review_sha256": "e9244fe489c3d1ec4b096d021c3b5b2c5e3110cf7c4168345fcfe0596dcff992",
+  "review_path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\review.json",
+  "checks": [
+    {
+      "name": "quality_check",
+      "command": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\.agents\\skills\\meeting-minutes-pro\\scripts\\quality_check.py C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt --mode qa-summary",
+      "exit_code": 0,
+      "passed": true,
+      "skipped": false,
+      "stdout": "纪要文本校验通过。\n提示：冗余归因表述检查：0 处残留。\n提示：总结概述转述句式检查：0 处残留。\n提示：问答 2 组。数字事实核对请另行运行 fact_check.py。",
+      "stderr": ""
+    },
+    {
+      "name": "audit_coverage",
+      "command": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\.agents\\skills\\meeting-minutes-pro\\scripts\\audit_coverage.py --transcript C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.json --ledger C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\coverage.txt --minutes C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt --strict-numbers",
+      "exit_code": 0,
+      "passed": true,
+      "skipped": false,
+      "stdout": "覆盖率审计通过：共 3 个窗口，纳入 3 个、省略 0 个。",
+      "stderr": ""
+    },
+    {
+      "name": "qa_reconcile",
+      "command": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\.agents\\skills\\meeting-minutes-pro\\scripts\\qa_reconcile.py C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt --transcript C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.json --show-matches",
+      "exit_code": 0,
+      "passed": true,
+      "skipped": false,
+      "stdout": "转录稿检测到疑似提问 2 个；纪要包含问答 2 组。\n对账映射（转录疑似提问 ↔ 纪要问答，请正向浏览确认指向未变）：\n- 编号 1［05:00］问：公司2025年收入及增长情况如何？答：按公司内部统计口径，2025年收入为1\n    <-> 问：公司2025年收入及增长情况如何？（相似度 1.00）\n- 编号 2［10:00］问：目前签约订单和意向订单各有多少？答：截至2026年10月5日，已签约且尚未交\n    <-> 问：目前签约订单和意向订单各有多少？（相似度 1.00）\n问答对账通过：疑似提问均能在纪要问答中找到对应内容。",
+      "stderr": ""
+    },
+    {
+      "name": "fact_check",
+      "command": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\.agents\\skills\\meeting-minutes-pro\\scripts\\fact_check.py C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt --transcript C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.txt --show-matches",
+      "exit_code": 0,
+      "passed": true,
+      "skipped": false,
+      "stdout": "共核对 24 个数字事实，转录稿来源 1 份。\n已核对数字的转录稿依据（请人工确认数字未被移用到无关表述；低语境相似度条目排在前面，优先确认）：\n- 第 11 行「00」 ← …2026年10月5日9:00至9:40。访谈地点：视…\n- 第 11 行「40」 ← …10月5日9:00至9:40。访谈地点：视频会议。访…\n- 第 11 行「2026年」 ← …司项目沟通会。访谈时间：2026年10月5日9:00至9:40。访谈…\n- 第 11 行「10月」 ← …司项目沟通会。访谈时间：2026年10月5日9:00至9:40。访谈…\n- 第 11 行「5日」 ← …司项目沟通会。访谈时间：2026年10月5日9:00至9:40。访谈…\n- 第 13 行「2025」 ← …答：按公司内部统计口径，2025年收入为1200万元，较…\n- 第 13 行「1200万」 ← …计口径，2025年收入为1200万元，较2024年增长20…\n- 第 13 行「2024」 ← …年收入为1200万元，较2024年增长20%，尚未经审计…\n- 第 13 行「20%」 ← …0万元，较2024年增长20%，尚未经审计。…\n- 第 15 行「800万」 ← …约且尚未交付的订单金额为800万元，意向订单金额为200…\n- 第 15 行「200万」 ← …00万元，意向订单金额为200万元。意向订单尚未签约，上…\n- 第 15 行「2026年」 ← …向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单…\n- 第 15 行「10月」 ← …向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单…\n- 第 15 行「5日」 ← …向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单…\n- 第 19 行「2025」 ← …问：公司2025年收入及增长情况如何？答…\n- 第 20 行「2025」 ← …答：按公司内部统计口径，2025年收入为1200万元，较…\n- 第 20 行「1200万」 ← …计口径，2025年收入为1200万元，较2024年增长20…\n- 第 20 行「2024」 ← …年收入为1200万元，较2024年增长20%，尚未经审计…\n- 第 20 行「20%」 ← …0万元，较2024年增长20%，尚未经审计。…\n- 第 24 行「800万」 ← …约且尚未交付的订单金额为800万元，意向订单金额为200…\n- 第 24 行「200万」 ← …00万元，意向订单金额为200万元。意向订单尚未签约，上…\n- 第 24 行「2026年」 ← …向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单…\n- 第 24 行「10月」 ← …向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单…\n- 第 24 行「5日」 ← …向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单…\n数字事实核对通过：纪要中的数字均可在转录稿中找到依据。",
+      "stderr": ""
+    }
+  ],
+  "waivers": {
+    "allow_line": [],
+    "skip": [],
+    "allow": [],
+    "allow_missing_number": [],
+    "note": "放行理由须在绑定版本的 review.json 中记录，并在对话中说明。"
+  },
+  "deliverable": {
+    "transcript_structured": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.json",
+    "transcript_txt_present": true,
+    "ledger_present": true,
+    "refine_report_present": false
+  }
+}

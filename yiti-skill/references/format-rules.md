@@ -52,7 +52,7 @@
 | 数字、英文字母、%等半角符号（全文） | Times New Roman | 随所在位置 | 随所在句 | 随所在段落 |
 | 页脚 `-1-` | 宋体 | 四号 | 否 | 奇数页居右、偶数页居左 |
 
-- 三款公文字体随技能放在 `assets/fonts/`（simfang.ttf、楷体_GB2312.ttf、方正小标宋简体.ttf），运行 `scripts/ensure_fonts.py` 检测并做用户级安装（Windows 同时写入 HKCU 字体注册表，无需管理员权限，已打开的 Word 重启后生效）。
+- 三款公文字体不随技能分发（simfang.ttf、楷体_GB2312.ttf、方正小标宋简体.ttf），请在仓库外自行准备并设置 ICDAFY_FONT_DIR，运行 `scripts/ensure_fonts.py` 检测并做用户级安装（Windows 同时写入 HKCU 字体注册表，无需管理员权限，已打开的 Word 重启后生效）。
 - 生成的 DOCX 嵌入仿宋_GB2312、楷体_GB2312；方正小标宋简体的许可（fsType=2）禁止嵌入，打开文档的电脑须已安装该字体。Word 另存 PDF 时该字体同样不能嵌入，PDF 字体列表里标题可能显示为 SimSun，属 Word 的命名方式，标题字形仍为方正小标宋。
 - 除标题、核心结论句和引导词外，不加粗、不加下划线、不用颜色、不用斜体。
 

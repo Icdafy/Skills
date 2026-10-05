@@ -1,20 +1,14 @@
 # 跨 Agent 安装与调用
 
-适用于本仓库七个技能：`hangye-fenxi`、`zhuying-yewu-fenxi`、`gongsi-qingkuang`、`officialese-skill`、`yiti-skill`、`meeting-minutes-pro`、`soe-post-investment-report`。官方文档核对日期：2026-09-27。各技能均采用标准 `SKILL.md`（`name`、`description`）入口，同一份目录可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM、WorkBuddy、TRAE、Qoder 等客户端复用。本文中的 `SKILL_ROOT` 指本次实际加载的技能文件夹，`<name>` 指技能英文标识。
+适用于此技能的完整目录。技能集合、中文分类、源码路径、下载和版本以 [仓库首页](https://github.com/Icdafy/Skills) 及 skills-index.json 为准。`SKILL_ROOT` 指本次实际加载的 SKILL.md 所在目录，`<name>` 为其 name。
 
 ## 一、获取完整技能包
 
-| 技能 | 中文名称 | 单技能 ZIP |
-|---|---|---|
-| `hangye-fenxi` | 立项报告行业分析 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/hangye-fenxi.zip) |
-| `zhuying-yewu-fenxi` | 立项报告主营业务分析 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip) |
-| `gongsi-qingkuang` | 立项报告公司情况 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip) |
-| `officialese-skill` | 国企公文格式 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/officialese-skill.zip) |
-| `yiti-skill` | 投委会议题 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/yiti-skill.zip) |
-| `meeting-minutes-pro` | 会议纪要专业版 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip) |
-| `soe-post-investment-report` | 国企股权投资投后报告 | [下载](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip) |
+在本技能 README 下载单技能 ZIP，解压第一层只有 `<name>/`。包含完整规则、脚本、资源、VERSION、LICENSE、NOTICE 和逐文件 manifest。整库 Download ZIP 不是单技能包，不能只复制 SKILL.md。公开包不含商用/系统字体或模型，使用本机授权字体。
 
-每个 ZIP 的第一层只有该技能目录，内含 `SKILL.md`、`references/`、`scripts/`、`assets/`、`agents/openai.yaml`、依赖说明和 `skill-manifest.json`（逐文件 SHA-256，文本统一 LF 换行）。GitHub 整库“Download ZIP”带 `Skills-main` 外层，不能直接当单技能包上传；仅复制 `SKILL.md` 会遗漏参考文件、生成器和字体，不算安装成功。
+## 验证程度
+
+Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档；真实调用结果见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。其他客户端保留下列安装参考（原核对日 2026-09-27），本次均未实测，入口可能随版本变化，请以客户端实际界面为准。目录复制或脚本成功均不等于模型调用成功。
 
 ## 二、各客户端安装与调用
 
@@ -24,12 +18,12 @@
 | **Claude Code**（CLI、桌面 Code、IDE） | 插件市场：`/plugin marketplace add Icdafy/Skills`，再 `/plugin install <name>@icdafy-skills`；或目录安装 `--agent claude-code`（`~/.claude/skills/`，项目级 `.claude/skills/`） | `/<name>`（插件方式安装时斜杠菜单带插件名前缀）或自然语言 | [Claude Code 技能](https://code.claude.com/docs/en/skills) |
 | **ChatGPT** 桌面版 | 目录安装 `--agent chatgpt`（与 Codex 共用 `~/.agents/skills/`），侧栏“技能”中确认 | 输入 `@` 选择技能，或按描述自动匹配 | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
 | **ChatGPT** Business / Enterprise / Edu | 技能 → 创建 → 从电脑上传，选择 ZIP；等待安全扫描，标记“需审核”时按提示复核 | `@` 选择技能 | [Skills in ChatGPT](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) |
-| **Codex** CLI / IDE 扩展 | `--agent codex`（`~/.agents/skills/`，项目级 `.agents/skills/`）；或在 Codex 中运行 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<name>`。仍读取 `$CODEX_HOME/skills` 的旧版用 `--agent codex-legacy` | `$<name>` 或 `/skills` | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
+| **Codex** CLI / IDE 扩展 | `--agent codex`（`~/.agents/skills/`，项目级 `.agents/skills/`）；或在 Codex 中运行 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/skills/<name>`。仍读取 `$CODEX_HOME/skills` 的旧版用 `--agent codex-legacy` | `$<name>` 或 `/skills` | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
 | **Kimi Work**（Kimi 电脑客户端 Work 模式） | 侧栏“技能”→ 上传本地技能，导入完整 ZIP | 输入框输入 `/` 选择技能，或直接点名 | [Kimi Work](https://www.kimi.com/help/kimi-work/overview) |
 | **Kimi Code CLI** | `--agent kimi-code`（`$KIMI_CODE_HOME/skills/`，默认 `~/.kimi-code/skills/`；也读取 `~/.agents/skills/`） | `/skill:<name>` | [Kimi Code Skills](https://www.kimi.com/code/docs/kimi-code-cli/customization/skills.html) |
 | **豆包** 电脑版（工作模式） | 左侧“插件·技能·伙伴”→“技能”→ 右上角“+ 添加”→“上传技能”，拖入 ZIP 或解压后的技能文件夹；在“我安装的”中确认 | “新工作任务”对话框输入 `/` 或 `@` 选择技能，或直接描述需求自动匹配 | [在豆包工作中使用技能](https://www.doubao.com/work/docs/zh-cn/articles/081010973544-skills) |
 | **智谱 GLM**：ZCode | 设置 → Skills → 右上角导入（选“复制”）；或 `--agent zcode`（`~/.zcode/skills/`） | `$<name>` 或斜杠菜单 | [ZCode Skill](https://zcode.z.ai/en/docs/skill) |
-| **智谱 GLM**：AutoClaw（澳龙，基于 OpenClaw） | `--agent openclaw`（`~/.openclaw/skills/`）或 `--agent agents`（`~/.agents/skills/`），重启后生效。界面“Plugins → Skills”导入限制单文件 1 MiB、总量 8 MiB，含字体的技能须用目录安装 | 斜杠命令 `/<name>` 或自然语言 | [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) |
+| **智谱 GLM**：AutoClaw（澳龙，基于 OpenClaw） | `--agent openclaw`（`~/.openclaw/skills/`）或 `--agent agents`（`~/.agents/skills/`），重启后生效。界面“Plugins → Skills”导入限制单文件 1 MiB、总量 8 MiB，遇到体积限制时可用目录安装；本库不分发字体 | 斜杠命令 `/<name>` 或自然语言 | [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) |
 | **WorkBuddy** | 技能 → 添加技能 → 上传技能，导入 ZIP 并在已安装页开启；或 `--agent workbuddy`（`~/.workbuddy/skills/`，项目级 `.workbuddy/skills/`）。CodeBuddy 用 `--agent codebuddy` | 自然语言点名或在技能列表选择 | [WorkBuddy 技能](https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market) |
 | **TRAE** / TraeCode | 设置 → 技能与命令 → 创建 → 全局或项目 → 导入 ZIP；中国版 `--agent trae-cn`（`~/.trae-cn/skills/`），国际版 `--agent trae`（`~/.trae/skills/`），项目级 `.trae/skills/` | 直接点名技能，或由 AI 自动加载。使用 `.agents/skills/` 须在“导入设置”开启，同名时 `.trae/skills/` 优先 | [TRAE 技能](https://docs.trae.cn/ide_skills) |
 | **Qoder** 桌面版 | Extensions → Skills → Add Skills → Upload Skill，上传 ZIP，在 Installed 中确认 | 输入 `/` 选择技能 | [Qoder Skills](https://docs.qoder.com/qoder/skills) |
@@ -54,8 +48,8 @@ python scripts/skill_portability.py check --smoke
 python scripts/skill_portability.py install --agent claude-code --agent codex
 python scripts/skill_portability.py install --agent claude-code --agent codex --apply
 
-# 自动识别本机已存在配置目录的客户端，一次安装
-python scripts/skill_portability.py install --detect --apply
+# 自动识别本机已存在的配置目录，仅预览；确认目标后单独安装
+python scripts/skill_portability.py install --detect
 
 # 项目级安装（project-dir 使用实际项目绝对路径）
 python scripts/skill_portability.py install --agent trae-cn --scope project --project-dir "/path/to/project" --apply
@@ -105,7 +99,7 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 
 1. **可发现**：技能列表出现原始英文 `name`（支持显示名称的客户端显示中文名），开关开启，无旧版本覆盖。直接说“使用 `<name>` 技能，只读取其规范，概括适用范围和 3 条排版规则”，观察实际技能加载记录；模型仅声称“已调用”不算验收。
 2. **自动选择**：按上表分别输入一句典型请求，观察是否调用对应技能及所需参考文件；信息不足时应先收集必要输入，不能编造。再输入与各技能无关的请求，确认不被误选。
-3. **运行完整**：在宿主执行环境运行 `check --smoke`，确认参考文件可读、生成器能找到同目录辅助模块与字体资源。无运行环境的平台不能记录为完整 Word 能力通过。
+3. **运行完整**：在宿主执行环境运行 `check --smoke`，确认参考文件可读、生成器能找到同目录辅助模块及本机授权字体。无运行环境的平台不能记录为完整 Word 能力通过。
 4. **输出一致**：用非敏感测试材料生成含表格、括注、`（1）` 标题、分页的 Word，核对中文字体、Times New Roman 数字及百分号、表格五号、奇偶页外侧页码和整段 14 磅页脚。
 
 各技能另有首轮行为，验收时一并核对：立项报告三技能首轮先问“早前期或中后期”并等待；`soe-post-investment-report` 首轮只逐字提出四项变更确认问题；`meeting-minutes-pro` 生成纪要前先一次性收集缺失的会议基本信息；`yiti-skill` 先判定会议类或退出类骨架。

@@ -1,0 +1,4 @@
+$ python C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\audit_frozen_content.py
+exit=0
+test files=25 original cases=375
+frozen assets=15 renderers=8 failures=0

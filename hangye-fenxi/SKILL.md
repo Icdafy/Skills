@@ -125,7 +125,7 @@ description: 撰写、修订或复核股权投资立项报告的所属行业分�
 
 若需要生成 `.docx`，还必须读取 [references/02-writing-style.md](references/02-writing-style.md) 的“公文版式与字体规范”。公文版式基准（与 zhuying-yewu-fenxi、gongsi-qingkuang 三技能统一）为 A4 页面、页边距上 3.7cm/下 3.5cm/左 2.8cm/右 2.6cm、正文 16pt、固定 28 磅行距（各级编号标题固定 30 磅）、正文与全部标题首行缩进 2 个中文字符；中文字体体系为“黑体/楷体_GB2312/仿宋_GB2312”；表格全表五号字（10.5pt），中文仿宋_GB2312、括注中文楷体_GB2312，西文 Times New Roman，仅首行表头加粗、不加底纹，表头行跨页重复，所有单元格内容水平和垂直居中，宽度按窗口自动调整（autofit）。
 
-生成 `.docx` 前，先运行 `python scripts/ensure_fonts.py` 检测并按需安装公文字体（仿宋 simfang、方正小标宋简体、楷体_GB2312）。本技能已在 [assets/fonts/](assets/fonts/) 内自带这三款字体，缺失时脚本会自动安装到当前用户字体目录并写入用户级字体注册表（无需管理员权限）。仅检测不安装可用 `python scripts/ensure_fonts.py --check`。字体为受版权保护的商用/系统字体，随本私有技能仅供本人使用，请勿再分发。生成的 `.docx` 会自动嵌入随附的仿宋_GB2312、楷体_GB2312（方正小标宋许可禁止嵌入，自动跳过），未装这两款字体的机器打开也不掉字；嵌入经反混淆校验，失败时保留未嵌入版本、不影响生成。可用 `python scripts/embed_fonts.py --docx 输出.docx --verify` 复核。
+生成 `.docx` 前，先运行 `python scripts/ensure_fonts.py` 检测并按需安装公文字体（仿宋 simfang、方正小标宋简体、楷体_GB2312）。本技能不随包提供字体，[assets/fonts/](assets/fonts/) 仅有准备说明；缺失时用户自行提供授权字体并设置 ICDAFY_FONT_DIR，再按需安装到用户字体目录并注册（无需管理员权限）。仅检测不安装可用 `python scripts/ensure_fonts.py --check`。字体为受版权保护的商用/系统字体，公开库不提供其二进制，用户自行核实本机使用授权。生成的 `.docx` 会自动嵌入本机授权的仿宋_GB2312、楷体_GB2312（方正小标宋许可禁止嵌入，自动跳过），未装这两款字体的机器打开也不掉字；嵌入经反混淆校验，失败时保留未嵌入版本、不影响生成。可用 `python scripts/embed_fonts.py --docx 输出.docx --verify` 复核。
 
 字体就位后，用 [scripts/build_docx.py](scripts/build_docx.py) 渲染 `.docx`（三技能共用同一份渲染脚本，禁止手写排版代码），它自动套用全部公文版式与表格规范，无需手动设置字体、缩进、行距或表格样式。做法是把写好的章节内容组织成结构化 `content`（`blocks` 列表，元素 `type` 为 `h1/h2/h3/h4/p/bullet/table/tnote/image/pagebreak`，其中 `image` 为插图（`path`、`width_cm`、`caption`），`tnote` 为表注——“单位：亿元”“注：……”，仿宋五号，单位行惯例 `"align":"right"` 放表格上方），再执行：
 
