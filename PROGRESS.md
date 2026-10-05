@@ -170,3 +170,4 @@
 - 澄清已有答复：维护者选择“没有此授权，或尚不清楚”。公开随包字体要求记为B4未完成；字体映射需求保留，未擅自换字体，未把字库公开提交或改标Apache-2.0。本次只追加记录，不修改七技能源码、测试、版本或ZIP。
 - `python tools/check_library.py`实际退出0：技能集合7、共享11、原237文件映射/19解释删除、递归扫描677文件且受限字体命中0、本地断链0。此为新增记录后的链接/当前分发复核，不能充当随包字体功能验证；原3轮验收及375项结果保留，不开始第4轮。
 - 授权答复及证据整理后的 `python work/check_font_request_metadata.py`（仓库外）实际退出0：Python3.12.14、对33ea8ea的七技能/测试/版本/包受保护路径差异0、统一校验退出0（679文件、字体0、断链0）、`git diff --check`退出0。变化仅限Markdown/JSON/文本记录，未公开本机企业字体路径。见 [四条实际命令](docs/validation/font-request/metadata-checks.json)及 [统一校验原输出](docs/validation/font-request/library.txt)。准备普通提交记录并更新现有草稿PR，未合并。
+- 新字体记录已交付：暂存10份记录的 `git diff --cached --check`实际退出0；普通commit退出0（d4bea71），正常 `git push origin chore/skills-library-20261005`退出0，`gh pr edit 12 --repo Icdafy/Skills --body-file ../pr-flat-layout-body.md`退出0。PR说明已明确新增B4未实施与旧验收范围，字体未上传；只补本条交付回执及输出副本，main不变、PR不自动合并。
