@@ -26,3 +26,7 @@
 | 删除允许保留字体 | [exit1：Retained source font missing](distribution/red-missing-retained-font.txt) | [exit0](distribution/green-missing-retained-font-restored.txt) |
 
 以上是合并工作验证，原三轮记录没有重写；字体许可未解决，不宣称原开源发布目标全部完成。
+
+## 已合并到唯一main
+
+[PR #12](https://github.com/Icdafy/Skills/pull/12)已合并，合并提交`e2f8282f4fd8cae67cd64f5fd61a1977999e3400`；远端和本地均仅main，工作分支已删除。合并树等于受测PR树，原18字体在合并树及工作树逐字节等于bf6f7d8。[实际回执](merge-receipt.json)。随后只提交合并回执和当前状态说明，不改变技能、版本或ZIP。字体许可、严格首轮四问和最后浏览缺证仍保留。

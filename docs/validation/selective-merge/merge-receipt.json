@@ -1,0 +1,66 @@
+{
+  "checked_at": "2026-10-05T12:19:12.314839+00:00",
+  "pr_url": "https://github.com/Icdafy/Skills/pull/12",
+  "state": "closed",
+  "merged": true,
+  "merged_at": "2026-10-05T12:16:08Z",
+  "baseline_main": "bf6f7d8cfb99265fc55ee45da5ea54150fff876d",
+  "validated_pr_head": "3919b43fe131819e64dc28817e53631e21b17094",
+  "merge_commit": "e2f8282f4fd8cae67cd64f5fd61a1977999e3400",
+  "remote_branches": [
+    "main"
+  ],
+  "local_branches": [
+    "main"
+  ],
+  "remote_main_sha": "e2f8282f4fd8cae67cd64f5fd61a1977999e3400",
+  "local_main_sha": "e2f8282f4fd8cae67cd64f5fd61a1977999e3400",
+  "merge_tree_equals_validated_pr_tree": true,
+  "original_font_files_unchanged": 18,
+  "single_skill_zip_fonts": 0,
+  "font_redistribution_authorization_confirmed": false,
+  "user_authorization": "除原main六技能各三款字体18份不变外，其余全部合并，只保留main。",
+  "commands": [
+    {
+      "command": "git commit (per-command public author identity)",
+      "exit": 0,
+      "commit": "3919b43fe131819e64dc28817e53631e21b17094"
+    },
+    {
+      "command": "git push origin chore/skills-library-20261005",
+      "exit": 0
+    },
+    {
+      "command": "gh pr edit 12 --repo Icdafy/Skills --body-file ../pr-selective-merge-body.md",
+      "exit": 0
+    },
+    {
+      "command": "gh pr ready 12 --repo Icdafy/Skills",
+      "exit": 0
+    },
+    {
+      "command": "gh pr merge 12 --repo Icdafy/Skills --merge --delete-branch --match-head-commit 3919b43fe131819e64dc28817e53631e21b17094",
+      "exit": 0
+    },
+    {
+      "command": "git fetch origin --prune",
+      "exit": 0
+    },
+    {
+      "command": "git switch main",
+      "exit": 0
+    },
+    {
+      "command": "git merge --ff-only origin/main",
+      "exit": 0
+    },
+    {
+      "command": "git branch -d chore/skills-library-20261005",
+      "exit": 0
+    },
+    {
+      "command": "git diff --exit-code 3919b43fe131819e64dc28817e53631e21b17094 e2f8282f4fd8cae67cd64f5fd61a1977999e3400",
+      "exit": 0
+    }
+  ]
+}

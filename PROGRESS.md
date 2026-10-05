@@ -186,3 +186,9 @@
 - 上述新范围验证完成，准备普通提交并push原PR分支；维护者已经明确授权合并并仅保留main，不再请求重复确认。字体许可待决、严格四问及浏览缺证仍如实保留。
 
 - `python work/finalize_selective_review.py`退出0：当前统一校验、七包、旧打包命令及diff均退出0，亲测后写入维护/验证说明；PR正文准备完成。`python work/stage_selective_merge.py`退出0：暂存白名单越界0、符号链接0、跟踪字体恰18且Git对象/工作树均等于原main，暂存diff --check退出0。准备普通提交、更新PR并执行维护者已授权的合并。
+
+## 用户授权的选择性合并已完成
+
+- 普通commit退出0：`3919b43fe131819e64dc28817e53631e21b17094`，正常push和PR正文更新均退出0。`gh pr ready`及带match-head-commit的普通merge退出0；PR #12已MERGED/CLOSED，合并提交`e2f8282f4fd8cae67cd64f5fd61a1977999e3400`。
+- `git fetch origin --prune`、`git switch main`、`git merge --ff-only origin/main`、`git branch -d chore/skills-library-20261005`均实际退出0；GitHub分支API和本地分支核对均只main，工作树干净。原18字体在合并Git树和工作树逐字节等于原main；合并树与受测PR树无差异，git diff --exit-code退出0。见[合并回执](docs/validation/selective-merge/merge-receipt.json)。
+- 本次“保留原字体，其余合并，仅main”已实现；原开源发布goal不冒称完成，字体许可/B2严格四问/B3浏览缺证保留。最后仅提交合并回执及当前状态说明，不改技能实现、测试、版本或ZIP。

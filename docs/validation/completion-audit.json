@@ -232,6 +232,15 @@
     "original_font_zero_requirement_overridden": true,
     "font_redistribution_permission_confirmed": false,
     "evidence": "validation/selective-merge/README.md",
-    "status": "preparing"
+    "status": "merged",
+    "merge_commit": "e2f8282f4fd8cae67cd64f5fd61a1977999e3400",
+    "remote_branches": [
+      "main"
+    ],
+    "local_branches": [
+      "main"
+    ],
+    "user_requested_merge_complete": true,
+    "original_goal_completion_proven": false
   }
 }
