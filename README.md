@@ -20,7 +20,6 @@
 | [officialese-skill](officialese-skill/) | 国企公文写作与排版：通知、请示、报告、函等公文的起草、改写与 DOCX 版式（字体、页边距、标题、落款、页码） |
 | [yiti-skill](yiti-skill/) | 投委会议题撰写：会议参会表决议题（股东会/合伙人会议通知及议案）与投资项目退出议题（对赌回购触发、实际控制人回购）两类，按固定骨架生成中性书面语、段尾不留悬置句的议题正文；公文排版 DOCX（括号楷体、表格五号、全文数字 Times New Roman、页脚-1-四号宋体奇偶页、附件说明悬挂对齐、落款与退出方案附件），附文本检查脚本 |
 | [meeting-minutes-pro](meeting-minutes-pro/) | 本地音视频转写＋正式会议纪要一体化：FunASR/Qwen3-ASR 双引擎、数小时长音频、说话人分离、热词术语库；自动采集会议基本信息，识别并保留 QA 问答，数字逐项对照转录稿核验，公文版式 DOCX 输出并渲染检查；详见文件夹内 README |
-| [sound-transcribe](sound-transcribe/) | 音视频转写：本地 faster-whisper 转写音频/视频为文本、时间戳、SRT 字幕与逐字稿 |
 
 ## 仓库维护工具
 
