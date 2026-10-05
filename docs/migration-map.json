@@ -1,0 +1,1443 @@
+[
+  {
+    "old": ".claude-plugin/marketplace.json",
+    "new": ".claude-plugin/marketplace.json",
+    "baseline_sha256": "564a9c392a28d95bc21fb7adb7f9b10decd314d209ddff4df491aa1bca42dcdf",
+    "action": "retain"
+  },
+  {
+    "old": ".gitignore",
+    "new": ".gitignore",
+    "baseline_sha256": "6a889056527d026afcdb87c709e4add05b0377930339cd2c3314d4a25a2ef650",
+    "action": "retain"
+  },
+  {
+    "old": "README.md",
+    "new": "README.md",
+    "baseline_sha256": "8270363941c6fa93a1bceb4209d3131e23a417b336da8b5c2572311e9b782511",
+    "action": "retain"
+  },
+  {
+    "old": "Skills军团",
+    "new": null,
+    "baseline_sha256": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+    "action": "delete",
+    "reason": "仅换行的空白占位文件，无引用、无执行或说明内容"
+  },
+  {
+    "old": "distributions/investment-report-skills/README.md",
+    "new": "distributions/investment-report-skills/README.md",
+    "baseline_sha256": "1302e15ca497589fbc4474da757d54dadfc24f6a563c42166d3a85220f2c3440",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/investment-report-skills/gongsi-qingkuang.zip",
+    "new": "distributions/investment-report-skills/gongsi-qingkuang.zip",
+    "baseline_sha256": "e64a3dfd5c443fb3fc470ae66381897b8965ba0cb74c682b3b8da3678c379006",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/investment-report-skills/gongsi-qingkuang.zip.sha256",
+    "new": "distributions/investment-report-skills/gongsi-qingkuang.zip.sha256",
+    "baseline_sha256": "bb8fa354b50a99e0a8adf29bff1c8bec539d469bc7203faa880b9523f7d02120",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/investment-report-skills/hangye-fenxi.zip",
+    "new": "distributions/investment-report-skills/hangye-fenxi.zip",
+    "baseline_sha256": "92f24f200a309e468122bb65a68bd79c4ebfec4075bdff39dd02888bbd00b48c",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/investment-report-skills/hangye-fenxi.zip.sha256",
+    "new": "distributions/investment-report-skills/hangye-fenxi.zip.sha256",
+    "baseline_sha256": "c1bfaa96ef2ec667de8002fa56b9e67e727b48e77658a864b59ec23b940761ad",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
+    "new": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
+    "baseline_sha256": "5b05b83c9ede955694f041312126e5878786c31c5684ea68a7bc11e0af6dadb5",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip.sha256",
+    "new": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip.sha256",
+    "baseline_sha256": "9547ebd0a64ff27600677744d07f5adc3ecdcca3ef1bde751e37b71972c94f0f",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/README.md",
+    "new": "distributions/office-skills/README.md",
+    "baseline_sha256": "7a26735291980d4312063ae6b0adf7aeefc265985133fdec8c02f676afba2b23",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/meeting-minutes-pro.zip",
+    "new": "distributions/office-skills/meeting-minutes-pro.zip",
+    "baseline_sha256": "8fb9f25a41081a3998c632ff09e19fbe70d70eb1d168a30a508efdab2fc894fb",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/meeting-minutes-pro.zip.sha256",
+    "new": "distributions/office-skills/meeting-minutes-pro.zip.sha256",
+    "baseline_sha256": "6055854fec66fd740f5a7a5b6614b11c55979b8b45dab4af5acdf880b5fb29cd",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/officialese-skill.zip",
+    "new": "distributions/office-skills/officialese-skill.zip",
+    "baseline_sha256": "8a957fca3b63759480ca0c109c2df2ffd6414ea40d3e406c8a3cde2d1aa60bb2",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/officialese-skill.zip.sha256",
+    "new": "distributions/office-skills/officialese-skill.zip.sha256",
+    "baseline_sha256": "910f9dadf5e8c80d88c1c4317cc6ad7335380e1fa627168dadd791c77c95f2b4",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/soe-post-investment-report.zip",
+    "new": "distributions/office-skills/soe-post-investment-report.zip",
+    "baseline_sha256": "9e361f474b657f3f4fcd291601e958c1b55f8c016d507ce46f22637e11300b1b",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/soe-post-investment-report.zip.sha256",
+    "new": "distributions/office-skills/soe-post-investment-report.zip.sha256",
+    "baseline_sha256": "3cc91f9d368f9bfbcaf1a3045ffcefa495596826c10ac90749a281fedf8a7cf0",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/yiti-skill.zip",
+    "new": "distributions/office-skills/yiti-skill.zip",
+    "baseline_sha256": "08ae8573b04e63192a04c94f8e900f68d83815993a69f44198072b99ee87f631",
+    "action": "retain"
+  },
+  {
+    "old": "distributions/office-skills/yiti-skill.zip.sha256",
+    "new": "distributions/office-skills/yiti-skill.zip.sha256",
+    "baseline_sha256": "56e3f080b742dd9aa056b584986b0aa3669eeda2a138f1de3f0e6c92dd530a49",
+    "action": "retain"
+  },
+  {
+    "old": "gongsi-qingkuang/README.md",
+    "new": "skills/gongsi-qingkuang/README.md",
+    "baseline_sha256": "76b407650925a27737c31bb9fe32c324de95a141bfeed9a589d4c0864a51d349",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/SKILL.md",
+    "new": "skills/gongsi-qingkuang/SKILL.md",
+    "baseline_sha256": "f290a99e0db7c432d2d5a92156c167ed6cd4840e374305833caa5b2c26ab7431",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/agents/openai.yaml",
+    "new": "skills/gongsi-qingkuang/agents/openai.yaml",
+    "baseline_sha256": "2dc7a950a229bf3e8a5e8c6cac48d8df2064c4180b69c5c6e94420f0ca7ece94",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/content_skeleton.json",
+    "new": "skills/gongsi-qingkuang/assets/content_skeleton.json",
+    "baseline_sha256": "c73303f50dba4dcb507fd73dcdf3d39c57cb65a53323178f1cc54e8921da603f",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/fonts/README.md",
+    "new": "skills/gongsi-qingkuang/assets/fonts/README.md",
+    "baseline_sha256": "354771926da7286272689d08dc9f310bb69a010fd6bd9a83e38b228cea656336",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/fonts/simfang.ttf",
+    "new": null,
+    "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf",
+    "new": null,
+    "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf",
+    "new": null,
+    "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/templates/early.json",
+    "new": "skills/gongsi-qingkuang/assets/templates/early.json",
+    "baseline_sha256": "37457aeae4fc77bd0a0a1b3075b72465348f418a9eb050075ac35813ae1c54ea",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/assets/templates/mid-late.json",
+    "new": "skills/gongsi-qingkuang/assets/templates/mid-late.json",
+    "baseline_sha256": "04deafab2f475391788114185e122d55ce5721d226d612b87cb81d08bfc77f0f",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/evals/evals.json",
+    "new": "skills/gongsi-qingkuang/evals/evals.json",
+    "baseline_sha256": "97cad98c725b09e8f243e84f78bca172a09b411672d2693cc6d8620f98cd9ff1",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/evals/test_style_check.py",
+    "new": "skills/gongsi-qingkuang/evals/test_style_check.py",
+    "baseline_sha256": "69d5f033389da26926f1104aa3edc96e76bff7a4e2420bf53a3e2d676b4e6441",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/agent-compatibility.md",
+    "new": "skills/gongsi-qingkuang/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/data-and-tables.md",
+    "new": "skills/gongsi-qingkuang/references/data-and-tables.md",
+    "baseline_sha256": "bfc18a8eb2c7c403af40965741f6f3b0f3fb53cf4c83205359b226f1e08d9685",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/gold-examples.md",
+    "new": "skills/gongsi-qingkuang/references/gold-examples.md",
+    "baseline_sha256": "fe53d9e8471dc20124205d318b285ee4189b13f0683495bc740fab27357a83c9",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/investment-logic-review.md",
+    "new": "skills/gongsi-qingkuang/references/investment-logic-review.md",
+    "baseline_sha256": "07ccad8d52db0fdd728d71d31429948ea525248abcfc01eff55576f547da6bf5",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/red-flags.md",
+    "new": "skills/gongsi-qingkuang/references/red-flags.md",
+    "baseline_sha256": "1d0ad19b1401056978ec2c223f7d28b3db3ceef86f5a3922806aa65c129a9eb4",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/review-feedback.md",
+    "new": "skills/gongsi-qingkuang/references/review-feedback.md",
+    "baseline_sha256": "43526a597bd3a862a50523fc62b4218711c29a5ec3ed43eb7f2a2efd94f74a8a",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/stage-template-workflow.md",
+    "new": "skills/gongsi-qingkuang/references/stage-template-workflow.md",
+    "baseline_sha256": "055540d849cb031063cc0acc70ae706ce907607573d23d2be3cef0f92150b808",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/structure.md",
+    "new": "skills/gongsi-qingkuang/references/structure.md",
+    "baseline_sha256": "abb172b51e366b5188fef04b3c4087b044f96d38b4a1cc7ea42eca6f12279153",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/template-early.md",
+    "new": "skills/gongsi-qingkuang/references/template-early.md",
+    "baseline_sha256": "13710cec2d0a145c14dbb1cd095a5659a15ab82b8f5be39fe24ceaf39abfb229",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/template-mid-late.md",
+    "new": "skills/gongsi-qingkuang/references/template-mid-late.md",
+    "baseline_sha256": "a3dc6b4c62854a801e5ea8e997a1a58d019f55ae796d5618dc27f9b52f31a862",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/references/writing-craft.md",
+    "new": "skills/gongsi-qingkuang/references/writing-craft.md",
+    "baseline_sha256": "d69c3d47a36ab028ac8031964993578523e9150f47911b339297e1dc094cb2d3",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/requirements.txt",
+    "new": "skills/gongsi-qingkuang/requirements.txt",
+    "baseline_sha256": "eb79fd0d91f00d0b0c869635c2a205a868665bb1010f601b6e5be01958fb1c83",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/build_docx.py",
+    "new": "skills/gongsi-qingkuang/scripts/build_docx.py",
+    "baseline_sha256": "de875588bf5599fc6d5b329f467a797315c39d3ba69a6579a46a31ac93d6294a",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/docx_format_helpers.py",
+    "new": "skills/gongsi-qingkuang/scripts/docx_format_helpers.py",
+    "baseline_sha256": "2bef1890fda3e0e2d76ed394923f9e69cb2856698d88fb0b3f63c0271e10b7a0",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/embed_fonts.py",
+    "new": "skills/gongsi-qingkuang/scripts/embed_fonts.py",
+    "baseline_sha256": "a6445f8d0f5072a531185a0889ede826e640f0ced4719f7d027fb17932d8cc4c",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/ensure_fonts.py",
+    "new": "skills/gongsi-qingkuang/scripts/ensure_fonts.py",
+    "baseline_sha256": "330143aa80a2fdc72edf54540c414fe226e773b247e84b6d1821a9ebe8d6dc7b",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/extract_docx.py",
+    "new": "skills/gongsi-qingkuang/scripts/extract_docx.py",
+    "baseline_sha256": "9cce838eadbc57e197510824b044102fcd780ebb2121038f2071ff5534692803",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/reconcile_check.py",
+    "new": "skills/gongsi-qingkuang/scripts/reconcile_check.py",
+    "baseline_sha256": "ddfa53131bc8fcf076469c5684b3d42d3f6670f1bbb0cab1490139f3d7b3f2c2",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/skill_portability.py",
+    "new": "skills/gongsi-qingkuang/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/stage_template.py",
+    "new": "skills/gongsi-qingkuang/scripts/stage_template.py",
+    "baseline_sha256": "2d3a10eeb2aee8c816d5757e16442f50c2c387cb1bf2a00a80c248917b092f02",
+    "action": "move"
+  },
+  {
+    "old": "gongsi-qingkuang/scripts/style_check.py",
+    "new": "skills/gongsi-qingkuang/scripts/style_check.py",
+    "baseline_sha256": "f07834df07846277ff704dfc630e087d2973545044555338a6dbb01bd69e8123",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/README.md",
+    "new": "skills/hangye-fenxi/README.md",
+    "baseline_sha256": "8f72c311ee253835b6ea8f42a00191d75c7f200cbe3680b0880f1f0b8dbec7b3",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/SKILL.md",
+    "new": "skills/hangye-fenxi/SKILL.md",
+    "baseline_sha256": "6a7fa2534573a6b3388e8c08f559fabab58b914e8f8bd107643d5097a5efccd3",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/agents/openai.yaml",
+    "new": "skills/hangye-fenxi/agents/openai.yaml",
+    "baseline_sha256": "847410f8fd3c28542cd2cb1a81dd10d0626a0fd20961802cc006231df32f007e",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/assets/fonts/README.md",
+    "new": "skills/hangye-fenxi/assets/fonts/README.md",
+    "baseline_sha256": "354771926da7286272689d08dc9f310bb69a010fd6bd9a83e38b228cea656336",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/assets/fonts/simfang.ttf",
+    "new": null,
+    "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "hangye-fenxi/assets/fonts/方正小标宋简体.ttf",
+    "new": null,
+    "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "hangye-fenxi/assets/fonts/楷体_GB2312.ttf",
+    "new": null,
+    "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "hangye-fenxi/assets/templates/early.json",
+    "new": "skills/hangye-fenxi/assets/templates/early.json",
+    "baseline_sha256": "4c5697333ac76cbc02542fde992d8a749f05de56196c187f78bd4b6e56b8c9e1",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/assets/templates/mid-late.json",
+    "new": "skills/hangye-fenxi/assets/templates/mid-late.json",
+    "baseline_sha256": "e3a96455c5f5ac30ebeb42ad8d35017b004d01d7c14516c852d47abc1baa601c",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/01-framework.md",
+    "new": "skills/hangye-fenxi/references/01-framework.md",
+    "baseline_sha256": "a8495c4d576060098c96b8d99a0d640ccf055188afeeab0a3fe551cb914cb4f8",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/02-writing-style.md",
+    "new": "skills/hangye-fenxi/references/02-writing-style.md",
+    "baseline_sha256": "14173809d73b3794b9ef85f23f47531a15f52e27d61db13b211ec41ecf43b217",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/03-data-rules.md",
+    "new": "skills/hangye-fenxi/references/03-data-rules.md",
+    "baseline_sha256": "1855f738b147d7a32095775472974a25f71bde8a0f21f87d8a92d5f4089d108c",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/04-tables-charts.md",
+    "new": "skills/hangye-fenxi/references/04-tables-charts.md",
+    "baseline_sha256": "ec0e405b10a6e133e76e6970b9c7040e95dcee366f8bb21b61b5e604a34434fd",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/05-quality-checklist.md",
+    "new": "skills/hangye-fenxi/references/05-quality-checklist.md",
+    "baseline_sha256": "85c0ae4c53fc28266fe7bba9b18091e6ee3ced22f9b850c1a24f4a2c10e34335",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/06-red-flags.md",
+    "new": "skills/hangye-fenxi/references/06-red-flags.md",
+    "baseline_sha256": "840775b2fe4cb266eb121c156c696eebeb45647ee9163cbf182589adbb6aa343",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/07-benchmark-lessons.md",
+    "new": "skills/hangye-fenxi/references/07-benchmark-lessons.md",
+    "baseline_sha256": "26ecbb34810fa1e299f531d11803f0d2d1ae7626a16e2ee945bac94ae002c92e",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/08-chanlian-deep-dive.md",
+    "new": "skills/hangye-fenxi/references/08-chanlian-deep-dive.md",
+    "baseline_sha256": "5e5e9af9819ca25f52b1ad81f1d21c7d24884b7c8711141895378c7e7233f12e",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/agent-compatibility.md",
+    "new": "skills/hangye-fenxi/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/investment-logic-review.md",
+    "new": "skills/hangye-fenxi/references/investment-logic-review.md",
+    "baseline_sha256": "07ccad8d52db0fdd728d71d31429948ea525248abcfc01eff55576f547da6bf5",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/stage-template-workflow.md",
+    "new": "skills/hangye-fenxi/references/stage-template-workflow.md",
+    "baseline_sha256": "055540d849cb031063cc0acc70ae706ce907607573d23d2be3cef0f92150b808",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/template-early.md",
+    "new": "skills/hangye-fenxi/references/template-early.md",
+    "baseline_sha256": "b819954710a20f73e7272b6bab9cfd355221b75abc4df0da9ff777878f4a7fdc",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/references/template-mid-late.md",
+    "new": "skills/hangye-fenxi/references/template-mid-late.md",
+    "baseline_sha256": "21ccb1ca1d0afee4c7b49f2c52ab3ec058722645800cc5a2ced1444441c0164c",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/requirements.txt",
+    "new": "skills/hangye-fenxi/requirements.txt",
+    "baseline_sha256": "eb79fd0d91f00d0b0c869635c2a205a868665bb1010f601b6e5be01958fb1c83",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/build_docx.py",
+    "new": "skills/hangye-fenxi/scripts/build_docx.py",
+    "baseline_sha256": "de875588bf5599fc6d5b329f467a797315c39d3ba69a6579a46a31ac93d6294a",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/docx_format_helpers.py",
+    "new": "skills/hangye-fenxi/scripts/docx_format_helpers.py",
+    "baseline_sha256": "2bef1890fda3e0e2d76ed394923f9e69cb2856698d88fb0b3f63c0271e10b7a0",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/embed_fonts.py",
+    "new": "skills/hangye-fenxi/scripts/embed_fonts.py",
+    "baseline_sha256": "a6445f8d0f5072a531185a0889ede826e640f0ced4719f7d027fb17932d8cc4c",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/ensure_fonts.py",
+    "new": "skills/hangye-fenxi/scripts/ensure_fonts.py",
+    "baseline_sha256": "330143aa80a2fdc72edf54540c414fe226e773b247e84b6d1821a9ebe8d6dc7b",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/reconcile_check.py",
+    "new": "skills/hangye-fenxi/scripts/reconcile_check.py",
+    "baseline_sha256": "f5589ddcf2110ed833a6d9fc13e8a91c818680c7aad7bc692e439c00fe061dd0",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/skill_portability.py",
+    "new": "skills/hangye-fenxi/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/stage_template.py",
+    "new": "skills/hangye-fenxi/scripts/stage_template.py",
+    "baseline_sha256": "2d3a10eeb2aee8c816d5757e16442f50c2c387cb1bf2a00a80c248917b092f02",
+    "action": "move"
+  },
+  {
+    "old": "hangye-fenxi/scripts/style_check.py",
+    "new": "skills/hangye-fenxi/scripts/style_check.py",
+    "baseline_sha256": "57046c74c8e9745d42c8211ab1a2ddbd2a7d383cdb774e37fb2bd402dc483208",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/LICENSE",
+    "new": "skills/meeting-minutes-pro/LICENSE",
+    "baseline_sha256": "b6cf6de111c06a0fd05c20c6479627d4329436ed3ed1aa66965c481e9939f63e",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/README.md",
+    "new": "skills/meeting-minutes-pro/README.md",
+    "baseline_sha256": "c551cbece63f922f3ae8f2cf3f08836c5030bbf38e1d1e3a01f60ec11ef18f98",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/SKILL.md",
+    "new": "skills/meeting-minutes-pro/SKILL.md",
+    "baseline_sha256": "5a5114b53d9d69ea6d9ed6875ed2b093185625f7f63eddfa87d354b367611b21",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/agents/openai.yaml",
+    "new": "skills/meeting-minutes-pro/agents/openai.yaml",
+    "baseline_sha256": "9809013e073669619d88cc3a860b46270ee5ed3917986d7d22803803d2994645",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/assets/fonts/simfang.ttf",
+    "new": null,
+    "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf",
+    "new": null,
+    "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf",
+    "new": null,
+    "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "meeting-minutes-pro/assets/templates/文件字体格式.doc",
+    "new": "skills/meeting-minutes-pro/assets/templates/文件字体格式.doc",
+    "baseline_sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/glossary/README.md",
+    "new": "skills/meeting-minutes-pro/glossary/README.md",
+    "baseline_sha256": "85ee0d2447afd278b7297b74ca3dc4831683b71fa952783fc498e8163f8e8992",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/glossary/industry/低空经济.txt",
+    "new": "skills/meeting-minutes-pro/glossary/industry/低空经济.txt",
+    "baseline_sha256": "22df85a00c67d31013d16d8f927bbd9ae9272dac56186620132a8b2d23294f55",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/glossary/industry/商业航天.txt",
+    "new": "skills/meeting-minutes-pro/glossary/industry/商业航天.txt",
+    "baseline_sha256": "b859b9a469d233803fdfe500f3b6d1a1a9fffd78c0d4ef4902b9c607a304edbe",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/references/agent-compatibility.md",
+    "new": "skills/meeting-minutes-pro/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/references/architecture.md",
+    "new": "skills/meeting-minutes-pro/references/architecture.md",
+    "baseline_sha256": "6dff100c158d5b3bb719e5467e3fc94e4252734cde1d663d32a889f8c2d8b348",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/references/evidence-and-release.md",
+    "new": "skills/meeting-minutes-pro/references/evidence-and-release.md",
+    "baseline_sha256": "8a41c706ead955e8920566bba735ec941eb81ec7a60c7c1039638a8279e8f8bc",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/references/format-and-output.md",
+    "new": "skills/meeting-minutes-pro/references/format-and-output.md",
+    "baseline_sha256": "1e37c1db680bb4546d5cd7d368da02a6f14520054759713b065f79772e69afa6",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/references/platforms.md",
+    "new": "skills/meeting-minutes-pro/references/platforms.md",
+    "baseline_sha256": "aed49637ee8d37254142fb5b168822d1b08620bb58b6dcef903d16010a1bedc6",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/references/runtime.md",
+    "new": "skills/meeting-minutes-pro/references/runtime.md",
+    "baseline_sha256": "47f5adf4f1549839d2ac5826beb2233d62f1f46c91f4d61a9608ab87e380c5b4",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/audit_coverage.py",
+    "new": "skills/meeting-minutes-pro/scripts/audit_coverage.py",
+    "baseline_sha256": "e4fcb7c99db64e43fcd8a8c5f424d289835782724de09f0e280e4aa83a3ca37b",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/bootstrap_runtime.py",
+    "new": "skills/meeting-minutes-pro/scripts/bootstrap_runtime.py",
+    "baseline_sha256": "10f4da56714c22bc91b5263d6f2505d0c792b6ca2e9ec3cf0f594efc743887e0",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/check_all.py",
+    "new": "skills/meeting-minutes-pro/scripts/check_all.py",
+    "baseline_sha256": "be4cf788114621b35733a0e7f5e19d596e3e4f25b3904284927daac5a0e647ee",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/create_minutes_docx.py",
+    "new": "skills/meeting-minutes-pro/scripts/create_minutes_docx.py",
+    "baseline_sha256": "3364a655f33c451197f791447a18a0a2746e710a952385c3d0823569cdd8db1a",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/docx_format_helpers.py",
+    "new": "skills/meeting-minutes-pro/scripts/docx_format_helpers.py",
+    "baseline_sha256": "2bef1890fda3e0e2d76ed394923f9e69cb2856698d88fb0b3f63c0271e10b7a0",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/docx_style_check.py",
+    "new": "skills/meeting-minutes-pro/scripts/docx_style_check.py",
+    "baseline_sha256": "1f2da77db599b0a3ba8394326e06dc04e654b1ae5de581db63dc9414d9d72140",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/embed_fonts.py",
+    "new": "skills/meeting-minutes-pro/scripts/embed_fonts.py",
+    "baseline_sha256": "3f801198f2d7d9242bd0a30bddf14d1dda6774f7ec5a91cbf0ae9a67409b16cc",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/fact_check.py",
+    "new": "skills/meeting-minutes-pro/scripts/fact_check.py",
+    "baseline_sha256": "f11ffc9c17baedb36c8d4f37415c26c55272739ed71dace7a1ef923c1674cf1e",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/font_preflight.py",
+    "new": "skills/meeting-minutes-pro/scripts/font_preflight.py",
+    "baseline_sha256": "d687f80a3d69353e1d06afa409748369f35f7225c5c8e66196a3b8584bc3dc47",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/format_spec.py",
+    "new": "skills/meeting-minutes-pro/scripts/format_spec.py",
+    "baseline_sha256": "8593ac7f809117997f90249b4e0edad57008bed4ba5c5344ad48003152c73d02",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/install_skill.py",
+    "new": "skills/meeting-minutes-pro/scripts/install_skill.py",
+    "baseline_sha256": "0f3f00abfc9195f5bfa8de77f43376e4da4ee03c8bfc09e64475f5543e667439",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/qa_reconcile.py",
+    "new": "skills/meeting-minutes-pro/scripts/qa_reconcile.py",
+    "baseline_sha256": "624cf4f632ca6ee3a8ae4d517e47d6beb59c21efc18f63247f0ab6bd75304ea8",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/quality_check.py",
+    "new": "skills/meeting-minutes-pro/scripts/quality_check.py",
+    "baseline_sha256": "19b4c505f77b6c2d134763b6879b202d9f61ff3da9693e26c68c3c10d1f0312f",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/refine_transcript.py",
+    "new": "skills/meeting-minutes-pro/scripts/refine_transcript.py",
+    "baseline_sha256": "d0e791070cca220409be84c9f366f84eced1f64a0a25290098d2d8b9f9910d26",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/render_docx.py",
+    "new": "skills/meeting-minutes-pro/scripts/render_docx.py",
+    "baseline_sha256": "9d701a69cd5d93a51dfde444642866fc7830a555860e86ad1039ea985c312bf6",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/requirements-funasr.txt",
+    "new": "skills/meeting-minutes-pro/scripts/requirements-funasr.txt",
+    "baseline_sha256": "ec752ccf62086a4913a52b2a2026cdf3cdb1fb5f1a92e331ae61b343c5021fae",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/requirements-qwen.txt",
+    "new": "skills/meeting-minutes-pro/scripts/requirements-qwen.txt",
+    "baseline_sha256": "ed9b97959b468713aadebd39553eb1e93ed9c9f9475cee8daa07e9b2b41ba02d",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/requirements-runtime.txt",
+    "new": "skills/meeting-minutes-pro/scripts/requirements-runtime.txt",
+    "baseline_sha256": "eae1f051f954b367ead3ee636008dd93ab8549f9149cf98c7c1427df855b0feb",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/review_gate.py",
+    "new": "skills/meeting-minutes-pro/scripts/review_gate.py",
+    "baseline_sha256": "2418817e37ba0ebdf6cd593347603d41e463ed7906b6537571ac6e02b4c13ce4",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/run_state.py",
+    "new": "skills/meeting-minutes-pro/scripts/run_state.py",
+    "baseline_sha256": "99f4371102aa87048b7f20ddc408eed0e1f2aba83b3d0a0175ab3b1aa2c676c2",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/skill_portability.py",
+    "new": "skills/meeting-minutes-pro/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/scripts/transcribe.py",
+    "new": "skills/meeting-minutes-pro/scripts/transcribe.py",
+    "baseline_sha256": "ef057a096b1629c79a8f47f6c02618567de877e1de1449f08c89814e4ef29229",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_attachment_format.py",
+    "new": "skills/meeting-minutes-pro/tests/test_attachment_format.py",
+    "baseline_sha256": "4c333677d407e42572855bdf55d6a0ed531d9f1f1d6967f1223497757f7811d6",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_audit_coverage.py",
+    "new": "skills/meeting-minutes-pro/tests/test_audit_coverage.py",
+    "baseline_sha256": "18f6f3e14ca6a5ae7ac3b862569767d05e7f4838187cd99461b0ba18b7ef20d9",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_check_all.py",
+    "new": "skills/meeting-minutes-pro/tests/test_check_all.py",
+    "baseline_sha256": "753f719afb07d46b9242eb5dbf4d0c086edecf04a0290553ee3daae08e1ccb05",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_create_minutes_docx.py",
+    "new": "skills/meeting-minutes-pro/tests/test_create_minutes_docx.py",
+    "baseline_sha256": "d7a507f9dd8ec27334bb73a70cd9a84bda87643eca7a1e87a80a96e085c6af3c",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_docx_style_check.py",
+    "new": "skills/meeting-minutes-pro/tests/test_docx_style_check.py",
+    "baseline_sha256": "7d78b15cee83ee88421f28f556a8758875d4101a07714223be91a8f2e87e1c7f",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_embed_fonts.py",
+    "new": "skills/meeting-minutes-pro/tests/test_embed_fonts.py",
+    "baseline_sha256": "33c1c5fbae9c649905f98d87c4a8ec2afc5634ade85da94cd7b16a7e967c855c",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_evidence_regressions.py",
+    "new": "skills/meeting-minutes-pro/tests/test_evidence_regressions.py",
+    "baseline_sha256": "2e4e50f4e451e8ddefca8b7da4274582e568ae1205289966852cdbd72eb9b951",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_fact_check.py",
+    "new": "skills/meeting-minutes-pro/tests/test_fact_check.py",
+    "baseline_sha256": "e0c2222309beb71fe1a37386d88428416b8d225b6b585984514a1b0f78f0bce3",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_format_spec.py",
+    "new": "skills/meeting-minutes-pro/tests/test_format_spec.py",
+    "baseline_sha256": "6ccaddff369c9632d22192e32f153b576e56bd2b2c683b9386dfcefc73d0f7d8",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_hardware_tier.py",
+    "new": "skills/meeting-minutes-pro/tests/test_hardware_tier.py",
+    "baseline_sha256": "bf358faeb09c04bda8aedad42375362dff8cb20d3592c6787ed5bbd15ec7205d",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_qa_reconcile.py",
+    "new": "skills/meeting-minutes-pro/tests/test_qa_reconcile.py",
+    "baseline_sha256": "912553e5d6b8c0a578267e94f828d39b803d619c344815a4cf43b8f182457b56",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_quality_check.py",
+    "new": "skills/meeting-minutes-pro/tests/test_quality_check.py",
+    "baseline_sha256": "dd5071ff2fdeb7d2805ee8cda577860bf3d3205a06e1e77733d596a84d6c9377",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_refine_transcript.py",
+    "new": "skills/meeting-minutes-pro/tests/test_refine_transcript.py",
+    "baseline_sha256": "83464538fa18aeb0f9265bcc23cd80b3866e2e357b82f283d2695b5cefc760a9",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_render_docx.py",
+    "new": "skills/meeting-minutes-pro/tests/test_render_docx.py",
+    "baseline_sha256": "3c3c72edd499c64a84cabf790ce8190b9c52244e78a35277dac8a6c9a748ffeb",
+    "action": "move"
+  },
+  {
+    "old": "meeting-minutes-pro/tests/test_transcribe_helpers.py",
+    "new": "skills/meeting-minutes-pro/tests/test_transcribe_helpers.py",
+    "baseline_sha256": "126686ec6140dcf9771fded926d50533d28107ee608fd4e002fd7a5aa2660b51",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/SKILL.md",
+    "new": "skills/officialese-skill/SKILL.md",
+    "baseline_sha256": "5d0be32583a26927c6cfa246f62c4612a936f9c56012c67ab95415848a36cbd4",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/agents/openai.yaml",
+    "new": "skills/officialese-skill/agents/openai.yaml",
+    "baseline_sha256": "6ee5f2bd7c9c21ccb22da36f4d620e9959faedfc382c153f43c81241ca3b3f76",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/assets/fonts/simfang.ttf",
+    "new": null,
+    "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "officialese-skill/assets/fonts/方正小标宋简体.ttf",
+    "new": null,
+    "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "officialese-skill/assets/fonts/楷体_GB2312.ttf",
+    "new": null,
+    "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "officialese-skill/assets/templates/文件字体格式.doc",
+    "new": "skills/officialese-skill/assets/templates/文件字体格式.doc",
+    "baseline_sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/references/agent-compatibility.md",
+    "new": "skills/officialese-skill/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/references/format-rules.md",
+    "new": "skills/officialese-skill/references/format-rules.md",
+    "baseline_sha256": "9e9aafe229928fc999d562164bd5bd8a3ca7014eab46801c5c07d8b44674aba7",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/references/writing-patterns.md",
+    "new": "skills/officialese-skill/references/writing-patterns.md",
+    "baseline_sha256": "dee3804bc988610d9152ec5f53706601a07215380aa3fcd0125010a961b9bf36",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/requirements.txt",
+    "new": "skills/officialese-skill/requirements.txt",
+    "baseline_sha256": "eb79fd0d91f00d0b0c869635c2a205a868665bb1010f601b6e5be01958fb1c83",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/scripts/create_official_docx.py",
+    "new": "skills/officialese-skill/scripts/create_official_docx.py",
+    "baseline_sha256": "2853617ed5c88784710ae2b149516ba055a4bae4a429118821d15a43b4e02bfe",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/scripts/embed_fonts.py",
+    "new": "skills/officialese-skill/scripts/embed_fonts.py",
+    "baseline_sha256": "a6445f8d0f5072a531185a0889ede826e640f0ced4719f7d027fb17932d8cc4c",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/scripts/ensure_fonts.py",
+    "new": "skills/officialese-skill/scripts/ensure_fonts.py",
+    "baseline_sha256": "330143aa80a2fdc72edf54540c414fe226e773b247e84b6d1821a9ebe8d6dc7b",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/scripts/skill_portability.py",
+    "new": "skills/officialese-skill/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "officialese-skill/scripts/test_create_official_docx.py",
+    "new": "skills/officialese-skill/scripts/test_create_official_docx.py",
+    "baseline_sha256": "96e8ef6093f44f00811f0aebc57ca3fcc31a46b0697e18338759bcc9e89bcb84",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/README.md",
+    "new": "skills/soe-post-investment-report/README.md",
+    "baseline_sha256": "cc3a820cb7e9fd90428f129eb357ffe79a4592ba3bc0b01dd989c4639de49dc3",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/SKILL.md",
+    "new": "skills/soe-post-investment-report/SKILL.md",
+    "baseline_sha256": "14eb8b31952f14d429fab62f53bb3dee595f3ce42547a6ada0f590198c572cef",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/agents/openai.yaml",
+    "new": "skills/soe-post-investment-report/agents/openai.yaml",
+    "baseline_sha256": "2e5bdec60cc5451e6c53b56f88df9f7e769498940937b51fae460ba0b04755fa",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/assets/preview.png",
+    "new": "skills/soe-post-investment-report/assets/preview.png",
+    "baseline_sha256": "b0e9abb903238ac8d5964ab57ae7844f4db3938eac7450e73d08007332908ae5",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/assets/reference-template.docx",
+    "new": "skills/soe-post-investment-report/assets/reference-template.docx",
+    "baseline_sha256": "4165afc2cb84cf81899b8d59c0e984ac035cf498fa9726b20047beba573b2790",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/assets/report-spec.example.json",
+    "new": "skills/soe-post-investment-report/assets/report-spec.example.json",
+    "baseline_sha256": "55f5a7acdf8322aa6dcca922c0fdc19f4b47da0b75f8cef604e8dd3d8879e4dc",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/assets/report-spec.internal.example.json",
+    "new": "skills/soe-post-investment-report/assets/report-spec.internal.example.json",
+    "baseline_sha256": "f6176463a58964aad6f7efe53cf99259bb1630d842b9f267dcd9cd3faaf6e154",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/evals/evals.json",
+    "new": "skills/soe-post-investment-report/evals/evals.json",
+    "baseline_sha256": "44bf4181c604dc4d6c4ddf8703983a041b76331768e0b7961daedcf2c336bb86",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/agent-compatibility.md",
+    "new": "skills/soe-post-investment-report/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/data-requirements.md",
+    "new": "skills/soe-post-investment-report/references/data-requirements.md",
+    "baseline_sha256": "7e8e3709eb78525f7f49802d9d8458491272f4ec159f7b33a4cc55fb7c9c2993",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/expression-playbook.md",
+    "new": "skills/soe-post-investment-report/references/expression-playbook.md",
+    "baseline_sha256": "6e42cf099b8e2613254da03d07bbefe7617d134dcb6b5ec1496ad01835b28076",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/platform-compatibility.md",
+    "new": "skills/soe-post-investment-report/references/platform-compatibility.md",
+    "baseline_sha256": "d7e1a4bf559cd403b47511e3cac36a664d9c2c8455e6b8162e2304f2dc4dcd17",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/quality-gates.md",
+    "new": "skills/soe-post-investment-report/references/quality-gates.md",
+    "baseline_sha256": "39e94be7a7cc68c061badf19814050dc9b65f1e3885bf2d353a16779eace5e46",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/source-intake-and-fact-ledger.md",
+    "new": "skills/soe-post-investment-report/references/source-intake-and-fact-ledger.md",
+    "baseline_sha256": "b34671cccb10dd99fcebde530d81efb2691ffe460a21a8b6b3ad7607c2a61d93",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/template-contract.md",
+    "new": "skills/soe-post-investment-report/references/template-contract.md",
+    "baseline_sha256": "0f7606fa457c5b0ab1006e50ed04e54f9749286e6d7373c3ba6d703196163294",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/references/writing-and-compression.md",
+    "new": "skills/soe-post-investment-report/references/writing-and-compression.md",
+    "baseline_sha256": "851b80dee907ea5494532ac5d6c517840188c182357ea8125afe7d035aa640ff",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/requirements.txt",
+    "new": "skills/soe-post-investment-report/requirements.txt",
+    "baseline_sha256": "f156d32aecaf4e5305191b002ec2087faeda19a3577f94f5119f338213dad25f",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/build_report.py",
+    "new": "skills/soe-post-investment-report/scripts/build_report.py",
+    "baseline_sha256": "4be63d3a47f337896580de9adccdf743a3cc1ccb40131be454fdc9e3291aa9fa",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/font_preflight.py",
+    "new": "skills/soe-post-investment-report/scripts/font_preflight.py",
+    "baseline_sha256": "8fa6ee43dd3eabd75549ec90a550721256d35b9e69c6cb7cf2e72151f2463fd8",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/install_skill.py",
+    "new": "skills/soe-post-investment-report/scripts/install_skill.py",
+    "baseline_sha256": "2045d408d58cfe0ddbe006967a96780e8b551c71f5f6d1a6fde24ff8d318fdbc",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/render_docx.py",
+    "new": "skills/soe-post-investment-report/scripts/render_docx.py",
+    "baseline_sha256": "e4dcf61003fbfac702f445f86426cabe1cd011d71e4fd876acc64b644fc02234",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/skill_portability.py",
+    "new": "skills/soe-post-investment-report/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/source_inventory.py",
+    "new": "skills/soe-post-investment-report/scripts/source_inventory.py",
+    "baseline_sha256": "98f9226da335ba2ec2c01bfe4d6977e12da3c3bc44d00fdc01e7b923252f0bd7",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/stamp_report.py",
+    "new": "skills/soe-post-investment-report/scripts/stamp_report.py",
+    "baseline_sha256": "fbd21aa5dee99aaa93406b43ea941a3b5f7afd4add846bc586b6bcf557376e19",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/scripts/validate_report.py",
+    "new": "skills/soe-post-investment-report/scripts/validate_report.py",
+    "baseline_sha256": "3b68d1c4cbbeee75a150a01736e55c7b7d95997892dd0121c800146f56b46baa",
+    "action": "move"
+  },
+  {
+    "old": "soe-post-investment-report/tests/test_skill.py",
+    "new": "skills/soe-post-investment-report/tests/test_skill.py",
+    "baseline_sha256": "93db15d27846fc8738192f7a9e0b68b1fb717e35395aa0c72d2257d2f79b65eb",
+    "action": "move"
+  },
+  {
+    "old": "tools/check_shared_scripts.py",
+    "new": "tools/check_shared_scripts.py",
+    "baseline_sha256": "8308d8e559682b702c25f68ab80a191afce3df8b38000cf8634449b6e41b467a",
+    "action": "retain"
+  },
+  {
+    "old": "tools/package_investment_skills.py",
+    "new": "tools/package_investment_skills.py",
+    "baseline_sha256": "6bcf7fc98700c71ad55309b520367da168a073c25672f35c671b211a0cf3b3d2",
+    "action": "retain"
+  },
+  {
+    "old": "tools/package_skills.py",
+    "new": "tools/package_skills.py",
+    "baseline_sha256": "c57dc6431793bc4b4a3e5628617868835d5ebfdb0dfab2829a9bc6e3a1b62fa8",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_investment_report_style.py",
+    "new": "tools/tests/test_investment_report_style.py",
+    "baseline_sha256": "4241600ce2301b6129d2015ef6202695d996dc81e52d40ca63624e9a2cf9e3f0",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_public_document_format.py",
+    "new": "tools/tests/test_public_document_format.py",
+    "baseline_sha256": "ac011debf2ae0be57d7ef54fbe5d22a1b1b2907a7cb450e3402960809030213d",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_sibling_docx_skills.py",
+    "new": "tools/tests/test_sibling_docx_skills.py",
+    "baseline_sha256": "24906327e3ef81e0df813f5899fa7e034e2168ea6e8067768a764531dde2230a",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_skill_portability.py",
+    "new": "tools/tests/test_skill_portability.py",
+    "baseline_sha256": "7ad305afd0ea31b64aad23edab4f1991bce0976a73f30d36f9d8d10efd87f4f1",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_stage_templates.py",
+    "new": "tools/tests/test_stage_templates.py",
+    "baseline_sha256": "73051648d67170c24c607fc4485460966391dba2a0bad09005b5101b6becf746",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_unified_format.py",
+    "new": "tools/tests/test_unified_format.py",
+    "baseline_sha256": "d0ddbaaee5e006dc4c712aa93ff3fb2d87cec3c4f5270855e8cd0a7ff415c868",
+    "action": "retain"
+  },
+  {
+    "old": "tools/tests/test_yiti_format.py",
+    "new": "tools/tests/test_yiti_format.py",
+    "baseline_sha256": "da2d0aebb76c01bfda08595da6e4170f991cefc67f89639a07d99d51404bc1d6",
+    "action": "retain"
+  },
+  {
+    "old": "tools/verify_embedding_with_word.py",
+    "new": "tools/verify_embedding_with_word.py",
+    "baseline_sha256": "056b7ab65fb7f16ada148a99518942e3125966d17dd80c411180d6b290d6526d",
+    "action": "retain"
+  },
+  {
+    "old": "yiti-skill/SKILL.md",
+    "new": "skills/yiti-skill/SKILL.md",
+    "baseline_sha256": "eb0fc0aee2f54d876240155f0b13d184622a816c8c420dfe682e410920846e7e",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/agents/openai.yaml",
+    "new": "skills/yiti-skill/agents/openai.yaml",
+    "baseline_sha256": "89bb6d86e427d77ccc0fe82d7ba8ad08f4b3fee66547233197ffd28f96cf4501",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/assets/examples/exit-yiti-spec.json",
+    "new": "skills/yiti-skill/assets/examples/exit-yiti-spec.json",
+    "baseline_sha256": "097ffdfe87f62a0ae4968ca9fc172825d1df870021ee0b16595f8e2e94e4d278",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/assets/fonts/simfang.ttf",
+    "new": null,
+    "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "yiti-skill/assets/fonts/方正小标宋简体.ttf",
+    "new": null,
+    "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "yiti-skill/assets/fonts/楷体_GB2312.ttf",
+    "new": null,
+    "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "yiti-skill/assets/templates/文件字体格式.doc",
+    "new": "skills/yiti-skill/assets/templates/文件字体格式.doc",
+    "baseline_sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/references/agent-compatibility.md",
+    "new": "skills/yiti-skill/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/references/exit-writing-logic.md",
+    "new": "skills/yiti-skill/references/exit-writing-logic.md",
+    "baseline_sha256": "1ee40bae3119010d97840f3af4f10adcce55037ed0e128f2c210dae65aaa7e99",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/references/format-rules.md",
+    "new": "skills/yiti-skill/references/format-rules.md",
+    "baseline_sha256": "c295ca91a109def5af5f87a1fe8c3196c7e909ea661122b2379d3f282fc05a2c",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/references/gold-examples.md",
+    "new": "skills/yiti-skill/references/gold-examples.md",
+    "baseline_sha256": "529b7d0dbceaf448bfc834458027ccd634bcb148c55fd7b596ed72454da1766a",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/references/writing-logic.md",
+    "new": "skills/yiti-skill/references/writing-logic.md",
+    "baseline_sha256": "b69c7ce9cbff8a7820a6676104917975ef5f861dc98802d4df275b5cd9272e60",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/requirements.txt",
+    "new": "skills/yiti-skill/requirements.txt",
+    "baseline_sha256": "eb79fd0d91f00d0b0c869635c2a205a868665bb1010f601b6e5be01958fb1c83",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/scripts/check_yiti_text.py",
+    "new": "skills/yiti-skill/scripts/check_yiti_text.py",
+    "baseline_sha256": "1edbe9740cc0e71d8d548121ad4e47356831f6f9ae467005a3057a5a5ce8554d",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/scripts/create_yiti_docx.py",
+    "new": "skills/yiti-skill/scripts/create_yiti_docx.py",
+    "baseline_sha256": "ce054516359d32c9d0e4b1abb96719266d926456d794c047c24b66614275974a",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/scripts/embed_fonts.py",
+    "new": "skills/yiti-skill/scripts/embed_fonts.py",
+    "baseline_sha256": "a6445f8d0f5072a531185a0889ede826e640f0ced4719f7d027fb17932d8cc4c",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/scripts/ensure_fonts.py",
+    "new": "skills/yiti-skill/scripts/ensure_fonts.py",
+    "baseline_sha256": "330143aa80a2fdc72edf54540c414fe226e773b247e84b6d1821a9ebe8d6dc7b",
+    "action": "move"
+  },
+  {
+    "old": "yiti-skill/scripts/skill_portability.py",
+    "new": "skills/yiti-skill/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/README.md",
+    "new": "skills/zhuying-yewu-fenxi/README.md",
+    "baseline_sha256": "6cd44de0de97d4bab579968aaba09a41a309486190af811d0681716e9e623578",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/SKILL.md",
+    "new": "skills/zhuying-yewu-fenxi/SKILL.md",
+    "baseline_sha256": "b9f5c6ee7dc54174dd6827f875b287a1c43feb40065e639e455abc4c2dc99a42",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/agents/openai.yaml",
+    "new": "skills/zhuying-yewu-fenxi/agents/openai.yaml",
+    "baseline_sha256": "c80136193c7c77a28e50c2ae54296c7ecc5c29b3315a9efa686758f2bf50b0dc",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf",
+    "new": null,
+    "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf",
+    "new": null,
+    "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/assets/fonts/simfang.ttf",
+    "new": null,
+    "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+    "action": "delete",
+    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/assets/templates/early.json",
+    "new": "skills/zhuying-yewu-fenxi/assets/templates/early.json",
+    "baseline_sha256": "0a71ca6005d2274b96576e0bb05e7bb94067cd4a291eeaf59561b5445c3ba255",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/assets/templates/mid-late.json",
+    "new": "skills/zhuying-yewu-fenxi/assets/templates/mid-late.json",
+    "baseline_sha256": "47362812a6520134528d1a1e0a5ead36b3b81bd5b87278e6401c70388537bbdf",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/agent-compatibility.md",
+    "new": "skills/zhuying-yewu-fenxi/references/agent-compatibility.md",
+    "baseline_sha256": "3a60fcedc214f080ee7c2837869bc29700e845eff743a89bb44bc07f3511039a",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/chapter-template.md",
+    "new": "skills/zhuying-yewu-fenxi/references/chapter-template.md",
+    "baseline_sha256": "72df91e7fbb1f550bf41f7619401ea8415a7bb98808ed482a86080b4d238b008",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/docx-format.md",
+    "new": "skills/zhuying-yewu-fenxi/references/docx-format.md",
+    "baseline_sha256": "176ec25cdb389950fe2e70909c4261b0c77a616aba95ee1cd15a08823683d670",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/investment-logic-review.md",
+    "new": "skills/zhuying-yewu-fenxi/references/investment-logic-review.md",
+    "baseline_sha256": "07ccad8d52db0fdd728d71d31429948ea525248abcfc01eff55576f547da6bf5",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/language-style.md",
+    "new": "skills/zhuying-yewu-fenxi/references/language-style.md",
+    "baseline_sha256": "00b743141eb33ebbf1277c071fb59d2cc989d6a84ea68563630bf4aa127c5403",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/metrics-formulas.md",
+    "new": "skills/zhuying-yewu-fenxi/references/metrics-formulas.md",
+    "baseline_sha256": "292788fe9daec5fab965e9c62b6ffc90cd12ce99ddcd73763be723d2d56578d9",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/quality-checklist.md",
+    "new": "skills/zhuying-yewu-fenxi/references/quality-checklist.md",
+    "baseline_sha256": "bbbe3b039dc93e028a960f5797892503fbf0c1fc2401cf84af0d9a3ed698602e",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/research-protocol.md",
+    "new": "skills/zhuying-yewu-fenxi/references/research-protocol.md",
+    "baseline_sha256": "32a629eb6a38a5958fd3b96032ab5e08a870b6e91e9aea189f18b38845c03625",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/stage-template-workflow.md",
+    "new": "skills/zhuying-yewu-fenxi/references/stage-template-workflow.md",
+    "baseline_sha256": "055540d849cb031063cc0acc70ae706ce907607573d23d2be3cef0f92150b808",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/template-early.md",
+    "new": "skills/zhuying-yewu-fenxi/references/template-early.md",
+    "baseline_sha256": "9c8eacb3f257e7a179ce3a868f47bba4db5155658e08a97cfb3fc041d648750d",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/template-mid-late.md",
+    "new": "skills/zhuying-yewu-fenxi/references/template-mid-late.md",
+    "baseline_sha256": "aa5893425ce70a687dcc86476628260b800d1306c3f21db759dd0610764c818a",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/references/writing-dna.md",
+    "new": "skills/zhuying-yewu-fenxi/references/writing-dna.md",
+    "baseline_sha256": "55676dce880784c77633bbb84696a0d441f7c5dd82f3f38375c7b43dfe4d220b",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/requirements.txt",
+    "new": "skills/zhuying-yewu-fenxi/requirements.txt",
+    "baseline_sha256": "eb79fd0d91f00d0b0c869635c2a205a868665bb1010f601b6e5be01958fb1c83",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/build_docx.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/build_docx.py",
+    "baseline_sha256": "de875588bf5599fc6d5b329f467a797315c39d3ba69a6579a46a31ac93d6294a",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/docx_format_helpers.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/docx_format_helpers.py",
+    "baseline_sha256": "2bef1890fda3e0e2d76ed394923f9e69cb2856698d88fb0b3f63c0271e10b7a0",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/embed_fonts.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/embed_fonts.py",
+    "baseline_sha256": "a6445f8d0f5072a531185a0889ede826e640f0ced4719f7d027fb17932d8cc4c",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/ensure-fonts.ps1",
+    "new": "skills/zhuying-yewu-fenxi/scripts/ensure-fonts.ps1",
+    "baseline_sha256": "990a8b46048b0de0334361eb50aa4e5df366d4b86bb51846c7c54d22394e4f7f",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/ensure_fonts.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/ensure_fonts.py",
+    "baseline_sha256": "330143aa80a2fdc72edf54540c414fe226e773b247e84b6d1821a9ebe8d6dc7b",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/skill_portability.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/skill_portability.py",
+    "baseline_sha256": "b8f7f7f3a626e147652c707624afdb98a82a818a5e976c262a754319f7c2272e",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/stage_template.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/stage_template.py",
+    "baseline_sha256": "2d3a10eeb2aee8c816d5757e16442f50c2c387cb1bf2a00a80c248917b092f02",
+    "action": "move"
+  },
+  {
+    "old": "zhuying-yewu-fenxi/scripts/style_check.py",
+    "new": "skills/zhuying-yewu-fenxi/scripts/style_check.py",
+    "baseline_sha256": "57046c74c8e9745d42c8211ab1a2ddbd2a7d383cdb774e37fb2bd402dc483208",
+    "action": "move"
+  }
+]

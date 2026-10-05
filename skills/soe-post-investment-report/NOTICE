@@ -1,0 +1,13 @@
+Icdafy/Skills
+Copyright contributors to Icdafy/Skills. Existing author and license notices are retained.
+
+有权授权的代码、自编业务规则、模板、范文和素材按 Apache License 2.0 分发。
+2026-10-05 维护者针对旧“文件字体格式.doc”、投后 reference-template.docx/preview.png、
+立项模板和范文及原业务规则，明确确认：“全部由我有权授权，可按 Apache-2.0 公开”。
+此记录是维护者的权利/授权确认，不把历史上传作者当作第三方原创证明。
+meeting-minutes-pro 的既有 Apache-2.0 LICENSE 原文保留。
+
+商用/系统字体（仿宋、楷体_GB2312、方正小标宋）不随源码、安装包或 ZIP 分发。
+本机授权字体的使用和 DOCX 嵌入仍由使用者的许可与 fsType 标志决定。
+运行时依赖各自的许可证仍适用，不由本仓库 Apache-2.0 取代。
+逐项来源、摘要、依赖及验证限制见 THIRD_PARTY_NOTICES.md。

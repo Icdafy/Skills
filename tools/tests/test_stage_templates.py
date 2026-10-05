@@ -10,7 +10,7 @@ import unittest
 import zipfile
 import xml.etree.ElementTree as ET
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[2] / 'skills'
 NAMES = ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang')
 spec = importlib.util.spec_from_file_location('stage_templates_test', REPO / NAMES[2] / 'scripts/stage_template.py')
 stage = importlib.util.module_from_spec(spec)

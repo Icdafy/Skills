@@ -1,0 +1,14 @@
+$ git diff --check
+exit=0
+warning: in the working copy of 'LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'PROGRESS.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs/validation/final/summary.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/gongsi-qingkuang/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/hangye-fenxi/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/meeting-minutes-pro/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/officialese-skill/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/officialese-skill/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/soe-post-investment-report/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/yiti-skill/LICENSE', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/yiti-skill/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'skills/zhuying-yewu-fenxi/LICENSE', LF will be replaced by CRLF the next time Git touches it

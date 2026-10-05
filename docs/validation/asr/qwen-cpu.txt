@@ -1,0 +1,46 @@
+$ F:\ASR模型\runtime\venv\Scripts\python.exe C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\skills\meeting-minutes-pro\scripts\transcribe.py --input "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\语音 验证\合成验收.wav" --output-dir "C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\语音 验证\qwen-cpu" --engine qwen --offline --device cpu --max-new-tokens 128
+The following generation flags are not valid and may be ignored: ['temperature']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Setting `pad_token_id` to `eos_token_id`:151645 for open-end generation.
+{"progress": {"stage": "chunk", "index": 1, "total": 1, "cached": false}}
+{
+  "ok": true,
+  "engine": "qwen",
+  "model": "Qwen/Qwen3-ASR-0.6B",
+  "device": "cpu",
+  "language": "Chinese",
+  "duration_seconds": 13.675,
+  "timestamps": false,
+  "speaker_labels": false,
+  "outputs": {
+    "txt": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\语音 验证\\qwen-cpu\\合成验收.txt",
+    "md": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\语音 验证\\qwen-cpu\\合成验收.md",
+    "json": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\语音 验证\\qwen-cpu\\合成验收.json"
+  },
+  "source_sha256": "efbbcdf57e9536b070d45ef84a60ba04b68c0cdd37dad87f775a35f433a874e1",
+  "clip_start_seconds": 0.0,
+  "is_partial": false,
+  "recognition_config": {
+    "engine": "qwen",
+    "language": "auto",
+    "context": "",
+    "model": null,
+    "aligner": "Qwen/Qwen3-ForcedAligner-0.6B",
+    "device": "cpu",
+    "timestamps": false,
+    "diarize": false,
+    "speakers": null,
+    "enhance": false,
+    "offline": true,
+    "clip_start": 0.0,
+    "clip_duration": null,
+    "sample": null,
+    "max_new_tokens": 128,
+    "chunk_seconds": null,
+    "no_resume": false
+  },
+  "elapsed_seconds": 15.1,
+  "realtime_factor": 1.106,
+  "media_duration_seconds": 13.67
+}
+
+exit=0

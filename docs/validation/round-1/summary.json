@@ -1,0 +1,189 @@
+{
+  "round": 1,
+  "python": "3.12.14 (main, Aug 25 2026, 14:01:42) [MSC v.1944 64 bit (AMD64)]",
+  "results": [
+    {
+      "label": "tools-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "tools/tests"
+      ],
+      "exit": 0,
+      "tests": 50,
+      "expected_tests": 50,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "minutes-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "skills/meeting-minutes-pro/tests"
+      ],
+      "exit": 0,
+      "tests": 258,
+      "expected_tests": 258,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "soe-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "skills/soe-post-investment-report/tests"
+      ],
+      "exit": 0,
+      "tests": 56,
+      "expected_tests": 56,
+      "skips": [
+        "test_source_inventory_skips_symlink_that_resolves_outside_material_root (test_skill.SkillRegressionTests.test_source_inventory_skips_symlink_that_resolves_outside_material_root) ... skipped \"symlink creation is unavailable on this host: [WinError 1314] 客户端没有所需的特权。: 'C:\\\\\\\\Users\\\\\\\\30649\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpose14amg\\\\\\\\outside-secret.txt' -> 'C:\\\\\\\\Users\\\\\\\\30649\\\\\\\\AppData\\\\\\\\Local\\\\\\\\Temp\\\\\\\\tmpose14amg\\\\\\\\sources\\\\\\\\linked-secret.txt'\""
+      ],
+      "passed": true
+    },
+    {
+      "label": "company-evals",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "skills/gongsi-qingkuang/evals"
+      ],
+      "exit": 0,
+      "tests": 8,
+      "expected_tests": 8,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "official-tests",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "skills/officialese-skill/scripts",
+        "-p",
+        "test_create_official_docx.py"
+      ],
+      "exit": 0,
+      "tests": 3,
+      "expected_tests": 3,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "new-font-pairs",
+      "command": [
+        "python",
+        "-m",
+        "unittest",
+        "discover",
+        "-v",
+        "-s",
+        "tools/library_tests"
+      ],
+      "exit": 0,
+      "tests": 13,
+      "expected_tests": 13,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "shared",
+      "command": [
+        "python",
+        "tools/check_shared_scripts.py"
+      ],
+      "exit": 0,
+      "tests": null,
+      "expected_tests": null,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "catalog",
+      "command": [
+        "python",
+        "tools/sync_catalog.py",
+        "--check"
+      ],
+      "exit": 0,
+      "tests": null,
+      "expected_tests": null,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "packages",
+      "command": [
+        "python",
+        "tools/package_skills.py",
+        "--check"
+      ],
+      "exit": 0,
+      "tests": null,
+      "expected_tests": null,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "legacy-package-command",
+      "command": [
+        "python",
+        "tools/package_investment_skills.py",
+        "--check"
+      ],
+      "exit": 0,
+      "tests": null,
+      "expected_tests": null,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "library",
+      "command": [
+        "python",
+        "tools/check_library.py"
+      ],
+      "exit": 0,
+      "tests": null,
+      "expected_tests": null,
+      "skips": [],
+      "passed": true
+    },
+    {
+      "label": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0,
+      "tests": null,
+      "expected_tests": null,
+      "skips": [],
+      "passed": true
+    }
+  ],
+  "passed": true
+}

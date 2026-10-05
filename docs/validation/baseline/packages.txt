@@ -1,0 +1,16 @@
+$ python tools/package_skills.py --check
+exit=0
+[OK] hangye-fenxi: metadata, resources and links (31 files)
+[OK] hangye-fenxi: downloadable archive matches current source
+[OK] zhuying-yewu-fenxi: metadata, resources and links (29 files)
+[OK] zhuying-yewu-fenxi: downloadable archive matches current source
+[OK] gongsi-qingkuang: metadata, resources and links (33 files)
+[OK] gongsi-qingkuang: downloadable archive matches current source
+[OK] officialese-skill: metadata, resources and links (15 files)
+[OK] officialese-skill: downloadable archive matches current source
+[OK] yiti-skill: metadata, resources and links (18 files)
+[OK] yiti-skill: downloadable archive matches current source
+[OK] meeting-minutes-pro: metadata, resources and links (54 files)
+[OK] meeting-minutes-pro: downloadable archive matches current source
+[OK] soe-post-investment-report: metadata, resources and links (26 files)
+[OK] soe-post-investment-report: downloadable archive matches current source

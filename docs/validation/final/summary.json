@@ -1,0 +1,176 @@
+{
+  "scope": "Final documentation/verification state rebuild and artifact checks; runtime unchanged since round 1",
+  "complete_acceptance_rounds": 1,
+  "results": [
+    {
+      "label": "catalog-update",
+      "command": [
+        "python",
+        "tools/sync_catalog.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "affected-packages-rebuild",
+      "command": [
+        "python",
+        "tools/package_skills.py",
+        "--skill",
+        "hangye-fenxi",
+        "--skill",
+        "zhuying-yewu-fenxi",
+        "--skill",
+        "gongsi-qingkuang",
+        "--skill",
+        "officialese-skill",
+        "--skill",
+        "yiti-skill",
+        "--skill",
+        "meeting-minutes-pro",
+        "--skill",
+        "soe-post-investment-report"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "catalog",
+      "command": [
+        "python",
+        "tools/sync_catalog.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "shared",
+      "command": [
+        "python",
+        "tools/check_shared_scripts.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "packages",
+      "command": [
+        "python",
+        "tools/package_skills.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "legacy-package-command",
+      "command": [
+        "python",
+        "tools/package_investment_skills.py",
+        "--check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "hangye-fenxi-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\hangye-fenxi\\hangye-fenxi\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "zhuying-yewu-fenxi-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\zhuying-yewu-fenxi\\zhuying-yewu-fenxi\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "gongsi-qingkuang-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\gongsi-qingkuang\\gongsi-qingkuang\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "officialese-skill-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\officialese-skill\\officialese-skill\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "yiti-skill-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\yiti-skill\\yiti-skill\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "meeting-minutes-pro-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\meeting-minutes-pro\\meeting-minutes-pro\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "soe-post-investment-report-external-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\最终 技能 解压 空格 5uvqeil6\\soe-post-investment-report\\soe-post-investment-report\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "frozen-content",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\audit_frozen_content.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "library",
+      "command": [
+        "python",
+        "tools/check_library.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "diff",
+      "command": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exit": 0
+    }
+  ],
+  "final_archive_sha256": {
+    "hangye-fenxi": "33636c6f035b5c11cf5356c0a523509b50041fae5843c968a71d04450e49e239",
+    "zhuying-yewu-fenxi": "a80dbb1462b6c8f23c2f6cabb500143f59543e358ee7892cff0592f1ef391c8f",
+    "gongsi-qingkuang": "315f7c9916aec4e9bf7b83065d31e3a6f216422fc8a9ef7b0d989fe4cf67313c",
+    "officialese-skill": "10a401de19998e3166bd390ad7026675fdf55cc9d4f1b9dba806837195907592",
+    "yiti-skill": "3158b6dae8be50b09744ac7e801f7b76e17423c8b1668ed51bd19e0fb9a43674",
+    "meeting-minutes-pro": "14f36986fabfc3d24b867bed7255642ca31002d83fb923025b77140bc03f0e7a",
+    "soe-post-investment-report": "29e92f27bfbf7900539c2b05bfacfc28647614b8b09cebc5bf111aff9b4859be"
+  },
+  "artifact_checks_passed": true
+}

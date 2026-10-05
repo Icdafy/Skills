@@ -1,33 +1,17 @@
-# 立项报告技能安装包
+# 立项报告三技能下载
 
-每个ZIP为一项完整技能，包含独立运行所需的规则、参考文件、Python脚本、依赖说明和原技能字体资源。用于现有授权范围内的跨客户端安装。
+每个 ZIP 第一层只有该英文技能目录，包含独立脚本、参考、模板、README、LICENSE、NOTICE、VERSION 和逐文件 SHA-256 manifest。不包含字体二进制、用户私有术语或模型。
 
-| 技能 | 安装包 | 完整性校验 | 分平台安装指引 |
-|---|---|---|---|
-| 所属行业分析 | [hangye-fenxi.zip](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/hangye-fenxi.zip) | [SHA-256](hangye-fenxi.zip.sha256) | [指引](../../hangye-fenxi/references/agent-compatibility.md) |
-| 主营业务分析 | [zhuying-yewu-fenxi.zip](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip) | [SHA-256](zhuying-yewu-fenxi.zip.sha256) | [指引](../../zhuying-yewu-fenxi/references/agent-compatibility.md) |
-| 公司情况 | [gongsi-qingkuang.zip](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip) | [SHA-256](gongsi-qingkuang.zip.sha256) | [指引](../../gongsi-qingkuang/references/agent-compatibility.md) |
+<!-- skills:begin -->
+### 立项报告
 
-Claude 网页/桌面 Chat、ChatGPT 团队版、豆包电脑版（工作模式）、WorkBuddy、Kimi Work、Qoder 桌面版、TRAE、智谱 ZCode 按指引走技能导入入口；Claude Code、Codex、ChatGPT 桌面版、Kimi Code、Qoder CLI、CodeBuddy、AutoClaw 等目录型客户端可用随包 `scripts/skill_portability.py install`（`agents` 子命令列出全部目标）。Claude Code 也可 `/plugin marketplace add Icdafy/Skills` 后安装。Kimi在线Agent等产品能力有差异，详见对应指引，不将普通文件上传等同安装。
+| 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
+|---|---|---|---|---|
+| 所属行业分析（`hangye-fenxi`） | [源码](../../skills/hangye-fenxi/) | [README](../../skills/hangye-fenxi/README.md) | [ZIP](hangye-fenxi.zip) | 1.0.0 |
+| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](../../skills/zhuying-yewu-fenxi/) | [README](../../skills/zhuying-yewu-fenxi/README.md) | [ZIP](zhuying-yewu-fenxi.zip) | 1.0.0 |
+| 公司情况（`gongsi-qingkuang`） | [源码](../../skills/gongsi-qingkuang/) | [README](../../skills/gongsi-qingkuang/README.md) | [ZIP](gongsi-qingkuang.zip) | 2.0.1 |
+<!-- skills:end -->
 
-解压后在技能目录执行：
+解压后在技能根运行 `python scripts/skill_portability.py check --smoke`；按各 README 安装所需依赖及本机授权字体，使用项目目录安装后新建会话验证。下载包结构检查不能代替客户端模型调用。
 
-```bash
-python scripts/skill_portability.py check
-python -m pip install -r requirements.txt
-python scripts/skill_portability.py check --smoke
-```
-
-需要Python 3.10+。安装后还须在目标客户端确认启用、实际加载路径、自动路由与输出；包及脚本检查通过不等于所有客户端模型调用已经实测。说明依据各平台官方文档（2026-09-27），未提供逐客户端登录验收结果。
-
-维护者更新任一技能后，在仓库根目录同步和重打包：
-
-```bash
-python tools/check_shared_scripts.py --sync
-python tools/package_skills.py
-python tools/package_skills.py --check
-```
-
-`--check` 对比包内清单、每个文件及ZIP本身的SHA-256，发现漏文件、包损坏或源码与安装包不同步即失败。安装包以技能名为唯一顶层目录，不打入缓存、虚拟环境或Git仓库。
-
-安装包现已包含两阶段固定模板：首次写作先询问早前期（伊隆纬特）或中后期（因诺科技），用户回答后按对应标题填入当前公司资料。使用 `scripts/stage_template.py check content.json` 校验成稿标题、顺序和占位项；完整标题及来源位置位于各技能 `references/template-early.md`、`references/template-mid-late.md`。
+维护者在仓库根运行 `python tools/package_skills.py --skill <英文名>` 只重建对应 ZIP，`python tools/package_skills.py --check` 检查全部包。见 [维护说明](../../docs/maintenance.md)、[许可来源](../../THIRD_PARTY_NOTICES.md) 和 [实际验证](../../docs/validation.md)。

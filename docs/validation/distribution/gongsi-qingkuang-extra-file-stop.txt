@@ -1,0 +1,8 @@
+$ python "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\下载 独立包\gongsi-qingkuang\scripts\skill_portability.py" install --agent codex --scope project --project-dir "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\项目 安装 gongsi-qingkuang" --apply
+exit=1
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Fonts are not distributed; embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install gongsi-qingkuang -> C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\项目 安装 gongsi-qingkuang\.agents\skills\gongsi-qingkuang
+[BACKUP] C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\项目 安装 gongsi-qingkuang\.agents\skill-backups\gongsi-qingkuang-20261005T052311173913Z
+[FAIL] Existing skill has extra files; preserved with backup. Resolve these, or rerun with --replace to move the old folder aside: personal-notes.txt

@@ -1,0 +1,354 @@
+{
+  "schema_version": 1,
+  "inputs": {
+    "minutes": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\会议纪要.txt",
+      "sha256": "02bda47534341183e76f95be2fc149c682c90164b2a0facb2c27cc50548eb6de"
+    },
+    "transcript": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.json",
+      "sha256": "a815e291b109f3cc0ed37dedeb0683e083901a4329d1994fbccd1a94e5419ae8"
+    },
+    "transcript_txt": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\虚构转录稿.txt",
+      "sha256": "a89d8adf96f726c558905b630deb821c5c61d28abfaab912a0505b11c86feddd"
+    },
+    "ledger": {
+      "path": "C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\客户端 验证 中文\\纪要 文本验收\\coverage.txt",
+      "sha256": "b5272a3a1debe8ef421bc7123ef4b12f88ba2a3c6a218b82bc13d88abc8aca62"
+    }
+  },
+  "policy": {
+    "source_kind": "transcript",
+    "assurance": "standard",
+    "mode": "qa-summary",
+    "subtitle": null,
+    "waivers": {
+      "allow_line": [],
+      "skip": [],
+      "allow": [],
+      "allow_missing_number": []
+    },
+    "terms": [],
+    "validators": {
+      "audit_coverage.py": "757d32c946fe68281b2a6a4e96ec11e6cd11908fac10c4f3af060fc045f65262",
+      "bootstrap_runtime.py": "51db04c049598bfa120c864b6f042cea2ab7364d7261b4fa7d189ed076909c5d",
+      "check_all.py": "be41db8c7c61a9d0c47b6a6587d878e526090267800fb027c3f9f6b94a6a7507",
+      "create_minutes_docx.py": "d7b07673155a42d81f54bc9f94d134739dea0003cff5ce427379cdd01d8c0785",
+      "docx_format_helpers.py": "78538581bd4c36faa91bea0c85fcb76dc92630a5467cad982cff3bd38a458c75",
+      "docx_style_check.py": "0930b1ae948bc3f21ff857f947ee91bcf20ff835ad091ecc997e1bb32466d95d",
+      "embed_fonts.py": "9f5ef723be5de17828f0f91261062987aff3e63fa00b5c1b9289038f7a0b89ac",
+      "fact_check.py": "6b17cb441937a72ae483e321a0e7713316f481514b1d7f1173b1517231b51e6f",
+      "font_preflight.py": "681a830b7347d4437a067dd0ac0634fe41f6d956d9fe8bc146c0712a93263a9a",
+      "format_spec.py": "9455a58814df65641665f9a9a0c578401b932143ffe18398aa283644d752d4d2",
+      "install_skill.py": "b3f35d37807051ebf8b6a9c00bcb20ffc7d7f5d7e4379b5ae474da8a9504e5c2",
+      "local_fonts.py": "02876e715e94ed86d77aaeb4e3273a0c9fc3e5e55ff94f6d3d807bdb8076b125",
+      "qa_reconcile.py": "77cf3dba61dbdf981dd05438cd22c8a31d8c930253659d642bf9b05a91a13e2c",
+      "quality_check.py": "541b33c69b937aac20767aa7fc7daf09b9b4b7e9ec631ffd82419a1a4ee8c402",
+      "refine_transcript.py": "08c1ea9b84134f0fc9fd1d36948a44fef5f5445fea5ad7c93bca6bdcc17f76ed",
+      "render_docx.py": "624fb11dece6df59b9e72b21169cf3a2be687843869ff712a6d24f5749c9e10f",
+      "review_gate.py": "7d589f32469e4ec5cefaa2ff1d537c1744ef6f7d14100e27e234967981df3bcd",
+      "run_state.py": "2492c861c15fe458b0ddc9279b35b27c4a2096da5acdfa49c32d073a1c1088fb",
+      "skill_portability.py": "a214155f6f05017bd6b8f13ad595e4adc281a71f6f738d33e6badde3e5db8720",
+      "transcribe.py": "d721f0ca7aba45f7a94cae4a742d564c3d7cc521aa0f194400ef78790c56b921"
+    }
+  },
+  "facts": [
+    {
+      "id": "W1-N1",
+      "window": "00:00–05:00",
+      "raw": "00",
+      "value": 0.0,
+      "kind": "value",
+      "unit": "",
+      "context": "2026年10月5日9:00至9:40。访谈地点：视",
+      "decision": "include",
+      "minutes_lines": [
+        3,
+        11
+      ],
+      "reason": "起始时刻9:00完整照录；00仍为分钟字段，小时9亦保留，未移用于数量。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W1-N2",
+      "window": "00:00–05:00",
+      "raw": "40",
+      "value": 40.0,
+      "kind": "value",
+      "unit": "",
+      "context": "10月5日9:00至9:40。访谈地点：视频会议。访",
+      "decision": "include",
+      "minutes_lines": [
+        3,
+        11
+      ],
+      "reason": "结束时刻9:40完整照录；40仍为分钟字段，小时9亦保留，起止范围未改。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W1-N3",
+      "window": "00:00–05:00",
+      "raw": "2026年",
+      "value": 2026.0,
+      "kind": "value",
+      "unit": "",
+      "context": "司项目沟通会。访谈时间：2026年10月5日9:00至9:40。访谈",
+      "decision": "include",
+      "minutes_lines": [
+        3,
+        11
+      ],
+      "reason": "2026年属于会议日期，与10月5日及9:00至9:40绑定，年份原样保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W1-N4",
+      "window": "00:00–05:00",
+      "raw": "10月",
+      "value": 10.0,
+      "kind": "month",
+      "unit": "",
+      "context": "司项目沟通会。访谈时间：2026年10月5日9:00至9:40。访谈",
+      "decision": "include",
+      "minutes_lines": [
+        3,
+        11
+      ],
+      "reason": "10月属于会议日期2026年10月5日，月份与年份、日及会议绑定。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W1-N5",
+      "window": "00:00–05:00",
+      "raw": "5日",
+      "value": 5.0,
+      "kind": "day",
+      "unit": "",
+      "context": "司项目沟通会。访谈时间：2026年10月5日9:00至9:40。访谈",
+      "decision": "include",
+      "minutes_lines": [
+        3,
+        11
+      ],
+      "reason": "5日属于会议日期2026年10月5日，完整日期及会议起止时刻保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W2-N1",
+      "window": "05:00–10:00",
+      "raw": "2025",
+      "value": 2025.0,
+      "kind": "value",
+      "unit": "年",
+      "context": "问：公司2025年收入及增长情况如何？答",
+      "decision": "include",
+      "minutes_lines": [
+        19
+      ],
+      "reason": "问题中的2025年原样纳入收入及增长情况问题，与答复年度分别保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W2-N2",
+      "window": "05:00–10:00",
+      "raw": "2025",
+      "value": 2025.0,
+      "kind": "value",
+      "unit": "年",
+      "context": "答：按公司内部统计口径，2025年收入为1200万元，较",
+      "decision": "include",
+      "minutes_lines": [
+        13,
+        20
+      ],
+      "reason": "答复中的2025年继续对应公司收入，内部统计口径和尚未经审计状态均保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W2-N3",
+      "window": "05:00–10:00",
+      "raw": "1200万",
+      "value": 12000000.0,
+      "kind": "value",
+      "unit": "CNY",
+      "context": "计口径，2025年收入为1200万元，较2024年增长20",
+      "decision": "include",
+      "minutes_lines": [
+        13,
+        20
+      ],
+      "reason": "1200万元仅规范为1,200万元，数值及万元单位不变；继续对应2025年公司收入，保留公司内部统计口径及尚未经审计。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W2-N4",
+      "window": "05:00–10:00",
+      "raw": "2024",
+      "value": 2024.0,
+      "kind": "value",
+      "unit": "年",
+      "context": "年收入为1200万元，较2024年增长20%，尚未经审计",
+      "decision": "include",
+      "minutes_lines": [
+        13,
+        20
+      ],
+      "reason": "2024年继续作为2025年公司收入增长的比较基准年度，未改成独立收入金额或其他年份。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W2-N5",
+      "window": "05:00–10:00",
+      "raw": "20%",
+      "value": 20.0,
+      "kind": "percent",
+      "unit": "",
+      "context": "0万元，较2024年增长20%，尚未经审计。",
+      "decision": "include",
+      "minutes_lines": [
+        13,
+        20
+      ],
+      "reason": "20%继续为2025年收入较2024年的增长比例，百分比、比较年度、内部统计及未审计状态完整保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W3-N1",
+      "window": "10:00–11:00",
+      "raw": "800万",
+      "value": 8000000.0,
+      "kind": "value",
+      "unit": "CNY",
+      "context": "约且尚未交付的订单金额为800万元，意向订单金额为200",
+      "decision": "include",
+      "minutes_lines": [
+        15,
+        24
+      ],
+      "reason": "800万元继续对应截至2026年10月5日已签约且尚未交付的订单金额；上述订单金额均不代表已确认收入的限制保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W3-N2",
+      "window": "10:00–11:00",
+      "raw": "200万",
+      "value": 2000000.0,
+      "kind": "value",
+      "unit": "CNY",
+      "context": "00万元，意向订单金额为200万元。意向订单尚未签约，上",
+      "decision": "include",
+      "minutes_lines": [
+        15,
+        24
+      ],
+      "reason": "200万元继续对应截至2026年10月5日的意向订单金额，保留意向订单尚未签约及订单金额均不代表已确认收入。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W3-N3",
+      "window": "10:00–11:00",
+      "raw": "2026年",
+      "value": 2026.0,
+      "kind": "value",
+      "unit": "",
+      "context": "向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单",
+      "decision": "include",
+      "minutes_lines": [
+        15,
+        24
+      ],
+      "reason": "2026年属于两类订单统计截止日期2026年10月5日，未移用为收入年度。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W3-N4",
+      "window": "10:00–11:00",
+      "raw": "10月",
+      "value": 10.0,
+      "kind": "month",
+      "unit": "",
+      "context": "向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单",
+      "decision": "include",
+      "minutes_lines": [
+        15,
+        24
+      ],
+      "reason": "10月属于两类订单统计截止日期，与2026年5日完整绑定。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    },
+    {
+      "id": "W3-N5",
+      "window": "10:00–11:00",
+      "raw": "5日",
+      "value": 5.0,
+      "kind": "day",
+      "unit": "",
+      "context": "向订单各有多少？答：截至2026年10月5日，已签约且尚未交付的订单",
+      "decision": "include",
+      "minutes_lines": [
+        15,
+        24
+      ],
+      "reason": "5日属于两类订单统计截止日期2026年10月5日，已签约未交付与意向未签约状态保留。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）"
+    }
+  ],
+  "findings": [
+    {
+      "id": "quality_check:9bf3d1a38260b53d",
+      "message": "提示：冗余归因表述检查：0 处残留。",
+      "audio_required": false,
+      "decision": "confirmed",
+      "reason": "校验输出为0处；全文回读仅基本信息使用固定字段访谈对象，正文无泛化主体及冗余归因套话。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）",
+      "method": "text_review"
+    },
+    {
+      "id": "quality_check:022e8e353fb4d6a8",
+      "message": "提示：总结概述转述句式检查：0 处残留。",
+      "audio_required": false,
+      "decision": "confirmed",
+      "reason": "校验输出为0处；总结各段直接陈述会议内容、收入及订单，不含主体加转述动词句式。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）",
+      "method": "text_review"
+    },
+    {
+      "id": "quality_check:86956b5ecfb7e1b2",
+      "message": "提示：问答 2 组。数字事实核对请另行运行 fact_check.py。",
+      "audio_required": false,
+      "decision": "confirmed",
+      "reason": "已实际运行fact_check.py并通过，24个纪要数字实例均有材料依据；源稿2组问答与纪要逐组核对，除1,200的千位分隔规范外，问题和答复全文一致。",
+      "reviewer": "Codex（基于现成转录稿的文本复核）",
+      "method": "text_review"
+    }
+  ],
+  "document_review": {
+    "confirmed": true,
+    "reviewer": "Codex（基于现成转录稿的文本复核）",
+    "scope": "text_draft_only",
+    "reason": "已逐行核对全部文本内容及非数字事项：会议名称、访谈时间地点、双方姓名单位职务、议题、虚构材料属性、内部统计口径、尚未经审计、签约且未交付、意向未签约及订单金额均不代表已确认收入均保留；已检查总结在前、全部问答在后、标题层级、两个全角空格缩进及主题切换前的问答空行。用户仅要求文本草稿，DOCX字体、行距、页码及逐页版式检查不适用；未执行录音回听、ASR或正式release验收。"
+  },
+  "material_checks": {
+    "json_txt_and_timestamp_text_consistent": true,
+    "qa_exact_after_thousands_separator_normalization": true,
+    "source_qa_pairs": 2,
+    "minutes_qa_pairs": 2,
+    "metadata_exact": true,
+    "numeric_occurrences_reviewed": 15,
+    "additional_time_hours_preserved": [
+      "9:00",
+      "9:40"
+    ],
+    "numeric_omissions": 0,
+    "waivers_used": false
+  },
+  "execution_scope": {
+    "source_kind": "transcript",
+    "stage": "draft",
+    "asr_performed": false,
+    "audio_playback_performed": false,
+    "docx_generated": false,
+    "release_validation_performed": false
+  }
+}
