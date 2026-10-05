@@ -1,5 +1,7 @@
 __pycache__/
 *.pyc
+*.pyo
+.pytest_cache/
 soe-post-investment-report/assets/reference-render/
 # 术语库中的项目数据属于用户本地内容，不入库；industry/ 行业术语库随技能分发，入库
 meeting-minutes-pro/glossary/*
@@ -8,6 +10,9 @@ meeting-minutes-pro/glossary/*
 
 # 临时材料与新增本机字体不入库；原main已跟踪18份字体按维护者要求保留
 work/
+# 一次性验证输出和执行记录放 work/，不再进入源码树
+/docs/validation/
+/PROGRESS.md
 */assets/fonts/*.ttf
 */assets/fonts/*.otf
 */assets/fonts/*.ttc

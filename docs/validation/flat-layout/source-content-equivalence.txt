@@ -1,3 +1,0 @@
-$ python C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\check_flat_sources.py
-exit=0
-Compared 214 instruction/resource/runtime files: failures=0, SKILL.md unchanged=7/7

@@ -17,14 +17,14 @@
 | `soe-post-investment-report/assets/preview.png` | b6b129d 2026-08-30 Kuangdi Liu | `b0e9abb903238ac8d5964ab57ae7844f4db3938eac7450e73d08007332908ae5` | 维护者确认有权授权，Apache-2.0 |
 | `soe-post-investment-report/assets/reference-template.docx` | 65e0d90 2026-09-02 Kuangdi Liu | `4165afc2cb84cf81899b8d59c0e984ac035cf498fa9726b20047beba573b2790` | 维护者确认有权授权，Apache-2.0 |
 | `yiti-skill/assets/templates/文件字体格式.doc` | beee0c1 2026-07-13 Icdafy | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
-| 立项三技能 `assets/templates/*.json`、`references/template-*.md`、范文及业务参考 | 原文件迁移保留 | 全部文件摘要见 [迁移映射](docs/migration-map.json) | 维护者确认有权授权，Apache-2.0 |
-| 七个技能其他规则、示例、行业术语与脚本 | 仓库既有提交，原署名保留 | [基线清单](docs/validation/baseline/tracked-files.json) | 维护者确认有权授权，Apache-2.0；会议纪要既有 LICENSE 保留 |
+| 立项三技能 `assets/templates/*.json`、`references/template-*.md`、范文及业务参考 | 原文件迁移保留 | [历史迁移映射](https://github.com/Icdafy/Skills/blob/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/migration-map.json) | 维护者确认有权授权，Apache-2.0 |
+| 七个技能其他规则、示例、行业术语与脚本 | 仓库既有提交，原署名保留 | [历史基线清单](https://github.com/Icdafy/Skills/blob/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/validation/baseline/tracked-files.json) | 维护者确认有权授权，Apache-2.0；会议纪要既有 LICENSE 保留 |
 
 ## 按维护者要求保留的原main字体
 
 此前PR移除了18个字体副本；维护者最新明确要求原main字体不变。现在仅保留六技能各三份、共18份原文件，路径和字节摘要不变；没有新增黑体或其他字库。它们不适用本仓库Apache-2.0许可。授权限制来自基线两个字体README；
 仿宋/楷体 fsType=0 不等于允许把整个字体公开再分发；方正小标宋 fsType=2 仍被嵌入器拒绝。
-逐项文件名、大小、fsType 和 SHA-256 见 [基线字体清单](docs/validation/baseline/restricted-fonts.json)。
+逐项文件名、大小、fsType 和 SHA-256 见 [源码字体清单](docs/source-fonts.json)。
 原main18份源码字体逐字节保留，GitHub整库源码下载因此也包含它们。维护者先前明确没有或尚不清楚公开再分发授权；保留请求不视为字体版权方许可。单技能安装器和重建ZIP继续排除全部字体，递归文档嵌入扫描也不豁免字体。旧历史与旧发布没有重写或删除。
 
 ## 运行依赖（不打包其源码或模型）

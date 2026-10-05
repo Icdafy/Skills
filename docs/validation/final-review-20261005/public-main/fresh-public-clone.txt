@@ -1,2 +1,0 @@
-$ git clone --quiet --depth 1 --single-branch --branch main https://github.com/Icdafy/Skills.git "C:\Users\30649\AppData\Local\Temp\GitHub 最终复查 中文 空格 ua72tz3t\在线 main 源码"
-exit=0

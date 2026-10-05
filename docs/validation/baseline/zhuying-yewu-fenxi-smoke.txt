@@ -1,5 +1,0 @@
-$ python zhuying-yewu-fenxi/scripts/skill_portability.py check --smoke
-exit=0
-[OK] zhuying-yewu-fenxi: metadata, resources and links (29 files)
-[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed
-[INFO] This checks package execution, not model invocation in a target client or visual font rendering

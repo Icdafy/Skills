@@ -1,95 +1,37 @@
-# 实际验证记录
+# 验证摘要
 
-维护者请求的合并后[最后复查](validation/final-review-20261005/README.md)已复跑原测试、七包安装/备份和故障检查；仅修正说明/版本/ZIP，不改变冻结业务和原18字体。下方历史结果保留其受测范围。
+当前维护入口是 `python tools/check_library.py`，检查七项技能、资源、版本、独立ZIP、11组共享副本、本地链接、许可文件和18份源码字体摘要。具体测试命令见 [维护说明](maintenance.md)，字体清单见 [source-fonts.json](source-fonts.json)。
 
-最新范围：维护者已授权原main18份字体文件保持原路径/字节，其余PR内容统一合并到main。下方原三轮与原完成审计按受测快照保留；其中“源码字体为0”“第三方待决0”“不自动合并”不适用于最新交付。当前源码保留18份，单技能ZIP/安装器排除字体，字体公开再分发授权未确认。合并与新增验证见[选择性合并](validation/selective-merge/README.md)。
+## 本次清理
 
-日期：2026-10-05（Asia/Shanghai）。基线 `bf6f7d8cfb99265fc55ee45da5ea54150fff876d`，独立分支 `chore/skills-library-20261005`。只使用已有运行依赖；Python实际为3.12.14。未改main、用户旧工作区、权限、历史或旧发布。
+2026-10-05，清理621份历史测试输出、模型调用日志、迁移映射和执行记录；字体摘要迁到 `docs/source-fonts.json`，索引和说明改为指向本页。跟踪文件由911个减至290个，减少68.17%。七项技能的源码、模板、字体、版本及下载包保持原内容。
 
-补充范围：维护者新增“四种中文字体随七技能分发”，并确认保留宋体页码和Times New Roman数字/英文；随后明确答复“没有此授权，或尚不清楚”。该字体随包方案没有实施；原授权答复和输入核查保留为历史记录。以下3轮及仓库外运行结果证明当前去字体分发方案，不能证明新字体随包要求已实现。[本次输入核查与授权答复](validation/font-request/README.md)。
+本次 Windows / Python 3.12.10 实测：原五组375项回归加17项字体契约，共392项，391通过、1项因既有Windows符号链接权限跳过、0失败。字体契约首次运行遇到两个中文输出编码错误，设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1` 后17项全通过，未修改测试断言。统一校验通过，七包与源码一致、11组共享副本一致、18份字体摘要不变、本地断链为0；Git差异检查通过。原始输出保留在本地工作目录。
 
-## 原测试与完整验收
+后续测试输出放本地 `work/validation/`，不提交。一项已经完成的历史迁移不再要求永久保留其逐文件映射；当前必需资源、包一致性和字体检查继续执行。
 
-按维护者最新反馈，七项唯一源码直接放在仓库根目录。最后第3轮完整验收12个命令全部退出0；完整修改→验收轮次为3/3，停止修改实现。五组原用例合计375个名字完整保留，374通过、1个原环境跳过。新增13项字体资源正负成对测试全部通过，无新增skip/todo。[最终实际命令及退出码](validation/round-3/summary.json)。第1轮原始命令和结果保留在 [历史第1轮](validation/round-1/summary.json)，其中 skills/ 是当时真实路径；[第2轮根目录记录](validation/round-2/summary.json)也保留。
+## 历史实测范围
 
-| 实际命令 | 发现数 | 退出码 / 结果 |
-|---|---:|---|
-| `python -m unittest discover -v -s tools/tests` | 50 | 0 / 全通过 |
-| `python -m unittest discover -v -s meeting-minutes-pro/tests` | 258 | 0 / 全通过 |
-| `python -m unittest discover -v -s soe-post-investment-report/tests` | 56 | 0 / 55通过、原1跳过 |
-| `python -m unittest discover -v -s gongsi-qingkuang/evals` | 8 | 0 / 全通过 |
-| `python -m unittest discover -v -s officialese-skill/scripts -p test_create_official_docx.py` | 3 | 0 / 全通过 |
-| `python -m unittest discover -v -s tools/library_tests` | 13（另列） | 0 / 全通过 |
+以下是清理前的实测记录，本次没有重新调用模型、转写语音或进行 Word 视觉验收。
 
-原跳过名称 `test_source_inventory_skips_symlink_that_resolves_outside_material_root`，原因仍是WinError1314“客户端没有所需的特权”，没有新增跳过。[基线原因](validation/baseline/soe-tests.txt)与[最后第3轮原输出](validation/round-3/soe-tests.txt)均保留。
+| 范围 | 已记录的结果及限制 |
+|---|---|
+| 原五组回归测试 | 375项：374通过，1项因Windows符号链接权限跳过；另17项字体契约测试通过 |
+| 分发与安装 | 七个独立ZIP仓库外烟测通过；项目安装、备份和纪要私有术语保留通过 |
+| Codex CLI 0.160.0 | 21个新会话路由21/21；严格首轮行为18/21。投后三例四问正确，但另含进度或依据说明 |
+| 会议纪要文本 | 虚构素材生成的文本通过四项检查；仍是草稿，未完成DOCX或音频回听 |
+| ASR | 13.675秒中文合成音频：FunASR离线CUDA通过、Qwen3-ASR 0.6B离线CPU通过；Qwen CUDA尝试失败。真实会议、长音频、方言和说话人分离未实测 |
+| Word字体探针 | 共同组与纪要组的阴性/阳性探针通过；不能替代全部业务文档逐页验收 |
+| 其他客户端 | Claude Code项目目录安装通过，模型调用未实测；其他客户端未实测 |
+| 字体 | 原18份源码字体保留原路径和字节；单技能ZIP和安装器排除字体，公开再分发授权未确认 |
 
-[冻结内容审计](validation/frozen-content.json)：原25个测试文件的375个名称、断言和decorators保留；只归一允许的路径/字体输入变化。15个模板素材、6个业务渲染/规约文件字节相同；另2个生成器仅一条字体资源提示字面量改变，精确归一后全文等于基线，布局与业务代码不变。审计退出0。字体契约先登记[依据](font-test-contract.md)，再调整输入并补等量13项有效正负测试，不放宽版式断言。
+## 原始证据
 
-第3轮 `check_shared_scripts.py`、`sync_catalog.py --check`、`package_skills.py --check`、旧 `package_investment_skills.py --check`、`check_library.py`、`git diff --check` 均退出0。根目录调整时七项README/CHANGELOG路径均受影响，以七个明确 --skill 重建七包；字体补审按实际六个--skill重建六包，投后包摘要不变。[重建实际输出](validation/flat-layout/preparation.json)与[当前分发结果](validation/flat-layout/distribution/summary.json)以实际日志为准；旧版 final/ 证据保留。
+历史文件仍保存在清理前的固定提交 `0a15cc20451414f1506d4f7fe4e8bba8939af875`，没有重写 Git 历史。
 
-## 七个ZIP与项目安装
+- [全部历史原始输出](https://github.com/Icdafy/Skills/tree/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/validation)
+- [最后复查及回归、安装结果](https://github.com/Icdafy/Skills/blob/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/validation/final-review-20261005/README.md)
+- [21个Codex会话摘要及原始输出入口](https://github.com/Icdafy/Skills/blob/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/validation/clients/codex/summary.json)
+- [历史字体测试契约](https://github.com/Icdafy/Skills/blob/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/font-test-contract.md)
 
-[最终独立分发验证](validation/font-guidance/distribution/summary.json)：七包分别解压到仓库外含中文和空格的临时路径，清除PYTHONPATH后执行其 `scripts/skill_portability.py check --smoke`，7/7退出0。预览不写、项目安装、备份、多余文件先停止（预期退出1）、确认replace后保留本地文件与纪要私有术语均已验证；未修改真实已安装技能。
-
-临时副本只修改yiti并执行 `python tools/package_skills.py --skill yiti-skill`，退出0，只有该ZIP变化，另六个摘要不变；随后全库校验退出0。[最终前后摘要](validation/font-guidance/distribution/single-skill-hashes.json)。最后七包再次仓库外烟测；53条实际分发/安装/反向命令全部符合预期。旧 [分发证据](validation/distribution/summary.json) 保留。
-
-## 反向校验实际红→绿
-
-| 制造的故障 | 红结果 | 恢复后 |
-|---|---|---|
-| 删除必需资源 | [退出1：Missing resources](validation/font-guidance/distribution/red-missing-resource.txt) | [退出0](validation/font-guidance/distribution/green-missing-resource-restored.txt) |
-| 错误插件source路径 | [退出1：Marketplace differs](validation/font-guidance/distribution/red-plugin-path.txt) | [退出0](validation/font-guidance/distribution/green-plugin-path-restored.txt) |
-| 修改源码而不重建ZIP | [退出1：ZIP is stale](validation/font-guidance/distribution/red-stale-zip.txt) | [退出0](validation/font-guidance/distribution/green-stale-zip-restored.txt) |
-| 受限字体改名.bin回流 | [退出1：Restricted font distribution](validation/font-guidance/distribution/red-restricted-font-fingerprint.txt) | [退出0](validation/font-guidance/distribution/green-restricted-font-fingerprint-restored.txt) |
-
-四项当前布局反向检查均真实退出1，精确恢复后各退出0。字体改名.bin仍由原摘要直接命中。历史首次字体回流先被旧ZIP拦住的输出保留在旧distribution/；不把过期包报错冒充字体规则命中。
-
-## 真实客户端调用
-
-Codex CLI **0.160.0**：在仓库外中文空格临时项目安装七项 `.agents/skills/<name>`，原用户同名副本仅在每次CLI调用配置中停用，未写全局配置。每例新建 `codex exec --ephemeral` 会话，记录原提示、真实Get-Content命令、退出码、完整SKILL.md输出及最终答复。[21例摘要](validation/clients/codex/summary.json)与[行为验收输出](validation/clients/codex/behavior-review.txt)。
-
-| 技能 | 显式请求 | 自然语言 | 相邻反例路由 | 首轮限制 |
-|---|---|---|---|---|
-| hangye-fenxi | 实际加载正确 | 实际加载正确 | zhuying-yewu-fenxi正确、未载行业 | 先问早前期/中后期 |
-| zhuying-yewu-fenxi | 实际加载正确 | 实际加载正确 | gongsi-qingkuang正确、未载主营 | 先问早前期/中后期 |
-| gongsi-qingkuang | 实际加载正确 | 实际加载正确 | hangye-fenxi正确、未载公司 | 先问早前期/中后期 |
-| officialese-skill | 实际加载正确 | 实际加载正确 | yiti-skill正确、未载通用公文 | 补必要材料 |
-| yiti-skill | 实际加载正确 | 实际加载正确 | 投后正确、未载议题 | 判会议类，补通知和议案 |
-| meeting-minutes-pro | 实际加载正确 | 实际加载正确 | officialese-skill正确、未载纪要 | 一次补齐基本信息 |
-| soe-post-investment-report | 实际加载正确 | 实际加载正确 | 公司正确、未载投后 | 严格只四问未通过 |
-
-路由21/21正确；严格首轮行为18/21。三个实际加载投后技能的会话（显式、自然、yiti相邻反例）四问文字和顺序均正确，但还发出进度或技能依据说明。最终答复2/3只含四问，整个首轮0/3符合“只能四问”；已保留失败，行为审计退出1。同项三例失败后停止，不扩写冻结业务规则，也不只看最终答复来伪报成功。
-
-最初Windows重复反斜杠和Join-Path导致证据分类8/21与20/21，均是解析问题；每次真实读取都退出0。保留[初始分类](validation/clients/codex/initial-analysis.json)及原jsonl，人工核对后只修正路径解析，不改模型输出。既有客户端配置警告也保留，没有擅自改用户设置。
-
-根目录布局调整时，214个配套文件（包含七个SKILL.md）与当时上一提交等价；该时点的 [逐文件证明](validation/flat-layout/source-content-equivalence.json) 保留。之后补审只修正字体来源/下载说明、共享嵌入器文档字符串及两个CLI提示，阶段选择、首轮四问、纪要文本/语音和事实规则未改。客户端安装目录仍是.agents/skills。原21会话展示其受测快照的真实行为，不伪称字体说明修正后重新跑过模型调用。
-
-## 字体说明补审与提示分支边界
-
-实际README/SKILL/reference补审发现旧“自带字体”和“GitHub下载兜底”说明，已更正为本机授权来源；共享嵌入器只改gongsi基准说明后同步，纪要专用脚本未入组。仅六包受影响并按六个--skill重建，投后包摘要不变。[实际结果](validation/font-guidance/summary.json)。
-
-公文/议题生成器各以现有临时SFNT与空目录真实调用，四次CLI退出0：阳性嵌入两字体/charset86，阴性无嵌入并说明ICDAFY_FONT_DIR与未嵌入草稿。本机三字体已全部注册，新增“本机未安装”提示分支没有触发，仅由精确字面量全文审计证明其更正；不声称该分支实测。第一次探针错误要求stderr分支出现而退出1，保留 [失败记录](validation/font-guidance/failed-probe.txt) 和原CLI输出；旧375测试未改，不改旧探针断言、不mock注册表或安装字体。
-
-Claude Code当前PATH及既有入口均未找到可执行程序（只发现安装器，未运行）。其他客户端本次未实测；[可用性记录](validation/clients/unavailable.json)。官方安装说明已核对：[Codex](https://learn.chatgpt.com/docs/build-skills)、[Claude Code](https://code.claude.com/docs/en/skills)。保留说明不等于真实调用通过。
-
-## 纪要文本、字体与真实语音
-
-Codex新增独立会话，基于完整虚构元信息及两组问答真实保存纪要文本。[摘要及文件摘要](validation/clients/codex/minutes-text/summary.json)。内容保留统计口径、尚未审计、签约未交付和意向未签约等限定；四项校验全部退出0，3窗全纳入、2问答、24数字，无放行。19个实际脚本内容比对不变；唯一安装快照差异是维护者后加的portability元数据LF归一，不用于文本校验。执行者用源码再次check_all退出0。[纪要正文](validation/clients/codex/minutes-text/generated/会议纪要.txt)、[执行者复核](validation/clients/codex/minutes-text/executor-recheck.txt)。本例仅文本draft，release_ready:false，不声称完成DOCX或音频回听。
-
-真实Microsoft Word字体探针，使用现有本机授权字体及fontTools（临时PYTHONPATH，未安装）：[共同组gongsi](validation/word-embedding/gongsi-qingkuang.txt)与[纪要专用组](validation/word-embedding/meeting-minutes-pro.txt)均退出0。阴性PDF为SimSun，嵌入阳性出现 ___WRD_EMBED_SUB_46；这证明嵌入生效，不能代替全部业务文档逐页视觉验收。
-
-`python meeting-minutes-pro/scripts/bootstrap_runtime.py --check` 在当前根目录布局亲跑退出0，发现已有F盘ASR运行时Python3.12.14和本地模型：[当前路径输出](validation/flat-layout/runtime-check.txt)。用现有Windows System.Speech合成13.675秒非敏感中文，真实离线推理：[全部尝试](validation/asr/summary.json)。
-
-| 引擎 | 实际参数 | 退出码 | 结果 |
-|---|---|---:|---|
-| FunASR paraformer-zh | --offline --device cuda | 0 | 收入1200万元、20%、签约800万元、意向200万元识别保留 |
-| Qwen3-ASR0.6B首次 | --offline --device cuda | 1 | CUDA was requested but is unavailable |
-| Qwen3-ASR0.6B重试 | --offline --device cpu --max-new-tokens128 | 0 | 同四项量化信息识别保留 |
-
-合成音频留在仓库外work，仅保存命令、摘要和输出；不分发录音、权重或新增依赖。已实测真实引擎与中文短样本；真实会议、长音频、方言、说话人分离、双引擎全量回听未实测。
-
-## 许可与交付范围
-
-维护者确认原模板、范文、预览和业务规则有权以Apache-2.0公开。最新main保留原18份字体的原路径和字节；单技能ZIP与安装器排除字体，字体许可独立适用，见[许可清单](../THIRD_PARTY_NOTICES.md)。原三轮去字体方案的扫描结果按当时快照保留，不作为当前源码无字体的证明。
-
-[PR #12](https://github.com/Icdafy/Skills/pull/12)已合并，七技能直接放根目录，仅保留main。此前未达项已由维护者撤回，相关待办与入口已删除；历史模型输出及未实测范围保持原记录。已执行的历史验收见[验收记录](completion-audit.md)，当前main复查见[最后复查](validation/final-review-20261005/README.md)。
+来源与许可继续以 [第三方清单](../THIRD_PARTY_NOTICES.md) 为准。历史实测只证明当时受测范围，不能用脚本检查代替客户端调用、实际ASR或视觉验收。

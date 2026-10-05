@@ -1,4 +1,0 @@
-$ git diff --check
-exit=0
-warning: in the working copy of 'PROGRESS.md', LF will be replaced by CRLF the next time Git touches it
-warning: in the working copy of 'docs/validation/final/summary.json', LF will be replaced by CRLF the next time Git touches it

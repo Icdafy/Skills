@@ -1,5 +1,0 @@
-$ python tools/package_skills.py --skill yiti-skill
-exit=0
-[OK] yiti-skill: metadata, resources and links (22 files)
-[INFO] Fonts are not distributed; embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
-[OK] C:\Users\30649\AppData\Local\Temp\技能 解压 空格 rpwvx2zz\临时库 副本\distributions\office-skills\yiti-skill.zip (97436 bytes) SHA256=92fd0a69b89bad5e01891aa88f30fffcef654f4d5fec47f1864a4d203178246e

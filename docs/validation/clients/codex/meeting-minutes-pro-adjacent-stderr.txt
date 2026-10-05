@@ -1,6 +1,0 @@
-Reading additional input from stdin...
-2026-10-05T05:42:29.476191Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
-2026-10-05T05:42:29.476238Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/
-2026-10-05T05:42:29.483384Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell
-2026-10-05T05:42:30.394264Z  WARN codex_skills::interface: ignoring interface.icon_small: icon path with '..' must resolve under plugin assets/
-2026-10-05T05:42:30.395312Z  WARN codex_skills::interface: ignoring interface.icon_large: icon path with '..' must resolve under plugin assets/

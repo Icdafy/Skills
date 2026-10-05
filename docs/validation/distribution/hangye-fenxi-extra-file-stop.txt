@@ -1,8 +1,0 @@
-$ python "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\下载 独立包\hangye-fenxi\scripts\skill_portability.py" install --agent codex --scope project --project-dir "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\项目 安装 hangye-fenxi" --apply
-exit=1
-[OK] hangye-fenxi: metadata, resources and links (33 files)
-[OK] Package SHA-256 manifest matches
-[INFO] Fonts are not distributed; embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
-[PLAN] Install hangye-fenxi -> C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\项目 安装 hangye-fenxi\.agents\skills\hangye-fenxi
-[BACKUP] C:\Users\30649\AppData\Local\Temp\技能 解压 空格 uwen25p8\项目 安装 hangye-fenxi\.agents\skill-backups\hangye-fenxi-20261005T052305416455Z
-[FAIL] Existing skill has extra files; preserved with backup. Resolve these, or rerun with --replace to move the old folder aside: personal-notes.txt

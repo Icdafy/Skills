@@ -1,5 +1,0 @@
-$ python soe-post-investment-report/scripts/skill_portability.py check --smoke
-exit=0
-[OK] soe-post-investment-report: metadata, resources and links (26 files)
-[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed
-[INFO] This checks package execution, not model invocation in a target client or visual font rendering

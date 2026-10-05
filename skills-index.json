@@ -16,7 +16,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json"
+        "codex_evidence": "docs/validation.md"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
@@ -35,7 +35,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json"
+        "codex_evidence": "docs/validation.md"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
@@ -54,7 +54,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json"
+        "codex_evidence": "docs/validation.md"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
@@ -73,7 +73,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json"
+        "codex_evidence": "docs/validation.md"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
@@ -92,7 +92,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json"
+        "codex_evidence": "docs/validation.md"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
@@ -111,7 +111,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json",
+        "codex_evidence": "docs/validation.md",
         "text_generation": "Codex真实生成及四项检查通过；仅文本draft",
         "asr": "真实FunASR及Qwen0.6B离线推理通过（13.675秒合成语音）；Qwen CUDA失败、CPU通过；真实会议未实测"
       },
@@ -132,7 +132,7 @@
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation/clients/codex/summary.json"
+        "codex_evidence": "docs/validation.md"
       },
       "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体"
     }

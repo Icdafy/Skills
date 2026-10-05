@@ -1,8 +1,0 @@
-$ python tools/check_library.py
-exit=0
-[OK] Index, Chinese catalog and marketplace agree: 7 skills
-[OK] Distribution scan: 383 files including ZIP/OOXML/CFB streams; restricted-font hits=0
-[OK] Source resources, versions, archives and 11 shared groups agree: 7 skills
-[OK] Migration coverage: 237 files, 19 explained deletions, missing=0
-[OK] Local Markdown links: broken=0
-[PASS] Library validation passed. Model invocation and visual rendering are separately recorded.

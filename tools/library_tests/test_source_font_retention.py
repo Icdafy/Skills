@@ -25,7 +25,7 @@ class SourceFontRetention(unittest.TestCase):
                         ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
 
     def test_original_eighteen_files_and_contract_match_baseline(self):
-        baseline = json.loads((REPO / 'docs/validation/baseline/restricted-fonts.json').read_text('utf-8'))
+        baseline = json.loads((REPO / 'docs/source-fonts.json').read_text('utf-8'))
         policy = json.loads((REPO / 'skills-index.json').read_text('utf-8'))['font_policy']
         self.assertEqual(len(baseline), 18)
         self.assertEqual(len({f['path'].split('/')[0] for f in baseline}), 6)

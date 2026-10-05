@@ -138,32 +138,8 @@ def check_links(root):
     print('[OK] Local Markdown links: broken=0')
 
 
-def check_mapping(root):
-    mapping = json.loads((root / 'docs/migration-map.json').read_text(encoding='utf-8'))
-    baseline = json.loads((root / 'docs/validation/baseline/tracked-files.json').read_text(encoding='utf-8'))
-    if len(mapping) != len(baseline) or {e['old'] for e in mapping} != {e['old'] for e in baseline}:
-        raise ValueError('Migration map must cover every baseline tracked file exactly once')
-    if len({e['old'] for e in mapping}) != len(mapping):
-        raise ValueError('Duplicate old file in migration map')
-    deleted = []
-    for entry in mapping:
-        if entry['action'] == 'delete':
-            if not entry.get('reason') or entry['new'] is not None:
-                raise ValueError('Unexplained deletion: ' + entry['old'])
-            deleted.append(entry)
-        elif not (root / entry['new']).is_file():
-            raise ValueError('Migrated file missing: ' + str(entry['new']))
-        if entry['old'].split('/')[0] in {'tools', 'distributions', '.claude-plugin'}:
-            continue
-        if entry['action'] != 'delete' and entry['new'] != entry['old'] and (root / entry['old']).exists():
-            raise ValueError('Duplicate legacy source: ' + entry['old'])
-    if any(Path(e['old']).suffix.lower() not in FONT_SUFFIXES and e['old'] != 'Skills军团' for e in deleted):
-        raise ValueError('Deletion exceeds permitted font/placeholder scope')
-    print(f'[OK] Migration coverage: {len(mapping)} files, {len(deleted)} explained deletions, missing=0')
-
-
 def check_distribution(root):
-    restricted = json.loads((root / 'docs/validation/baseline/restricted-fonts.json').read_text(encoding='utf-8'))
+    restricted = json.loads((root / 'docs/source-fonts.json').read_text(encoding='utf-8'))
     policy = load_index(root).get('font_policy', {})
     if (policy.get('retained_source_fonts') != restricted
             or policy.get('single_skill_zip_fonts') is not False
@@ -238,7 +214,6 @@ def main():
         if not consistent:
             raise ValueError('Shared copy drift: ' + '; '.join(messages))
     print(f"[OK] Source resources, versions, archives and {len(index['shared_groups'])} shared groups agree: {len(ids)} skills")
-    check_mapping(REPO)
     check_links(REPO)
     for name in ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md'):
         if not (REPO / name).is_file():

@@ -1,3 +1,0 @@
-$ python tools/sync_catalog.py --check
-exit=0
-[OK] Index, Chinese catalog and marketplace agree: 7 skills

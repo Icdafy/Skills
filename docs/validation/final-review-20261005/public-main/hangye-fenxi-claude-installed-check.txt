@@ -1,5 +1,0 @@
-$ python "C:\Users\30649\AppData\Local\Temp\GitHub 最终复查 中文 空格 ua72tz3t\Claude 项目 安装 hangye-fenxi\.claude\skills\hangye-fenxi\scripts\skill_portability.py" check
-exit=0
-[OK] hangye-fenxi: metadata, resources and links (33 files)
-[OK] Package SHA-256 manifest matches
-[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight

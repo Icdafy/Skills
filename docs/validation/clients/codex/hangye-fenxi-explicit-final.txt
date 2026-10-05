@@ -1,8 +1,0 @@
-这次项目采用早前期（2026-09 终稿范式）还是中后期（因诺科技）模板？
-
-请同时补充：
-
-- 公司简称、细分赛道、核心产品或服务、主要客户及产业链位置。
-- 数据方式：使用您提供的离线资料，还是明确标注的虚构验收数据？
-
-[hangye-fenxi 技能](<C:/Users/30649/Documents/Codex/2026-10-05/icdafy-skills-blocked-md-progress-md/work/客户端 验证 中文/.agents/skills/hangye-fenxi/SKILL.md>)明确要求“等待用户回答后再起草”，因此需先确定模板和业务边界。

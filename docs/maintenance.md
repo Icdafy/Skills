@@ -39,7 +39,7 @@ python tools/package_skills.py --check
 git diff --check
 ```
 
-原 375 个名称必须继续被发现。字体输入位置调整依据见 [字体测试契约](font-test-contract.md)；文档版式断言没有放宽。实际退出码、发现数、原符号链接跳过原因、ZIP 仓库外烟测、备份和反向验证见 [验证页](validation.md)。
+原五组375个测试及文档版式断言保留。`tools/library_tests` 另含17项字体资源契约测试，字体原路径、大小和摘要以 [源码字体清单](source-fonts.json) 为准。结果与未实测范围见 [验证摘要](validation.md)。
 
 统一校验入口已经实际跑通（退出 0）后登记：
 
@@ -48,7 +48,9 @@ python tools/check_library.py
 python -m unittest discover -s tools/library_tests
 ```
 
-`check_library.py` 只读检查技能集合、唯一名称、索引/首页/插件/ZIP、必需资源、版本、全部迁移去向、本地 Markdown 链接、许可文件、字体摘要，以及 ZIP/OOXML/CFB 中的字体资源。不联网、不重建、不写入安装目录。`library_tests` 保留原13项字体正负资源契约测试；原375项及这13项均不改。本次另增4项源码字体保留/打包排除/改字节拒绝/新增文件拒绝测试，不替代原五组。新命令实跑证据见选择性合并验证记录。
+`check_library.py` 只读检查当前技能集合、唯一名称、索引/首页/插件/ZIP、必需资源、版本、本地 Markdown 链接、许可文件、字体摘要，以及 ZIP/OOXML/CFB 中的字体资源。不联网、不重建、不写入安装目录。已经完成的旧目录迁移不再作为每次校验的前置条件；历史映射保存在 Git 历史中。
+
+测试原始输出、模型调用日志和安装试验材料放在本地 `work/validation/`，不提交。`docs/validation.md` 只维护简短结论、受测范围及历史提交入口；`docs/source-fonts.json` 是仍用于校验的18份源码字体摘要，需保留。旧日志目录和执行记录已加入 `.gitignore`，避免再次堆积。
 
 ## 分发前许可与资源核对
 

@@ -1,4 +1,0 @@
-$ python tools/check_library.py
-exit=1
-[FAIL] Marketplace differs from index/source metadata
-[FAIL] Index/README/marketplace mismatch

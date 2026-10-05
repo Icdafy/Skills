@@ -1,5 +1,0 @@
-$ python tools/check_library.py
-exit=1
-[OK] Index, Chinese catalog and marketplace agree: 7 skills
-[OK] Distribution scan: 632 files including ZIP/OOXML/CFB streams; restricted-font hits=0
-[FAIL] Missing resources: references/template-early.md

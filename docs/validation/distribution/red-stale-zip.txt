@@ -1,4 +1,0 @@
-$ python tools/check_library.py
-exit=1
-[OK] Index, Chinese catalog and marketplace agree: 7 skills
-[FAIL] yiti-skill: ZIP is stale; rebuild

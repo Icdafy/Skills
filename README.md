@@ -82,20 +82,15 @@ python tools/package_skills.py --check
 | [soe-post-investment-report/](soe-post-investment-report/) | 国企股权投资投后报告的独立源码、规则和配套资源 |
 | [distributions/](distributions/) | 保留的两类下载目录，七个单技能 ZIP 和 SHA-256 |
 | [tools/](tools/) | 仓库维护、同步、打包和测试；不当作技能安装 |
-| [docs/](docs/) | 安装迁移、维护、来源、验证证据及全部原文件映射 |
+| [docs/](docs/) | 安装、维护、验证摘要及源码字体校验清单 |
 | [.claude-plugin/](.claude-plugin/) | Claude Code 市场索引，直接指向七个根目录技能 |
 | [skills-index.json](skills-index.json) | 技能集合、路径、版本和共享副本的唯一清单 |
-| [PROGRESS.md](PROGRESS.md) | 执行记录 |
 | [LICENSE](LICENSE)、[NOTICE](NOTICE)、[第三方清单](THIRD_PARTY_NOTICES.md) | Apache-2.0 授权范围、原署名及来源；原18份源码字体保留，字体公开再分发授权未确认；单技能ZIP排除字体 |
 
-本地 `.git/` 是 Git 元数据，不属于下载技能。临时材料放 `work/`，不提交。七个技能目录直接列在仓库根目录，每项只有一份源码。根目录空白占位物已删除，临时材料不进入分发。
+本地 `.git/` 是 Git 元数据，不属于下载技能。临时材料和测试输出放 `work/`，不提交。七个技能目录直接列在仓库根目录，每项只有一份源码。
 
 ## 验证状态
 
-合并后的[最后复查](docs/validation/final-review-20261005/README.md)：七项资源/安装/包检查通过，原375项及另17项复跑通过（唯一既有环境跳过）；修正过期分支安装提示和纪要语音验证范围，版本及ZIP同步。
+七项资源、安装包、11组共享副本及测试的结果见 [验证摘要](docs/validation.md)。原始测试日志、模型调用输出和迁移记录已从当前目录清理，可通过摘要中的固定 Git 提交查阅。
 
-Windows / Python 3.12.14：原375项完整发现，374通过、1项既有Windows符号链接环境跳过；七个独立ZIP仓库外烟测、项目安装备份、11组共享副本和第3轮完整校验通过（已达到3轮上限）。这些是合并前去字体方案的历史结果。最新保留原main18份源码字体，单技能ZIP继续排除字体；字体公开再分发授权未确认，见[选择性合并记录](docs/validation/selective-merge/README.md)。
-
-Codex CLI 0.160.0：21个新会话实际加载路径与路由均正确，严格首轮行为18/21。投后报告三例的四问内容和顺序正确，首轮另含进度或依据说明。会议纪要文本与两个真实ASR引擎短合成语音已实测；真实长会/方言未实测。Claude Code当前不可运行，其他客户端未实测。
-
-具体命令、原输出、红→绿和验证范围见 [验证记录](docs/validation.md)。PR #12其余内容及原18份字体保留方案已合并到main，仓库仅保留main分支；七个源码目录沿用原地址。
+历史 Codex CLI 0.160.0 路由实测21/21、严格首轮行为18/21；会议纪要文本与两个真实ASR引擎的短合成语音已实测。真实长会、方言、Claude Code及其他客户端未实测，脚本检查不能代替这些验证。

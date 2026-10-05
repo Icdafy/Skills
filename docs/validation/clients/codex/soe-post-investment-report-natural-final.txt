@@ -1,6 +1,0 @@
-依据 [soe-post-investment-report 技能](<C:/Users/30649/Documents/Codex/2026-10-05/icdafy-skills-blocked-md-progress-md/work/客户端 验证 中文/.agents/skills/soe-post-investment-report/SKILL.md>)“首轮回复，只能逐字、按顺序提出以下四个问题，然后停止”的要求，先完成变更确认：
-
-1. 项目是否有变动？
-2. 变动的地方在哪里？
-3. 有无需要着重修改的地方？
-4. 其他提示？

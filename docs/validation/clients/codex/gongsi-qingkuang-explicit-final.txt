@@ -1,6 +1,0 @@
-请先补充两项信息：
-
-1. 本轮采用**早前期（2026-09 终稿范式）**还是**中后期（因诺科技）**模板？
-2. 尽调资料放在哪个本地路径？当前消息未见附件，工作目录中也未找到资料文件；也可直接粘贴资料内容。
-
-[gongsi-qingkuang 技能](<C:/Users/30649/Documents/Codex/2026-10-05/icdafy-skills-blocked-md-progress-md/work/客户端 验证 中文/.agents/skills/gongsi-qingkuang/SKILL.md>)明确要求“等待用户回答后再起草”，因此先确认模板，不根据融资轮次推断阶段。
