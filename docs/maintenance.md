@@ -48,10 +48,10 @@ python tools/check_library.py
 python -m unittest discover -s tools/library_tests
 ```
 
-`check_library.py` 只读检查技能集合、唯一名称、索引/首页/插件/ZIP、必需资源、版本、全部迁移去向、本地 Markdown 链接、许可文件、字体摘要，以及 ZIP/OOXML/CFB 中的字体资源。不联网、不重建、不写入安装目录。`library_tests` 另外保留字体变更所需的 13 项正负资源契约测试，不替代原五组。
+`check_library.py` 只读检查技能集合、唯一名称、索引/首页/插件/ZIP、必需资源、版本、全部迁移去向、本地 Markdown 链接、许可文件、字体摘要，以及 ZIP/OOXML/CFB 中的字体资源。不联网、不重建、不写入安装目录。`library_tests` 保留原13项字体正负资源契约测试；原375项及这13项均不改。本次另增4项源码字体保留/打包排除/改字节拒绝/新增文件拒绝测试，不替代原五组。新命令实跑证据见选择性合并验证记录。
 
 ## 分发前许可与资源核对
 
 README、LICENSE、NOTICE、VERSION 和 CHANGELOG 必须随单技能包分发。根 [第三方清单](../THIRD_PARTY_NOTICES.md) 保留来源与维护者授权确认；不以 fsType 或上传作者推断公开分发许可。
 
-本机字体只放仓库外授权目录，可设置 ICDAFY_FONT_DIR；禁止重新带回源码或 ZIP。字体缺失要明确提示；未完成实际渲染/页数闭环的 DOCX 仍是草稿。旧历史与旧发布不删除、不重写。私有术语和参考渲染缓存按 .gitignore 与打包规则排除。
+运行时本机授权字体放仓库外目录，可设置 ICDAFY_FONT_DIR。维护者最新要求保留原main18份源码字体：仅索引font_policy列出的原路径和摘要可保留，禁止新增、改名或替换；单技能ZIP和安装器始终排除字体。GitHub整库源码下载仍含原字体，公开再分发授权未确认。字体缺失要明确提示；未完成实际渲染/页数闭环的 DOCX 仍是草稿。旧历史与旧发布不删除、不重写。私有术语和参考渲染缓存按 .gitignore 与打包规则排除。

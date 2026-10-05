@@ -6,7 +6,7 @@ meeting-minutes-pro/glossary/*
 !meeting-minutes-pro/glossary/README.md
 !meeting-minutes-pro/glossary/industry/
 
-# 临时材料和用户授权字体不公开分发
+# 临时材料与新增本机字体不入库；原main已跟踪18份字体按维护者要求保留
 work/
 */assets/fonts/*.ttf
 */assets/fonts/*.otf

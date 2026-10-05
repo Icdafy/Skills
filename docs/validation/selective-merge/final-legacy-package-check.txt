@@ -1,0 +1,11 @@
+$ python tools/package_investment_skills.py --check
+exit=0
+[OK] hangye-fenxi: metadata, resources and links (33 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] hangye-fenxi: downloadable archive matches current source
+[OK] zhuying-yewu-fenxi: metadata, resources and links (32 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] zhuying-yewu-fenxi: downloadable archive matches current source
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] gongsi-qingkuang: downloadable archive matches current source

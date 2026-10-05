@@ -286,5 +286,5 @@ DOCX 生成后用运行时 Python 追加内容与样式回读比对——逐段�
 - `scripts/render_docx.py`：将 DOCX 渲染为 PDF，报告页数与实际内嵌字体，并用文字坐标自动核验页码奇右偶左（`page_number_check`），用于交付前逐页检查。
 - `scripts/font_preflight.py`：检查固定版式所需字体，并在用户许可后安装用户自行准备的授权字体。
 - `glossary/`：按项目或公司维护的热词术语文件，跨会议复用（仅本地，不入库）；`glossary/industry/`：随技能分发的行业术语库（低空经济、商业航天），供相关行业会议挑选热词并作规范写法参照。
-- `assets/fonts/`：本机授权字体准备说明，公开包不含字体文件。
+- `assets/fonts/`：本机授权字体准备说明，单技能ZIP和安装器输出不含字体文件；源码保留原main历史字体，许可待决见该目录README。
 - `assets/templates/文件字体格式.doc`：公司格式样例。发生格式冲突时，以样例和 `references/format-and-output.md` 为准。

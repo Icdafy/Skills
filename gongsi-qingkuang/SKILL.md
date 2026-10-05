@@ -110,7 +110,7 @@ description: 根据尽调资料与访谈撰写、修订或复核股权投资立�
 
 ## Word 输出
 
-渲染前先运行 `python scripts/ensure_fonts.py`：本技能不附字体文件；使用本机或 ICDAFY_FONT_DIR 中自行准备的授权字体（仿宋 simfang、方正小标宋简体、楷体_GB2312），需要安装时仅从授权目录做用户级安装（Windows 含注册表注册，无需管理员权限）。生成的 `.docx` 会自动嵌入本机授权的仿宋_GB2312、楷体_GB2312（方正小标宋许可禁止嵌入，自动跳过），未装这两款字体的机器打开也不掉字；嵌入经反混淆校验，失败时保留未嵌入版本、不影响生成。可用 `python scripts/embed_fonts.py --docx 输出.docx --verify` 复核。
+渲染前先运行 `python scripts/ensure_fonts.py`：单技能ZIP和安装器输出不附字体文件；源码仅按维护者要求保留原main字体副本（许可待决，见assets/fonts/README.md）；使用本机或 ICDAFY_FONT_DIR 中自行准备的授权字体（仿宋 simfang、方正小标宋简体、楷体_GB2312），需要安装时仅从授权目录做用户级安装（Windows 含注册表注册，无需管理员权限）。生成的 `.docx` 会自动嵌入本机授权的仿宋_GB2312、楷体_GB2312（方正小标宋许可禁止嵌入，自动跳过），未装这两款字体的机器打开也不掉字；嵌入经反混淆校验，失败时保留未嵌入版本、不影响生成。可用 `python scripts/embed_fonts.py --docx 输出.docx --verify` 复核。
 
 新建章节使用 `scripts/build_docx.py` 排版（三技能共用渲染脚本）。修订用户已有Word时保留原有样式、表格及分页，用文档工具处理修订并渲染检查，无需重建整份文件。新建时把内容组织成 JSON 再运行：
 

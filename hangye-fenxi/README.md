@@ -1,6 +1,6 @@
 # 所属行业分析（hangye-fenxi）
 
-当前分发版本：**1.0.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.0.1**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
@@ -16,7 +16,7 @@
 
 Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `requirements.txt` 中的 python-docx。
 
-公开包不含字体。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
+单技能ZIP和安装器输出不含字体。GitHub源码按维护者要求保留原main三份字体，见 [字体说明](assets/fonts/README.md)；其公开再分发授权仍未确认。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
 
 ## 完整安装例子
 
@@ -150,7 +150,7 @@ hangye-fenxi/
 ├── agents/
 │   └── openai.yaml                 界面展示名、默认提示语、调用策略
 ├── assets/
-│   └── fonts/                      本机授权字体准备说明（不含字体文件）
+│   └── fonts/                      原main历史字体保留及本机授权字体说明（单技能ZIP不含字体）
 │       ├── simfang.ttf             仿宋 / 仿宋_GB2312
 │       ├── 方正小标宋简体.ttf       公文大标题
 │       ├── 楷体_GB2312.ttf          （一）（二）层级标题
@@ -283,7 +283,7 @@ Use $hangye-fenxi 帮我把这份行业分析改写成范文风格，并生成 .
 
 ---
 
-*本技能按Apache-2.0公开；商用/系统字体不随源码和ZIP分发。*
+*代码、规则和已授权素材按Apache-2.0公开；源码仅保留原main三份历史字体，字体公开再分发授权未确认，单技能ZIP和安装器排除字体。*
 
 ## 审阅批注吸收（2026-09）
 

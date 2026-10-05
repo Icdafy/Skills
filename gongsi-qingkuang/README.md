@@ -1,6 +1,6 @@
 # 公司情况（gongsi-qingkuang）
 
-当前分发版本：**2.0.1**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**2.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
@@ -16,7 +16,7 @@
 
 Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `requirements.txt` 中的 python-docx。
 
-公开包不含字体。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
+单技能ZIP和安装器输出不含字体。GitHub源码按维护者要求保留原main三份字体，见 [字体说明](assets/fonts/README.md)；其公开再分发授权仍未确认。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
 
 ## 完整安装例子
 
@@ -128,7 +128,7 @@ Claude Code当前没有可运行客户端，未实测；其他客户端未实测
 | `scripts/reconcile_check.py` | 机械勾稽核验：股权求和=100%、人员分项=总数、客户合计、资产负债恒等式、毛利率反算等 |
 | `scripts/extract_docx.py` | 读取 .docx 资料包，逐块输出段落与表格便于建台账 |
 | `assets/content_skeleton.json` | content.json 骨架样例 |
-| `assets/fonts/` | 本机授权字体准备说明（不含字体文件） |
+| `assets/fonts/` | 原main历史字体保留及本机授权字体说明（单技能ZIP不含字体） |
 | `evals/evals.json` | 骨架及证据边界回归场景，以及修订、融资简写、财务和订单分析的虚构用例 |
 
 ## 脚本用法

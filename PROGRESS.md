@@ -171,3 +171,18 @@
 - `python tools/check_library.py`实际退出0：技能集合7、共享11、原237文件映射/19解释删除、递归扫描677文件且受限字体命中0、本地断链0。此为新增记录后的链接/当前分发复核，不能充当随包字体功能验证；原3轮验收及375项结果保留，不开始第4轮。
 - 授权答复及证据整理后的 `python work/check_font_request_metadata.py`（仓库外）实际退出0：Python3.12.14、对33ea8ea的七技能/测试/版本/包受保护路径差异0、统一校验退出0（679文件、字体0、断链0）、`git diff --check`退出0。变化仅限Markdown/JSON/文本记录，未公开本机企业字体路径。见 [四条实际命令](docs/validation/font-request/metadata-checks.json)及 [统一校验原输出](docs/validation/font-request/library.txt)。准备普通提交记录并更新现有草稿PR，未合并。
 - 新字体记录已交付：暂存10份记录的 `git diff --cached --check`实际退出0；普通commit退出0（d4bea71），正常 `git push origin chore/skills-library-20261005`退出0，`gh pr edit 12 --repo Icdafy/Skills --body-file ../pr-flat-layout-body.md`退出0。PR说明已明确新增B4未实施与旧验收范围，字体未上传；只补本条交付回执及输出副本，main不变、PR不自动合并。
+
+## 维护者授权选择性合并，仅保留一个main
+
+- 最新明确指示保留原main六技能各三字体共18份，其余内容合并并只保留main；覆盖此前不自动合并的默认。未取得字体版权方公开再分发授权，B4继续保留。
+- 已核对工作区干净、main为bf6f7d8、PR为dcc5ff4，远端仅main和PR分支，push权限可用。单agent，无新增依赖、无改权限/历史/旧发布。
+- 本项恢复18份原文件并保持Git字节；安装/打包排除这些历史字体，校验仅准原路径/摘要。版本、索引、共享副本及说明同步；原375和13项测试不改，新增4项有效保留规则测试。原三轮记录不重写，本次合并验证另存selective-merge。
+
+- `python work/prepare_selective_merge.py`实际退出0：18份原Git字体对象恢复，59份必要说明/契约/版本记录调整。生成验证脚本时一次PowerShell嵌套引号退出1、未执行Python或修改源码；改用独立脚本后准备完成。
+- `python work/prepare_selective_validation.py`退出0：共享同步、索引同步及明确七个--skill重建全部退出0；18份字体逐字节等于bf6f7d8原Git对象。见[准备记录](docs/validation/selective-merge/preparation.json)和[字体比对](docs/validation/selective-merge/original-fonts-unchanged.json)。原业务脚本和测试不改，待跑本次回归/独立安装/反向检查后合并。
+
+- `python work/run_selective_acceptance.py`实际退出0：12条命令全绿；原50/258/56/8/3仍375，374通过、原WinError1314跳过1；13+4项新字体契约全部通过。`python work/audit_selective_merge.py`退出0：25原测试文件375名/断言/装饰器、15素材/8渲染契约通过，679个原PR文件保留，159个受保护文件不变。
+- 完整回归后修正行业README遗留的一句“源码不带字体”和投后metadata版本为1.5.4；只有说明/版本变化，明确重建这两包退出0。`python work/verify_selective_distribution.py`实际退出0，最终57条实跑符合预期：七包仓库外smoke与项目安装/备份/本地数据通过；缺资源、插件路径、过期ZIP、改名字体回流、原字体改字节、原字体缺失六项分别红1→绿0；只重建yiti的其他六ZIP摘要不变。见[合并验证记录](docs/validation/selective-merge/README.md)。
+- 上述新范围验证完成，准备普通提交并push原PR分支；维护者已经明确授权合并并仅保留main，不再请求重复确认。字体许可待决、严格四问及浏览缺证仍如实保留。
+
+- `python work/finalize_selective_review.py`退出0：当前统一校验、七包、旧打包命令及diff均退出0，亲测后写入维护/验证说明；PR正文准备完成。`python work/stage_selective_merge.py`退出0：暂存白名单越界0、符号链接0、跟踪字体恰18且Git对象/工作树均等于原main，暂存diff --check退出0。准备普通提交、更新PR并执行维护者已授权的合并。

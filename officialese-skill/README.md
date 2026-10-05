@@ -1,6 +1,6 @@
 # 国企公文写作与排版（officialese-skill）
 
-当前分发版本：**1.0.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.0.1**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
@@ -16,7 +16,7 @@
 
 Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `requirements.txt` 中的 python-docx。
 
-公开包不含字体。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
+单技能ZIP和安装器输出不含字体。GitHub源码按维护者要求保留原main三份字体，见 [字体说明](assets/fonts/README.md)；其公开再分发授权仍未确认。自行准备有使用权的仿宋、楷体_GB2312、方正小标宋等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/ensure_fonts.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过实际版式验收；原字体、字号和版式规则保留。
 
 ## 完整安装例子
 

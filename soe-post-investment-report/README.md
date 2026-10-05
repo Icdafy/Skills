@@ -1,6 +1,6 @@
 # 国企股权投资投后报告（soe-post-investment-report）
 
-当前分发版本：**1.5.3**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.5.4**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 

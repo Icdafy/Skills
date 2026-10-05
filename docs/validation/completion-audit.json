@@ -225,5 +225,13 @@
     "font_binaries_distributed": false,
     "existing_acceptance_applies_to": "Previously tested unbundled-font distribution; not the newly requested bundled-font behavior",
     "evidence": "font-request/README.md"
+  },
+  "historical_snapshot": true,
+  "latest_selective_merge": {
+    "authorization": "维护者明确授权合并并删除工作分支，仅保留main；18份原字体不变",
+    "original_font_zero_requirement_overridden": true,
+    "font_redistribution_permission_confirmed": false,
+    "evidence": "validation/selective-merge/README.md",
+    "status": "preparing"
   }
 }

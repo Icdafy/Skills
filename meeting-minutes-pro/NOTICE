@@ -7,7 +7,9 @@ Copyright contributors to Icdafy/Skills. Existing author and license notices are
 此记录是维护者的权利/授权确认，不把历史上传作者当作第三方原创证明。
 meeting-minutes-pro 的既有 Apache-2.0 LICENSE 原文保留。
 
-商用/系统字体（仿宋、楷体_GB2312、方正小标宋）不随源码、安装包或 ZIP 分发。
+维护者要求保留原main六技能中的18份商用/系统字体文件，原路径和字节不变。
+这些第三方字体不适用本仓库Apache-2.0授权，公开再分发授权仍未确认。
+单技能安装器及重建ZIP排除字体；GitHub整库源码下载仍含上述18份历史文件。
 本机授权字体的使用和 DOCX 嵌入仍由使用者的许可与 fsType 标志决定。
 运行时依赖各自的许可证仍适用，不由本仓库 Apache-2.0 取代。
 逐项来源、摘要、依赖及验证限制见 THIRD_PARTY_NOTICES.md。

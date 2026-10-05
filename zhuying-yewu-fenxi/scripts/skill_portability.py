@@ -38,6 +38,30 @@ MAX_DESCRIPTION = 200
 MAX_SKILL_MD_BYTES = 100 * 1024
 ALLOWED_FRONTMATTER = {'name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools'}
 
+# Exact historical source files retained at the maintainer's request.
+# These bytes are checked, then excluded from install/package payloads.
+# The repository index is authoritative; this physical copy supports standalone use.
+RETAINED_SOURCE_FONT_SHA256 = {
+    'gongsi-qingkuang/assets/fonts/simfang.ttf': 'fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4',
+    'gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf': '5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904',
+    'gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf': '99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b',
+    'hangye-fenxi/assets/fonts/simfang.ttf': 'fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4',
+    'hangye-fenxi/assets/fonts/方正小标宋简体.ttf': '5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904',
+    'hangye-fenxi/assets/fonts/楷体_GB2312.ttf': '99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b',
+    'meeting-minutes-pro/assets/fonts/simfang.ttf': 'fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4',
+    'meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf': '5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904',
+    'meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf': '99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b',
+    'officialese-skill/assets/fonts/simfang.ttf': 'fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4',
+    'officialese-skill/assets/fonts/方正小标宋简体.ttf': '5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904',
+    'officialese-skill/assets/fonts/楷体_GB2312.ttf': '99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b',
+    'yiti-skill/assets/fonts/simfang.ttf': 'fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4',
+    'yiti-skill/assets/fonts/方正小标宋简体.ttf': '5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904',
+    'yiti-skill/assets/fonts/楷体_GB2312.ttf': '99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b',
+    'zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf': '5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904',
+    'zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf': '99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b',
+    'zhuying-yewu-fenxi/assets/fonts/simfang.ttf': 'fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4'
+}
+
 COMMON_REQUIRED = ('README.md', 'LICENSE', 'NOTICE', 'VERSION', 'SKILL.md', 'agents/openai.yaml', 'references/agent-compatibility.md',
                    'scripts/skill_portability.py')
 INVESTMENT = {
@@ -183,6 +207,7 @@ def is_private(root, rel):
 
 def included_files(root):
     rules = profile(root)
+    name = skill_name(root)
     for path in sorted(root.rglob('*')):
         if path.is_symlink():
             raise ValueError(f'Symlinks are not portable: {path}')
@@ -192,6 +217,12 @@ def included_files(root):
                 or any(fnmatch.fnmatch(path.name, pattern) for pattern in SKIP_NAMES)
                 or posix == 'skill-manifest.json' or _matches(posix, rules.get('exclude', ()))
                 or is_private(root, posix)):
+            continue
+        retained_key = name + '/' + posix
+        expected_font = RETAINED_SOURCE_FONT_SHA256.get(retained_key)
+        if expected_font is not None:
+            if hashlib.sha256(path.read_bytes()).hexdigest() != expected_font:
+                raise ValueError('Retained source font changed: ' + retained_key)
             continue
         yield path
 
@@ -304,8 +335,8 @@ def check(root):
               'installs and ZIPs always use the skill name')
     if record.is_file():
         print('[OK] Package SHA-256 manifest matches')
-    if rules.get('fonts') and not any((root / 'assets/fonts').glob('*.ttf')):
-        print('[INFO] Fonts are not distributed; embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight')
+    if rules.get('fonts'):
+        print('[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight')
     return current
 
 

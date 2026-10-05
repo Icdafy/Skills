@@ -152,24 +152,24 @@
   },
   {
     "old": "gongsi-qingkuang/assets/fonts/simfang.ttf",
-    "new": null,
+    "new": "gongsi-qingkuang/assets/fonts/simfang.ttf",
     "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf",
-    "new": null,
+    "new": "gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf",
     "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf",
-    "new": null,
+    "new": "gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf",
     "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "gongsi-qingkuang/assets/templates/early.json",
@@ -347,24 +347,24 @@
   },
   {
     "old": "hangye-fenxi/assets/fonts/simfang.ttf",
-    "new": null,
+    "new": "hangye-fenxi/assets/fonts/simfang.ttf",
     "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "hangye-fenxi/assets/fonts/方正小标宋简体.ttf",
-    "new": null,
+    "new": "hangye-fenxi/assets/fonts/方正小标宋简体.ttf",
     "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "hangye-fenxi/assets/fonts/楷体_GB2312.ttf",
-    "new": null,
+    "new": "hangye-fenxi/assets/fonts/楷体_GB2312.ttf",
     "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "hangye-fenxi/assets/templates/early.json",
@@ -536,24 +536,24 @@
   },
   {
     "old": "meeting-minutes-pro/assets/fonts/simfang.ttf",
-    "new": null,
+    "new": "meeting-minutes-pro/assets/fonts/simfang.ttf",
     "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf",
-    "new": null,
+    "new": "meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf",
     "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf",
-    "new": null,
+    "new": "meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf",
     "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "meeting-minutes-pro/assets/templates/文件字体格式.doc",
@@ -851,24 +851,24 @@
   },
   {
     "old": "officialese-skill/assets/fonts/simfang.ttf",
-    "new": null,
+    "new": "officialese-skill/assets/fonts/simfang.ttf",
     "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "officialese-skill/assets/fonts/方正小标宋简体.ttf",
-    "new": null,
+    "new": "officialese-skill/assets/fonts/方正小标宋简体.ttf",
     "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "officialese-skill/assets/fonts/楷体_GB2312.ttf",
-    "new": null,
+    "new": "officialese-skill/assets/fonts/楷体_GB2312.ttf",
     "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "officialese-skill/assets/templates/文件字体格式.doc",
@@ -1172,24 +1172,24 @@
   },
   {
     "old": "yiti-skill/assets/fonts/simfang.ttf",
-    "new": null,
+    "new": "yiti-skill/assets/fonts/simfang.ttf",
     "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "yiti-skill/assets/fonts/方正小标宋简体.ttf",
-    "new": null,
+    "new": "yiti-skill/assets/fonts/方正小标宋简体.ttf",
     "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "yiti-skill/assets/fonts/楷体_GB2312.ttf",
-    "new": null,
+    "new": "yiti-skill/assets/fonts/楷体_GB2312.ttf",
     "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "yiti-skill/assets/templates/文件字体格式.doc",
@@ -1283,24 +1283,24 @@
   },
   {
     "old": "zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf",
-    "new": null,
+    "new": "zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf",
     "baseline_sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf",
-    "new": null,
+    "new": "zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf",
     "baseline_sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "zhuying-yewu-fenxi/assets/fonts/simfang.ttf",
-    "new": null,
+    "new": "zhuying-yewu-fenxi/assets/fonts/simfang.ttf",
     "baseline_sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
-    "action": "delete",
-    "reason": "原字体说明禁止公开再分发；保留本机授权字体检测与使用"
+    "action": "retain",
+    "reason": "维护者最新指示保留原main字体；原路径和字节不变，不进入单技能ZIP，授权待决见BLOCKED.md。"
   },
   {
     "old": "zhuying-yewu-fenxi/assets/templates/early.json",

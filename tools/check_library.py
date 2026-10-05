@@ -164,17 +164,37 @@ def check_mapping(root):
 
 def check_distribution(root):
     restricted = json.loads((root / 'docs/validation/baseline/restricted-fonts.json').read_text(encoding='utf-8'))
-    hashes = {f['sha256'] for f in restricted}
+    policy = load_index(root).get('font_policy', {})
+    if (policy.get('retained_source_fonts') != restricted
+            or policy.get('single_skill_zip_fonts') is not False
+            or policy.get('redistribution_authorization_confirmed') is not False):
+        raise ValueError('Source font retention policy differs from baseline or distribution scope')
+    retained = {f['path']: f['sha256'] for f in restricted}
+    if package_skills.portable.RETAINED_SOURCE_FONT_SHA256 != retained:
+        raise ValueError('Standalone font retention contract differs from index')
+    for item in restricted:
+        path = root / item['path']
+        if path.is_symlink() or not path.is_file():
+            raise ValueError('Retained source font missing: ' + item['path'])
+        body = path.read_bytes()
+        if len(body) != item['bytes'] or hashlib.sha256(body).hexdigest() != item['sha256']:
+            raise ValueError('Retained source font changed: ' + item['path'])
+    hashes = set(retained.values())
     findings = []
     scanned = 0
     for path in files(root):
         if path.is_symlink():
             raise ValueError('Symlink in delivered tree: ' + str(path))
-        scan_payload(path.relative_to(root).as_posix(), path.read_bytes(), hashes, findings=findings)
+        label = path.relative_to(root).as_posix()
+        if label in retained:
+            continue  # Only these exact top-level source paths were checked above.
+        scan_payload(label, path.read_bytes(), hashes, findings=findings)
         scanned += 1
     if findings:
         raise ValueError('Restricted font distribution: ' + '; '.join(findings))
-    print(f'[OK] Distribution scan: {scanned} files including ZIP/OOXML/CFB streams; restricted-font hits=0')
+    print(f'[OK] Retained source fonts: {len(retained)} exact paths/SHA-256; unchanged')
+    print(f'[OK] Distribution scan: {scanned} other files including ZIP/OOXML/CFB streams; restricted-font hits=0')
+    print('[INFO] Source font redistribution authorization remains unresolved; see BLOCKED.md. Validation does not certify public licensing.')
 
 
 def main():

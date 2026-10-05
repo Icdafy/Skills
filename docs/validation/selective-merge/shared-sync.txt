@@ -1,0 +1,21 @@
+$ python tools/check_shared_scripts.py --sync
+exit=0
+[一致] scripts/stage_template.py（阶段模板初始化与标题检查）：3 份副本
+[一致] references/stage-template-workflow.md（用户阶段选择及固定模板填空）：3 份副本
+[一致] references/investment-logic-review.md（固定标题下的投资逻辑复核）：3 份副本
+[已同步] scripts/skill_portability.py（跨 Agent 完整性检查、打包与目录安装）
+  已同步（原与基准不一致）：hangye-fenxi/scripts/skill_portability.py
+  已同步（原与基准不一致）：zhuying-yewu-fenxi/scripts/skill_portability.py
+  已同步（原与基准不一致）：officialese-skill/scripts/skill_portability.py
+  已同步（原与基准不一致）：yiti-skill/scripts/skill_portability.py
+  已同步（原与基准不一致）：meeting-minutes-pro/scripts/skill_portability.py
+  已同步（原与基准不一致）：soe-post-investment-report/scripts/skill_portability.py
+[一致] references/agent-compatibility.md（跨 Agent 安装与真实调用验收）：7 份副本
+[一致] scripts/ensure_fonts.py（公文字体检测与用户级安装）：5 份副本
+[一致] requirements.txt（Word 运行依赖）：5 份副本
+[一致] scripts/docx_format_helpers.py（括号片段与附件名称规范化）：4 份副本
+[一致] scripts/build_docx.py（立项报告三技能统一公文渲染器）：3 份副本
+[一致] scripts/embed_fonts.py（公文 DOCX 字体嵌入器（meeting-minutes-pro 版本由 format_spec 驱动，不在此组））：5 份副本
+[一致] scripts/local_fonts.py（只查找本机授权字体；不包含排版规则或字体二进制）：6 份副本
+
+同步完成；请复核改动并一并提交全部副本。

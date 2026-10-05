@@ -6,7 +6,7 @@
       "name_zh": "所属行业分析",
       "category": "立项报告",
       "source": "hangye-fenxi",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "readme": "hangye-fenxi/README.md",
       "archive": "distributions/investment-report-skills/hangye-fenxi.zip",
       "distribution": "investment-report-skills",
@@ -18,14 +18,14 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
     },
     {
       "id": "zhuying-yewu-fenxi",
       "name_zh": "主营业务分析",
       "category": "立项报告",
       "source": "zhuying-yewu-fenxi",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "readme": "zhuying-yewu-fenxi/README.md",
       "archive": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
       "distribution": "investment-report-skills",
@@ -37,14 +37,14 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
     },
     {
       "id": "gongsi-qingkuang",
       "name_zh": "公司情况",
       "category": "立项报告",
       "source": "gongsi-qingkuang",
-      "version": "2.0.1",
+      "version": "2.0.2",
       "readme": "gongsi-qingkuang/README.md",
       "archive": "distributions/investment-report-skills/gongsi-qingkuang.zip",
       "distribution": "investment-report-skills",
@@ -56,14 +56,14 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
     },
     {
       "id": "officialese-skill",
       "name_zh": "国企公文写作与排版",
       "category": "公文与会议",
       "source": "officialese-skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "readme": "officialese-skill/README.md",
       "archive": "distributions/office-skills/officialese-skill.zip",
       "distribution": "office-skills",
@@ -75,14 +75,14 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
     },
     {
       "id": "yiti-skill",
       "name_zh": "投委会议题",
       "category": "公文与会议",
       "source": "yiti-skill",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "readme": "yiti-skill/README.md",
       "archive": "distributions/office-skills/yiti-skill.zip",
       "distribution": "office-skills",
@@ -94,14 +94,14 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
     },
     {
       "id": "meeting-minutes-pro",
       "name_zh": "会议转录与正式纪要",
       "category": "公文与会议",
       "source": "meeting-minutes-pro",
-      "version": "1.0.0",
+      "version": "1.0.1",
       "readme": "meeting-minutes-pro/README.md",
       "archive": "distributions/office-skills/meeting-minutes-pro.zip",
       "distribution": "office-skills",
@@ -115,14 +115,14 @@
         "text_generation": "Codex真实生成及四项检查通过；仅文本draft",
         "asr": "真实FunASR及Qwen0.6B离线推理通过（13.675秒合成语音）；Qwen CUDA失败、CPU通过；真实会议未实测"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
     },
     {
       "id": "soe-post-investment-report",
       "name_zh": "国企股权投资投后报告",
       "category": "投后管理",
       "source": "soe-post-investment-report",
-      "version": "1.5.3",
+      "version": "1.5.4",
       "readme": "soe-post-investment-report/README.md",
       "archive": "distributions/office-skills/soe-post-investment-report.zip",
       "distribution": "office-skills",
@@ -134,7 +134,7 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认，受限字体不分发"
+      "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体"
     }
   ],
   "shared_groups": [
@@ -266,5 +266,121 @@
       ],
       "note": "只查找本机授权字体；不包含排版规则或字体二进制"
     }
-  ]
+  ],
+  "font_policy": {
+    "baseline_commit": "bf6f7d8cfb99265fc55ee45da5ea54150fff876d",
+    "retained_source_fonts": [
+      {
+        "path": "gongsi-qingkuang/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "gongsi-qingkuang/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "gongsi-qingkuang/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "hangye-fenxi/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "hangye-fenxi/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "hangye-fenxi/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "meeting-minutes-pro/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "meeting-minutes-pro/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "meeting-minutes-pro/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "officialese-skill/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "officialese-skill/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "officialese-skill/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "yiti-skill/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      },
+      {
+        "path": "yiti-skill/assets/fonts/方正小标宋简体.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "yiti-skill/assets/fonts/楷体_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "zhuying-yewu-fenxi/assets/fonts/FZXiaoBiaoSongJT.ttf",
+        "sha256": "5b1d10a2543c436df12aa292b05bff59ce6dae1b5351a90892599a7b3fed5904",
+        "bytes": 3806520,
+        "fsType": 2
+      },
+      {
+        "path": "zhuying-yewu-fenxi/assets/fonts/KaiTi_GB2312.ttf",
+        "sha256": "99092cbb0df301625f46509e85854db8685556551742097ab3fbbc2e2ca0778b",
+        "bytes": 4135804,
+        "fsType": 0
+      },
+      {
+        "path": "zhuying-yewu-fenxi/assets/fonts/simfang.ttf",
+        "sha256": "fef7cf991b458cabd184b73378918d9d15429010e1d6c804f08d394395c3c3b4",
+        "bytes": 3996872,
+        "fsType": 0
+      }
+    ],
+    "single_skill_zip_fonts": false,
+    "redistribution_authorization_confirmed": false,
+    "reason": "2026-10-05维护者要求保留原main六技能各三款字体，共18份，路径和字节不变；其他PR内容合并。保留不代表取得字体公开再分发授权。"
+  }
 }

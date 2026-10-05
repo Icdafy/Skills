@@ -25,6 +25,6 @@ Claude Code 使用 `--agent claude-code`。只有 `--apply` 才写入；默认�
 
 Claude Code：`/plugin marketplace add Icdafy/Skills` 后 `/plugin install <英文名>@icdafy-skills`，本次市场 source 已指向 `./<英文名>`。直接复制和市场安装不要重复启用同名技能。
 
-Codex 可用 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<英文名>`；当前 PR 合并前用分支目录安装，main 中的新版内容合并后才生效。旧版仍读取 `$CODEX_HOME/skills` 时选择安装器的 `codex-legacy`，并在真实客户端确认实际路径。
+Codex 可用 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<英文名>`；统一从main安装；单技能ZIP和安装器排除字体，GitHub整库源码下载含原18份历史字体。旧版仍读取 `$CODEX_HOME/skills` 时选择安装器的 `codex-legacy`，并在真实客户端确认实际路径。
 
 Codex 的 `.agents/skills` 与显式 `$<name>`：[官方说明](https://learn.chatgpt.com/docs/build-skills)。Claude Code 的 `.claude/skills` 与 `/<name>`：[官方说明](https://code.claude.com/docs/en/skills)。其他客户端入口在各包共享 compatibility 参考中保留，实际验证程度见 [验证记录](validation.md)。
