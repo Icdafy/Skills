@@ -144,3 +144,9 @@
 - 第3轮后的交付暂存检查 `git diff --cached --check` 实际退出2：新保存的Git差异原始输出含16行单空格的空白上下文行。只调整两份证据的存储格式：原始字节和失败输出以UTF-8/Base64及SHA-256完整保存到*.raw.json，文本可读视图将行末空格显示为␠；已逐字节还原核对。没有改源码、用例、Git空白规则或第3轮原始结果。后续只复核暂存与交付，不开始第4轮。见 [实际退出2原始输出](docs/validation/font-guidance/staged-whitespace-last.raw.json)。
 
 - 证据格式处理后，`git diff --cached --check`实际退出0，保留原退出2并完成红→绿。最终白名单/字体/符号链接/密钥模式审计实际退出0：越界0、跟踪字体0、符号链接0、密钥模式0，main仍为基线；统一校验结果登记后也已实际退出0。仅整理证据和提交记录，无第4轮。见 [最终暂存审计](docs/validation/font-guidance/scope-and-secret-audit.json)及 [空白检查绿输出](docs/validation/font-guidance/staged-whitespace-after-preservation.txt)。
+
+## 第3轮实况已推送，同一草稿PR继续保留未达项
+
+- 单命令公开noreply作者参数的commit实际退出0：`a3e4a64296e71fb86efbb9cc25cce471f4e6c6cd`；正常 `git push origin chore/skills-library-20261005`退出0，无强推。只推受测的字体资源说明、六包及第3轮证据。
+- `gh pr edit 12 --repo Icdafy/Skills --body-file ../pr-flat-layout-body.md`退出0；PR #12亲读仍OPEN/DRAFT，远端分支等于上述提交，main仍为bf6f7d8基线，reviews/comments为空。见 [实际交付核对](docs/validation/font-guidance/published-followup.json)。最终只补本段交付回执和输出文件，不修改实现。
+- 第3轮12命令全绿、原375及唯一既有环境跳过、另13项通过、最终7包独立运行和四项红→绿已交付。B2严格首轮四问仍未通过，B3维护者最终浏览仍无确认；整项goal未完成，不自动合并，不重复模型/ASR或运行第4轮。

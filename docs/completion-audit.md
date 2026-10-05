@@ -38,6 +38,6 @@
 | 不改main/权限/历史/强推/旧发布 | 已证实本次操作 | [普通分支push和草稿PR；remote main持续bf6f7d8，未执行禁止动作；用户旧工作区未改](../PROGRESS.md) |
 | 失败3次换独立项、最多3轮验收 | 已证实 | [投后三例失败后停止；完整轮1/2/3均有原输出，满3后只记录/提交，不继续修实现](../PROGRESS.md) |
 | 维护者最后浏览首页/7README/维护说明 | 缺少证据 | [已收到布局反馈并落实；最新最终浏览请求未收到答复，GitHub reviews/comments为空](../BLOCKED.md) |
-| PR/分支或补丁、交付记录与BLOCKED | 已交付并更新中 | [同一草稿PR #12/独立分支，后续只推送本轮受测实况和验证记录；不自动合并](../PROGRESS.md) |
+| PR/分支或补丁、交付记录与BLOCKED | 已交付 | [本轮实况已普通push同一草稿PR #12；亲读OPEN/DRAFT、分支一致及main原基线；只补交付回执，不自动合并](validation/font-guidance/published-followup.json) |
 
 结构化记录与goal阻塞轮次见 [审计JSON](validation/completion-audit.json)。当前已观测两个goal轮出现同一B2/B3，不能现在提前置blocked；下一连续goal轮仍无外部变化且无法继续时按规则置blocked。

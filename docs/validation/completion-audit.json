@@ -197,9 +197,9 @@
     },
     {
       "requirement": "PR/分支或补丁、交付记录与BLOCKED",
-      "status": "已交付并更新中",
-      "evidence": "../PROGRESS.md",
-      "finding": "同一草稿PR #12/独立分支，后续只推送本轮受测实况和验证记录；不自动合并"
+      "status": "已交付",
+      "evidence": "validation/font-guidance/published-followup.json",
+      "finding": "本轮实况已普通push同一草稿PR #12；亲读OPEN/DRAFT、分支一致及main原基线；只补交付回执，不自动合并"
     }
   ],
   "unmet": [
