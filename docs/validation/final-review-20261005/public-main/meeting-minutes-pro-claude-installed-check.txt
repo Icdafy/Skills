@@ -1,0 +1,5 @@
+$ python "C:\Users\30649\AppData\Local\Temp\GitHub 最终复查 中文 空格 ua72tz3t\Claude 项目 安装 meeting-minutes-pro\.claude\skills\meeting-minutes-pro\scripts\skill_portability.py" check
+exit=0
+[OK] meeting-minutes-pro: metadata, resources and links (57 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight

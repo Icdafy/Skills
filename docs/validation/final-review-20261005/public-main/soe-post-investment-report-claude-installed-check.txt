@@ -1,0 +1,4 @@
+$ python "C:\Users\30649\AppData\Local\Temp\GitHub 最终复查 中文 空格 ua72tz3t\Claude 项目 安装 soe-post-investment-report\.claude\skills\soe-post-investment-report\scripts\skill_portability.py" check
+exit=0
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] Package SHA-256 manifest matches

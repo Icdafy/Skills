@@ -203,3 +203,7 @@
 
 - `python work/run_final_review_acceptance.py`实际退出0：12条命令全部exit0，原375仍374通过/原WinError1314跳过1，另17项全部通过。`python work/verify_final_review_distribution.py`实际退出0：七包外部运行/安装/备份通过，六项红1→绿0，57条符合预期，仅yiti单独升级其他六包不变。
 - `python work/check_final_environment.py`实际退出0：七技能本机字体只读检测均exit0、现有纪要运行时check exit0，未安装或推理。亲读首页/七项用途说明/维护页后修正的两类滞后说明已与实际一致；真实客户端/语音复用有范围的历史证据，B2/B3/B4保留。[最后复查页](docs/validation/final-review-20261005/README.md)。
+
+- 发布后`python work/verify_final_public_main.py`实际退出0：从公开GitHub重新浅克隆main（`356c48a71b2c4e0f9d0b98799c273833e460f2cd`），克隆统一校验exit0、18原字体摘要保持；七个README公开下载地址HTTP200，下载字节等于新克隆源码及本地ZIP，7/7再次仓库外smoke exit0。另验证7项Claude项目目录安装与安装后检查exit0；Claude模型仍未实测，不混淆。只main，克隆检查后干净，临时目录安全清理。见[在线main结果](docs/validation/final-review-20261005/public-main/summary.json)。
+
+- `python work/publish_final_review.py`实际退出0：当前统一校验/暂存差异exit0，普通commit与push均exit0，公开main为`356c48a71b2c4e0f9d0b98799c273833e460f2cd`；未建新分支，保留仅main。`python work/verify_final_public_main.py`实际退出0，公开新克隆、7HTTP下载、7外部smoke、7Claude目录安装与安装后检查全绿。本次源码/资源完整性复查完成；原goal的真实客户端首轮/人工确认/字体许可未达仍如实保留。最后仅普通提交公开入口证据，不再改源码、版本或包。

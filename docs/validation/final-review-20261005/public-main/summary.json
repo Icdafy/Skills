@@ -1,0 +1,367 @@
+{
+  "checked_at": "2026-10-05T12:48:27.445199+00:00",
+  "main_commit": "356c48a71b2c4e0f9d0b98799c273833e460f2cd",
+  "remote_branches": [
+    "main"
+  ],
+  "fresh_public_clone_verified": true,
+  "original_font_files_unchanged": 18,
+  "downloads": [
+    {
+      "skill": "hangye-fenxi",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/hangye-fenxi.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/investment-report-skills/hangye-fenxi.zip",
+      "http_status": 200,
+      "bytes": 167529,
+      "sha256": "191b269b2d302f6ccabdb27f74c25a1f8a40b89258de2ae5a3f4568effc9ee61",
+      "version": "1.0.2"
+    },
+    {
+      "skill": "zhuying-yewu-fenxi",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
+      "http_status": 200,
+      "bytes": 132729,
+      "sha256": "cfe5a386185f9711fad0a0edee8278d696fc78549691140cd4d65d24f2f6b038",
+      "version": "1.0.2"
+    },
+    {
+      "skill": "gongsi-qingkuang",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/investment-report-skills/gongsi-qingkuang.zip",
+      "http_status": 200,
+      "bytes": 169397,
+      "sha256": "f8907e5120be86b8c8d7cbd5cd95484a381269a3fff7acb8deceb53485ee088e",
+      "version": "2.0.3"
+    },
+    {
+      "skill": "officialese-skill",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/officialese-skill.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/office-skills/officialese-skill.zip",
+      "http_status": 200,
+      "bytes": 75141,
+      "sha256": "88f7736206f87685215b36f1f5986ff2336058b56394e46f8a528e8f779bab3e",
+      "version": "1.0.2"
+    },
+    {
+      "skill": "yiti-skill",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/yiti-skill.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/office-skills/yiti-skill.zip",
+      "http_status": 200,
+      "bytes": 99073,
+      "sha256": "3a9838468cf0203e8ac4a5fd4add1f615d7137ae3e37fedee16d50d7fdb7cf0d",
+      "version": "1.0.2"
+    },
+    {
+      "skill": "meeting-minutes-pro",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip",
+      "http_status": 200,
+      "bytes": 236195,
+      "sha256": "0371c9dd55fa6e1d84115a1e215251dbed476ae6a77ed795cac441db9dc78057",
+      "version": "1.0.2"
+    },
+    {
+      "skill": "soe-post-investment-report",
+      "url": "https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip",
+      "final_url": "https://raw.githubusercontent.com/Icdafy/Skills/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip",
+      "http_status": 200,
+      "bytes": 488647,
+      "sha256": "349be86a62dd30932ae5414db0a25facc5ba32822384d70c5ec69d17525bd6f0",
+      "version": "1.5.5"
+    }
+  ],
+  "downloaded_zip_smokes": 7,
+  "claude_directory_installs": 7,
+  "claude_model_invocations": 0,
+  "new_codex_model_invocations": 0,
+  "results": [
+    {
+      "label": "remote-branches",
+      "command": [
+        "gh",
+        "api",
+        "repos/Icdafy/Skills/branches"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "fresh-public-clone",
+      "command": [
+        "git",
+        "clone",
+        "--quiet",
+        "--depth",
+        "1",
+        "--single-branch",
+        "--branch",
+        "main",
+        "https://github.com/Icdafy/Skills.git",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\在线 main 源码"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "fresh-clone-library",
+      "command": [
+        "python",
+        "tools/check_library.py"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "hangye-fenxi-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\hangye-fenxi\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "hangye-fenxi-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\hangye-fenxi\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 hangye-fenxi",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "hangye-fenxi-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 hangye-fenxi\\.claude\\skills\\hangye-fenxi\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "zhuying-yewu-fenxi-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\zhuying-yewu-fenxi\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "zhuying-yewu-fenxi-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\zhuying-yewu-fenxi\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 zhuying-yewu-fenxi",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "zhuying-yewu-fenxi-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 zhuying-yewu-fenxi\\.claude\\skills\\zhuying-yewu-fenxi\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "gongsi-qingkuang-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\gongsi-qingkuang\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "gongsi-qingkuang-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\gongsi-qingkuang\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 gongsi-qingkuang",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "gongsi-qingkuang-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 gongsi-qingkuang\\.claude\\skills\\gongsi-qingkuang\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "officialese-skill-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\officialese-skill\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "officialese-skill-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\officialese-skill\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 officialese-skill",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "officialese-skill-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 officialese-skill\\.claude\\skills\\officialese-skill\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "yiti-skill-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\yiti-skill\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "yiti-skill-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\yiti-skill\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 yiti-skill",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "yiti-skill-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 yiti-skill\\.claude\\skills\\yiti-skill\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "meeting-minutes-pro-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\meeting-minutes-pro\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "meeting-minutes-pro-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\meeting-minutes-pro\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 meeting-minutes-pro",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "meeting-minutes-pro-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 meeting-minutes-pro\\.claude\\skills\\meeting-minutes-pro\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "soe-post-investment-report-public-smoke",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\soe-post-investment-report\\scripts\\skill_portability.py",
+        "check",
+        "--smoke"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "soe-post-investment-report-claude-directory-install",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\公开 下载独立包\\soe-post-investment-report\\scripts\\skill_portability.py",
+        "install",
+        "--agent",
+        "claude-code",
+        "--scope",
+        "project",
+        "--project-dir",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 soe-post-investment-report",
+        "--apply"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "soe-post-investment-report-claude-installed-check",
+      "command": [
+        "python",
+        "C:\\Users\\30649\\AppData\\Local\\Temp\\GitHub 最终复查 中文 空格 ua72tz3t\\Claude 项目 安装 soe-post-investment-report\\.claude\\skills\\soe-post-investment-report\\scripts\\skill_portability.py",
+        "check"
+      ],
+      "exit": 0
+    },
+    {
+      "label": "clone-clean-after-checks",
+      "command": [
+        "git",
+        "status",
+        "--porcelain"
+      ],
+      "exit": 0
+    }
+  ]
+}
