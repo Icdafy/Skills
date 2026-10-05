@@ -15,7 +15,7 @@
 
 | 项目 | 状态 | 证据 |
 |---|---|---|
-| 1. 盘点、索引及迁移 | 最新布局已调整 | [237 个文件映射](docs/migration-map.json)；按维护者最新反馈，7个唯一技能目录直接放在仓库根目录，19个删除均列理由 |
+| 1. 盘点、索引及迁移 | 已完成，最新布局已验证 | [237 个文件映射](docs/migration-map.json)；按维护者最新反馈，7个唯一技能目录直接放在仓库根目录，19个删除均列理由 |
 | 2. 安装、打包、插件、README 入口 | 已完成 | 7 项 README、独立 LICENSE/NOTICE/VERSION；索引生成首页和市场，中央资源/链接检查已跑通 |
 | 3. 单技能升级及维护说明 | 已完成 | [维护说明](docs/maintenance.md)；临时副本只改 yiti 后，重建仅改变其 ZIP，其他六个摘要保持不变 |
 | 4. 许可和受限字体 | 已完成 | 维护者素材授权确认；18 字体移除；递归分发扫描命中 0，LICENSE 与 NOTICE 随单包 |
@@ -109,3 +109,9 @@
 - 四项新版反向输出均为真实红1→绿0：缺资源 `Missing resources: references/template-early.md`；错误插件 `Marketplace differs from index/source metadata`；旧ZIP `yiti-skill: ZIP is stale; rebuild`；字体摘要回流 `Restricted font distribution: yiti-skill/assets/fonts/reintroduced.bin`。新版53条分发/安装/反向命令全部符合预期。
 
 - 最终目录反馈说明回填后，统一校验、暂存diff --check和白名单/字体/符号链接/密钥模式审计实际均退出0。暂存审计越界0、跟踪受限字体0、符号链接0、密钥模式0，main仍为基线；见 [审计](docs/validation/flat-layout/scope-and-secret-audit.json)。准备带已确认公开noreply作者参数提交并正常push原分支，更新既有PR #12；未重新跑模型，未用文档检查冒充第3轮。
+
+## 根目录反馈已提交到原PR
+
+- 单命令公开noreply作者参数的 `git commit` 退出0：`651501ea925d58c1974efff6b7c9e5895c625061`。`git push origin chore/skills-library-20261005`退出0，无强推。
+- `gh pr edit 12 --repo Icdafy/Skills --title ... --body-file ...`退出0；[PR #12](https://github.com/Icdafy/Skills/pull/12)已更新为根目录七项技能的最终实现描述，仍OPEN/DRAFT。GitHub内容API亲读确认七个技能目录直接列在分支根目录；没有skills/源码容器。main远端仍为bf6f7d8基线，未合并。
+- 已再次请求维护者对修改后的首页、七项README和maintenance.md做最终浏览；问题说明这是原任务书要求，自动检查不能替代。未收到结果前保留待确认；Codex严格四问失败继续留在BLOCKED.md，未宣布整项goal完成。
