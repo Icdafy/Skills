@@ -17,7 +17,7 @@ def load_index(repo=REPO):
         if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', name) or name in seen:
             raise ValueError(f'Duplicate or invalid skill ID: {name}')
         seen.add(name)
-        if entry['source'] != 'skills/' + name:
+        if entry['source'] != name:
             raise ValueError(f'Incorrect index source path: {name}')
         for key in ('source', 'readme', 'archive'):
             path = (repo / entry[key]).resolve()

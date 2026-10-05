@@ -155,7 +155,7 @@ def check_mapping(root):
             raise ValueError('Migrated file missing: ' + str(entry['new']))
         if entry['old'].split('/')[0] in {'tools', 'distributions', '.claude-plugin'}:
             continue
-        if entry['action'] != 'delete' and entry['new'].startswith('skills/') and (root / entry['old']).exists():
+        if entry['action'] != 'delete' and entry['new'] != entry['old'] and (root / entry['old']).exists():
             raise ValueError('Duplicate legacy source: ' + entry['old'])
     if any(Path(e['old']).suffix.lower() not in FONT_SUFFIXES and e['old'] != 'Skills军团' for e in deleted):
         raise ValueError('Deletion exceeds permitted font/placeholder scope')

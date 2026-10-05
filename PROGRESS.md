@@ -15,14 +15,20 @@
 
 | 项目 | 状态 | 证据 |
 |---|---|---|
-| 1. 盘点、索引及迁移 | 已完成 | [237 个文件映射](docs/migration-map.json)；7 个源码根目录移入 skills/，19 个删除均列理由 |
+| 1. 盘点、索引及迁移 | 最新布局已调整 | [237 个文件映射](docs/migration-map.json)；按维护者最新反馈，7个唯一技能目录直接放在仓库根目录，19个删除均列理由 |
 | 2. 安装、打包、插件、README 入口 | 已完成 | 7 项 README、独立 LICENSE/NOTICE/VERSION；索引生成首页和市场，中央资源/链接检查已跑通 |
 | 3. 单技能升级及维护说明 | 已完成 | [维护说明](docs/maintenance.md)；临时副本只改 yiti 后，重建仅改变其 ZIP，其他六个摘要保持不变 |
 | 4. 许可和受限字体 | 已完成 | 维护者素材授权确认；18 字体移除；递归分发扫描命中 0，LICENSE 与 NOTICE 随单包 |
 | 5. 原测试、仓库外安装、客户端、反向验收 | 已执行；严格四问未通过，人工抽查待完成 | [实际验证](docs/validation.md)、[未达项](BLOCKED.md) |
 | 独立分支、提交和 PR | 已交付草稿PR；未合并 | [PR #12](https://github.com/Icdafy/Skills/pull/12) |
 
-完整验收轮次：1 / 3；第1轮全绿。局部检查不当作完整验收；每轮必须记录全部命令及结果。
+完整验收轮次：2 / 3；第1、2轮均全绿。局部检查不当作完整验收；每轮必须记录全部命令及结果。
+
+## 最新反馈：七技能放回仓库根目录
+
+- 维护者浏览草稿PR后提出：希望全部技能直接列在 `Icdafy/Skills` 后，不整合到同一个 skills 文件夹。按此最新要求，七项唯一源码改为 `<仓库>/<原英文技能名>/`；覆盖任务书原先的 `skills/<英文名>/` 布局决定。
+- 同步索引、插件、中文首页、七项README、维护/安装说明及测试定位；客户端 `.agents/skills`、`.claude/skills` 安装目录和 ZIP 名称不变。只移动源码路径，不扩写业务规则。
+- 已完成目录调整及第2轮完整验收；新版包的仓库外安装/反向检查已通过，第1轮原始证据保留。最终浏览是收到布局修改意见，尚不能记为全部抽查通过。Codex严格四问未通过记录继续保留。
 
 ## 盘点与迁移完成
 
@@ -88,3 +94,18 @@
 - `git push -u origin chore/skills-library-20261005`退出0；`gh pr create --draft --base main --head chore/skills-library-20261005 --body-file ...`退出0：[PR #12](https://github.com/Icdafy/Skills/pull/12)。已附到当前任务，不自动合并；main仍为原基线。
 - 最后浏览抽查已通过异步问题请求维护者，尚未收到结果。另一个未达条件为Codex严格首轮只四问3/3失败；源规则冻结保留。这是可审查交付，不宣称整项goal完成。
 - 中断后不重复原375测试、21次模型会话或ASR推理；先看BLOCKED.md。只有新变化、失败或待决事项得到解决时才续做受影响验证；完整验收轮数仍为1/3。
+
+- `python work/flatten_layout.py`（仓库外临时脚本）完成七次 `git mv skills/<英文名> <英文名>`，均退出0；安全删除空容器目录。索引和237个原文件映射改为根目录去向，19个已说明删除保持不变。旧测试只恢复路径定位；字体正负测试只改定位。源码内容/业务规则未扩写，路径记录见 [moves.json](docs/validation/flat-layout/moves.json)。入口同步和验收尚待执行。
+
+- 根目录布局准备检查全部退出0：七个SKILL.md及其非README/CHANGELOG配套内容与上一提交等价，保留原客户端和ASR证据并说明其安装路径未变；冻结审计原375名/断言及15素材/8渲染器通过。索引生成首页、下载说明及根目录插件source后，以七个明确 `--skill` 重建此次受影响七包。实际命令见 [preparation.json](docs/validation/flat-layout/preparation.json)；下一步第2轮完整验收。
+
+- `python work/verify_flat_distribution.py` 实际退出0：新版7ZIP仓库外中文空格路径烟测、七项项目安装/预览不写、额外文件默认停止与replace备份、纪要私有术语保留均通过。四故障各退出1，精确恢复后各退出0；单技能重建只有yiti ZIP摘要改变，其他六个不变。全部实际命令见 [根目录分发摘要](docs/validation/flat-layout/distribution/summary.json)。
+
+## 第2轮根目录布局验收已通过
+
+- `python work/run_acceptance.py 2`（仓库外临时脚本）实际退出0，12个验收命令全部退出0；五组仍为50、258、56、8、3，共375，374通过、原WinError1314文件符号链接用例跳过1项。新增13项正负资源契约测试通过；无新增skip/todo，冻结审计已核对原名与断言。见 [第2轮实际输出](docs/validation/round-2/summary.json)。完整验收轮数2/3。
+- 本轮共享11组、首页/索引/插件、七包校验、旧打包入口、统一校验及git diff --check全部退出0。七技能直接在根目录，skills/旧容器不存在；237个原文件映射保留，删除仍限原19项。
+- 当前路径 `python meeting-minutes-pro/scripts/bootstrap_runtime.py --check` 亲跑退出0，发现原F盘运行时及两个已有引擎。此次不重复模型或ASR调用，不新增下载；214个非README/CHANGELOG文件与上一提交等价，7个SKILL.md未变，原客户端项目安装目录未变，历史真实调用证据继续适用且失败项保留。见 [内容等价](docs/validation/flat-layout/source-content-equivalence.json)及 [运行时检查](docs/validation/flat-layout/runtime-check.txt)。
+- 四项新版反向输出均为真实红1→绿0：缺资源 `Missing resources: references/template-early.md`；错误插件 `Marketplace differs from index/source metadata`；旧ZIP `yiti-skill: ZIP is stale; rebuild`；字体摘要回流 `Restricted font distribution: yiti-skill/assets/fonts/reintroduced.bin`。新版53条分发/安装/反向命令全部符合预期。
+
+- 最终目录反馈说明回填后，统一校验、暂存diff --check和白名单/字体/符号链接/密钥模式审计实际均退出0。暂存审计越界0、跟踪受限字体0、符号链接0、密钥模式0，main仍为基线；见 [审计](docs/validation/flat-layout/scope-and-secret-audit.json)。准备带已确认公开noreply作者参数提交并正常push原分支，更新既有PR #12；未重新跑模型，未用文档检查冒充第3轮。

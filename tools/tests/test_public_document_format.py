@@ -12,7 +12,7 @@ from docx.enum.text import WD_LINE_SPACING, WD_ALIGN_PARAGRAPH
 from docx.oxml.ns import qn
 from docx.shared import Pt
 
-REPO = Path(__file__).resolve().parents[2] / 'skills'
+REPO = Path(__file__).resolve().parents[2]
 SKILLS = ('gongsi-qingkuang', 'hangye-fenxi', 'zhuying-yewu-fenxi')
 
 

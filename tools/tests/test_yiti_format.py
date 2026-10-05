@@ -9,7 +9,7 @@ import unittest
 from docx import Document
 from docx.oxml.ns import qn
 
-REPO = Path(__file__).resolve().parents[2] / 'skills'
+REPO = Path(__file__).resolve().parents[2]
 SKILL = REPO / 'yiti-skill'
 GENERATOR = SKILL / 'scripts/create_yiti_docx.py'
 CHECKER = SKILL / 'scripts/check_yiti_text.py'

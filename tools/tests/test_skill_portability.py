@@ -13,7 +13,7 @@ import unittest
 from unittest.mock import patch
 import zipfile
 
-REPO = Path(__file__).resolve().parents[2] / 'skills'
+REPO = Path(__file__).resolve().parents[2]
 INVESTMENT = ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang')
 SKILLS = INVESTMENT + ('officialese-skill', 'yiti-skill', 'meeting-minutes-pro', 'soe-post-investment-report')
 spec = importlib.util.spec_from_file_location(
@@ -187,12 +187,12 @@ class SkillPortabilityTests(unittest.TestCase):
                     portable.metadata(skill)
 
     def test_claude_code_marketplace_lists_every_skill(self):
-        marketplace = json.loads((REPO.parent / '.claude-plugin/marketplace.json').read_text(encoding='utf-8'))
+        marketplace = json.loads((REPO / '.claude-plugin/marketplace.json').read_text(encoding='utf-8'))
         plugins = {plugin['name']: plugin for plugin in marketplace['plugins']}
         self.assertEqual(set(plugins), set(SKILLS))
         for skill, plugin in plugins.items():
             with self.subTest(skill=skill):
-                self.assertEqual(plugin['source'], './skills/' + skill)
+                self.assertEqual(plugin['source'], './' + skill)
                 self.assertEqual(plugin['skills'], ['./'])
                 self.assertFalse(plugin['strict'])
                 self.assertEqual(plugin['description'], portable.metadata(REPO / skill)['description'])

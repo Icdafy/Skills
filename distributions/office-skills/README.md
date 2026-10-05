@@ -7,15 +7,15 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企公文写作与排版（`officialese-skill`） | [源码](../../skills/officialese-skill/) | [README](../../skills/officialese-skill/README.md) | [ZIP](officialese-skill.zip) | 1.0.0 |
-| 投委会议题（`yiti-skill`） | [源码](../../skills/yiti-skill/) | [README](../../skills/yiti-skill/README.md) | [ZIP](yiti-skill.zip) | 1.0.0 |
-| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](../../skills/meeting-minutes-pro/) | [README](../../skills/meeting-minutes-pro/README.md) | [ZIP](meeting-minutes-pro.zip) | 1.0.0 |
+| 国企公文写作与排版（`officialese-skill`） | [源码](../../officialese-skill/) | [README](../../officialese-skill/README.md) | [ZIP](officialese-skill.zip) | 1.0.0 |
+| 投委会议题（`yiti-skill`） | [源码](../../yiti-skill/) | [README](../../yiti-skill/README.md) | [ZIP](yiti-skill.zip) | 1.0.0 |
+| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](../../meeting-minutes-pro/) | [README](../../meeting-minutes-pro/README.md) | [ZIP](meeting-minutes-pro.zip) | 1.0.0 |
 
 ### 投后管理
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](../../skills/soe-post-investment-report/) | [README](../../skills/soe-post-investment-report/README.md) | [ZIP](soe-post-investment-report.zip) | 1.5.3 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](../../soe-post-investment-report/) | [README](../../soe-post-investment-report/README.md) | [ZIP](soe-post-investment-report.zip) | 1.5.3 |
 <!-- skills:end -->
 
 解压后在技能根运行 `python scripts/skill_portability.py check --smoke`；按各 README 安装所需依赖及本机授权字体，使用项目目录安装后新建会话验证。下载包结构检查不能代替客户端模型调用。

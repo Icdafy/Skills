@@ -37,7 +37,7 @@ def tearDownModule():
     FONT_FIXTURE.__exit__()
 
 
-REPO = Path(__file__).resolve().parents[2] / 'skills'
+REPO = Path(__file__).resolve().parents[2]
 SKILLS = ("gongsi-qingkuang", "hangye-fenxi", "zhuying-yewu-fenxi",
           "officialese-skill", "yiti-skill")
 
@@ -209,7 +209,7 @@ class GeneratorEmbeddingTests(unittest.TestCase):
 class SharedScriptConsistencyTests(unittest.TestCase):
     def test_shared_copies_are_identical(self) -> None:
         proc = subprocess.run(
-            [sys.executable, str(REPO.parent / "tools" / "check_shared_scripts.py")],
+            [sys.executable, str(REPO / "tools" / "check_shared_scripts.py")],
             capture_output=True, text=True, encoding="utf-8", errors="replace")
         self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
 

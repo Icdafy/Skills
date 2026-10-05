@@ -1,6 +1,6 @@
-# 安装、更新和旧路径迁移
+# 安装与旧版更新
 
-技能英文名称和安装后目录名不变；整库源码从 `<仓库>/<英文名>/` 移到 `<仓库>/skills/<英文名>/`。旧 GitHub `tree/main/<英文名>` 改为 `tree/main/skills/<英文名>`。ZIP 下载目录及文件名不变，旧已安装技能不会自动更新。
+七项技能直接放在仓库根目录 `<仓库>/<英文名>/`，GitHub 地址沿用 `tree/main/<英文名>`。安装后的英文目录名、ZIP 下载目录及文件名不变，旧已安装技能不会自动更新。若使用过本PR早期的 `skills/<英文名>/` 路径，请改为根目录 `<英文名>/`；仓库只保留这一份源码。
 
 ## 单技能安装
 
@@ -23,8 +23,8 @@ Claude Code 使用 `--agent claude-code`。只有 `--apply` 才写入；默认�
 
 ## 插件市场与旧安装
 
-Claude Code：`/plugin marketplace add Icdafy/Skills` 后 `/plugin install <英文名>@icdafy-skills`，本次市场 source 已指向 `./skills/<英文名>`。直接复制和市场安装不要重复启用同名技能。
+Claude Code：`/plugin marketplace add Icdafy/Skills` 后 `/plugin install <英文名>@icdafy-skills`，本次市场 source 已指向 `./<英文名>`。直接复制和市场安装不要重复启用同名技能。
 
-Codex 可用 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/skills/<英文名>`；当前 PR 合并前用分支目录安装，新 main 链接合并后才生效。旧版仍读取 `$CODEX_HOME/skills` 时选择安装器的 `codex-legacy`，并在真实客户端确认实际路径。
+Codex 可用 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<英文名>`；当前 PR 合并前用分支目录安装，main 中的新版内容合并后才生效。旧版仍读取 `$CODEX_HOME/skills` 时选择安装器的 `codex-legacy`，并在真实客户端确认实际路径。
 
 Codex 的 `.agents/skills` 与显式 `$<name>`：[官方说明](https://learn.chatgpt.com/docs/build-skills)。Claude Code 的 `.claude/skills` 与 `/<name>`：[官方说明](https://code.claude.com/docs/en/skills)。其他客户端入口在各包共享 compatibility 参考中保留，实际验证程度见 [验证记录](validation.md)。

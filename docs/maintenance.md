@@ -1,6 +1,6 @@
 # 维护与精准升级
 
-唯一源码位于 `skills/<英文名>/`，集合、路径、版本、分发目录和共享组统一定义在 `skills-index.json`。不编辑解压出的 ZIP 或旧顶层路径；不把 tools/、distributions/、插件配置当技能。
+七项唯一源码直接位于仓库根目录 `<英文名>/`，集合、路径、版本、分发目录和共享组统一定义在 `skills-index.json`。在各英文技能目录改源码，不编辑解压出的 ZIP；不把 tools/、distributions/、插件配置当技能。
 
 ## 改哪份 → 同步什么 → 验证 → 打哪个包
 
@@ -9,13 +9,13 @@
 3. `python tools/sync_catalog.py` 从索引更新中文首页、下载说明及插件市场；`--check` 只校验，不改文件。
 4. 跑受影响测试及各技能 `scripts/skill_portability.py check --smoke`。共享排版脚本变化时还需原五组完整回归和实际字体渲染证据；元数据/包检查不能充当模型调用证据。
 5. `python tools/package_skills.py --skill <英文名>` 只重建该技能 ZIP 和 SHA-256；重复 `--skill` 处理多个成员。`python tools/package_skills.py --check` 检查全部 ZIP 及逐文件 manifest。
-6. 验证通过后在独立分支提交、发可审查 PR。main 首页和新安装地址在合并后生效，不自动合并。
+6. 验证通过后在独立分支提交、发可审查 PR。main 首页和新版技能内容在合并后生效，不自动合并。
 
 共享组的文件、基准、成员以 [索引](../skills-index.json) 的 `shared_groups` 为准。原十组保留，新增 `local_fonts.py` 第十一组只负责本机字体查找。`meeting-minutes-pro/scripts/embed_fonts.py` 由自己的 format_spec.py 驱动，明确不属于五技能 embed_fonts 同步组；不得用其他技能的字体脚本覆盖它。
 
 ## 单技能例子
 
-修改 `skills/yiti-skill/references/writing-logic.md` 后，在库根运行：
+修改 `yiti-skill/references/writing-logic.md` 后，在库根运行：
 
 ```powershell
 python tools/sync_catalog.py
@@ -30,10 +30,10 @@ python tools/package_skills.py --check
 
 ```powershell
 python -m unittest discover -s tools/tests
-python -m unittest discover -s skills/meeting-minutes-pro/tests
-python -m unittest discover -s skills/soe-post-investment-report/tests
-python -m unittest discover -s skills/gongsi-qingkuang/evals
-python -m unittest discover -s skills/officialese-skill/scripts -p test_create_official_docx.py
+python -m unittest discover -s meeting-minutes-pro/tests
+python -m unittest discover -s soe-post-investment-report/tests
+python -m unittest discover -s gongsi-qingkuang/evals
+python -m unittest discover -s officialese-skill/scripts -p test_create_official_docx.py
 python tools/check_shared_scripts.py
 python tools/package_skills.py --check
 git diff --check

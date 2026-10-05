@@ -1,0 +1,3 @@
+$ python C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\staged_flat_audit.py
+exit=0
+{"staged_changed_paths": 574, "allowed_scope_passed": true, "outside_scope": [], "tracked_fonts": [], "tracked_symlinks": [], "secret_patterns": [], "main_unchanged": true}

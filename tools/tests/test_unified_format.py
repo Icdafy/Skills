@@ -22,7 +22,7 @@ from docx import Document
 from docx.enum.text import WD_LINE_SPACING
 from docx.oxml.ns import qn
 
-REPO = Path(__file__).resolve().parents[2] / 'skills'
+REPO = Path(__file__).resolve().parents[2]
 
 TITLE = "关于测试事项（2026年）的报告"
 H1, H2, H3 = "一、总体情况", "（一）基本信息", "1.经营情况"

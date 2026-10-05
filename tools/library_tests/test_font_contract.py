@@ -17,7 +17,7 @@ from test_sibling_docx_skills import BUILDERS, embedded_entries
 
 
 def load(name):
-    path = REPO / 'skills' / name / 'scripts/embed_fonts.py'
+    path = REPO / name / 'scripts/embed_fonts.py'
     spec = importlib.util.spec_from_file_location('contract_' + name.replace('-', '_'), path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -145,7 +145,7 @@ class FontContractPairs(unittest.TestCase):
         source = self.output / '纪要.txt'
         source.write_text('示例会议纪要\n\n　　一、会议基本情况\n　　会议时间：2026年10月5日。\n'
                           '　　会议地点：会议室。\n\n　　二、会议主要内容\n　　公司介绍项目进展。\n', encoding='utf-8')
-        args = [sys.executable, str(REPO / 'skills/meeting-minutes-pro/scripts/create_minutes_docx.py'),
+        args = [sys.executable, str(REPO / 'meeting-minutes-pro/scripts/create_minutes_docx.py'),
                 '--input', str(source), '--output', str(self.output / 'minutes.docx'), '--mode', 'minutes']
         result = subprocess.run(args, capture_output=True, encoding='utf-8')
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)

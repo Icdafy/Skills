@@ -12,11 +12,11 @@
 
 | 原文件/素材范围 | 来源记录 | SHA-256 或盘点 | 分发许可依据 |
 |---|---|---|---|
-| `skills/meeting-minutes-pro/assets/templates/文件字体格式.doc` | 6149206 2026-07-15 Kuangdi Liu | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
-| `skills/officialese-skill/assets/templates/文件字体格式.doc` | c414f96 2026-06-08 Kuangdi Liu | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
-| `skills/soe-post-investment-report/assets/preview.png` | b6b129d 2026-08-30 Kuangdi Liu | `b0e9abb903238ac8d5964ab57ae7844f4db3938eac7450e73d08007332908ae5` | 维护者确认有权授权，Apache-2.0 |
-| `skills/soe-post-investment-report/assets/reference-template.docx` | 65e0d90 2026-09-02 Kuangdi Liu | `4165afc2cb84cf81899b8d59c0e984ac035cf498fa9726b20047beba573b2790` | 维护者确认有权授权，Apache-2.0 |
-| `skills/yiti-skill/assets/templates/文件字体格式.doc` | beee0c1 2026-07-13 Icdafy | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
+| `meeting-minutes-pro/assets/templates/文件字体格式.doc` | 6149206 2026-07-15 Kuangdi Liu | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
+| `officialese-skill/assets/templates/文件字体格式.doc` | c414f96 2026-06-08 Kuangdi Liu | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
+| `soe-post-investment-report/assets/preview.png` | b6b129d 2026-08-30 Kuangdi Liu | `b0e9abb903238ac8d5964ab57ae7844f4db3938eac7450e73d08007332908ae5` | 维护者确认有权授权，Apache-2.0 |
+| `soe-post-investment-report/assets/reference-template.docx` | 65e0d90 2026-09-02 Kuangdi Liu | `4165afc2cb84cf81899b8d59c0e984ac035cf498fa9726b20047beba573b2790` | 维护者确认有权授权，Apache-2.0 |
+| `yiti-skill/assets/templates/文件字体格式.doc` | beee0c1 2026-07-13 Icdafy | `5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925` | 维护者确认有权授权，Apache-2.0 |
 | 立项三技能 `assets/templates/*.json`、`references/template-*.md`、范文及业务参考 | 原文件迁移保留 | 全部文件摘要见 [迁移映射](docs/migration-map.json) | 维护者确认有权授权，Apache-2.0 |
 | 七个技能其他规则、示例、行业术语与脚本 | 仓库既有提交，原署名保留 | [基线清单](docs/validation/baseline/tracked-files.json) | 维护者确认有权授权，Apache-2.0；会议纪要既有 LICENSE 保留 |
 

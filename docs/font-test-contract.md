@@ -9,7 +9,7 @@
 | 原文件 | 涉及旧测试 | 调整 |
 |---|---|---|
 | tools/tests/test_sibling_docx_skills.py | 三个 BundledFontResolution、一个 Obfuscation、两个 GeneratorEmbedding，共 6 项 | 临时目录提供由 stdlib 生成的 SFNT/OS2 数据；仍检查 GB2312 charset、fsType 拒绝、完整反混淆、生成器 CLI 的两字体嵌入与验证 |
-| skills/meeting-minutes-pro/tests/test_embed_fonts.py | 三个 FsTypeGate、一个可读 FontDescriptor、三个 EmbedIntoDocx，共 7 项 | 相同测试数据替代随包文件；仍保留原名、原 fsType/charset/部件/settings 断言和实际 DOCX 写入 |
+| meeting-minutes-pro/tests/test_embed_fonts.py | 三个 FsTypeGate、一个可读 FontDescriptor、三个 EmbedIntoDocx，共 7 项 | 相同测试数据替代随包文件；仍保留原名、原 fsType/charset/部件/settings 断言和实际 DOCX 写入 |
 
 测试数据只含手工构造的 SFNT 表头、OS/2 标志与字符集字段，没有字体字形或第三方字节；用于测试解析/嵌入算法，不能拿来声称 Word 渲染通过。用真实环境变量 `ICDAFY_FONT_DIR` 提供该目录，实际执行被测查找、fsType、反混淆、DOCX 写入及生成器，不 mock 被测功能。
 

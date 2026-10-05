@@ -3,7 +3,7 @@ import importlib.util
 from pathlib import Path
 import unittest
 
-ROOT = Path(__file__).resolve().parents[2] / 'skills'
+ROOT = Path(__file__).resolve().parents[2]
 SKILLS = ('hangye-fenxi', 'zhuying-yewu-fenxi', 'gongsi-qingkuang')
 
 
