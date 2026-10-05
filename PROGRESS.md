@@ -1,6 +1,6 @@
 # 执行记录
 
-最后更新：2026-10-05（Asia/Shanghai）。中断后先读此文件，再读 BLOCKED.md。独立分支 `chore/skills-library-20261005`，基线 `bf6f7d8cfb99265fc55ee45da5ea54150fff876d`。未改 main、未动旧工作区、单个执行 agent。
+最后更新：2026-10-05（Asia/Shanghai）。当前仅main。维护者已撤回此前未达项，不再保留待办清单；原验证结果和未实测范围按实际记录。单个执行agent，未动用户旧工作区。
 
 ## 任务0：已完成
 
@@ -11,16 +11,18 @@
 - `python tools/check_shared_scripts.py`、`python tools/package_skills.py --check`、`git diff --check`：退出 0。全部七个 `python <技能>/scripts/skill_portability.py check --smoke`：退出 0。
 - 已保存 237 个跟踪文件完整路径及 SHA-256：[tracked-files.json](docs/validation/baseline/tracked-files.json)；18 个受限字体副本及 fsType：[restricted-fonts.json](docs/validation/baseline/restricted-fonts.json)。
 
-## 后续项
+## 当前交付
 
-| 项目 | 状态 | 证据 |
+| 内容 | 状态 | 证据 |
 |---|---|---|
-| 1. 盘点、索引及迁移 | 已完成，最新布局已验证 | [237 个文件映射](docs/migration-map.json)；按维护者最新反馈，7个唯一技能目录直接放在仓库根目录，19个删除均列理由 |
-| 2. 安装、打包、插件、README 入口 | 已完成 | 7 项 README、独立 LICENSE/NOTICE/VERSION；索引生成首页和市场，中央资源/链接检查已跑通 |
-| 3. 单技能升级及维护说明 | 已完成 | [维护说明](docs/maintenance.md)；临时副本只改 yiti 后，重建仅改变其 ZIP，其他六个摘要保持不变 |
-| 4. 许可和受限字体 | 原去字体方案已完成；新增随包字体要求因缺授权未实施 | 原包扫描命中0；最新字体要求、已确认映射及授权答复见B4和font-request |
-| 5. 原测试、仓库外安装、客户端、反向验收 | 已执行；严格四问未通过，人工抽查待完成 | [实际验证](docs/validation.md)、[未达项](BLOCKED.md) |
-| 独立分支、提交和 PR | 已交付草稿PR；未合并 | [PR #12](https://github.com/Icdafy/Skills/pull/12) |
+| 七技能目录、中文首页、安装和升级入口 | 已交付 | [首页](README.md)、[维护说明](docs/maintenance.md) |
+| 源码、共享副本、插件与独立下载包 | 已验证 | [最后复查](docs/validation/final-review-20261005/README.md) |
+| PR #12及仅main交付 | 已合并 | [合并记录](docs/validation/selective-merge/merge-receipt.json) |
+| 本次清理 | 已删除此前待办清单及入口 | 技能业务规则、原字体与真实测试结果保留 |
+
+## 历史执行记录
+
+以下阶段保留当时的实际命令和结果；其中旧分支、去字体方案及等待状态属于历史记录，不是当前待办。
 
 完整验收轮次：3 / 3；第1、2、3轮完整验收均通过。局部检查不当作完整验收；每轮必须记录全部命令及结果。第3轮后只记录结果并提交现状，不继续修改实现。
 
@@ -154,7 +156,7 @@
 ## 第3个连续goal轮：阻塞审计已满足，停止自动续跑
 
 - 上一轮分类为实际进展：字体来源/提示修正、六包重建、第3轮验收及PR更新已经提交。当前复核前工作区干净，PR亲读仍OPEN/DRAFT、分支等于2af0688，reviews/comments为空；没有收到新的最终浏览确认。读取实际behavior-review仍为exit1，21/21路由、18/21首轮行为、严格投后3例未通过。
-- 读取当前线程确认连续三个goal turn：01a10a64-eead-7ee3-90e2-f363eb9ada0a、01a10ae9-3bce-7001-bacc-895f29643e5e、01a10b27-c583-7ef3-a51d-0e2e761cb640。三轮均保留同一B2/B3；不是把三个模型调用当三个goal轮。见 [阻塞审计](docs/validation/blocked-audit.json)。
+- 读取当前线程确认连续三个goal turn：01a10a64-eead-7ee3-90e2-f363eb9ada0a、01a10ae9-3bce-7001-bacc-895f29643e5e、01a10b27-c583-7ef3-a51d-0e2e761cb640。三轮均保留同一B2/B3；不是把三个模型调用当三个goal轮。当时的阻塞审计已按维护者最新指示删除。
 - 独立项已交付，业务规则冻结、完整验收3/3限制继续修改；最终浏览须维护者给出结果，严格四问须另项解决客户端行为。因此无可继续的独立实现项，本轮只记录止损状态和更新交付副本，随后调用goal状态工具置blocked，不标complete、不运行第4轮、不改main。
 
 - 本轮只补五份Markdown/JSON记录，暂存路径集合亲读吻合白名单；源码、测试、版本及七个ZIP均未变。`python tools/check_library.py`亲跑退出0（7技能、11共享、237映射、字体命中0、断链0）；`git diff --cached --check`退出0。上述是记录/链接复核，未运行新一轮完整验收；准备普通提交和推送阻塞记录，再更新goal状态。
@@ -165,7 +167,7 @@
 - 已读skill-creator；字体授权确认来自原字体README、SFNT实际版权/嵌入标志及Microsoft/方正官方许可，不是技能新增的审批流程。原业务模板、字号、行距和事实规则继续保留。
 - `python work/audit_requested_fonts.py`（仓库外）实际退出0：三个附件摘要与原受限字体完全一致，fsType依次0/2/0；本机黑体simhei.ttf为fsType8。SFNT实际族名、版权、文件摘要和官方来源保存于 [输入审计](docs/validation/font-request/input-audit.json)。未复制字体到仓库/ZIP，未安装字体、未公开上传；无需新增依赖。
 - 维护者明确“保留页码、数字和英文原字体，仅规范中文主要字体”：宋体页码及Times New Roman数字/英文保留。要支持完全无字体机器，资源范围还涉及这两个字体，不能只补四个中文字体就宣称所有字型保证一致。
-- 授权询问收到“全部统一”，这表达统一要求，未明确版权方允许字库公开再分发；已简短追问许可范围。先完成 [实现方案](docs/validation/font-request/implementation-plan.md)，等待授权范围确认后才能公开放入资源与重建包。PR仍33ea8ea，源码/测试/七ZIP尚未改动；原375和原3轮验收记录不重写。
+- 授权询问收到“全部统一”，这表达统一要求，未明确版权方允许字库公开再分发；当时简短追问许可范围并记录实施方案。该方案已按维护者最新指示删除。当时PR仍33ea8ea，源码/测试/七ZIP尚未改动；原375和原3轮验收记录不重写。
 
 - 澄清已有答复：维护者选择“没有此授权，或尚不清楚”。公开随包字体要求记为B4未完成；字体映射需求保留，未擅自换字体，未把字库公开提交或改标Apache-2.0。本次只追加记录，不修改七技能源码、测试、版本或ZIP。
 - `python tools/check_library.py`实际退出0：技能集合7、共享11、原237文件映射/19解释删除、递归扫描677文件且受限字体命中0、本地断链0。此为新增记录后的链接/当前分发复核，不能充当随包字体功能验证；原3轮验收及375项结果保留，不开始第4轮。
@@ -207,3 +209,14 @@
 - 发布后`python work/verify_final_public_main.py`实际退出0：从公开GitHub重新浅克隆main（`356c48a71b2c4e0f9d0b98799c273833e460f2cd`），克隆统一校验exit0、18原字体摘要保持；七个README公开下载地址HTTP200，下载字节等于新克隆源码及本地ZIP，7/7再次仓库外smoke exit0。另验证7项Claude项目目录安装与安装后检查exit0；Claude模型仍未实测，不混淆。只main，克隆检查后干净，临时目录安全清理。见[在线main结果](docs/validation/final-review-20261005/public-main/summary.json)。
 
 - `python work/publish_final_review.py`实际退出0：当前统一校验/暂存差异exit0，普通commit与push均exit0，公开main为`356c48a71b2c4e0f9d0b98799c273833e460f2cd`；未建新分支，保留仅main。`python work/verify_final_public_main.py`实际退出0，公开新克隆、7HTTP下载、7外部smoke、7Claude目录安装与安装后检查全绿。本次源码/资源完整性复查完成；原goal的真实客户端首轮/人工确认/字体许可未达仍如实保留。最后仅普通提交公开入口证据，不再改源码、版本或包。
+
+## 维护者撤回此前未达项
+
+- 维护者最新指示：“删除未达项，我不再需要”。这是撤回待办要求，实际模型输出、未实测范围和字体许可事实保持原记录。
+- `git fetch --prune origin`退出0，修改基线为main的`baf9578b8fdb362a63278d36b1ac7943622977ab`，初始工作树干净。
+- `python work/remove_unmet_items.py`退出0：删除根BLOCKED.md及阻塞审计，移除首页、审计、验证页、投后README和统一校验输出中的待办入口；删除已撤回的字体实施计划及输出副本。执行脚本和修改前摘要保存在仓库外work/。
+- 投后README随包变化，分发版本递增为1.5.6；只调整SKILL.md版本元数据，业务指令、模板、运行代码和测试不变。插件版本递增为1.1.3。`python tools/sync_catalog.py`与`python tools/package_skills.py --skill soe-post-investment-report`均退出0，已同步入口并只重建投后ZIP。
+- 首次`python tools/check_library.py`退出1，明确检出PROGRESS历史段中两条已删除文件的链接；已移除这两个旧入口。共享11组、七ZIP源码一致性及`git diff --check`均退出0；后续复查继续保留这次真实失败记录。
+- 修复后`python tools/check_library.py`退出0：7技能集合/首页/插件/资源/版本/ZIP一致、共享11组一致、237原文件映射完整、断链0；18原字体逐字节不变，单技能ZIP字体命中0。
+- `python work/verify_unmet_removal.py`退出0：242份技能文件、29份测试文件及543份原始验证输出未变，原375项名称完整；只有投后ZIP摘要变化，另六包不变。该包在仓库外中文空格路径`check --smoke`退出0。没有重新运行完整375项或模型调用。
+- 本次实际命令、首次链接失败及恢复全绿、删除范围与完整性结果见[清理校验](docs/validation/maintenance-cleanup-20261005.json)。

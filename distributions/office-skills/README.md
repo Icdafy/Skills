@@ -15,7 +15,7 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](../../soe-post-investment-report/) | [README](../../soe-post-investment-report/README.md) | [ZIP](soe-post-investment-report.zip) | 1.5.5 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](../../soe-post-investment-report/) | [README](../../soe-post-investment-report/README.md) | [ZIP](soe-post-investment-report.zip) | 1.5.6 |
 <!-- skills:end -->
 
 解压后在技能根运行 `python scripts/skill_portability.py check --smoke`；按各 README 安装所需依赖及本机授权字体，使用项目目录安装后新建会话验证。下载包结构检查不能代替客户端模型调用。

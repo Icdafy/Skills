@@ -10,4 +10,4 @@
 - [当前纪要运行时路径检查](runtime-check.txt)：退出0，已有运行时可用，不下载依赖或模型。
 - [当前冻结审计](../frozen-content.json)；[之前布局审计备份](frozen-content-before-flat-layout.json)。
 
-Codex严格首轮只四问失败和最终浏览状态仍以 [BLOCKED.md](../../../BLOCKED.md) 为准。历史round-1/final/distribution日志保留真实旧路径，不改写为未执行过的命令。
+客户端实际输出保留在[调用记录](../clients/codex/summary.json)。历史round-1/final/distribution日志保留真实旧路径，不改写为未执行过的命令。

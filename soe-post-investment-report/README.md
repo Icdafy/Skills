@@ -1,6 +1,6 @@
 # 国企股权投资投后报告（soe-post-investment-report）
 
-当前分发版本：**1.5.5**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.5.6**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
@@ -46,7 +46,7 @@ Claude Code 输入 `/soe-post-investment-report 用这些本期投后资料更�
 
 Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
 
-Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。**严格首轮只四问未通过**：三例均正确提出原四问，但另有进度或技能依据说明；已记录到仓库BLOCKED.md，未修改冻结业务规则来掩盖。
+Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。历史会话中，三例的四问内容和顺序正确，首轮另含进度或技能依据说明；实际输出保留在[客户端验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation/clients/codex/summary.json)。
 
 Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。
 

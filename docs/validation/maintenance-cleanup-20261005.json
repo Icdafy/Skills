@@ -1,0 +1,89 @@
+{
+  "request": "删除未达项，我不再需要",
+  "baseline_commit": "baf9578b8fdb362a63278d36b1ac7943622977ab",
+  "removed_files": [
+    "BLOCKED.md",
+    "docs/validation/blocked-audit.json",
+    "docs/validation/font-request/implementation-plan.md"
+  ],
+  "removed_output_copies": [
+    "BLOCKED.md",
+    "强制字体方案.md"
+  ],
+  "skills": 7,
+  "skill_files_unchanged": 242,
+  "test_files_unchanged": 29,
+  "original_tests_preserved": 375,
+  "original_font_files_unchanged": 18,
+  "validator_logic_unchanged": true,
+  "changed_archives": [
+    "soe-post-investment-report"
+  ],
+  "external_smoke": {
+    "command": [
+      "python",
+      "<仓库外中文 空格临时路径>/soe-post-investment-report/scripts/skill_portability.py",
+      "check",
+      "--smoke"
+    ],
+    "exit": 0,
+    "stdout": "[OK] soe-post-investment-report: metadata, resources and links (30 files)\n[OK] Package SHA-256 manifest matches\n[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed\n[INFO] This checks package execution, not model invocation in a target client or visual font rendering\n",
+    "stderr": ""
+  },
+  "new_model_invocations_performed": false,
+  "historical_test_outputs_changed": false,
+  "raw_verification_output_files_unchanged": 543,
+  "commands": [
+    {
+      "command": "python tools/sync_catalog.py",
+      "exit": 0,
+      "output": "[OK] Index, Chinese catalog and marketplace agree: 7 skills\r\n"
+    },
+    {
+      "command": "python tools/package_skills.py --skill soe-post-investment-report",
+      "exit": 0,
+      "output": "[OK] soe-post-investment-report: metadata, resources and links (30 files)\r\n[OK] C:\\Users\\30649\\Documents\\Codex\\2026-10-05\\icdafy-skills-blocked-md-progress-md\\work\\Skills\\distributions\\office-skills\\soe-post-investment-report.zip (488711 bytes) SHA256=e57b010116dc84e32641b19d09bc4e2b45d39b3c7053ecc1662436f7568db875\r\n"
+    },
+    {
+      "command": "python tools/check_library.py",
+      "exit": 1,
+      "output": "[FAIL] Broken links: PROGRESS.md -> docs/validation/blocked-audit.json; PROGRESS.md -> docs/validation/font-request/implementation-plan.md\r\n[OK] Index, Chinese catalog and marketplace agree: 7 skills\r\n[OK] Retained source fonts: 18 exact paths/SHA-256; unchanged\r\n[OK] Distribution scan: 892 other files including ZIP/OOXML/CFB streams; restricted-font hits=0\r\n[INFO] Source fonts have separate licensing; see THIRD_PARTY_NOTICES.md. Validation does not certify public licensing.\r\n[OK] Source resources, versions, archives and 11 shared groups agree: 7 skills\r\n[OK] Migration coverage: 237 files, 1 explained deletions, missing=0\r\n"
+    },
+    {
+      "command": "python tools/check_shared_scripts.py",
+      "exit": 0,
+      "output": "[一致] scripts/stage_template.py（阶段模板初始化与标题检查）：3 份副本\r\n[一致] references/stage-template-workflow.md（用户阶段选择及固定模板填空）：3 份副本\r\n[一致] references/investment-logic-review.md（固定标题下的投资逻辑复核）：3 份副本\r\n[一致] scripts/skill_portability.py（跨 Agent 完整性检查、打包与目录安装）：7 份副本\r\n[一致] references/agent-compatibility.md（跨 Agent 安装与真实调用验收）：7 份副本\r\n[一致] scripts/ensure_fonts.py（公文字体检测与用户级安装）：5 份副本\r\n[一致] requirements.txt（Word 运行依赖）：5 份副本\r\n[一致] scripts/docx_format_helpers.py（括号片段与附件名称规范化）：4 份副本\r\n[一致] scripts/build_docx.py（立项报告三技能统一公文渲染器）：3 份副本\r\n[一致] scripts/embed_fonts.py（公文 DOCX 字体嵌入器（meeting-minutes-pro 版本由 format_spec 驱动，不在此组））：5 份副本\r\n[一致] scripts/local_fonts.py（只查找本机授权字体；不包含排版规则或字体二进制）：6 份副本\r\n\r\n全部共享脚本副本一致。\r\n"
+    },
+    {
+      "command": "python tools/package_skills.py --check",
+      "exit": 0,
+      "output": "[OK] hangye-fenxi: metadata, resources and links (33 files)\r\n[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight\r\n[OK] hangye-fenxi: downloadable archive matches current source\r\n[OK] zhuying-yewu-fenxi: metadata, resources and links (32 files)\r\n[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight\r\n[OK] zhuying-yewu-fenxi: downloadable archive matches current source\r\n[OK] gongsi-qingkuang: metadata, resources and links (35 files)\r\n[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight\r\n[OK] gongsi-qingkuang: downloadable archive matches current source\r\n[OK] officialese-skill: metadata, resources and links (19 files)\r\n[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight\r\n[OK] officialese-skill: downloadable archive matches current source\r\n[OK] yiti-skill: metadata, resources and links (22 files)\r\n[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight\r\n[OK] yiti-skill: downloadable archive matches current source\r\n[OK] meeting-minutes-pro: metadata, resources and links (57 files)\r\n[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight\r\n[OK] meeting-minutes-pro: downloadable archive matches current source\r\n[OK] soe-post-investment-report: metadata, resources and links (30 files)\r\n[OK] soe-post-investment-report: downloadable archive matches current source\r\n"
+    },
+    {
+      "command": "git -c core.safecrlf=false diff --check",
+      "exit": 0,
+      "output": ""
+    },
+    {
+      "command": "python work/verify_unmet_removal.py",
+      "exit": 0,
+      "output": "[OK] 242 skill files and 29 test files unchanged; original 375 tests preserved.\r\n[OK] 18 font files unchanged; only post-report ZIP changed; validator logic unchanged.\r\n[OK] soe-post-investment-report: metadata, resources and links (30 files)\r\n[OK] Package SHA-256 manifest matches\r\n[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed\r\n[INFO] This checks package execution, not model invocation in a target client or visual font rendering\r\n[PASS] Removal integrity and external smoke passed.\r\n"
+    },
+    {
+      "command": "python tools/check_library.py",
+      "exit": 0,
+      "output": "[OK] Index, Chinese catalog and marketplace agree: 7 skills\r\n[OK] Retained source fonts: 18 exact paths/SHA-256; unchanged\r\n[OK] Distribution scan: 892 other files including ZIP/OOXML/CFB streams; restricted-font hits=0\r\n[INFO] Source fonts have separate licensing; see THIRD_PARTY_NOTICES.md. Validation does not certify public licensing.\r\n[OK] Source resources, versions, archives and 11 shared groups agree: 7 skills\r\n[OK] Migration coverage: 237 files, 1 explained deletions, missing=0\r\n[OK] Local Markdown links: broken=0\r\n[PASS] Library validation passed. Model invocation and visual rendering are separately recorded.\r\n"
+    },
+    {
+      "command": "python work/verify_unmet_removal.py",
+      "exit": 0,
+      "output": "[OK] 242 skill files and 29 test files unchanged; original 375 tests preserved.\r\n[OK] 18 font files unchanged; only post-report ZIP changed; validator logic unchanged.\r\n[OK] 543 raw verification output files unchanged.\r\n[OK] soe-post-investment-report: metadata, resources and links (30 files)\r\n[OK] Package SHA-256 manifest matches\r\n[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed\r\n[INFO] This checks package execution, not model invocation in a target client or visual font rendering\r\n[PASS] Removal integrity and external smoke passed.\r\n"
+    }
+  ],
+  "test_execution_scope": "Existing original 375 tests and additional test files were unchanged; this cleanup checked integrity, catalog, archives, shared copies, links and external DOCX smoke without repeating the full suite.",
+  "initial_link_check_failure": {
+    "exit": 1,
+    "reason": "Two historical PROGRESS links pointed at deleted files; references removed and check rerun.",
+    "restored_exit": 0
+  }
+}

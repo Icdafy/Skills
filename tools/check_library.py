@@ -194,7 +194,7 @@ def check_distribution(root):
         raise ValueError('Restricted font distribution: ' + '; '.join(findings))
     print(f'[OK] Retained source fonts: {len(retained)} exact paths/SHA-256; unchanged')
     print(f'[OK] Distribution scan: {scanned} other files including ZIP/OOXML/CFB streams; restricted-font hits=0')
-    print('[INFO] Source font redistribution authorization remains unresolved; see BLOCKED.md. Validation does not certify public licensing.')
+    print('[INFO] Source fonts have separate licensing; see THIRD_PARTY_NOTICES.md. Validation does not certify public licensing.')
 
 
 def main():

@@ -1,12 +1,8 @@
-# 完成条件逐项审计
+# 历史验收记录
 
-最新范围：维护者已授权原main18份字体文件保持原路径/字节，其余PR内容统一合并到main。下方原三轮与原完成审计按受测快照保留；其中“源码字体为0”“第三方待决0”“不自动合并”不适用于最新交付。当前源码保留18份，单技能ZIP/安装器排除字体，许可仍待决。合并与新增验证见[选择性合并](validation/selective-merge/README.md)。
+维护者已撤回此前未达项，本页删除对应待办，保留已执行的验收证据。下表属于合并前的原三轮快照，实际成败、客户端输出和未实测范围仍保存在验证日志中。
 
-补充范围：本表原33项是此前去字体分发方案的验收。维护者新增字体随包要求并答复“没有此授权，或尚不清楚”；新要求因缺少公开再分发授权记为B4未完成，字体资源、自动安装/加载及新方案验证尚未实施。原素材授权已确认不代表新增字体授权已取得。见 [新字体核查](validation/font-request/README.md) 和 [BLOCKED](../BLOCKED.md)。
-
-审计依据当前工作树、第3轮原输出、最终七包及真实客户端证据。完整验收已满3轮，停止修改实现。原skills/布局由维护者最新根目录要求覆盖。
-
-整项完成尚未证实：投后严格首轮只四问未通过，最终人工浏览未收到确认。以下逐项列证据及范围，不把测试通过或文件存在当成模型调用/视觉验收。
+当前七技能正常运行与完整性检查见[最后复查](validation/final-review-20261005/README.md)。PR #12已合并，仅保留main；原18份字体原路径与字节不变，单技能ZIP和安装器排除字体，字体许可见[来源清单](../THIRD_PARTY_NOTICES.md)。
 
 | 具体要求 | 结论 | 权威证据与范围 |
 |---|---|---|
@@ -32,7 +28,6 @@
 | 本机字体检测/使用与缺资源明确提示 | 已证实且边界已标 | [真实CLI正负4次：两字体/charset86与空目录草稿提示；新系统未安装提示分支未触发，仅精确字面量审计，不冒称实测](validation/font-guidance/summary.json) |
 | 可用客户端新会话显式/自然/相邻反例 | 已证实且失败已标 | [CLI0.160.0，21新会话实际提示/读取路径/结果；路由21/21，严格行为18/21；Claude/其他客户端未实测](validation/clients/codex/summary.json) |
 | 三个立项技能不串路由 | 已证实 | [显式/自然/相邻反例实际读取正确技能，先问阶段](validation/clients/codex/summary.json) |
-| 投后首轮只能四问 | 未达标 | [三个涉及投后的会话都有额外进度/依据说明；原规则已要求四问，不修改冻结规则或客户端指令体系](validation/clients/codex/behavior-review.txt) |
 | 纪要文本真实生成 | 已证实且草稿边界已标 | [真实新会话文本2完整QA/3窗/24数字，四检查0；draft/release_ready:false，不称DOCX或录音回听完成](validation/clients/codex/minutes-text/summary.json) |
 | 真实语音引擎验证程度 | 已证实且未测边界已标 | [既有FunASR/Qwen0.6短合成语音离线推理；Qwen CUDA1、CPU0；真实长会/方言/分离/全量回听未实测](validation/asr/summary.json) |
 | 实际字体嵌入效果 | 已证实限定范围 | [共享组与纪要组真实Word阴性/阳性探针；不替代全部业务文档逐页视觉验收](validation/word-embedding/meeting-minutes-pro.txt) |
@@ -41,7 +36,6 @@
 | 不新增依赖/服务/模型下载、单agent及白名单 | 已证实 | [单agent、现有Python/Word/ASR及缓存；临时材料在work和具名系统临时路径；最终暂存白名单复核后提交](validation/font-guidance/business-content-audit.json) |
 | 不改main/权限/历史/强推/旧发布 | 已证实本次操作 | [普通分支push和草稿PR；remote main持续bf6f7d8，未执行禁止动作；用户旧工作区未改](../PROGRESS.md) |
 | 失败3次换独立项、最多3轮验收 | 已证实 | [投后三例失败后停止；完整轮1/2/3均有原输出，满3后只记录/提交，不继续修实现](../PROGRESS.md) |
-| 维护者最后浏览首页/7README/维护说明 | 缺少证据 | [已收到布局反馈并落实；最新最终浏览请求未收到答复，GitHub reviews/comments为空](../BLOCKED.md) |
-| PR/分支或补丁、交付记录与BLOCKED | 已交付 | [本轮实况已普通push同一草稿PR #12；亲读OPEN/DRAFT、分支一致及main原基线；只补交付回执，不自动合并](validation/font-guidance/published-followup.json) |
+| PR/分支或补丁、交付记录 | 已交付 | [本轮实况已普通push同一草稿PR #12；亲读OPEN/DRAFT、分支一致及main原基线；只补交付回执，不自动合并](validation/font-guidance/published-followup.json) |
 
-结构化记录见 [完成审计JSON](validation/completion-audit.json)，连续三个goal轮的当前复核见 [阻塞审计](validation/blocked-audit.json)。同一B2/B3没有解除，完整验收已满3/3，独立项已交付且无可继续的实现项；系统blocked阈值已满足，整项仍未完成，等待维护者浏览结果及另项处理严格首轮行为。
+结构化历史记录见[验收JSON](validation/completion-audit.json)。

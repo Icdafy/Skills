@@ -18,7 +18,7 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
     {
       "id": "zhuying-yewu-fenxi",
@@ -37,7 +37,7 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
     {
       "id": "gongsi-qingkuang",
@@ -56,7 +56,7 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
     {
       "id": "officialese-skill",
@@ -75,7 +75,7 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
     {
       "id": "yiti-skill",
@@ -94,7 +94,7 @@
         "evidence": "docs/validation.md",
         "codex_evidence": "docs/validation/clients/codex/summary.json"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
     {
       "id": "meeting-minutes-pro",
@@ -115,14 +115,14 @@
         "text_generation": "Codex真实生成及四项检查通过；仅文本draft",
         "asr": "真实FunASR及Qwen0.6B离线推理通过（13.675秒合成语音）；Qwen CUDA失败、CPU通过；真实会议未实测"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权待决；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
     },
     {
       "id": "soe-post-investment-report",
       "name_zh": "国企股权投资投后报告",
       "category": "投后管理",
       "source": "soe-post-investment-report",
-      "version": "1.5.5",
+      "version": "1.5.6",
       "readme": "soe-post-investment-report/README.md",
       "archive": "distributions/office-skills/soe-post-investment-report.zip",
       "distribution": "office-skills",

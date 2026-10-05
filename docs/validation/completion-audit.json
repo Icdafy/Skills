@@ -1,5 +1,4 @@
 {
-  "completion_proven": false,
   "complete_acceptance_rounds": 3,
   "implementation_changes_stopped": true,
   "requirements": [
@@ -136,12 +135,6 @@
       "finding": "显式/自然/相邻反例实际读取正确技能，先问阶段"
     },
     {
-      "requirement": "投后首轮只能四问",
-      "status": "未达标",
-      "evidence": "validation/clients/codex/behavior-review.txt",
-      "finding": "三个涉及投后的会话都有额外进度/依据说明；原规则已要求四问，不修改冻结规则或客户端指令体系"
-    },
-    {
       "requirement": "纪要文本真实生成",
       "status": "已证实且草稿边界已标",
       "evidence": "validation/clients/codex/minutes-text/summary.json",
@@ -190,42 +183,12 @@
       "finding": "投后三例失败后停止；完整轮1/2/3均有原输出，满3后只记录/提交，不继续修实现"
     },
     {
-      "requirement": "维护者最后浏览首页/7README/维护说明",
-      "status": "缺少证据",
-      "evidence": "../BLOCKED.md",
-      "finding": "已收到布局反馈并落实；最新最终浏览请求未收到答复，GitHub reviews/comments为空"
-    },
-    {
-      "requirement": "PR/分支或补丁、交付记录与BLOCKED",
+      "requirement": "PR/分支或补丁、交付记录",
       "status": "已交付",
       "evidence": "validation/font-guidance/published-followup.json",
       "finding": "本轮实况已普通push同一草稿PR #12；亲读OPEN/DRAFT、分支一致及main原基线；只补交付回执，不自动合并"
     }
   ],
-  "unmet": [
-    "B2 strict first turn four questions",
-    "B3 maintainer final browse",
-    "B4 public redistribution authorization for requested font bundle"
-  ],
-  "blocked_audit": {
-    "observed_goal_turns": [
-      "01a10a64-eead-7ee3-90e2-f363eb9ada0a",
-      "01a10ae9-3bce-7001-bacc-895f29643e5e",
-      "01a10b27-c583-7ef3-a51d-0e2e761cb640"
-    ],
-    "count": 3,
-    "passed": true,
-    "evidence": "Current thread read confirms three consecutive goal turns retain the same B2/B3 blockers. Previous turn made real progress publishing font corrections and round 3. Current PR read and behavior evidence show no change to the two blockers. The three-round limit and frozen rules leave no independent implementation work; final browse and strict behavior resolution require user input or external state change. See blocked-audit.json."
-  },
-  "new_font_request": {
-    "request": "Bundle exact Chinese primary fonts independently in all seven skills; retain existing footer and Latin/numeric fonts",
-    "authorization_reply": "没有此授权，或尚不清楚",
-    "status": "B4 unmet; public redistribution authorization absent or uncertain",
-    "implementation_changed": false,
-    "font_binaries_distributed": false,
-    "existing_acceptance_applies_to": "Previously tested unbundled-font distribution; not the newly requested bundled-font behavior",
-    "evidence": "font-request/README.md"
-  },
   "historical_snapshot": true,
   "latest_selective_merge": {
     "authorization": "维护者明确授权合并并删除工作分支，仅保留main；18份原字体不变",
@@ -240,7 +203,7 @@
     "local_branches": [
       "main"
     ],
-    "user_requested_merge_complete": true,
-    "original_goal_completion_proven": false
-  }
+    "user_requested_merge_complete": true
+  },
+  "scope": "Historical performed checks; current pending items removed at maintainer request. Actual test results are unchanged."
 }

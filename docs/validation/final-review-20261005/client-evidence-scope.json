@@ -7,9 +7,7 @@
     "post_report_strict_four_question_failures": 3
   },
   "new_model_invocations_performed": false,
-  "first_turn_four_question_blocker_remains": true,
   "claude_code": "Executable not found; not model-tested",
   "other_clients": "Not model-tested",
-  "asr": "Historical real short synthetic speech inference retained; no new ASR invocation or model download",
-  "human_readability_review": "Agent read root README, seven README introductions and maintenance guide; user final review confirmation still absent"
+  "asr": "Historical real short synthetic speech inference retained; no new ASR invocation or model download"
 }
