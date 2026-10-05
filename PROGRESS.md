@@ -115,3 +115,4 @@
 - 单命令公开noreply作者参数的 `git commit` 退出0：`651501ea925d58c1974efff6b7c9e5895c625061`。`git push origin chore/skills-library-20261005`退出0，无强推。
 - `gh pr edit 12 --repo Icdafy/Skills --title ... --body-file ...`退出0；[PR #12](https://github.com/Icdafy/Skills/pull/12)已更新为根目录七项技能的最终实现描述，仍OPEN/DRAFT。GitHub内容API亲读确认七个技能目录直接列在分支根目录；没有skills/源码容器。main远端仍为bf6f7d8基线，未合并。
 - 已再次请求维护者对修改后的首页、七项README和maintenance.md做最终浏览；问题说明这是原任务书要求，自动检查不能替代。未收到结果前保留待确认；Codex严格四问失败继续留在BLOCKED.md，未宣布整项goal完成。
+- 最终交付复核将“214文件”明确为包含七个SKILL.md的总数，避免与七项指令文件重复计数；只澄清验证说明，运行代码、技能内容和ZIP未改。

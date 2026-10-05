@@ -56,7 +56,7 @@ Codex CLI **0.160.0**：在仓库外中文空格临时项目安装七项 `.agent
 
 最初Windows重复反斜杠和Join-Path导致证据分类8/21与20/21，均是解析问题；每次真实读取都退出0。保留[初始分类](validation/clients/codex/initial-analysis.json)及原jsonl，人工核对后只修正路径解析，不改模型输出。既有客户端配置警告也保留，没有擅自改用户设置。
 
-本次只改仓库源码位置、README/CHANGELOG及仓库入口。214个其他配套文件与上一提交等价，七个SKILL.md全部未变；客户端实际安装目录仍是.agents/skills。因此保留原21会话、纪要文本及ASR实测证据，没有伪称重新跑过模型调用。[逐文件等价证明](validation/flat-layout/source-content-equivalence.json)。
+本次只改仓库源码位置、README/CHANGELOG及仓库入口。214个配套文件（包含七个SKILL.md）与上一提交等价；客户端实际安装目录仍是.agents/skills。因此保留原21会话、纪要文本及ASR实测证据，没有伪称重新跑过模型调用。[逐文件等价证明](validation/flat-layout/source-content-equivalence.json)。
 
 Claude Code当前PATH及既有入口均未找到可执行程序（只发现安装器，未运行）。其他客户端本次未实测；[可用性记录](validation/clients/unavailable.json)。官方安装说明已核对：[Codex](https://learn.chatgpt.com/docs/build-skills)、[Claude Code](https://code.claude.com/docs/en/skills)。保留说明不等于真实调用通过。
 
