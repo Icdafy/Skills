@@ -20,7 +20,7 @@
 | 3. 单技能升级及维护说明 | 已完成 | [维护说明](docs/maintenance.md)；临时副本只改 yiti 后，重建仅改变其 ZIP，其他六个摘要保持不变 |
 | 4. 许可和受限字体 | 已完成 | 维护者素材授权确认；18 字体移除；递归分发扫描命中 0，LICENSE 与 NOTICE 随单包 |
 | 5. 原测试、仓库外安装、客户端、反向验收 | 已执行；严格四问未通过，人工抽查待完成 | [实际验证](docs/validation.md)、[未达项](BLOCKED.md) |
-| 独立分支、提交和 PR | 待办 | |
+| 独立分支、提交和 PR | 已交付草稿PR；未合并 | [PR #12](https://github.com/Icdafy/Skills/pull/12) |
 
 完整验收轮次：1 / 3；第1轮全绿。局部检查不当作完整验收；每轮必须记录全部命令及结果。
 
@@ -81,3 +81,10 @@
 - 清理后的受影响七包已重建；最终16项全部退出0，7/7再次仓库外烟测成功，旧包命令、统一校验及冻结审计通过。此前检查快照和原始空白错误仍保留。准备重新暂存、检查许可字体跟踪数量及白名单后提交。
 - 重新暂存后 `git diff --cached --check` 实际退出0，空白错误红（Git退出2）→绿（退出0）。[绿输出](docs/validation/final/staged-whitespace-green.txt)。暂存白名单/敏感输出检查退出0：693个变更路径（不折叠rename），越界0、跟踪字体0、符号链接0、密钥模式命中0、main未改；[审计](docs/validation/final/scope-and-secret-audit.json)。
 - 首次commit退出1，原因仅为未配置Git作者身份。`gh api user`确认已登录Icdafy，公开名称Kuangdi Liu、ID184378185；使用该账号公开noreply身份的单命令 `git -c user.name=... -c user.email=... commit`，不修改全局或本地Git配置。[GitHub公开格式依据](https://docs.github.com/en/account-and-profile/reference/email-addresses-reference)。
+
+## 草稿PR已交付，尚未全部达标
+
+- 带单命令作者参数的commit退出0：`bb8f9ed`，518个Git差异文件；迁移映射仍以237个原文件逐项校验，不把Git重复副本的rename检测结果误当丢失。
+- `git push -u origin chore/skills-library-20261005`退出0；`gh pr create --draft --base main --head chore/skills-library-20261005 --body-file ...`退出0：[PR #12](https://github.com/Icdafy/Skills/pull/12)。已附到当前任务，不自动合并；main仍为原基线。
+- 最后浏览抽查已通过异步问题请求维护者，尚未收到结果。另一个未达条件为Codex严格首轮只四问3/3失败；源规则冻结保留。这是可审查交付，不宣称整项goal完成。
+- 中断后不重复原375测试、21次模型会话或ASR推理；先看BLOCKED.md。只有新变化、失败或待决事项得到解决时才续做受影响验证；完整验收轮数仍为1/3。
