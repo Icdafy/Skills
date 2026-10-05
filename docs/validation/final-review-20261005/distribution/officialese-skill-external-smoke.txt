@@ -1,0 +1,7 @@
+$ python "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 5vjpqu0p\下载 独立包\officialese-skill\scripts\skill_portability.py" check --smoke
+exit=0
+[OK] officialese-skill: metadata, resources and links (19 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed
+[INFO] This checks package execution, not model invocation in a target client or visual font rendering

@@ -1,0 +1,22 @@
+$ python tools/package_skills.py --skill hangye-fenxi --skill zhuying-yewu-fenxi --skill gongsi-qingkuang --skill officialese-skill --skill yiti-skill --skill meeting-minutes-pro --skill soe-post-investment-report
+exit=0
+[OK] hangye-fenxi: metadata, resources and links (33 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\investment-report-skills\hangye-fenxi.zip (167529 bytes) SHA256=191b269b2d302f6ccabdb27f74c25a1f8a40b89258de2ae5a3f4568effc9ee61
+[OK] zhuying-yewu-fenxi: metadata, resources and links (32 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\investment-report-skills\zhuying-yewu-fenxi.zip (132729 bytes) SHA256=cfe5a386185f9711fad0a0edee8278d696fc78549691140cd4d65d24f2f6b038
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\investment-report-skills\gongsi-qingkuang.zip (169397 bytes) SHA256=f8907e5120be86b8c8d7cbd5cd95484a381269a3fff7acb8deceb53485ee088e
+[OK] officialese-skill: metadata, resources and links (19 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\office-skills\officialese-skill.zip (75141 bytes) SHA256=88f7736206f87685215b36f1f5986ff2336058b56394e46f8a528e8f779bab3e
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\office-skills\yiti-skill.zip (99073 bytes) SHA256=3a9838468cf0203e8ac4a5fd4add1f615d7137ae3e37fedee16d50d7fdb7cf0d
+[OK] meeting-minutes-pro: metadata, resources and links (57 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\office-skills\meeting-minutes-pro.zip (236195 bytes) SHA256=0371c9dd55fa6e1d84115a1e215251dbed476ae6a77ed795cac441db9dc78057
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] C:\Users\30649\Documents\Codex\2026-10-05\icdafy-skills-blocked-md-progress-md\work\Skills\distributions\office-skills\soe-post-investment-report.zip (488647 bytes) SHA256=349be86a62dd30932ae5414db0a25facc5ba32822384d70c5ec69d17525bd6f0

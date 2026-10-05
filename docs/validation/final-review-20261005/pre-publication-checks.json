@@ -1,0 +1,10 @@
+[
+  {
+    "label": "final-library",
+    "command": [
+      "python",
+      "tools/check_library.py"
+    ],
+    "exit": 0
+  }
+]

@@ -1,0 +1,184 @@
+$ python -m unittest discover -v -s tools/tests
+exit=0
+[OK] hangye-fenxi: metadata, resources and links (33 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmpg6unyit2\zips\hangye-fenxi.zip (167529 bytes) SHA256=191b269b2d302f6ccabdb27f74c25a1f8a40b89258de2ae5a3f4568effc9ee61
+[OK] zhuying-yewu-fenxi: metadata, resources and links (32 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmph38s4mz6\zips\zhuying-yewu-fenxi.zip (132729 bytes) SHA256=cfe5a386185f9711fad0a0edee8278d696fc78549691140cd4d65d24f2f6b038
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmp8e6sdfhr\zips\gongsi-qingkuang.zip (169397 bytes) SHA256=f8907e5120be86b8c8d7cbd5cd95484a381269a3fff7acb8deceb53485ee088e
+[OK] officialese-skill: metadata, resources and links (19 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmp71q5tyyw\zips\officialese-skill.zip (75141 bytes) SHA256=88f7736206f87685215b36f1f5986ff2336058b56394e46f8a528e8f779bab3e
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmpnsk0t618\zips\yiti-skill.zip (99073 bytes) SHA256=3a9838468cf0203e8ac4a5fd4add1f615d7137ae3e37fedee16d50d7fdb7cf0d
+[OK] meeting-minutes-pro: metadata, resources and links (57 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmp070s6irv\zips\meeting-minutes-pro.zip (236195 bytes) SHA256=0371c9dd55fa6e1d84115a1e215251dbed476ae6a77ed795cac441db9dc78057
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] C:\Users\30649\AppData\Local\Temp\tmpkx4qiw1e\zips\soe-post-investment-report.zip (488647 bytes) SHA256=349be86a62dd30932ae5414db0a25facc5ba32822384d70c5ec69d17525bd6f0
+[OK] hangye-fenxi: metadata, resources and links (33 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] zhuying-yewu-fenxi: metadata, resources and links (32 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] officialese-skill: metadata, resources and links (19 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] meeting-minutes-pro: metadata, resources and links (57 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install gongsi-qingkuang -> C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skills\gongsi-qingkuang
+[DRY RUN] Use --apply to write; UI-only clients should import the complete ZIP
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install gongsi-qingkuang -> C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skills\gongsi-qingkuang
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install gongsi-qingkuang -> C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skills\gongsi-qingkuang
+[BACKUP] C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skill-backups\gongsi-qingkuang-20261005T123556419305Z
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install gongsi-qingkuang -> C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skills\gongsi-qingkuang
+[BACKUP] C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skill-backups\gongsi-qingkuang-20261005T123557266932Z
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install gongsi-qingkuang -> C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skills\gongsi-qingkuang
+[BACKUP] C:\Users\30649\AppData\Local\Temp\tmpkhgwyjps\agent\skill-backups\gongsi-qingkuang-20261005T123557591981Z
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmpnkdlvl79\zips\meeting-minutes-pro.zip (195947 bytes) SHA256=15a1db8dc87633b66add1c38e2a0d2ff809bd99bba41259a9193b6520d5a94cc
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install meeting-minutes-pro -> C:\Users\30649\AppData\Local\Temp\tmpnkdlvl79\agent\skills\meeting-minutes-pro
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install meeting-minutes-pro -> C:\Users\30649\AppData\Local\Temp\tmpnkdlvl79\agent\skills\meeting-minutes-pro
+[BACKUP] C:\Users\30649\AppData\Local\Temp\tmpnkdlvl79\agent\skill-backups\meeting-minutes-pro-20261005T123600744885Z
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install meeting-minutes-pro -> C:\Users\30649\AppData\Local\Temp\tmpnkdlvl79\agent\skills\meeting-minutes-pro
+[BACKUP] C:\Users\30649\AppData\Local\Temp\tmpnkdlvl79\agent\skill-backups\meeting-minutes-pro-20261005T123601793301Z
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] meeting-minutes-pro: metadata, resources and links (41 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Folder "290e7a5f75c4" differs from the skill name (normal in plugin caches); installs and ZIPs always use the skill name
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Folder "290e7a5f75c4" differs from the skill name (normal in plugin caches); installs and ZIPs always use the skill name
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmp_xyuu312\zips\yiti-skill.zip (99073 bytes) SHA256=3a9838468cf0203e8ac4a5fd4add1f615d7137ae3e37fedee16d50d7fdb7cf0d
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Folder "290e7a5f75c4" differs from the skill name (normal in plugin caches); installs and ZIPs always use the skill name
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install yiti-skill -> C:\Users\30649\AppData\Local\Temp\tmp_xyuu312\skills\yiti-skill
+[OK] yiti-skill: metadata, resources and links (22 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmpeawkkf_h\gongsi-qingkuang.zip (169397 bytes) SHA256=f8907e5120be86b8c8d7cbd5cd95484a381269a3fff7acb8deceb53485ee088e
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmpeawkkf_h\gongsi-qingkuang.zip (169397 bytes) SHA256=f8907e5120be86b8c8d7cbd5cd95484a381269a3fff7acb8deceb53485ee088e
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\tmpeawkkf_h\other-zips\gongsi-qingkuang.zip (169397 bytes) SHA256=f8907e5120be86b8c8d7cbd5cd95484a381269a3fff7acb8deceb53485ee088e
+[OK] gongsi-qingkuang: metadata, resources and links (35 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+test_empty_deferrals_fail_and_concrete_limits_pass (test_investment_report_style.ReportStyleTests.test_empty_deferrals_fail_and_concrete_limits_pass) ... ok
+test_industry_and_business_chapters_reject_investment_stance (test_investment_report_style.ReportStyleTests.test_industry_and_business_chapters_reject_investment_stance) ... ok
+test_meta_advice_and_internal_source_traces (test_investment_report_style.ReportStyleTests.test_meta_advice_and_internal_source_traces) ... ok
+test_number_ranges_parentheses_and_wording (test_investment_report_style.ReportStyleTests.test_number_ranges_parentheses_and_wording)
+Fictional sentences mirroring recurring reviewer edits on public-document style. ... ok
+test_numbers_use_thousands_separators (test_investment_report_style.ReportStyleTests.test_numbers_use_thousands_separators)
+Quantities of four or more integer digits take a half-width comma every three digits. ... ok
+test_final_western_pass_preserves_chinese_and_field_format (test_public_document_format.PublicDocumentFormatTests.test_final_western_pass_preserves_chinese_and_field_format) ... ok
+test_saved_format_in_every_report_skill (test_public_document_format.PublicDocumentFormatTests.test_saved_format_in_every_report_skill) ... ok
+test_text_helpers_and_single_attachment (test_public_document_format.PublicDocumentFormatTests.test_text_helpers_and_single_attachment) ... ok
+test_descriptor_declares_gb2312_charset (test_sibling_docx_skills.BundledFontResolutionTests.test_descriptor_declares_gb2312_charset) ... ok
+test_every_skill_resolves_both_gb2312_faces (test_sibling_docx_skills.BundledFontResolutionTests.test_every_skill_resolves_both_gb2312_faces) ... ok
+test_title_face_is_gated_by_fs_type (test_sibling_docx_skills.BundledFontResolutionTests.test_title_face_is_gated_by_fs_type) ... ok
+test_each_generator_embeds_and_verifies (test_sibling_docx_skills.GeneratorEmbeddingTests.test_each_generator_embeds_and_verifies) ... ok
+test_restricted_title_face_is_never_embedded (test_sibling_docx_skills.GeneratorEmbeddingTests.test_restricted_title_face_is_never_embedded) ... ok
+test_round_trip_reconstructs_font_exactly (test_sibling_docx_skills.ObfuscationTests.test_round_trip_reconstructs_font_exactly) ... ok
+test_shared_copies_are_identical (test_sibling_docx_skills.SharedScriptConsistencyTests.test_shared_copies_are_identical) ... ok
+test_claude_code_marketplace_lists_every_skill (test_skill_portability.SkillPortabilityTests.test_claude_code_marketplace_lists_every_skill) ... ok
+test_each_archive_is_self_contained_and_runs_after_extraction (test_skill_portability.SkillPortabilityTests.test_each_archive_is_self_contained_and_runs_after_extraction) ... ok
+test_every_skill_has_a_profile_and_passes_check (test_skill_portability.SkillPortabilityTests.test_every_skill_has_a_profile_and_passes_check) ... ok
+test_install_dry_run_backup_and_extra_file_preservation (test_skill_portability.SkillPortabilityTests.test_install_dry_run_backup_and_extra_file_preservation) ... ok
+test_minutes_glossary_is_user_data (test_skill_portability.SkillPortabilityTests.test_minutes_glossary_is_user_data) ... ok
+test_official_path_variants_and_env_overrides (test_skill_portability.SkillPortabilityTests.test_official_path_variants_and_env_overrides) ... ok
+test_skill_in_version_folder_is_identified_by_skill_md (test_skill_portability.SkillPortabilityTests.test_skill_in_version_folder_is_identified_by_skill_md) ... ok
+test_strict_client_metadata_rules (test_skill_portability.SkillPortabilityTests.test_strict_client_metadata_rules) ... ok
+test_zip_is_reproducible_and_rejects_output_inside_source (test_skill_portability.SkillPortabilityTests.test_zip_is_reproducible_and_rejects_output_inside_source) ... ok
+test_all_original_headings_have_template_mappings (test_stage_templates.StageTemplateTests.test_all_original_headings_have_template_mappings) ... ok
+test_all_six_templates_accept_filled_sections (test_stage_templates.StageTemplateTests.test_all_six_templates_accept_filled_sections) ... ok
+test_all_six_templates_preserve_headings_in_saved_docx (test_stage_templates.StageTemplateTests.test_all_six_templates_preserve_headings_in_saved_docx) ... ok
+test_bindings_reject_hidden_headings_and_extra_fields (test_stage_templates.StageTemplateTests.test_bindings_reject_hidden_headings_and_extra_fields) ... ok
+test_cli_from_chinese_space_path_requires_stage (test_stage_templates.StageTemplateTests.test_cli_from_chinese_space_path_requires_stage) ... ok
+test_docx_renderer_rejects_template_drift_before_writing (test_stage_templates.StageTemplateTests.test_docx_renderer_rejects_template_drift_before_writing) ... ok
+test_early_business_repeats_products_and_techs_in_given_order (test_stage_templates.StageTemplateTests.test_early_business_repeats_products_and_techs_in_given_order) ... ok
+test_early_templates_keep_case_text_out_of_public_repo (test_stage_templates.StageTemplateTests.test_early_templates_keep_case_text_out_of_public_repo) ... ok
+test_lead_sentence_renders_bold_then_plain_in_one_paragraph (test_stage_templates.StageTemplateTests.test_lead_sentence_renders_bold_then_plain_in_one_paragraph) ... ok
+test_no_implicit_stage_and_no_unfilled_delivery (test_stage_templates.StageTemplateTests.test_no_implicit_stage_and_no_unfilled_delivery) ... ok
+test_repeat_counts_follow_current_company_without_changing_generic_titles (test_stage_templates.StageTemplateTests.test_repeat_counts_follow_current_company_without_changing_generic_titles) ... ok
+test_title_deletion_reordering_renaming_and_wrong_stage_are_rejected (test_stage_templates.StageTemplateTests.test_title_deletion_reordering_renaming_and_wrong_stage_are_rejected) ... ok
+test_every_generator_follows_the_yiti_standard (test_unified_format.UnifiedFormatTests.test_every_generator_follows_the_yiti_standard) ... ok
+test_attachment_labels_names_and_alignment (test_yiti_format.YitiFormatTests.test_attachment_labels_names_and_alignment) ... ok
+test_complete_footer_font_and_dynamic_field (test_yiti_format.YitiFormatTests.test_complete_footer_font_and_dynamic_field) ... ok
+test_exit_kind_structure_signature_and_appendix (test_yiti_format.YitiFormatTests.test_exit_kind_structure_signature_and_appendix) ... ok
+test_fixed_title_and_body_spacing (test_yiti_format.YitiFormatTests.test_fixed_title_and_body_spacing) ... ok
+test_heading_fonts_including_level_four (test_yiti_format.YitiFormatTests.test_heading_fonts_including_level_four) ... ok
+test_parentheses_kaiti_with_times_new_roman_digits (test_yiti_format.YitiFormatTests.test_parentheses_kaiti_with_times_new_roman_digits) ... ok
+test_table_text_is_wuhao_fangsong_and_kaiti (test_yiti_format.YitiFormatTests.test_table_text_is_wuhao_fangsong_and_kaiti) ... ok
+test_times_new_roman_pass_and_fullwidth_digits (test_yiti_format.YitiFormatTests.test_times_new_roman_pass_and_fullwidth_digits) ... ok
+test_bundled_exit_example_is_clean (test_yiti_format.YitiTextCheckTests.test_bundled_exit_example_is_clean) ... ok
+test_deferral_endings_and_contrast_patterns_are_hard_hits (test_yiti_format.YitiTextCheckTests.test_deferral_endings_and_contrast_patterns_are_hard_hits) ... ok
+test_numbers_without_thousands_separators_are_hard_hits (test_yiti_format.YitiTextCheckTests.test_numbers_without_thousands_separators_are_hard_hits) ... ok
+test_rule_statements_and_final_style_pass (test_yiti_format.YitiTextCheckTests.test_rule_statements_and_final_style_pass) ... ok
+test_tone_warnings (test_yiti_format.YitiTextCheckTests.test_tone_warnings) ... ok
+
+----------------------------------------------------------------------
+Ran 50 tests in 58.476s
+
+OK

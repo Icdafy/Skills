@@ -1,6 +1,6 @@
 # 主营业务分析（zhuying-yewu-fenxi）
 
-当前分发版本：**1.0.1**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
@@ -20,7 +20,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip) 下载，解压后进入 `zhuying-yewu-fenxi`；不要只复制 SKILL.md。本 PR 合并前可从当前分支 `zhuying-yewu-fenxi/` 安装。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/investment-report-skills/zhuying-yewu-fenxi.zip) 下载，解压后进入 `zhuying-yewu-fenxi`；不要只复制 SKILL.md。统一从main下载或安装，核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/zhuying-yewu-fenxi"

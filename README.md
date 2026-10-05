@@ -11,23 +11,23 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](distributions/investment-report-skills/hangye-fenxi.zip) | 1.0.1 |
-| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](distributions/investment-report-skills/zhuying-yewu-fenxi.zip) | 1.0.1 |
-| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](distributions/investment-report-skills/gongsi-qingkuang.zip) | 2.0.2 |
+| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](distributions/investment-report-skills/hangye-fenxi.zip) | 1.0.2 |
+| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](distributions/investment-report-skills/zhuying-yewu-fenxi.zip) | 1.0.2 |
+| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](distributions/investment-report-skills/gongsi-qingkuang.zip) | 2.0.3 |
 
 ### 公文与会议
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](distributions/office-skills/officialese-skill.zip) | 1.0.1 |
-| 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](distributions/office-skills/yiti-skill.zip) | 1.0.1 |
-| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](distributions/office-skills/meeting-minutes-pro.zip) | 1.0.1 |
+| 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](distributions/office-skills/officialese-skill.zip) | 1.0.2 |
+| 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](distributions/office-skills/yiti-skill.zip) | 1.0.2 |
+| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](distributions/office-skills/meeting-minutes-pro.zip) | 1.0.2 |
 
 ### 投后管理
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](distributions/office-skills/soe-post-investment-report.zip) | 1.5.4 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](distributions/office-skills/soe-post-investment-report.zip) | 1.5.5 |
 <!-- skills:end -->
 
 ## 怎么装
@@ -91,6 +91,8 @@ python tools/package_skills.py --check
 本地 `.git/` 是 Git 元数据，不属于下载技能。临时材料放 `work/`，不提交。七个技能目录直接列在仓库根目录，每项只有一份源码。根目录空白占位物已删除，临时材料不进入分发。
 
 ## 验证状态
+
+合并后的[最后复查](docs/validation/final-review-20261005/README.md)：七项资源/安装/包检查通过，原375项及另17项复跑通过（唯一既有环境跳过）；修正过期分支安装提示和纪要语音验证范围，版本及ZIP同步。已知客户端行为与字体许可未达项继续保留。
 
 Windows / Python 3.12.14：原375项完整发现，374通过、1项既有Windows符号链接环境跳过；七个独立ZIP仓库外烟测、项目安装备份、11组共享副本和第3轮完整校验通过（已达到3轮上限）。这些是合并前去字体方案的历史结果。最新保留原main18份源码字体，单技能ZIP继续排除字体；字体授权待决，见[选择性合并记录](docs/validation/selective-merge/README.md)。
 

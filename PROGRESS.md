@@ -192,3 +192,14 @@
 - 普通commit退出0：`3919b43fe131819e64dc28817e53631e21b17094`，正常push和PR正文更新均退出0。`gh pr ready`及带match-head-commit的普通merge退出0；PR #12已MERGED/CLOSED，合并提交`e2f8282f4fd8cae67cd64f5fd61a1977999e3400`。
 - `git fetch origin --prune`、`git switch main`、`git merge --ff-only origin/main`、`git branch -d chore/skills-library-20261005`均实际退出0；GitHub分支API和本地分支核对均只main，工作树干净。原18字体在合并Git树和工作树逐字节等于原main；合并树与受测PR树无差异，git diff --exit-code退出0。见[合并回执](docs/validation/selective-merge/merge-receipt.json)。
 - 本次“保留原字体，其余合并，仅main”已实现；原开源发布goal不冒称完成，字体许可/B2严格四问/B3浏览缺证保留。最后仅提交合并回执及当前状态说明，不改技能实现、测试、版本或ZIP。
+
+## 维护者请求合并后的最后复查
+
+- 远端、本地main均为`522fbe48cdfd7b04639be6ccc522ce66b6524544`，仅main且工作区干净；Python3.12.14、Codex0.160.0，Claude仍没有可运行入口。原字体/B2/B3记录先读后保留，本次是维护者新请求的复查，不改写原三轮或合并验证。
+- 亲读发现并修正七项README中的已删除PR分支安装提示，以及纪要依赖段“引擎未实测”与已有短合成语音记录冲突。只改说明、每项补丁版本、投后metadata.version、索引/插件与ZIP；字体、运行代码、模板、业务规则和原375+13+4项测试均不改。
+- `python work/prepare_final_review.py`实际退出0：索引同步及明确七个--skill重建均退出0；待本次完整回归、外部独立安装/故障检查和公开GitHub入口复核后发布。见[准备](docs/validation/final-review-20261005/preparation.json)。
+
+- `python work/audit_final_review.py`实际退出0：七项README各8段齐全，版本一致，旧main全部文件保留、运行代码/资源/测试逐文件不变；原375名/断言/装饰器、15素材/8渲染契约审计通过。真实客户端历史21路由/18严格行为重新亲读，B2三例失败仍保留；本次未重新调用模型或ASR，不冒充新实测。见[完整性](docs/validation/final-review-20261005/source-integrity.json)和[客户端范围](docs/validation/final-review-20261005/client-evidence-scope.json)。
+
+- `python work/run_final_review_acceptance.py`实际退出0：12条命令全部exit0，原375仍374通过/原WinError1314跳过1，另17项全部通过。`python work/verify_final_review_distribution.py`实际退出0：七包外部运行/安装/备份通过，六项红1→绿0，57条符合预期，仅yiti单独升级其他六包不变。
+- `python work/check_final_environment.py`实际退出0：七技能本机字体只读检测均exit0、现有纪要运行时check exit0，未安装或推理。亲读首页/七项用途说明/维护页后修正的两类滞后说明已与实际一致；真实客户端/语音复用有范围的历史证据，B2/B3/B4保留。[最后复查页](docs/validation/final-review-20261005/README.md)。

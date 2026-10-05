@@ -1,0 +1,3 @@
+$ python yiti-skill/scripts/ensure_fonts.py --check
+exit=0
+[OK] 所需公文字体已全部安装：仿宋_GB2312、楷体_GB2312、方正小标宋简体

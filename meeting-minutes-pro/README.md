@@ -1,6 +1,6 @@
 # 会议转录与正式纪要（meeting-minutes-pro）
 
-当前分发版本：**1.0.1**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
@@ -14,13 +14,13 @@
 
 ## 依赖与字体
 
-Python 3.10+；文本检查使用标准库，DOCX 生成需 `scripts/requirements-runtime.txt` 中的依赖。语音环境由 `python scripts/bootstrap_runtime.py --check` 检测；FunASR/Qwen3-ASR、FFmpeg 和模型另行准备，本次真实引擎未实测。
+Python 3.10+；文本检查使用标准库，DOCX 生成需 `scripts/requirements-runtime.txt` 中的依赖。语音环境由 `python scripts/bootstrap_runtime.py --check` 检测；FunASR/Qwen3-ASR、FFmpeg 和模型另行准备，既有FunASR与Qwen0.6B已完成短合成语音实测，实际范围及未测项见下方“已验证环境”。
 
 单技能ZIP和安装器输出不含字体。GitHub源码按维护者要求保留原main三份字体，见 [字体说明](assets/fonts/README.md)；其公开再分发授权仍未确认。自行准备有使用权的仿宋_GB2312、楷体_GB2312、方正小标宋简体等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/font_preflight.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过版式验收；原字体、字号和版式规则保留。
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip) 下载，解压后进入 `meeting-minutes-pro`；不要只复制 SKILL.md。本 PR 合并前可从当前分支 `meeting-minutes-pro/` 安装。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip) 下载，解压后进入 `meeting-minutes-pro`；不要只复制 SKILL.md。统一从main下载或安装，核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/meeting-minutes-pro"

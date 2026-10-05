@@ -1,0 +1,8 @@
+$ python "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 5vjpqu0p\下载 独立包\soe-post-investment-report\scripts\skill_portability.py" install --agent codex --scope project --project-dir "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 5vjpqu0p\项目 安装 soe-post-investment-report" --apply
+exit=0
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] Package SHA-256 manifest matches
+[PLAN] Install soe-post-investment-report -> C:\Users\30649\AppData\Local\Temp\技能 解压 空格 5vjpqu0p\项目 安装 soe-post-investment-report\.agents\skills\soe-post-investment-report
+[OK] soe-post-investment-report: metadata, resources and links (30 files)
+[OK] Package SHA-256 manifest matches
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts

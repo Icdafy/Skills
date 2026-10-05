@@ -1,0 +1,21 @@
+$ git diff --check
+exit=0
+warning: in the working copy of '.claude-plugin/marketplace.json', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'distributions/investment-report-skills/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'distributions/office-skills/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gongsi-qingkuang/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'gongsi-qingkuang/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'hangye-fenxi/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'hangye-fenxi/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'meeting-minutes-pro/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'meeting-minutes-pro/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'officialese-skill/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'officialese-skill/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'soe-post-investment-report/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'soe-post-investment-report/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'soe-post-investment-report/SKILL.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'yiti-skill/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'yiti-skill/README.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'zhuying-yewu-fenxi/CHANGELOG.md', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'zhuying-yewu-fenxi/README.md', LF will be replaced by CRLF the next time Git touches it

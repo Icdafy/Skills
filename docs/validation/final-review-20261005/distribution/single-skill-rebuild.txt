@@ -1,0 +1,5 @@
+$ python tools/package_skills.py --skill yiti-skill
+exit=0
+[OK] yiti-skill: metadata, resources and links (22 files)
+[INFO] Single-skill packages/install payloads exclude fonts; historical source fonts are hash-checked. Embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[OK] C:\Users\30649\AppData\Local\Temp\技能 解压 空格 5vjpqu0p\临时库 副本\distributions\office-skills\yiti-skill.zip (99115 bytes) SHA256=4c3a6443c9b65f563c733972834990b3ede403c0e734fd00ecd6209174ba35b5
