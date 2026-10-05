@@ -204,7 +204,8 @@
   ],
   "unmet": [
     "B2 strict first turn four questions",
-    "B3 maintainer final browse"
+    "B3 maintainer final browse",
+    "B4 public redistribution authorization for requested font bundle"
   ],
   "blocked_audit": {
     "observed_goal_turns": [
@@ -215,5 +216,14 @@
     "count": 3,
     "passed": true,
     "evidence": "Current thread read confirms three consecutive goal turns retain the same B2/B3 blockers. Previous turn made real progress publishing font corrections and round 3. Current PR read and behavior evidence show no change to the two blockers. The three-round limit and frozen rules leave no independent implementation work; final browse and strict behavior resolution require user input or external state change. See blocked-audit.json."
+  },
+  "new_font_request": {
+    "request": "Bundle exact Chinese primary fonts independently in all seven skills; retain existing footer and Latin/numeric fonts",
+    "authorization_reply": "没有此授权，或尚不清楚",
+    "status": "B4 unmet; public redistribution authorization absent or uncertain",
+    "implementation_changed": false,
+    "font_binaries_distributed": false,
+    "existing_acceptance_applies_to": "Previously tested unbundled-font distribution; not the newly requested bundled-font behavior",
+    "evidence": "font-request/README.md"
   }
 }
