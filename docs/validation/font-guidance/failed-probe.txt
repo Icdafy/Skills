@@ -1,0 +1,12 @@
+$ python work/verify_font_guidance.py
+exit=1
+frozen-content exit=0
+Active font-source/old download claims=0
+officialese-skill-present exit=0
+officialese-skill-missing exit=0
+AssertionError: required the new "--check 检测本机字体" stderr branch to appear.
+
+The complete CLI outputs remain in officialese-skill-present.txt and officialese-skill-missing.txt.
+Source: actual exec result chunk 11c5b7. No CLI failed; the observational probe assertion failed.
+Do not treat this as a passing check or change the old probe assertion.
+The existing system has all three font families registered; ICDAFY_FONT_DIR controls embedding file inputs, not Windows registry detection.

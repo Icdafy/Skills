@@ -328,7 +328,9 @@ def resolve_bundled_fonts(font_dir: Path | None = None) -> dict[str, Path]:
 
 
 def embed_bundled_fonts(docx_path: Path, font_dir: Path | None = None) -> dict:
-    """Embed this skill's embeddable bundled fonts into ``docx_path`` in place.
+    """Embed locally licensed fonts into ``docx_path`` in place.
+
+    The legacy function name is retained for callers; no fonts are distributed.
 
     Safe: embeds into a temp file and only replaces the original when
     verification passes, so the delivered DOCX is never left worse than the

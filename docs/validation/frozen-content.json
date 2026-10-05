@@ -181,90 +181,105 @@
       "old": "gongsi-qingkuang/assets/content_skeleton.json",
       "new": "gongsi-qingkuang/assets/content_skeleton.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "9621a0fd6333ab2b5a8a1b1e540766e87e418d89ba4cc02d857405a12558fe7c"
     },
     {
       "old": "gongsi-qingkuang/assets/templates/early.json",
       "new": "gongsi-qingkuang/assets/templates/early.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "97401147b4db0719d7fe0d9ca12370736556542969b7a7b4c4f6cac57dd96ce6"
     },
     {
       "old": "gongsi-qingkuang/assets/templates/mid-late.json",
       "new": "gongsi-qingkuang/assets/templates/mid-late.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "7f537d49aab4fca123ec299cd6dd691f7b93316ae821df3c1dbf0796f52aa3ea"
     },
     {
       "old": "hangye-fenxi/assets/templates/early.json",
       "new": "hangye-fenxi/assets/templates/early.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "d4b2de70ad127ef151deec8b1046e62d321afc05968d853593813e86a8fbcd3c"
     },
     {
       "old": "hangye-fenxi/assets/templates/mid-late.json",
       "new": "hangye-fenxi/assets/templates/mid-late.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "93148329347deb93d0b4eaac358fdf053c29793934cda487c1fa044c238628df"
     },
     {
       "old": "meeting-minutes-pro/assets/templates/文件字体格式.doc",
       "new": "meeting-minutes-pro/assets/templates/文件字体格式.doc",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925"
     },
     {
       "old": "officialese-skill/assets/templates/文件字体格式.doc",
       "new": "officialese-skill/assets/templates/文件字体格式.doc",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925"
     },
     {
       "old": "soe-post-investment-report/assets/preview.png",
       "new": "soe-post-investment-report/assets/preview.png",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "b0e9abb903238ac8d5964ab57ae7844f4db3938eac7450e73d08007332908ae5"
     },
     {
       "old": "soe-post-investment-report/assets/reference-template.docx",
       "new": "soe-post-investment-report/assets/reference-template.docx",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "4165afc2cb84cf81899b8d59c0e984ac035cf498fa9726b20047beba573b2790"
     },
     {
       "old": "soe-post-investment-report/assets/report-spec.example.json",
       "new": "soe-post-investment-report/assets/report-spec.example.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "545a5fe4b0f697530ea708828de7eafe50246a54dd68bb8f1dfa200db8a72cf8"
     },
     {
       "old": "soe-post-investment-report/assets/report-spec.internal.example.json",
       "new": "soe-post-investment-report/assets/report-spec.internal.example.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "32cc2b88f412e7c4be58788a2c75518a2d95785cdf54af71d965e0f43a9c5300"
     },
     {
       "old": "yiti-skill/assets/examples/exit-yiti-spec.json",
       "new": "yiti-skill/assets/examples/exit-yiti-spec.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "48589647f5c11d02eab480d7c8e153ccc34e02710ef5b8bfb98d86ef22a0c7ee"
     },
     {
       "old": "yiti-skill/assets/templates/文件字体格式.doc",
       "new": "yiti-skill/assets/templates/文件字体格式.doc",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "5a781e07ee839c7b7d293134914fb86c4e6733793152e367d3cb26422b4c3925"
     },
     {
       "old": "zhuying-yewu-fenxi/assets/templates/early.json",
       "new": "zhuying-yewu-fenxi/assets/templates/early.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "5cb58b6bebd7bd2090f4ee61134e37fdc6034958d8c72aa2a76254a987e3b4b8"
     },
     {
       "old": "zhuying-yewu-fenxi/assets/templates/mid-late.json",
       "new": "zhuying-yewu-fenxi/assets/templates/mid-late.json",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "e64c57ffe607558d8bdbb85e982cc0d76d383f8b22253c91f4e296f70a690d88"
     }
   ],
@@ -273,48 +288,56 @@
       "old": "gongsi-qingkuang/scripts/build_docx.py",
       "new": "gongsi-qingkuang/scripts/build_docx.py",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
     },
     {
       "old": "hangye-fenxi/scripts/build_docx.py",
       "new": "hangye-fenxi/scripts/build_docx.py",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
     },
     {
       "old": "meeting-minutes-pro/scripts/format_spec.py",
       "new": "meeting-minutes-pro/scripts/format_spec.py",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "9455a58814df65641665f9a9a0c578401b932143ffe18398aa283644d752d4d2"
     },
     {
       "old": "officialese-skill/scripts/create_official_docx.py",
       "new": "officialese-skill/scripts/create_official_docx.py",
-      "unchanged": true,
-      "sha256": "5dda29763a1eb02de7359fb0bc8166cfad245e89b2b17e48e73d35472c3a14ae"
+      "unchanged": false,
+      "only_documented_font_hint_changed": true,
+      "sha256": "0216d0c5bef5b8bb5871d50371cac0f32cda16a3b826a93be5bd4991eca5c17a"
     },
     {
       "old": "soe-post-investment-report/scripts/build_report.py",
       "new": "soe-post-investment-report/scripts/build_report.py",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "7fcd89bad07cbbfa70773b381bff7ec4b6cb9d86db991280e7b55d96416d61df"
     },
     {
       "old": "soe-post-investment-report/scripts/validate_report.py",
       "new": "soe-post-investment-report/scripts/validate_report.py",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "eab4970aa692cbf500e77b4d5f48cdde5416ea19a339c850a56539f63d8deb25"
     },
     {
       "old": "yiti-skill/scripts/create_yiti_docx.py",
       "new": "yiti-skill/scripts/create_yiti_docx.py",
-      "unchanged": true,
-      "sha256": "8199aaee861a1417a7242d348c9e5d4b22ca6e3ae46b69209ecbac9da0bd0cba"
+      "unchanged": false,
+      "only_documented_font_hint_changed": true,
+      "sha256": "1c92e628d0c1997d66f8f20ea27fd4179319db32eb6a952eb9fdfba6934705cb"
     },
     {
       "old": "zhuying-yewu-fenxi/scripts/build_docx.py",
       "new": "zhuying-yewu-fenxi/scripts/build_docx.py",
       "unchanged": true,
+      "only_documented_font_hint_changed": false,
       "sha256": "c881bd5b74815b44fd84d4fc154b3ebb5d2b0b22cc598437f9bafcd121049138"
     }
   ],

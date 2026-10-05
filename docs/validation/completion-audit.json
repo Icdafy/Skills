@@ -1,0 +1,217 @@
+{
+  "completion_proven": false,
+  "complete_acceptance_rounds": 3,
+  "implementation_changes_stopped": true,
+  "requirements": [
+    {
+      "requirement": "任务0版本/权限/解释器/基线",
+      "status": "已证实",
+      "evidence": "validation/baseline/summary.json",
+      "finding": "远端基线bf6f7d8、push权限、实际Python3.12.14；原375及逐名/跳过/字体摘要已存"
+    },
+    {
+      "requirement": "核对后先给≤10行开工回执",
+      "status": "已证实",
+      "evidence": "validation/task0-receipt.json",
+      "finding": "原线程实际消息7行，目标/顺序/风险齐全；不能事后改写为未说过的话"
+    },
+    {
+      "requirement": "七SKILL.md识别及唯一来源索引",
+      "status": "已证实",
+      "evidence": "../skills-index.json",
+      "finding": "稳定ID、中文名/类别、根目录源码、版本、README/ZIP与验证状态齐全；根目录是维护者最新授权"
+    },
+    {
+      "requirement": "全部原跟踪文件映射、不丢失",
+      "status": "已证实",
+      "evidence": "migration-map.json",
+      "finding": "237逐项，19解释删除；只限18受限字体及空白占位物"
+    },
+    {
+      "requirement": "七项README完整并可独立使用",
+      "status": "已证实",
+      "evidence": "../README.md",
+      "finding": "逐项亲读且七种必需段落检查通过；本技能安装/调用/升级、依赖及验证边界均有"
+    },
+    {
+      "requirement": "中文首页7/7分类/源码/说明/下载及顶层用途",
+      "status": "已证实",
+      "evidence": "../README.md",
+      "finding": "首页实际表、七根目录与11顶层目录用途；sync_catalog由索引生成技能表"
+    },
+    {
+      "requirement": "索引/源码/插件/ZIP集合一致、唯一名称、必需资源及断链",
+      "status": "已证实",
+      "evidence": "validation/round-3/library.txt",
+      "finding": "统一入口亲跑0，集合7、共享11、迁移237、缺文件0/断链0；四类反向检测"
+    },
+    {
+      "requirement": "修复资源及安装/调用入口，不保留双源码",
+      "status": "已证实",
+      "evidence": "installation.md",
+      "finding": "七个根目录；客户端.agents/.claude安装路径保留；ZIP第一层仍单技能英文名，旧PR路径有迁移说明"
+    },
+    {
+      "requirement": "旧维护命令及原下载目录/ZIP名保留",
+      "status": "已证实",
+      "evidence": "validation/round-3/legacy-package-command.txt",
+      "finding": "旧package_investment_skills.py --check退出0，原两下载目录七包保留"
+    },
+    {
+      "requirement": "单技能版本/变更及精准重建",
+      "status": "已证实",
+      "evidence": "validation/font-guidance/distribution/single-skill-hashes.json",
+      "finding": "临时仅修改yiti，重建只变其包、另六摘要不变；本次六包受影响，投后包未变"
+    },
+    {
+      "requirement": "维护顺序/共享canonical物理副本",
+      "status": "已证实",
+      "evidence": "maintenance.md",
+      "finding": "源码→canonical→sync→验证→只打受影响包；11组一致，不跨技能import或符号链接"
+    },
+    {
+      "requirement": "纪要专用embed不误同步",
+      "status": "已证实",
+      "evidence": "validation/round-3/shared.txt",
+      "finding": "索引五技能embed明确排除meeting；纪要专用版本独立验证"
+    },
+    {
+      "requirement": "原模板/版式/事实/语言/阶段规则保留",
+      "status": "已证实",
+      "evidence": "validation/font-guidance/business-content-audit.json",
+      "finding": "38原脚本/47参考字节相同，资源变更23脚本/11参考逐项审查；15素材、6渲染器相同，2仅精确提示字面量"
+    },
+    {
+      "requirement": "旧375方法/断言/装饰器保留；不新增skip/todo/mock/吞失败",
+      "status": "已证实",
+      "evidence": "validation/frozen-content.json",
+      "finding": "原25文件375名/断言/装饰器审计通过，13资源契约正负覆盖；错误探针和行为失败如实保留"
+    },
+    {
+      "requirement": "五组实际回归及同一Windows跳过",
+      "status": "已证实",
+      "evidence": "validation/round-3/summary.json",
+      "finding": "50/258/56/8/3=375，374通过、WinError1314同一文件符号链接跳过1；另13通过"
+    },
+    {
+      "requirement": "七包仓库外中文空格解压/运行",
+      "status": "已证实",
+      "evidence": "validation/font-guidance/distribution/summary.json",
+      "finding": "7/7最终包绝对路径check --smoke退出0，PYTHONPATH清除"
+    },
+    {
+      "requirement": "项目安装备份和本地数据保留",
+      "status": "已证实",
+      "evidence": "validation/font-guidance/distribution/summary.json",
+      "finding": "七项预览不写/安装/默认停止/replace/备份通过；纪要私有词库保留，真实全局安装未覆盖"
+    },
+    {
+      "requirement": "Apache-2.0/署名/第三方来源与授权",
+      "status": "已证实",
+      "evidence": "../THIRD_PARTY_NOTICES.md",
+      "finding": "维护者直接确认原素材有权授权；原许可/署名保留，未称外部素材原创；第三方授权待决0"
+    },
+    {
+      "requirement": "受限字体源树/ZIP/嵌入资源为0",
+      "status": "已证实",
+      "evidence": "validation/round-3/library.txt",
+      "finding": "原18摘要+后缀/签名递归ZIP/OOXML/CFB扫描0；旧历史/旧发布未删/重写"
+    },
+    {
+      "requirement": "本机字体检测/使用与缺资源明确提示",
+      "status": "已证实且边界已标",
+      "evidence": "validation/font-guidance/summary.json",
+      "finding": "真实CLI正负4次：两字体/charset86与空目录草稿提示；新系统未安装提示分支未触发，仅精确字面量审计，不冒称实测"
+    },
+    {
+      "requirement": "可用客户端新会话显式/自然/相邻反例",
+      "status": "已证实且失败已标",
+      "evidence": "validation/clients/codex/summary.json",
+      "finding": "CLI0.160.0，21新会话实际提示/读取路径/结果；路由21/21，严格行为18/21；Claude/其他客户端未实测"
+    },
+    {
+      "requirement": "三个立项技能不串路由",
+      "status": "已证实",
+      "evidence": "validation/clients/codex/summary.json",
+      "finding": "显式/自然/相邻反例实际读取正确技能，先问阶段"
+    },
+    {
+      "requirement": "投后首轮只能四问",
+      "status": "未达标",
+      "evidence": "validation/clients/codex/behavior-review.txt",
+      "finding": "三个涉及投后的会话都有额外进度/依据说明；原规则已要求四问，不修改冻结规则或客户端指令体系"
+    },
+    {
+      "requirement": "纪要文本真实生成",
+      "status": "已证实且草稿边界已标",
+      "evidence": "validation/clients/codex/minutes-text/summary.json",
+      "finding": "真实新会话文本2完整QA/3窗/24数字，四检查0；draft/release_ready:false，不称DOCX或录音回听完成"
+    },
+    {
+      "requirement": "真实语音引擎验证程度",
+      "status": "已证实且未测边界已标",
+      "evidence": "validation/asr/summary.json",
+      "finding": "既有FunASR/Qwen0.6短合成语音离线推理；Qwen CUDA1、CPU0；真实长会/方言/分离/全量回听未实测"
+    },
+    {
+      "requirement": "实际字体嵌入效果",
+      "status": "已证实限定范围",
+      "evidence": "validation/word-embedding/meeting-minutes-pro.txt",
+      "finding": "共享组与纪要组真实Word阴性/阳性探针；不替代全部业务文档逐页视觉验收"
+    },
+    {
+      "requirement": "统一入口实现亲跑后登记维护文档",
+      "status": "已证实",
+      "evidence": "maintenance.md",
+      "finding": "tools/check_library.py先实际运行0后登记；路径/许可规则及模型验证边界写清"
+    },
+    {
+      "requirement": "四项反向红→绿实跑",
+      "status": "已证实",
+      "evidence": "validation/font-guidance/distribution/summary.json",
+      "finding": "缺资源、插件路径、旧ZIP、改名.bin字体各exit1；精确恢复后exit0"
+    },
+    {
+      "requirement": "不新增依赖/服务/模型下载、单agent及白名单",
+      "status": "已证实",
+      "evidence": "validation/font-guidance/business-content-audit.json",
+      "finding": "单agent、现有Python/Word/ASR及缓存；临时材料在work和具名系统临时路径；最终暂存白名单复核后提交"
+    },
+    {
+      "requirement": "不改main/权限/历史/强推/旧发布",
+      "status": "已证实本次操作",
+      "evidence": "../PROGRESS.md",
+      "finding": "普通分支push和草稿PR；remote main持续bf6f7d8，未执行禁止动作；用户旧工作区未改"
+    },
+    {
+      "requirement": "失败3次换独立项、最多3轮验收",
+      "status": "已证实",
+      "evidence": "../PROGRESS.md",
+      "finding": "投后三例失败后停止；完整轮1/2/3均有原输出，满3后只记录/提交，不继续修实现"
+    },
+    {
+      "requirement": "维护者最后浏览首页/7README/维护说明",
+      "status": "缺少证据",
+      "evidence": "../BLOCKED.md",
+      "finding": "已收到布局反馈并落实；最新最终浏览请求未收到答复，GitHub reviews/comments为空"
+    },
+    {
+      "requirement": "PR/分支或补丁、交付记录与BLOCKED",
+      "status": "已交付并更新中",
+      "evidence": "../PROGRESS.md",
+      "finding": "同一草稿PR #12/独立分支，后续只推送本轮受测实况和验证记录；不自动合并"
+    }
+  ],
+  "unmet": [
+    "B2 strict first turn four questions",
+    "B3 maintainer final browse"
+  ],
+  "blocked_audit": {
+    "observed_goal_turns": [
+      "01a10a64-eead-7ee3-90e2-f363eb9ada0a",
+      "01a10ae9-3bce-7001-bacc-895f29643e5e"
+    ],
+    "count": 2,
+    "evidence": "Calling thread read confirms exactly these two goal turns. The prior turn progressed root layout; this turn progressed font guidance. Both retain the same B2/B3 blockers. Do not count three client cases as three goal turns. On the next consecutive goal turn, revalidate external/user state and set blocked if still at an impasse."
+  }
+}

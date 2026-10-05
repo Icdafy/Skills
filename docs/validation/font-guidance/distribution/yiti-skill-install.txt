@@ -1,0 +1,10 @@
+$ python "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 sfegc7gk\下载 独立包\yiti-skill\scripts\skill_portability.py" install --agent codex --scope project --project-dir "C:\Users\30649\AppData\Local\Temp\技能 解压 空格 sfegc7gk\项目 安装 yiti-skill" --apply
+exit=0
+[OK] yiti-skill: metadata, resources and links (22 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Fonts are not distributed; embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[PLAN] Install yiti-skill -> C:\Users\30649\AppData\Local\Temp\技能 解压 空格 sfegc7gk\项目 安装 yiti-skill\.agents\skills\yiti-skill
+[OK] yiti-skill: metadata, resources and links (22 files)
+[OK] Package SHA-256 manifest matches
+[INFO] Fonts are not distributed; embedding uses installed licensed fonts or ICDAFY_FONT_DIR. Missing fonts are reported by the generator/preflight
+[NEXT] Enable/reload the skill in the target client, then run the invocation acceptance prompts

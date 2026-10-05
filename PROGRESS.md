@@ -22,7 +22,7 @@
 | 5. 原测试、仓库外安装、客户端、反向验收 | 已执行；严格四问未通过，人工抽查待完成 | [实际验证](docs/validation.md)、[未达项](BLOCKED.md) |
 | 独立分支、提交和 PR | 已交付草稿PR；未合并 | [PR #12](https://github.com/Icdafy/Skills/pull/12) |
 
-完整验收轮次：2 / 3；第1、2轮均全绿。局部检查不当作完整验收；每轮必须记录全部命令及结果。
+完整验收轮次：3 / 3；第1、2、3轮完整验收均通过。局部检查不当作完整验收；每轮必须记录全部命令及结果。第3轮后只记录结果并提交现状，不继续修改实现。
 
 ## 最新反馈：七技能放回仓库根目录
 
@@ -116,3 +116,31 @@
 - `gh pr edit 12 --repo Icdafy/Skills --title ... --body-file ...`退出0；[PR #12](https://github.com/Icdafy/Skills/pull/12)已更新为根目录七项技能的最终实现描述，仍OPEN/DRAFT。GitHub内容API亲读确认七个技能目录直接列在分支根目录；没有skills/源码容器。main远端仍为bf6f7d8基线，未合并。
 - 已再次请求维护者对修改后的首页、七项README和maintenance.md做最终浏览；问题说明这是原任务书要求，自动检查不能替代。未收到结果前保留待确认；Codex严格四问失败继续留在BLOCKED.md，未宣布整项goal完成。
 - 最终交付复核将“214文件”明确为包含七个SKILL.md的总数，避免与七项指令文件重复计数；只澄清验证说明，运行代码、技能内容和ZIP未改。
+
+## 续跑补审：遗漏的字体资源说明
+
+- 上一goal轮为实际进展：根目录布局提交/推送、原375回归、新包独立安装和四项反向验证均完成。当前工作树干净，远端PR仍OPEN/DRAFT且与本地提交631769d一致；GitHub reviews/comments均空，最终人工抽查尚未收到确认。
+- 补审实际SKILL.md、历史README资源说明及生成器发现遗漏：公文/议题仍写bundled fonts，主营仍宣传GitHub字体下载，行业旧说明仍写私有自带字体；公文和议题CLI缺字体提示仍说“从技能自带字体安装”。与实际取消分发的资源契约不符，需要修正。
+- 只改字体来源/安装提示，字体名称、字号、版式、模板和事实规则冻结；旧375测试不改。两个生成器只替换同一条stderr提示中的文字与--check参数，其他代码须逐字保持。具体依据先登记到font-test-contract.md；共享embed说明先改canonical后同步，会议纪要专用脚本不入该组。
+- 修正后只重建受影响六包；投后包应摘要不变。验证CLI真实正负输入、冻结内容和源码差异后运行最后第3轮完整验收；满3轮即停止修改并提交实况，不能宣称严格四问/最终浏览已完成。
+
+- `python work/fix_remaining_font_guidance.py` 完成必要字体资源说明修正；两个生成器精确新旧提示归一后全文等于bf6f7d8基线，其他代码不改。原版式/字体名称、用例及断言未变；六项未发布CHANGELOG登记补审。共享embed只改gongsi基准文档字符串，尚待同步和验证。替换逐项见 [replacements.json](docs/validation/font-guidance/replacements.json)。
+
+- `python tools/check_shared_scripts.py --sync`退出0：只由gongsi基准同步五技能embed文档字符串，其他10组保持一致，纪要专用脚本未同步。
+- `python work/verify_font_guidance.py`首次退出1：静态字体说明检查、冻结审计、公文CLI正负两次均退出0，但探针错误要求新“本机未安装”stderr必须出现。当前系统三字体已注册，`python officialese-skill/scripts/ensure_fonts.py --check`实际退出0，所以该分支没有触发；ICDAFY_FONT_DIR空目录只控制可嵌入文件，阴性stdout已明确缺少本机授权文件并保留草稿。原375测试未改；保留失败，不修改旧探针断言，也不称未触发分支实测通过。继续独立的四次资源正负调用与精确提示字面量审计。
+
+- `python work/verify_font_resource_followup.py`实际退出0：两个CLI各实跑有文件/空目录，四次退出0；阳性实际嵌入两字体且charset86，阴性无嵌入并明确ICDAFY_FONT_DIR/未嵌入草稿，未mock功能、注册表或安装字体。系统未安装提示分支未触发，单独如实标记；两个源码文件仅提示字面量改变的全文比对通过，原375断言保持。共享11组与catalog退出0；只重建实际受影响六包，投后包摘要保持。[实际结果](docs/validation/font-guidance/summary.json)。
+- `python work/audit_preserved_business.py`实际退出0：38个原业务脚本、47个原参考文件按checkout换行归一后字节相同；23个修改脚本仅限已列字体/安装/打包资源契约及两提示，11个参考变化仅安装说明7份与字体准备4份，未说明变化0。四个非安装参考diff已逐项阅读；模板、事实/语言/阶段规则和版式数值保留。[内容审计](docs/validation/font-guidance/business-content-audit.json)。
+- 开始最后第3轮完整验收及最终七包独立分发/备份/反向复查；若不通过则按3轮止损交付实况，不再修改实现或宣称全部完成。
+
+## 第3轮已结束，按上限停止修改实现
+
+- `python work/run_acceptance.py 3`实际退出0：12条命令全部退出0，原50/258/56/8/3仍共375；374通过，只有原WinError1314文件符号链接跳过1项。另13项有效正负契约测试通过，原名字/断言/装饰器保持。本轮共享11、catalog、七包、旧维护入口、统一校验及diff检查均退出0。[实际命令](docs/validation/round-3/summary.json)。完整验收3/3，停止修改实现。
+- `python work/verify_final_distribution.py`实际退出0：最终7ZIP分别在仓库外中文空格路径smoke通过，七项安装/备份/本地数据与纪要词库保留通过；四项独立故障红1→绿0，单技能重建只改变yiti，其他六包不变。53条命令均符合预期。[最终分发](docs/validation/font-guidance/distribution/summary.json)。
+- 当前受测源码没有删除/放宽旧测试、增添skip、mock被测功能、吞掉失败或扩大业务规则。一次错误观测探针退出1和Codex严格四问行为退出1仍保留；新系统未安装提示分支如实标未触发，不能将第3轮结构回归说成模型/分支实测。
+- 核对七项README的用途/边界、输入输出、依赖、完整安装/调用、验证状态与升级七段均齐全。原开工回执从当前线程实际消息读取，7行，见 [回执](docs/validation/task0-receipt.json)；原skills/决定已被维护者根目录反馈覆盖。
+- 逐项完成审计仍不通过：B2严格四问、B3最终人工浏览没有完成证据。已确认这里只有两个goal turn，不能把三次调用失败当成三次goal阻塞轮；本轮暂保留active。后续只读复核这两个同一阻塞，累计第3个连续goal轮仍无外部变化时按规则置blocked，不再复跑或改实现。
+
+- 第3轮后的交付暂存检查 `git diff --cached --check` 实际退出2：新保存的Git差异原始输出含16行单空格的空白上下文行。只调整两份证据的存储格式：原始字节和失败输出以UTF-8/Base64及SHA-256完整保存到*.raw.json，文本可读视图将行末空格显示为␠；已逐字节还原核对。没有改源码、用例、Git空白规则或第3轮原始结果。后续只复核暂存与交付，不开始第4轮。见 [实际退出2原始输出](docs/validation/font-guidance/staged-whitespace-last.raw.json)。
+
+- 证据格式处理后，`git diff --cached --check`实际退出0，保留原退出2并完成红→绿。最终白名单/字体/符号链接/密钥模式审计实际退出0：越界0、跟踪字体0、符号链接0、密钥模式0，main仍为基线；统一校验结果登记后也已实际退出0。仅整理证据和提交记录，无第4轮。见 [最终暂存审计](docs/validation/font-guidance/scope-and-secret-audit.json)及 [空白检查绿输出](docs/validation/font-guidance/staged-whitespace-after-preservation.txt)。

@@ -2,7 +2,7 @@
 
 各客户端（Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM、WorkBuddy、TRAE、Qoder）的安装入口、调用方式、运行环境适配与验收统一见 [agent-compatibility.md](agent-compatibility.md)。本文只记录会议纪要技能特有的要求。
 
-Install the whole directory rather than copying only `SKILL.md`: transcription, review, fact checks and DOCX output depend on the bundled scripts, references, fonts and `glossary/industry/`.
+Install the whole directory rather than copying only `SKILL.md`: transcription, review, fact checks and DOCX output depend on the bundled scripts, references and `glossary/industry/`. DOCX fonts are supplied by the licensed user; preparation is described in `assets/fonts/README.md`.
 
 ## Installers
 

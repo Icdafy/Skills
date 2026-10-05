@@ -80,7 +80,7 @@ v1 是一套教科书式的 12 节固定框架；v2 以两篇内部范文为母�
 4. **联网补研协议**（`references/research-protocol.md`）：竞对财务与估值、市场空间锚点、战略客户背景、企业自述核验；
 5. **语言禁令**：全文禁用"标的公司"（直接写公司简称）、禁用"不是…而是/不仅…而且"等对举连词、禁机械总结腔，附改写示例；
 6. **风险内嵌**：随范文取消独立风险章与空泛小结，风险以劣势三段式与实际约束及影响嵌入正文，重大风险时才增设独立节；
-7. **公文排版与字体自动化**（v2.2，三技能统一）：内置集团《行文规范性格式模板》全套规则（方正小标宋二号主标题、仿宋_GB2312三号正文、28磅固定行距、A4公文页边距、外侧奇偶页码）；表格全五号、中文仿宋_GB2312及括注楷体_GB2312、西文Times New Roman；表头首行加粗、不加底纹、表头行跨页重复、宽度按窗口自动调整、所有单元格居中；渲染由与 hangye-fenxi / gongsi-qingkuang 共用的 `scripts/build_docx.py` 统一完成，不再手写排版代码；三个公文字体随技能分发，`scripts/ensure_fonts.py` 自动检测安装（备用 `ensure-fonts.ps1`，assets 缺失时自动从本仓库下载）。
+7. **公文排版与字体自动化**（v2.2，三技能统一）：内置集团《行文规范性格式模板》全套规则（方正小标宋二号主标题、仿宋_GB2312三号正文、28磅固定行距、A4公文页边距、外侧奇偶页码）；表格全五号、中文仿宋_GB2312及括注楷体_GB2312、西文Times New Roman；表头首行加粗、不加底纹、表头行跨页重复、宽度按窗口自动调整、所有单元格居中；渲染由与 hangye-fenxi / gongsi-qingkuang 共用的 `scripts/build_docx.py` 统一完成，不再手写排版代码；三个公文字体不随技能分发；`scripts/ensure_fonts.py` 检测本机并仅从自行准备的 ICDAFY_FONT_DIR 授权目录按需安装，`ensure-fonts.ps1` 是调用同一Python脚本的兼容入口，不下载字体。
 
 ## 审阅批注吸收（2026-09）
 
@@ -111,11 +111,9 @@ zhuying-yewu-fenxi/
 │   ├── build_docx.py               # 三技能统一 .docx 渲染脚本
 │   ├── ensure_fonts.py             # 字体自动检测与用户级安装（Windows 含注册表注册）
 │   ├── style_check.py              # 语言红线机械扫描
-│   └── ensure-fonts.ps1            # 字体安装 PowerShell 备用方案（含 GitHub 下载兜底）
+│   └── ensure-fonts.ps1            # 调用同目录Python字体脚本的PowerShell兼容入口，不下载字体
 └── assets/fonts/
-    ├── simfang.ttf                 # 仿宋_GB2312（正文/表格）
-    ├── KaiTi_GB2312.ttf            # 楷体_GB2312（二级标题）
-    └── FZXiaoBiaoSongJT.ttf        # 方正小标宋简体（主标题）
+    └── README.md                 # 本机授权字体准备说明，不含字体二进制
 ```
 
 ## 使用方式

@@ -1,0 +1,20 @@
+$ python -m unittest discover -v -s tools/library_tests
+exit=0
+test_common_charset_readable_and_unreadable (test_font_contract.FontContractPairs.test_common_charset_readable_and_unreadable) ... ok
+test_common_document_embeds_allowed_and_rejects_title (test_font_contract.FontContractPairs.test_common_document_embeds_allowed_and_rejects_title) ... ok
+test_common_generators_with_and_without_local_fonts (test_font_contract.FontContractPairs.test_common_generators_with_and_without_local_fonts) ... ok
+test_common_resolution_present_and_absent (test_font_contract.FontContractPairs.test_common_resolution_present_and_absent) ... ok
+test_common_roundtrip_correct_and_wrong_key (test_font_contract.FontContractPairs.test_common_roundtrip_correct_and_wrong_key) ... ok
+test_common_title_gate_allowed_and_restricted (test_font_contract.FontContractPairs.test_common_title_gate_allowed_and_restricted) ... ok
+test_minutes_default_paths_present_and_generator_fails_when_missing (test_font_contract.FontContractPairs.test_minutes_default_paths_present_and_generator_fails_when_missing) ... ok
+test_minutes_descriptor_gb2312_and_other_charset (test_font_contract.FontContractPairs.test_minutes_descriptor_gb2312_and_other_charset) ... ok
+test_minutes_embed_valid_and_corrupt_part (test_font_contract.FontContractPairs.test_minutes_embed_valid_and_corrupt_part) ... ok
+test_minutes_fs_type_allowed_and_restricted (test_font_contract.FontContractPairs.test_minutes_fs_type_allowed_and_restricted) ... ok
+test_minutes_missing_path_reports_failure_after_valid_input (test_font_contract.FontContractPairs.test_minutes_missing_path_reports_failure_after_valid_input) ... ok
+test_minutes_signature_valid_and_invalid (test_font_contract.FontContractPairs.test_minutes_signature_valid_and_invalid) ... ok
+test_minutes_title_embeddability_present_and_denied (test_font_contract.FontContractPairs.test_minutes_title_embeddability_present_and_denied) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 4.674s
+
+OK
