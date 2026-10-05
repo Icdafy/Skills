@@ -209,9 +209,11 @@
   "blocked_audit": {
     "observed_goal_turns": [
       "01a10a64-eead-7ee3-90e2-f363eb9ada0a",
-      "01a10ae9-3bce-7001-bacc-895f29643e5e"
+      "01a10ae9-3bce-7001-bacc-895f29643e5e",
+      "01a10b27-c583-7ef3-a51d-0e2e761cb640"
     ],
-    "count": 2,
-    "evidence": "Calling thread read confirms exactly these two goal turns. The prior turn progressed root layout; this turn progressed font guidance. Both retain the same B2/B3 blockers. Do not count three client cases as three goal turns. On the next consecutive goal turn, revalidate external/user state and set blocked if still at an impasse."
+    "count": 3,
+    "passed": true,
+    "evidence": "Current thread read confirms three consecutive goal turns retain the same B2/B3 blockers. Previous turn made real progress publishing font corrections and round 3. Current PR read and behavior evidence show no change to the two blockers. The three-round limit and frozen rules leave no independent implementation work; final browse and strict behavior resolution require user input or external state change. See blocked-audit.json."
   }
 }

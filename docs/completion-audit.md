@@ -40,4 +40,4 @@
 | 维护者最后浏览首页/7README/维护说明 | 缺少证据 | [已收到布局反馈并落实；最新最终浏览请求未收到答复，GitHub reviews/comments为空](../BLOCKED.md) |
 | PR/分支或补丁、交付记录与BLOCKED | 已交付 | [本轮实况已普通push同一草稿PR #12；亲读OPEN/DRAFT、分支一致及main原基线；只补交付回执，不自动合并](validation/font-guidance/published-followup.json) |
 
-结构化记录与goal阻塞轮次见 [审计JSON](validation/completion-audit.json)。当前已观测两个goal轮出现同一B2/B3，不能现在提前置blocked；下一连续goal轮仍无外部变化且无法继续时按规则置blocked。
+结构化记录见 [完成审计JSON](validation/completion-audit.json)，连续三个goal轮的当前复核见 [阻塞审计](validation/blocked-audit.json)。同一B2/B3没有解除，完整验收已满3/3，独立项已交付且无可继续的实现项；系统blocked阈值已满足，整项仍未完成，等待维护者浏览结果及另项处理严格首轮行为。
