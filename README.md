@@ -59,10 +59,13 @@ Claude Code 也可用插件市场：`/plugin marketplace add Icdafy/Skills`，�
 
 ## 怎么升级
 
-维护者只改仓库根目录 `<英文名>/` 中的源码；共享文件改索引指定基准后同步。只升级投委会议题的例子：
+默认按技能独立升级：你点名哪个技能，就只升级哪个技能；点名多个时只升级这些技能。只有你明确要求“所有技能”或“全库升级”时，才升级全部技能。目标技能独立维护源码、版本、变更记录和安装包；共享文件的改动不自动扩散到其他技能。
+
+维护者只改仓库根目录 `<英文名>/` 中的目标源码。索引、首页、下载说明和插件市场可登记目标变更，但不顺带修改其他技能的源码、版本或 ZIP。单技能升级不运行全库 `--sync`；共享文件的独立演进见 [维护说明](docs/maintenance.md)。只升级投委会议题的例子：
 
 ```powershell
-python tools/check_shared_scripts.py --sync
+python tools/sync_catalog.py
+python tools/check_shared_scripts.py
 python tools/package_skills.py --skill yiti-skill
 python tools/package_skills.py --check
 ```

@@ -2,10 +2,18 @@
 
 七项唯一源码直接位于仓库根目录 `<英文名>/`，集合、路径、版本、分发目录和共享组统一定义在 `skills-index.json`。在各英文技能目录改源码，不编辑解压出的 ZIP；不把 tools/、distributions/、插件配置当技能。
 
+## 默认按技能独立升级
+
+- 用户点名一个技能，只升级该技能；点名多个技能，只升级指定集合。只有用户明确要求“所有技能”或“全库升级”，才升级全部技能。整理、修复或优化某个技能不构成全库升级授权。
+- 每个技能独立维护源码、VERSION、CHANGELOG.md、索引中的自身记录，以及自身 ZIP 和 SHA-256。默认只修改目标技能及登记该变更所需的公共元数据；其他技能的源码、版本、变更记录和安装包保持不变。
+- 已登记共享组表示当前副本需要保持一致，不表示可以扩大升级范围。单技能任务不运行全库 `check_shared_scripts.py --sync`。需要独立修改共享副本时，仅修改目标技能，按实际依赖调整相关 `shared_groups`；目标为 canonical 时，先将基准改为仍保持原内容的成员。保持同步组非空、基准属于组内，且剩余成员继续一致。
+- 涉及打包、安装或校验基础设施时，还需检查公共工具对 canonical 和资源契约的依赖；不能把移出同步组当作独立升级已经完成的证明。优先在目标技能内适配，必要时只修改支持目标升级所需的公共工具，不升级其他技能。若解决方案确实需要改动其他技能，先说明具体对象和原因，由用户明确扩大范围后再处理。
+- 全库只读校验不等于全库升级，可以用于确认其他技能未受影响。提交前核对差异，确保未指定技能的源码、版本和 ZIP/SHA-256 没有变化；只重建目标包，版本与验证结果按目标技能记录。
+
 ## 改哪份 → 同步什么 → 验证 → 打哪个包
 
 1. 只改一个技能的非共享文件：改该技能源码，更新它的 VERSION、CHANGELOG.md、索引 version，以及 SKILL.md 中已有的 metadata.version。业务模板、版式和事实规则的升级另做，本次没有扩写。
-2. 改共享文件：先在索引 shared_groups 指定的 canonical 技能中改基准，然后 `python tools/check_shared_scripts.py --sync`。同步后所有该组成员的版本和变更记录都更新。脚本物理副本必须保留，不能跨技能 import 或用符号链接代替。
+2. 改已登记的共享文件：默认按上文的独立升级规则，仅修改目标副本并处理对应同步关系。只有用户明确要求升级对应全部成员时，才在索引 shared_groups 指定的 canonical 中改基准并同步；全库 `--sync` 会处理所有组，执行前应确认无范围外漂移。只更新实际获准且内容变化的成员版本、变更记录和安装包。脚本物理副本必须保留，不能跨技能 import 或用符号链接代替。
 3. `python tools/sync_catalog.py` 从索引更新中文首页、下载说明及插件市场；`--check` 只校验，不改文件。
 4. 跑受影响测试及各技能 `scripts/skill_portability.py check --smoke`。共享排版脚本变化时还需原五组完整回归和实际字体渲染证据；元数据/包检查不能充当模型调用证据。
 5. `python tools/package_skills.py --skill <英文名>` 只重建该技能 ZIP 和 SHA-256；重复 `--skill` 处理多个成员。`python tools/package_skills.py --check` 检查全部 ZIP 及逐文件 manifest。
@@ -24,7 +32,7 @@ python tools/package_skills.py --skill yiti-skill
 python tools/package_skills.py --check
 ```
 
-其他六个 ZIP 的 SHA-256 应保持不变。如果改的是五技能共享的 ensure_fonts.py，则按索引将五个成员分别传给 `--skill`；不要为了省事始终重打全库。旧 `python tools/package_investment_skills.py` 命令保留，只处理立项三技能，支持 `--check`。
+其他六个技能的源码、版本、变更记录以及 ZIP/SHA-256 应保持不变。如果只升级 `yiti-skill` 的 `ensure_fonts.py`，仍只修改、验证和打包 `yiti-skill`，按上文处理该副本的独立同步关系；不能因它原属五技能共享组就升级另外四个技能。用户明确要求升级五个成员时，才逐个传给 `--skill`；明确要求全库升级时，才使用无 `--skill` 的全库打包。旧 `python tools/package_investment_skills.py` 命令保留，写入时会重建立项三个包，不用于单技能升级；`--check` 仍可作只读校验。
 
 ## 原五组测试与证据
 
