@@ -426,7 +426,7 @@ def _smoke_minutes(root, temp):
     source = temp / 'minutes.txt'
     source.write_text('某公司项目沟通会议纪要\n\n　　一、会议基本情况\n　　会议时间：2026年9月1日。\n'
                       '　　会议地点：公司会议室。\n\n　　二、会议主要内容\n'
-                      '　　公司介绍2025年营业收入为1.2亿元，同比增长20%（经审计口径）。\n', encoding='utf-8')
+                      '　　公司介绍2025年营业收入为1.2亿元，同比增长20%，采用经审计口径。\n', encoding='utf-8')
     _run(root, temp, 'create_minutes_docx.py', '--input', source, '--output', temp / 'sample.docx',
          '--mode', 'minutes')
     return temp / 'sample.docx'

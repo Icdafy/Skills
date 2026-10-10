@@ -1,6 +1,6 @@
 # 公司情况（gongsi-qingkuang）
 
-当前分发版本：**2.0.3**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**2.0.4**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 

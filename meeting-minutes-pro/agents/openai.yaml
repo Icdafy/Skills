@@ -1,4 +1,4 @@
 interface:
   display_name: "会议纪要专业版"
   short_description: "本地转录并生成完整总结概述在前、完整问答在后的正式会议纪要"
-  default_prompt: "Use $meeting-minutes-pro 先补齐会议基本信息，再将整份录音或转录稿整理为前置完整总结概述、后置完整问答的正式会议纪要，不要只输出纯 QA。"
+  default_prompt: "Use $meeting-minutes-pro 先补齐会议基本信息，并主动询问是否有 BP 等辅助文件用于核对模糊的数据或专名；仅整理会议实际内容，不补入 BP 未在会议提及的内容，不写解释性括注或转录、识别、材料来源等加工说明，保留公文层级编号；含明确问答时生成前置完整总结概述、后置完整问答的正式会议纪要。"

@@ -11,23 +11,23 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](distributions/investment-report-skills/hangye-fenxi.zip) | 1.0.2 |
-| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](distributions/investment-report-skills/zhuying-yewu-fenxi.zip) | 1.0.2 |
-| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](distributions/investment-report-skills/gongsi-qingkuang.zip) | 2.0.3 |
+| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](distributions/investment-report-skills/hangye-fenxi.zip) | 1.0.3 |
+| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](distributions/investment-report-skills/zhuying-yewu-fenxi.zip) | 1.0.3 |
+| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](distributions/investment-report-skills/gongsi-qingkuang.zip) | 2.0.4 |
 
 ### 公文与会议
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](distributions/office-skills/officialese-skill.zip) | 1.0.2 |
-| 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](distributions/office-skills/yiti-skill.zip) | 1.0.2 |
-| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](distributions/office-skills/meeting-minutes-pro.zip) | 1.0.2 |
+| 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](distributions/office-skills/officialese-skill.zip) | 1.0.3 |
+| 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](distributions/office-skills/yiti-skill.zip) | 1.0.3 |
+| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](distributions/office-skills/meeting-minutes-pro.zip) | 1.0.3 |
 
 ### 投后管理
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](distributions/office-skills/soe-post-investment-report.zip) | 1.5.6 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](distributions/office-skills/soe-post-investment-report.zip) | 1.5.7 |
 <!-- skills:end -->
 
 ## 怎么装

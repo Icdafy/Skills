@@ -22,7 +22,7 @@ Restart the agent if the new skill is not detected. Invoke it as `$meeting-minut
 
 ## Execution environment
 
-Local transcription needs a host that runs Python on the user's machine (Claude Code, Codex, ChatGPT desktop, Kimi Work / Kimi Code, 豆包 desktop work mode, WorkBuddy, TRAE, Qoder, ZCode, AutoClaw). Cloud sandboxes such as claude.ai or ChatGPT workspace skills cannot download the ASR models or read local recordings; there the skill can only turn a user-supplied transcript into minutes, and must say so. The ASR runtime is installed separately by `scripts/bootstrap_runtime.py` with the user's permission for network downloads.
+Local transcription needs a host that runs Python on the user's machine (Claude Code, Codex, ChatGPT desktop, Kimi Work / Kimi Code, 豆包 desktop work mode, WorkBuddy, TRAE, Qoder, ZCode, AutoClaw). Cloud sandboxes such as claude.ai or ChatGPT workspace skills cannot download the ASR models or read local recordings; there the skill can only turn a user-supplied transcript into minutes, and must explain this limit in chat or the review ledger. Do not place capability limits, transcription steps or material-source commentary in the minutes. The ASR runtime is installed separately by `scripts/bootstrap_runtime.py` with the user's permission for network downloads.
 
 ## Distribution
 

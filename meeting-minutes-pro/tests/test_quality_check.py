@@ -107,6 +107,128 @@ class HalfwidthPunctTests(unittest.TestCase):
         self.assertFalse(any("千位分隔符" in error for error in errors))
 
 
+class DeliverableContentTests(unittest.TestCase):
+    def errors(self, *lines: str, title: str = "项目会议纪要") -> list[str]:
+        return QUALITY_CHECK.validate(document(title, *lines), "minutes", custom_banned=[])
+
+    def test_explanatory_parentheses_are_rejected_everywhere(self) -> None:
+        examples = (
+            ("项目会议纪要（内部讨论）", ("公司已完成样机测试。",)),
+            ("项目会议纪要 (Draft)", ("公司已完成样机测试。",)),
+            ("项目会议纪要", ("访谈对象：张某某（公司总经理）",)),
+            ("项目会议纪要", ("一、总体情况（讨论内容）",)),
+            ("项目会议纪要", ("公司计划扩产（含一期产能），交付周期约三个月。",)),
+            ("项目会议纪要", ("The platform (draft) supports exports.",)),
+            ("项目会议纪要", ("|指标|金额（万元）|",)),
+            ("项目会议纪要", ("|指标|Amount (CNY)|",)),
+            ("项目会议纪要", ("附件：工作方案（试行）",)),
+        )
+        for title, lines in examples:
+            with self.subTest(title=title, lines=lines):
+                self.assertTrue(any("解释性括注" in e for e in self.errors(*lines, title=title)))
+
+    def test_qa_parenthetical_notes_are_rejected(self) -> None:
+        for qa_line in ("问：本年收入是多少（含税）？", "答：收入约3,000万元（未审计）。"):
+            with self.subTest(qa_line=qa_line):
+                errors = self.errors("一、会议主要内容", qa_line)
+                self.assertTrue(any("解释性括注" in e for e in errors))
+
+    def test_only_leading_official_heading_numbers_are_exempt(self) -> None:
+        errors = self.errors(
+            "一、总体情况", "（一）产品能力", "1.测试情况", "（1）测试环境", "公司完成测试。",
+        )
+        self.assertEqual([], errors)
+        for line in ("设备共（100）台。", "问：（1）为何扩产？", "|（1）|产能|",
+                     "（一）产品能力（补充说明）", "（1）环境（说明）", "(1)测试环境", "（1）"):
+            with self.subTest(line=line):
+                self.assertTrue(any("解释性括注" in e for e in self.errors("一、总体情况", line)))
+
+    def test_nested_or_unclosed_parentheses_are_rejected(self) -> None:
+        for line in ("公司计划扩产（含一期（试验线））。", "公司计划扩产（补充说明。",
+                     "公司计划扩产）补充说明。", "The platform (draft supports exports."):
+            with self.subTest(line=line):
+                self.assertTrue(any("解释性括注" in e for e in self.errors(line)))
+
+    def test_validator_does_not_silently_remove_facts(self) -> None:
+        text = "项目会议纪要\n　　公司计划扩产（补充说明），交付周期约三个月。"
+        doc = TextInput(text)
+        self.assertTrue(any("解释性括注" in e for e in QUALITY_CHECK.validate(doc, "minutes")))
+        self.assertEqual(text, doc.text)
+        self.assertEqual([], self.errors("公司计划扩产，交付周期约三个月。"))
+
+    def test_parenthesis_error_preserves_effective_units_and_qualifiers(self) -> None:
+        errors = self.errors("本年收入约1,000万元（含税）。")
+        error = next(e for e in errors if "解释性括注" in e)
+        self.assertIn("有效单位、范围或限定词等应直接并入句子", error)
+        self.assertEqual([], self.errors("本年含税收入约1,000万元。"))
+
+    def test_processing_and_source_notes_are_rejected(self) -> None:
+        examples = (
+            "本纪要根据录音整理，项目已完成验证。",
+            "纪要由音频转文字后形成。",
+            "本段名词已按BP核对。",
+            "根据会议录音，交付周期约三个月。",
+            "依据转录内容，公司已完成样机测试。",
+            "据转录稿显示，公司计划扩产。",
+            "根据BP，公司预计下一年收入为5亿元。",
+            "来源：录音转写文本。",
+            "转录说明：部分音频不清晰。",
+            "整理说明：内容取自录音。",
+            "以上内容由转录稿整理。",
+            "|内容来源：转录稿|已完成测试|",
+            "录音中提到，年产能约1,000台。",
+            "转录稿未明确具体交付时间。",
+            "原文识别为某某科技。",
+            "该名词识别不清。",
+            "转录存疑。",
+            "该处录音不清晰，无法辨识。",
+            "该处录音不清晰，无法辨认。",
+            "该名称无法辨识。",
+            "该数字转录为30。",
+            "BP核对后，名称为星锥一号。",
+            "经BP核对，名称为星锥一号。",
+            "根据转录稿整理，合同金额约1,200万元。",
+        )
+        for line in examples:
+            with self.subTest(line=line):
+                self.assertTrue(any("加工元说明" in e for e in self.errors(line)))
+
+    def test_processing_notes_in_title_metadata_and_qa_are_rejected(self) -> None:
+        examples = (
+            ("本纪要根据录音整理", "公司完成测试。"),
+            ("项目会议纪要", "访谈对象：本纪要根据音频记载，张某某"),
+            ("项目会议纪要", "答：根据转录稿，交付周期约三个月。"),
+            ("项目会议纪要", "问：原文识别为某某科技吗？"),
+        )
+        for title, line in examples:
+            with self.subTest(title=title, line=line):
+                self.assertTrue(any("加工元说明" in e for e in self.errors(line, title=title)))
+
+    def test_audio_and_transcription_business_content_remains_allowed(self) -> None:
+        examples = (
+            "公司生产录音设备，年产能约1,000台。",
+            "公司提供会议转录服务，单月处理音频时长约1,000小时。",
+            "语音识别准确率达到98%，识别结果用于实时字幕。",
+            "产品根据录音生成字幕，再将转录结果存入数据库。",
+            "根据录音生成字幕是公司的核心功能。",
+            "录音中包含音乐与人声，系统可分别识别。",
+            "会议讨论了转录模型的识别错误与改进方案。",
+            "数据来源：业务系统。",
+            "合同原文为交付后支付货款，双方计划延长账期。",
+            "该处产品标记不清晰，需要提高印刷精度。",
+            "公司提供BP核对服务，主要客户为投资机构。",
+        )
+        for line in examples:
+            with self.subTest(line=line):
+                self.assertEqual([], self.errors(line))
+
+    def test_allow_line_cannot_bypass_deliverable_content_rules(self) -> None:
+        doc = document("项目会议纪要", "公司计划扩产（补充说明）。", "根据录音，公司完成测试。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", {2, 3}, [])
+        for label in ("解释性括注", "加工元说明"):
+            self.assertTrue(any(label in e and "不可用 --allow-line 放行" in e for e in errors))
+
+
 class DuplicateQuestionTests(unittest.TestCase):
     def test_near_identical_questions_flagged(self) -> None:
         doc = document(
@@ -402,6 +524,8 @@ class QualityCheckTests(unittest.TestCase):
         self.assertEqual(0, code)
         self.assertIn("冗余归因表述检查：0 处残留", output.getvalue())
         self.assertIn("总结概述转述句式检查：0 处残留", output.getvalue())
+        self.assertIn("解释性括注检查：0 处残留", output.getvalue())
+        self.assertIn("加工元说明检查：0 处残留", output.getvalue())
 
     def test_risk_section_in_summary_is_rejected(self) -> None:
         errors = self.errors(
@@ -479,14 +603,14 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertEqual([], QUALITY_CHECK.validate(TextInput(text), "auto"))
 
-    def test_interviewee_affiliation_requires_parentheses(self) -> None:
+    def test_interviewee_affiliation_uses_plain_text(self) -> None:
         errors = self.errors(
             "auto",
             "访谈对象：张某某，某某公司总经理",
             "一、会议主要内容",
             substantial_summary(),
         )
-        self.assertTrue(any("（）" in error for error in errors))
+        self.assertEqual([], errors)
 
     def test_common_words_are_not_false_positives(self) -> None:
         errors = self.errors(
@@ -505,14 +629,14 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertTrue(any("核验或指导类表述" in error for error in errors))
 
-    def test_interviewee_with_parentheses_passes(self) -> None:
+    def test_interviewee_with_parentheses_is_rejected(self) -> None:
         errors = self.errors(
             "auto",
             "访谈对象：张某某（某某公司总经理）",
             "一、会议主要内容",
             substantial_summary(),
         )
-        self.assertEqual([], errors)
+        self.assertTrue(any("解释性括注" in error for error in errors))
 
 
 if __name__ == "__main__":

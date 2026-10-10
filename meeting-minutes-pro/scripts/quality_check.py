@@ -9,7 +9,9 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from format_spec import INDENT, is_table_row, level_number  # noqa: E402  (needs path shim)
+from format_spec import (  # noqa: E402  (needs path shim)
+    FOURTH_LEVEL, INDENT, SECOND_LEVEL, is_table_row, level_number,
+)
 from docx_format_helpers import ATTACHMENT_PREFIX, attachment_lines  # noqa: E402
 
 SKILL_DIR = Path(__file__).resolve().parent.parent
@@ -192,12 +194,77 @@ SUMMARY_BANNED_HEADING = re.compile(
     r"主要风险|风险提示|风险与|风险及|风险、|待核|重点关注|后续关注|需关注"
 )
 
-# 访谈对象行中出现单位或职务信息但未使用（）括注时给出错误。
-AFFILIATION_HINT = re.compile(
-    r"公司|集团|银行|基金|证券|研究院|研究所|大学|学院|中心|部门|单位|科技|有限|"
-    r"董事|监事|经理|总裁|总监|主任|部长|处长|科长|组长|负责人|创始人|合伙人|"
-    r"工程师|会计师|分析师|顾问|CEO|CFO|CTO|COO"
+# 交付文本不带解释性括注；只有行首公文层级编号是结构的一部分。
+# 同时检查落单、嵌套和中英文括号，避免未闭合的括注绕过校验。校验器
+# 只报错，不改写输入；删除冗余说明前，必要单位或限定词应并入句子。
+PARENTHESIS = re.compile(r"[（）()]")
+
+# 检查对纪要加工过程、输入出处或识别质量的说明，而不是把“录音”“转录”
+# 当禁词。公司讨论录音设备、转录服务或语音识别指标属于会议实质内容。
+_INPUT_SOURCE = (
+    r"(?:转录稿|转录文本|转录结果|转录内容|转写稿|转写文本|转写结果|转写内容|"
+    r"听写稿|听写文本|识别稿|识别文本|识别结果|音频转文字|录音转文字|"
+    r"录音|音频|转录|转写|BP|商业计划书|参考材料)"
 )
+_SOURCE_MODIFIER = r"(?:(?:本次|此次|原始|提供的|所提供的|会议|访谈|现场|现有|上述|该)\s*)?"
+_SENTENCE_START = r"(?:^|[。！？；]\s*|[|｜]\s*)(?:问：|答：)?\s*"
+PROCESS_METADATA_PATTERNS: list[re.Pattern[str]] = [
+    # “本纪要根据录音整理”“本段名词按 BP 核对”等文稿加工说明。
+    re.compile(
+        r"(?:本(?:份|次|篇)?纪要|该纪要|"
+        r"(?:会议|访谈)?纪要(?:正文|内容)?(?=(?:根据|依据|基于|由|系|为|通过|经|按照|采用))|"
+        r"本记录|本文|本段|该段|本问答|本摘要|"
+        r"上述(?:纪要|记录|文本|内容)|(?:以下|以上)(?:纪要|记录|文本|内容))"
+        r"[^\r\n。！？；]{0,50}" + _INPUT_SOURCE,
+        re.IGNORECASE,
+    ),
+    # 句首的输入来源引语；“产品根据录音生成字幕”不匹配此模式。
+    re.compile(
+        _SENTENCE_START + r"(?:根据|依据|基于|参照|据|结合|从)\s*"
+        + _SOURCE_MODIFIER + _INPUT_SOURCE
+        + r"(?:内容|结果|原文|记载|记录)?\s*(?:[，,:：]|可知|显示|记载|提到|所述|"
+        r"(?:进行)?(?:整理|编写|编制|归纳)(?:后|而成)?\s*(?:[，,:：。；]|$))",
+        re.IGNORECASE,
+    ),
+    # “BP 核对后，名称为……”把内部核对过程带进了交付文本。
+    re.compile(
+        _SENTENCE_START + r"(?:经|按)?\s*(?:BP|商业计划书|参考材料)\s*"
+        r"(?:核对|核验|校对|比对)(?:后)?\s*[，,:：]",
+        re.IGNORECASE,
+    ),
+    # 对交付文本的来源或加工方式作标注，包括表格单元格中的标签。
+    re.compile(
+        _SENTENCE_START
+        + r"(?:来源|内容来源|信息来源|数据来源|文本来源|纪要来源|整理依据|编写依据|"
+        r"转录说明|转写说明|识别说明|录音说明|来源说明|整理说明|备注|说明|注)\s*[:：]"
+        r"[^\r\n。！？；|｜]{0,40}" + _INPUT_SOURCE,
+        re.IGNORECASE,
+    ),
+    # “录音中提到”“转录稿未明确”说明的是本次输入，而不是业务能力。
+    re.compile(
+        r"(?:录音|音频)(?:中|里|内)\s*(?:提到|提及|显示|记载|表述|"
+        r"未提及|未说明|未明确|听不清|不清晰|无法辨认|无法辨识)|"
+        r"(?:转录稿|转录文本|转录内容|转写稿|转写文本|转写内容|听写稿|听写文本|识别稿|识别文本)"
+        r"(?:中|里|内)?\s*(?:提到|提及|显示|记载|表述|未提及|未说明|未明确|"
+        r"不清晰|无法辨认|无法辨识|存在歧义|存疑)|"
+        r"(?:原文|原话)\s*(?:识别为|转录为|转写为)|"
+        r"(?:转录|转写|听写|识别)\s*(?:存疑|有误|不确定|不清晰)|"
+        r"(?:此处|该处|本处)[^\r\n。！？；，,]{0,12}(?:录音|音频|转录|转写|听写|识别)"
+        r"[^\r\n。！？；，,]{0,8}(?:听不清|不清晰|模糊|无法辨认|无法辨识)|"
+        r"(?:此处|该处|本处|该名词|该数据|该数字|该名称)[^\r\n。！？；]{0,16}"
+        r"(?:听不清|识别不清|无法辨认|无法辨识|识别为|转录为|转写为)",
+    ),
+]
+
+
+def has_explanatory_parentheses(content: str) -> bool:
+    """Allow only the first full-width heading number, never inline notes."""
+    for pattern in (SECOND_LEVEL, FOURTH_LEVEL):
+        number = pattern.match(content)
+        if number and content[number.end():].strip():
+            content = content[number.end():]
+            break
+    return PARENTHESIS.search(content) is not None
 
 
 def load_custom_banned() -> list[str]:
@@ -309,19 +376,6 @@ def validate(
                 )
         if content.startswith("答："):
             qa_labels.append((line_number, "答"))
-        if content.startswith("访谈对象："):
-            subject_value = content.removeprefix("访谈对象：").strip()
-            if (
-                subject_value
-                and "（" not in subject_value
-                and "(" not in subject_value
-                and AFFILIATION_HINT.search(subject_value)
-            ):
-                errors.append(
-                    f"第 {line_number} 行访谈对象的单位、职务或补充说明"
-                    "应置于人名后的（）内，如“张某某（某某公司总经理）”。"
-                )
-
     if interview_metadata:
         field_indexes = [field_index for field_index, _, _ in interview_metadata]
         if field_indexes != sorted(field_indexes):
@@ -340,6 +394,24 @@ def validate(
     document = "\n".join(lines)
     if any(pattern.search(document) for pattern in CONTRAST_PATTERNS):
         errors.append("存在禁用的对照式连词组合。")
+
+    # 标题、基本信息、问答、表格和附件都属于交付内容；不因结构校验的
+    # 跳过或 --allow-line 而豁免。不得静默删除括注或说明而丢失其它事实。
+    for line_number, line in visible:
+        content = line.removeprefix(INDENT).strip()
+        if has_explanatory_parentheses(content):
+            errors.append(
+                f"第 {line_number} 行含解释性括注；删除括号及冗余说明，"
+                "括号内有效单位、范围或限定词等应直接并入句子，完整保留会议事实。"
+                "仅保留行首公文层级编号；"
+                "此规则不可用 --allow-line 放行。"
+            )
+        if any(pattern.search(content) for pattern in PROCESS_METADATA_PATTERNS):
+            errors.append(
+                f"第 {line_number} 行含转录、识别或来源等加工元说明；"
+                "请直接客观陈述会议实质内容，删除输入出处、识别质量和材料核对说明；"
+                "此规则不可用 --allow-line 放行。"
+            )
 
     # 泛化受访主体和归因套话在总结、问答及其他正文中一律禁止。此规则
     # 不读取 allowed_lines，确保 --allow-line 无法绕过用户要求的硬约束。
@@ -557,7 +629,7 @@ def main() -> int:
         metavar="行号",
         help=(
             "放行该行的禁用核验/指导类表述；仅限转录稿中真实谈及的会议内容；"
-            "不适用于泛化受访主体和归因套话"
+            "不适用于括注、加工元说明、泛化受访主体和归因套话"
         ),
     )
     args = parser.parse_args()
@@ -584,6 +656,8 @@ def main() -> int:
     print("纪要文本校验通过。")
     print("提示：冗余归因表述检查：0 处残留。")
     print("提示：总结概述转述句式检查：0 处残留。")
+    print("提示：解释性括注检查：0 处残留。")
+    print("提示：加工元说明检查：0 处残留。")
     if allowed_lines:
         released = "、".join(str(number) for number in sorted(allowed_lines))
         print(f"提示：第 {released} 行的表述已按转录稿真实内容放行，交付前向用户说明。")
