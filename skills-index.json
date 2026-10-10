@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "skills": [
     {
       "id": "hangye-fenxi",
@@ -8,17 +8,21 @@
       "source": "hangye-fenxi",
       "version": "1.0.2",
       "readme": "hangye-fenxi/README.md",
-      "archive": "distributions/investment-report-skills/hangye-fenxi.zip",
       "distribution": "investment-report-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md"
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
+      "release": {
+        "tag": "hangye-fenxi/v1.0.2",
+        "asset": "hangye-fenxi.zip",
+        "sha256": "d8e674eb9a6f75366b4e51e63626c653e218b345a1427c511a5e2e1a57142970"
+      }
     },
     {
       "id": "zhuying-yewu-fenxi",
@@ -27,17 +31,21 @@
       "source": "zhuying-yewu-fenxi",
       "version": "1.0.2",
       "readme": "zhuying-yewu-fenxi/README.md",
-      "archive": "distributions/investment-report-skills/zhuying-yewu-fenxi.zip",
       "distribution": "investment-report-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md"
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
+      "release": {
+        "tag": "zhuying-yewu-fenxi/v1.0.2",
+        "asset": "zhuying-yewu-fenxi.zip",
+        "sha256": "5dafc6c7a92658324e3d5202c45df2e7ffba5ad49f9caec58e75e60414ae0cbb"
+      }
     },
     {
       "id": "gongsi-qingkuang",
@@ -46,17 +54,21 @@
       "source": "gongsi-qingkuang",
       "version": "2.0.3",
       "readme": "gongsi-qingkuang/README.md",
-      "archive": "distributions/investment-report-skills/gongsi-qingkuang.zip",
       "distribution": "investment-report-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md"
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
+      "release": {
+        "tag": "gongsi-qingkuang/v2.0.3",
+        "asset": "gongsi-qingkuang.zip",
+        "sha256": "0fc7883c12d28db59eab36f7a4b165cbf9c0b31483308828b0ded1f7c1f63dd3"
+      }
     },
     {
       "id": "officialese-skill",
@@ -65,17 +77,21 @@
       "source": "officialese-skill",
       "version": "1.0.2",
       "readme": "officialese-skill/README.md",
-      "archive": "distributions/office-skills/officialese-skill.zip",
       "distribution": "office-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md"
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
+      "release": {
+        "tag": "officialese-skill/v1.0.2",
+        "asset": "officialese-skill.zip",
+        "sha256": "3c488f903e55ee1ccd664ed03b3feced4c5e8c34ac2612f1fd4579f64e0888cd"
+      }
     },
     {
       "id": "yiti-skill",
@@ -84,17 +100,21 @@
       "source": "yiti-skill",
       "version": "1.0.2",
       "readme": "yiti-skill/README.md",
-      "archive": "distributions/office-skills/yiti-skill.zip",
       "distribution": "office-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md"
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
+      "release": {
+        "tag": "yiti-skill/v1.0.2",
+        "asset": "yiti-skill.zip",
+        "sha256": "1f4fea9d8eb039f6b02c8cde2632c78d9840ce717abf6e94739588dac4f54dda"
+      }
     },
     {
       "id": "meeting-minutes-pro",
@@ -103,19 +123,23 @@
       "source": "meeting-minutes-pro",
       "version": "1.0.3",
       "readme": "meeting-minutes-pro/README.md",
-      "archive": "distributions/office-skills/meeting-minutes-pro.zip",
       "distribution": "office-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md",
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md",
         "text_generation": "Codex真实生成及四项检查通过；仅文本draft",
         "asr": "真实FunASR及Qwen0.6B离线推理通过（13.675秒合成语音）；Qwen CUDA失败、CPU通过；真实会议未实测"
       },
-      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
+      "release": {
+        "tag": "meeting-minutes-pro/v1.0.3",
+        "asset": "meeting-minutes-pro.zip",
+        "sha256": "3afec69d6723d86380f5e265ec6ba4dc527b91a0b7e1b8addabf171582152a1d"
+      }
     },
     {
       "id": "soe-post-investment-report",
@@ -124,17 +148,21 @@
       "source": "soe-post-investment-report",
       "version": "1.5.6",
       "readme": "soe-post-investment-report/README.md",
-      "archive": "distributions/office-skills/soe-post-investment-report.zip",
       "distribution": "office-skills",
       "verification": {
         "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过；严格首轮只四问未通过（有额外进度/依据说明）",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
-        "evidence": "docs/validation.md",
-        "codex_evidence": "docs/validation.md"
+        "evidence": "docs/maintenance.md",
+        "codex_evidence": "docs/maintenance.md"
       },
-      "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体"
+      "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体",
+      "release": {
+        "tag": "soe-post-investment-report/v1.5.6",
+        "asset": "soe-post-investment-report.zip",
+        "sha256": "010efbd78bf52f83a16504e18bc9ec9d66486b93a4ded164d40db765efb6dda0"
+      }
     }
   ],
   "shared_groups": [

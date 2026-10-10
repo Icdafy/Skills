@@ -1,6 +1,6 @@
 # Icdafy/Skills · 投资与公文技能库
 
-按用途选择一个技能，下载安装完整目录，再在客户端点名调用。当前共七项：立项报告三个章节、公文与会议三项、投后管理一项。会议纪要内含可选语音转写；仓库没有 PPT 技能或独立 sound-transcribe 技能。
+按用途选择技能，下载完整目录并安装，再在客户端点名调用。当前共七项：立项报告三个章节、公文与会议三项、投后管理一项。
 
 ## 找技能
 
@@ -11,86 +11,58 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](distributions/investment-report-skills/hangye-fenxi.zip) | 1.0.2 |
-| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](distributions/investment-report-skills/zhuying-yewu-fenxi.zip) | 1.0.2 |
-| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](distributions/investment-report-skills/gongsi-qingkuang.zip) | 2.0.3 |
+| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.0.2/hangye-fenxi.zip) | 1.0.2 |
+| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/zhuying-yewu-fenxi%2Fv1.0.2/zhuying-yewu-fenxi.zip) | 1.0.2 |
+| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.0.3/gongsi-qingkuang.zip) | 2.0.3 |
 
 ### 公文与会议
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](distributions/office-skills/officialese-skill.zip) | 1.0.2 |
-| 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](distributions/office-skills/yiti-skill.zip) | 1.0.2 |
-| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](distributions/office-skills/meeting-minutes-pro.zip) | 1.0.3 |
+| 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.0.2/officialese-skill.zip) | 1.0.2 |
+| 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/yiti-skill%2Fv1.0.2/yiti-skill.zip) | 1.0.2 |
+| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.0.3/meeting-minutes-pro.zip) | 1.0.3 |
 
 ### 投后管理
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](distributions/office-skills/soe-post-investment-report.zip) | 1.5.6 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.5.6/soe-post-investment-report.zip) | 1.5.6 |
 <!-- skills:end -->
 
-## 怎么装
+## 安装与调用
 
-推荐只安装所需技能，先用项目目录试用。Python 3.10+；Word 生成需各技能依赖。单技能ZIP和安装器输出不含字体。源码按维护者要求保留原main六技能各三份字体，共18份，路径和字节不变；字体公开再分发授权仍未确认。使用时请自行准备授权字体；检测、嵌入和缺字体提示见技能 README。
+从上表下载对应版本的 Release ZIP，解压得到 `<英文名>/SKILL.md`，按技能 README 准备依赖。保留完整目录，不只复制 SKILL.md；整库 Download ZIP 不能当作单技能包上传。
 
-从上表下载单技能 ZIP，解压得到 `<英文名>/SKILL.md`。整库 Download ZIP 不能直接当单技能包上传。以下是完整公司情况安装例子，在仓库根运行（路径换成你的项目）：
+Python 3.10+；依赖、Word 字体和会议纪要的 ASR 环境按对应技能 README 准备。安装包不含字体或模型，字体由使用者自行准备。目录安装、Claude Code 市场安装、Codex 源码安装及旧版备份更新见 [安装与更新](docs/maintenance.md#安装与更新)，字体授权范围见 [字体与许可](docs/maintenance.md#字体与许可)。
 
-```powershell
-git clone https://github.com/Icdafy/Skills.git
-cd Skills
-python -m pip install -r gongsi-qingkuang/requirements.txt
-python gongsi-qingkuang/scripts/skill_portability.py check --smoke
-python gongsi-qingkuang/scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目"
-python gongsi-qingkuang/scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目" --apply
-```
+安装后新建会话。Codex 输入 `$gongsi-qingkuang 帮我整理这份尽调资料的公司情况`；Claude Code 输入 `/gongsi-qingkuang 帮我整理这份尽调资料的公司情况`。也可直接说“帮我写立项报告的公司情况”。
 
-Codex 使用项目 `.agents/skills/`；Claude Code 把 `--agent codex` 换成 `--agent claude-code`，使用 `.claude/skills/`。目录安装器默认只预览，`--apply` 才写入；新会话前核对实际加载路径和同名旧安装。用户级安装去掉项目参数即可，但不要自动覆盖所有已安装技能。
-
-Claude Code 也可用插件市场：`/plugin marketplace add Icdafy/Skills`，再 `/plugin install gongsi-qingkuang@icdafy-skills`。Codex 可运行 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/gongsi-qingkuang`。源码地址沿用根目录路径；统一从main安装，按各技能README核对版本和依赖。
-
-其他客户端的目录/ZIP 入口保留在各技能 `references/agent-compatibility.md`，均注明验证程度。没有实际客户端调用记录时，不用脚本通过代替“已验证”。
-
-## 怎么用
-
-安装后新建会话。Codex 输入 `$gongsi-qingkuang 帮我整理这份尽调资料的公司情况`；Claude Code 输入 `/gongsi-qingkuang 帮我整理这份尽调资料的公司情况`。自然语言例子：“帮我写立项报告的公司情况”。首轮会询问早前期或中后期，回答后才按原固定模板起草。
-
-行业分析和主营业务分析分别使用 `$hangye-fenxi`、`$zhuying-yewu-fenxi`；投后报告先提出四项变更确认；会议纪要先补会议信息。每项技能 README 都写明用途边界、输入输出、依赖和完整调用例子。
+每项技能 README 写明用途边界、所需材料、输入输出和完整调用例子。
 
 ## 怎么升级
 
-维护者只改仓库根目录 `<英文名>/` 中的源码；共享文件改索引指定基准后同步。只升级投委会议题的例子：
+默认按技能独立升级：点名哪个技能就只升级哪个，点名多个就只升级指定集合。只有明确要求“所有技能”或“全库升级”，才升级全部技能。目标技能独立维护源码、版本、变更记录和 Release；共享文件的改动不自动扩散。
 
-```powershell
-python tools/check_shared_scripts.py --sync
-python tools/package_skills.py --skill yiti-skill
-python tools/package_skills.py --check
-```
-
-详细顺序、版本修改、受影响包计算及验证见 [维护说明](docs/maintenance.md)。用户更新安装时见 [安装与旧版更新](docs/installation.md)，已有目录先备份，私有术语保留；ZIP 与源码版本分别在 `VERSION`、`CHANGELOG.md` 和 manifest 里核对。
+只在仓库根目录修改目标技能源码，索引和首页登记目标变更；单技能任务不运行全库 `--sync`。构建产物放 `work/releases/<英文名>/<版本>/`，通过 GitHub Releases 分别发布，不提交 ZIP。版本、共享关系、构建命令和发布流程见 [维护说明](docs/maintenance.md#按技能独立维护)。
 
 ## 目录做什么
 
-| 顶层目录/文件 | 用途 |
+| 目录/文件 | 用途 |
 |---|---|
-| [hangye-fenxi/](hangye-fenxi/) | 所属行业分析的独立源码、规则和配套资源 |
-| [zhuying-yewu-fenxi/](zhuying-yewu-fenxi/) | 主营业务分析的独立源码、规则和配套资源 |
-| [gongsi-qingkuang/](gongsi-qingkuang/) | 公司情况的独立源码、规则和配套资源 |
-| [officialese-skill/](officialese-skill/) | 国企公文写作与排版的独立源码、规则和配套资源 |
-| [yiti-skill/](yiti-skill/) | 投委会议题的独立源码、规则和配套资源 |
-| [meeting-minutes-pro/](meeting-minutes-pro/) | 会议转录与正式纪要的独立源码、规则和配套资源 |
-| [soe-post-investment-report/](soe-post-investment-report/) | 国企股权投资投后报告的独立源码、规则和配套资源 |
-| [distributions/](distributions/) | 保留的两类下载目录，七个单技能 ZIP 和 SHA-256 |
-| [tools/](tools/) | 仓库维护、同步、打包和测试；不当作技能安装 |
-| [docs/](docs/) | 安装、维护、验证摘要及源码字体校验清单 |
-| [.claude-plugin/](.claude-plugin/) | Claude Code 市场索引，直接指向七个根目录技能 |
-| [skills-index.json](skills-index.json) | 技能集合、路径、版本和共享副本的唯一清单 |
-| [LICENSE](LICENSE)、[NOTICE](NOTICE)、[第三方清单](THIRD_PARTY_NOTICES.md) | Apache-2.0 授权范围、原署名及来源；原18份源码字体保留，字体公开再分发授权未确认；单技能ZIP排除字体 |
+| 根目录七个技能 | 每个技能的一份独立源码、规则、资源和使用说明 |
+| [tools/](tools/) | 仓库目录生成、打包、校验和测试 |
+| [docs/](docs/) | 一份安装维护指南及原字体校验清单 |
+| [.claude-plugin/](.claude-plugin/) | Claude Code 市场索引，指向七个根目录技能 |
+| [.gitignore](.gitignore) | 排除临时输出、缓存、私有词库及新增本机字体 |
+| [AGENTS.md](AGENTS.md) | 按技能独立升级的仓库维护规则 |
+| [skills-index.json](skills-index.json) | 技能路径、版本、Release 和共享关系的唯一清单 |
+| [LICENSE](LICENSE) | 完整的 Apache-2.0 授权文本 |
+| [NOTICE](NOTICE) | 署名、授权范围及第三方例外的简短声明 |
+| [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) | 素材来源、文件摘要、字体限制与依赖许可明细 |
 
-本地 `.git/` 是 Git 元数据，不属于下载技能。临时材料和测试输出放 `work/`，不提交。七个技能目录直接列在仓库根目录，每项只有一份源码。
+安装包在 [GitHub Releases](https://github.com/Icdafy/Skills/releases)；临时材料、构建和测试输出放 `work/`，不提交。
 
 ## 验证状态
 
-七项资源、安装包、11组共享副本及测试的结果见 [验证摘要](docs/validation.md)。原始测试日志、模型调用输出和迁移记录已从当前目录清理，可通过摘要中的固定 Git 提交查阅。
-
-历史 Codex CLI 0.160.0 路由实测21/21、严格首轮行为18/21；会议纪要文本与两个真实ASR引擎的短合成语音已实测。真实长会、方言、Claude Code及其他客户端未实测，脚本检查不能代替这些验证。
+校验命令、历史实测结果及其适用范围集中记录在 [维护指南](docs/maintenance.md#测试与验证范围)，分别说明脚本检查、客户端调用、ASR 和 Word 渲染的验证程度。

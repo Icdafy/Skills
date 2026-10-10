@@ -572,7 +572,7 @@ def list_agents():
         scope = f'；项目级 <项目>/{project}' if project else ''
         override = f'；设置 {env} 时为 ${env}/skills' if env else ''
         print(f'  {agent:<13} ~/{user}{scope}{override}  —  {label}')
-    print('界面上传（先用 package 生成 ZIP，或下载仓库 distributions/ 中的 ZIP）：')
+    print('界面上传（先用 package 生成 ZIP，或从 GitHub Releases 下载单技能 ZIP）：')
     for client, route in UI_CLIENTS:
         print(f'  {client}：{route}')
 
