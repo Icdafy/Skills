@@ -1,6 +1,6 @@
 # 国企公文写作与排版（officialese-skill）
 
-当前分发版本：**1.0.3**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 

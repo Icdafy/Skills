@@ -56,7 +56,7 @@ Claude Code当前没有可运行客户端，未实测；其他客户端未实测
 
 ## 升级入口
 
-维护者只改 `meeting-minutes-pro/`，同步受影响的共享副本后执行 `python tools/package_skills.py --skill meeting-minutes-pro`（在整库根运行）；源码版本见 [VERSION](VERSION)，记录见 [CHANGELOG.md](CHANGELOG.md)。全部维护步骤见 [维护说明](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md)。
+维护者只更新 `meeting-minutes-pro/`、本技能的索引/目录版本及 ZIP，不修改或升级其他技能。`scripts/skill_portability.py` 复制自通用安装工具，现与 `references/agent-compatibility.md` 一同独立维护，这两份资源不得跨技能同步。执行 `python tools/package_skills.py --skill meeting-minutes-pro`（在整库根运行）；源码版本见 [VERSION](VERSION)，记录见 [CHANGELOG.md](CHANGELOG.md)。全部维护步骤见 [维护说明](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md)。
 
 用户将新版解压到另一个目录，再用同样的 install 命令更新指定项目。已有安装先备份到 skills 目录外的 `skill-backups/`；出现多余文件会停止，手工确认后 `--replace --apply` 把旧目录移入备份。会议纪要私有术语自动保留，其他本地文件在备份中保留。源码保持在仓库根目录 `<仓库>/meeting-minutes-pro/`；GitHub 源码地址及安装后的英文目录名不变。
 

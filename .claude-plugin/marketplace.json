@@ -13,7 +13,7 @@
       "name": "hangye-fenxi",
       "source": "./hangye-fenxi",
       "description": "撰写、修订或复核股权投资立项报告的所属行业分析，覆盖市场规模、增长动力、产业链价值、国产化率和壁垒。用于“写行业分析”“产业链分析”“赛道投资逻辑”，可输出公文Word；不用于公司情况或主营业务分析。 首先询问早前期或中后期，再按对应固定标题模板填入资料。",
-      "version": "1.0.3",
+      "version": "1.0.2",
       "strict": false,
       "skills": [
         "./"
@@ -23,7 +23,7 @@
       "name": "zhuying-yewu-fenxi",
       "source": "./zhuying-yewu-fenxi",
       "description": "根据企业资料与访谈撰写、修订或复核股权投资立项报告的主营业务分析，说明产品技术、商业模式、客户订单、竞争优势和技术壁垒，可输出公文Word。用于“写主营业务分析”“商业模式分析”；不用于纯行业分析或公司情况。 首先询问早前期或中后期，再按对应固定标题模板填入资料。",
-      "version": "1.0.3",
+      "version": "1.0.2",
       "strict": false,
       "skills": [
         "./"
@@ -33,7 +33,7 @@
       "name": "gongsi-qingkuang",
       "source": "./gongsi-qingkuang",
       "description": "根据尽调资料与访谈撰写、修订或复核股权投资立项报告的公司情况，整理工商主体、股权沿革、核心团队、权属资质、融资和财务快照，可输出公文Word。用于“写公司情况”“整理股权或团队”；不用于行业或主营业务分析。 首先询问早前期或中后期，再按对应固定标题模板填入资料。",
-      "version": "2.0.4",
+      "version": "2.0.3",
       "strict": false,
       "skills": [
         "./"
@@ -43,7 +43,7 @@
       "name": "officialese-skill",
       "source": "./officialese-skill",
       "description": "起草、改写、润色并排版中国国企公文及Word文件：通知、请示、报告、函、会议纪要、方案、附件说明等；识别上行文、平行文、下行文口吻，按公司版式设置字体、字号、页边距、标题层级、附件、落款和页码，输出DOC/DOCX。投委会议题、投后报告、立项报告章节另用专门技能。",
-      "version": "1.0.3",
+      "version": "1.0.2",
       "strict": false,
       "skills": [
         "./"
@@ -53,7 +53,7 @@
       "name": "yiti-skill",
       "source": "./yiti-skill",
       "description": "撰写国企投委会议题（DOCX）：依据股东会、合伙人会议通知及议案撰写参会表决议题；依据投后资料、对赌回购条款、经营数据撰写项目退出、股权回购议题。用于“写投委会议题”“报送投委会”“提请投委会审议”，按公司公文版式排版。",
-      "version": "1.0.3",
+      "version": "1.0.2",
       "strict": false,
       "skills": [
         "./"
@@ -73,7 +73,7 @@
       "name": "soe-post-investment-report",
       "source": "./soe-post-investment-report",
       "description": "依据随调用提供的投后材料，创建或更新国企股权投资项目投后情况报告：首轮先问四项变更确认，再核验事实、回填数据、披露风险、更新附件；沿用上期定稿的报告形式（文件式或内部报告式）与框架，按定稿表述范式成文，正文不超过10页，输出正式DOCX。用于投后报告、投后管理报告、半年度或年度投后情况报告。",
-      "version": "1.5.7",
+      "version": "1.5.6",
       "strict": false,
       "skills": [
         "./"

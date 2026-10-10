@@ -5,9 +5,9 @@ Python 3.10+; stdlib only. ``check --smoke`` additionally needs python-docx.
 No host configuration or font installation is performed. ``install`` is a dry
 run unless ``--apply`` is specified.
 
-One file serves every skill in the repository: the per-skill contract lives in
-PROFILES below. Edit the canonical copy in gongsi-qingkuang and run
-``python tools/check_shared_scripts.py --sync``.
+This copy originated from the repository's common installation tool and is now
+maintained independently for meeting-minutes-pro. Its per-skill contract lives
+in PROFILES below. Do not sync this file to or from other skills.
 """
 from __future__ import annotations
 

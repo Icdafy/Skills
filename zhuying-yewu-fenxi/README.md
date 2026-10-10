@@ -1,6 +1,6 @@
 # 主营业务分析（zhuying-yewu-fenxi）
 
-当前分发版本：**1.0.3**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
