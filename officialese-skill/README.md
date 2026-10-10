@@ -20,7 +20,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。统一从main下载或安装，核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.0.2/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/officialese-skill"
@@ -48,7 +48,7 @@ Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1�
 
 Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。
 
-Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。
+Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。
 
 ## 升级入口
 

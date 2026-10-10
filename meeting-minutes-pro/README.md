@@ -24,7 +24,7 @@ Python 3.10+；文本检查使用标准库，DOCX 生成需 `scripts/requirement
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip) 下载，解压后进入 `meeting-minutes-pro`；不要只复制 SKILL.md。统一从main下载或安装，核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.0.3/meeting-minutes-pro.zip) 下载，解压后进入 `meeting-minutes-pro`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/meeting-minutes-pro"
@@ -52,7 +52,7 @@ Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1�
 
 Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。文本生成实测保留2组问答、3窗全部内容和24个数字事实，四项检查全部退出0；这是文本草稿，`release_ready:false`。已有FunASR及Qwen0.6B真实离线推理13.675秒合成中文语音均成功；Qwen CUDA首次失败，CPU重试通过。真实长会、方言、说话人分离和全量回听未实测。
 
-Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。
+Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。
 
 ## 升级入口
 
@@ -108,7 +108,7 @@ Qwen 主稿再次由 Qwen 重转不计作独立双引擎；当前自动复核器
 
 ## 安装、更新与隐私
 
-[下载完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/meeting-minutes-pro.zip)，在 Claude、ChatGPT、豆包、WorkBuddy、Kimi Work、Qoder、TRAE 的技能界面上传；目录型客户端用 `python scripts/skill_portability.py install --agent <客户端> --apply`（`agents` 子命令列出 claude-code、codex、kimi-code、workbuddy、trae-cn、qoder-cli、zcode、openclaw 等全部目标，`--detect` 自动识别本机客户端）。覆盖更新时旧版先备份到 `skill-backups/`，项目术语与机构禁词始终保留。旧命令 `python scripts/install_skill.py --target codex|claude|workbuddy|all [--force]` 仍可用。旧版无指纹 ASR 检查点自动重算，旧版复核报告须按新版重新生成。
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.0.3/meeting-minutes-pro.zip)，在 Claude、ChatGPT、豆包、WorkBuddy、Kimi Work、Qoder、TRAE 的技能界面上传；目录型客户端用 `python scripts/skill_portability.py install --agent <客户端> --apply`（`agents` 子命令列出 claude-code、codex、kimi-code、workbuddy、trae-cn、qoder-cli、zcode、openclaw 等全部目标，`--detect` 自动识别本机客户端）。覆盖更新时旧版先备份到 `skill-backups/`，项目术语与机构禁词始终保留。旧命令 `python scripts/install_skill.py --target codex|claude|workbuddy|all [--force]` 仍可用。旧版无指纹 ASR 检查点自动重算，旧版复核报告须按新版重新生成。
 
 `glossary/industry/` 是公共行业术语库；`glossary/` 根下项目术语和 `banned-phrases.txt` 是用户数据。安装复制与 Git 发布默认排除私有数据。对目录手工打包时也必须排除这些文件，不得仅依赖 `.gitignore`。不把模型、录音、转录稿、项目数据或本机路径补丁上传到技能仓库。
 

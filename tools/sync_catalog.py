@@ -6,21 +6,19 @@ import json
 import re
 import sys
 
-from skill_catalog import REPO, load_index
+from skill_catalog import REPO, load_index, release_asset_url
 
 
 def table(index, distribution=None):
     rows = [e for e in index['skills'] if distribution is None or e['distribution'] == distribution]
-    prefix = '' if distribution is None else '../../'
     result = []
     for category in dict.fromkeys(e['category'] for e in rows):
         result += [f'### {category}', '', '| 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |',
                    '|---|---|---|---|---|']
         for e in rows:
             if e['category'] == category:
-                archive = prefix + e['archive'] if distribution is None else e['id'] + '.zip'
-                result.append(f"| {e['name_zh']}（`{e['id']}`） | [源码]({prefix}{e['source']}/) | "
-                              f"[README]({prefix}{e['readme']}) | [ZIP]({archive}) | {e['version']} |")
+                result.append(f"| {e['name_zh']}（`{e['id']}`） | [源码]({e['source']}/) | "
+                              f"[README]({e['readme']}) | [ZIP]({release_asset_url(e)}) | {e['version']} |")
         result.append('')
     return '\n'.join(result).rstrip() + '\n'
 
@@ -31,9 +29,7 @@ def main(argv=None):
     args = parser.parse_args(argv)
     index = load_index()
     failure = False
-    targets = [(REPO / 'README.md', None)] + [
-        (REPO / 'distributions' / group / 'README.md', group)
-        for group in dict.fromkeys(e['distribution'] for e in index['skills'])]
+    targets = [(REPO / 'README.md', None)]
     for path, group in targets:
         content = path.read_text(encoding='utf-8')
         expected = '<!-- skills:begin -->\n' + table(index, group) + '<!-- skills:end -->'

@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
-"""Validate collection, entry points, archives, resources, links and distribution licenses.
+"""Validate collection, entry points, source resources, links and distribution licenses.
 
-Standard library only. Read-only; never rebuilds packages or edits a client.
+Standard library only. Never rebuilds packages or edits a client. Default checks
+sources and any cached release ZIPs; --release-assets fetches and verifies every
+published ZIP in the ignored work/releases/ cache.
 """
 import argparse
 from contextlib import redirect_stdout
@@ -175,7 +177,9 @@ def check_distribution(root):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.parse_args()
+    parser.add_argument('--release-assets', action='store_true',
+                        help='Fetch published assets into work/ and require all release ZIPs to match')
+    args = parser.parse_args()
     index = load_index()
     ids = {e['id'] for e in index['skills']}
     actual = {p.parent.relative_to(REPO).as_posix() for p in REPO.rglob('SKILL.md')
@@ -185,12 +189,11 @@ def main():
         raise ValueError(f'Skill set differs: actual={sorted(actual)} expected={sorted(expected)}')
     if len({e['name_zh'].casefold() for e in index['skills']}) != len(ids):
         raise ValueError('Duplicate Chinese skill name')
-    archives = {p.relative_to(REPO).as_posix() for p in (REPO / 'distributions').rglob('*.zip')}
-    if archives != {e['archive'] for e in index['skills']}:
-        raise ValueError('Archive set differs from index')
     if sync_catalog.main(['--check']):
         raise ValueError('Index/README/marketplace mismatch')
     check_distribution(REPO)
+    verified_releases = 0
+    missing_releases = []
     for entry in index['skills']:
         root = REPO / entry['source']
         if (root / 'VERSION').read_text(encoding='utf-8').strip() != entry['version']:
@@ -204,7 +207,16 @@ def main():
         with redirect_stdout(io.StringIO()):
             if package_skills.portable.metadata(root)['name'] != entry['id']:
                 raise ValueError('SKILL.md name differs from index: ' + entry['id'])
-            package_skills.verify(entry['id'], (REPO / entry['archive']).parent)
+            package_skills.portable.check(root)
+            archive = package_skills.archive_path(entry['id'])
+            checksum = archive.with_name(archive.name + '.sha256')
+            if args.release_assets:
+                package_skills.download(entry['id'], force=True)
+            if args.release_assets or archive.exists() or checksum.exists():
+                package_skills.verify(entry['id'])
+                verified_releases += 1
+            else:
+                missing_releases.append(entry['id'])
     for group in index['shared_groups']:
         if group['canonical'] not in group['skills'] or not set(group['skills']) <= ids:
             raise ValueError('Invalid shared group: ' + group['file'])
@@ -213,7 +225,11 @@ def main():
         consistent, messages = check_shared_scripts.check_group(group, False)
         if not consistent:
             raise ValueError('Shared copy drift: ' + '; '.join(messages))
-    print(f"[OK] Source resources, versions, archives and {len(index['shared_groups'])} shared groups agree: {len(ids)} skills")
+    print(f"[OK] Source resources, versions and {len(index['shared_groups'])} shared groups agree: {len(ids)} skills")
+    print(f'[OK] Published ZIP byte locks and manifests verified: {verified_releases}/{len(ids)}')
+    if missing_releases:
+        print('[INFO] Release ZIPs absent from local cache: ' + ', '.join(missing_releases))
+        print('[INFO] Source checks passed; release contents were not fully verified. Use --release-assets for published ZIP verification.')
     check_links(REPO)
     for name in ('LICENSE', 'NOTICE', 'THIRD_PARTY_NOTICES.md'):
         if not (REPO / name).is_file():

@@ -20,7 +20,7 @@ Python 3.10+；安装和资料盘点使用标准库，DOCX 生成需 `requiremen
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip) 下载，解压后进入 `soe-post-investment-report`；不要只复制 SKILL.md。统一从main下载或安装，核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.5.6/soe-post-investment-report.zip) 下载，解压后进入 `soe-post-investment-report`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/soe-post-investment-report"
@@ -46,9 +46,9 @@ Claude Code 输入 `/soe-post-investment-report 用这些本期投后资料更�
 
 Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
 
-Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。历史会话中，三例的四问内容和顺序正确，首轮另含进度或技能依据说明；实际输出保留在[客户端验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation/clients/codex/summary.json)。
+Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。历史会话中，三例的四问内容和顺序正确，首轮另含进度或技能依据说明；实际输出保留在[客户端验证记录](https://github.com/Icdafy/Skills/blob/0a15cc20451414f1506d4f7fe4e8bba8939af875/docs/validation/clients/codex/summary.json)。
 
-Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。
+Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。
 
 ## 升级入口
 
@@ -166,7 +166,7 @@ python -X utf8 scripts/font_preflight.py
 
 ## 跨智能体安装
 
-本技能采用通用 `SKILL.md` 包结构，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 中使用。界面型客户端上传[完整技能 ZIP](https://github.com/Icdafy/Skills/raw/refs/heads/main/distributions/office-skills/soe-post-investment-report.zip)；目录型客户端使用通用安装器，各客户端入口、调用方式和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)：
+本技能采用通用 `SKILL.md` 包结构，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 中使用。界面型客户端上传[完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.5.6/soe-post-investment-report.zip)；目录型客户端使用通用安装器，各客户端入口、调用方式和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)：
 
 ```bash
 python -X utf8 scripts/skill_portability.py agents

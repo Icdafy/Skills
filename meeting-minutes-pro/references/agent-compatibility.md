@@ -8,7 +8,7 @@
 
 ## 验证程度
 
-Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档；真实调用结果见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/validation.md)。其他客户端保留下列安装参考（原核对日 2026-09-27），本次均未实测，入口可能随版本变化，请以客户端实际界面为准。目录复制或脚本成功均不等于模型调用成功。
+Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档；真实调用结果见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。其他客户端保留下列安装参考（原核对日 2026-09-27），本次均未实测，入口可能随版本变化，请以客户端实际界面为准。目录复制或脚本成功均不等于模型调用成功。
 
 ## 二、各客户端安装与调用
 
@@ -18,7 +18,7 @@ Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档�
 | **Claude Code**（CLI、桌面 Code、IDE） | 插件市场：`/plugin marketplace add Icdafy/Skills`，再 `/plugin install <name>@icdafy-skills`；或目录安装 `--agent claude-code`（`~/.claude/skills/`，项目级 `.claude/skills/`） | `/<name>`（插件方式安装时斜杠菜单带插件名前缀）或自然语言 | [Claude Code 技能](https://code.claude.com/docs/en/skills) |
 | **ChatGPT** 桌面版 | 目录安装 `--agent chatgpt`（与 Codex 共用 `~/.agents/skills/`），侧栏“技能”中确认 | 输入 `@` 选择技能，或按描述自动匹配 | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
 | **ChatGPT** Business / Enterprise / Edu | 技能 → 创建 → 从电脑上传，选择 ZIP；等待安全扫描，标记“需审核”时按提示复核 | `@` 选择技能 | [Skills in ChatGPT](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) |
-| **Codex** CLI / IDE 扩展 | `--agent codex`（`~/.agents/skills/`，项目级 `.agents/skills/`）；或在 Codex 中运行 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/skills/<name>`。仍读取 `$CODEX_HOME/skills` 的旧版用 `--agent codex-legacy` | `$<name>` 或 `/skills` | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
+| **Codex** CLI / IDE 扩展 | `--agent codex`（`~/.agents/skills/`，项目级 `.agents/skills/`）；或在 Codex 中运行 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<name>`。仍读取 `$CODEX_HOME/skills` 的旧版用 `--agent codex-legacy` | `$<name>` 或 `/skills` | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
 | **Kimi Work**（Kimi 电脑客户端 Work 模式） | 侧栏“技能”→ 上传本地技能，导入完整 ZIP | 输入框输入 `/` 选择技能，或直接点名 | [Kimi Work](https://www.kimi.com/help/kimi-work/overview) |
 | **Kimi Code CLI** | `--agent kimi-code`（`$KIMI_CODE_HOME/skills/`，默认 `~/.kimi-code/skills/`；也读取 `~/.agents/skills/`） | `/skill:<name>` | [Kimi Code Skills](https://www.kimi.com/code/docs/kimi-code-cli/customization/skills.html) |
 | **豆包** 电脑版（工作模式） | 左侧“插件·技能·伙伴”→“技能”→ 右上角“+ 添加”→“上传技能”，拖入 ZIP 或解压后的技能文件夹；在“我安装的”中确认 | “新工作任务”对话框输入 `/` 或 `@` 选择技能，或直接描述需求自动匹配 | [在豆包工作中使用技能](https://www.doubao.com/work/docs/zh-cn/articles/081010973544-skills) |
