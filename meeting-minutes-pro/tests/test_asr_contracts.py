@@ -109,6 +109,7 @@ class FunASRContractTests(unittest.TestCase):
         self.assertEqual(calls, ['chunk_0001', 'chunk_0002', 'chunk_0002'])
         self.assertEqual(result.text, 'chunk_0001\nchunk_0002')
         self.assertEqual([s.start for s in result.stamps], [0.1, 900.1])
+        self.assertEqual(result.chunk_boundaries, [900])
         self.assertEqual(result.inferred_audio_seconds, 1000)
 
 

@@ -40,6 +40,8 @@ import time
 import wave
 
 from run_state import atomic_json, fingerprint, read_checkpoint, enable_offline, local_model, file_hash
+import audio_quality
+from transcript_quality import repetition_flags
 
 
 QWEN_MODEL_DEFAULT = "Qwen/Qwen3-ASR-0.6B"
@@ -79,6 +81,7 @@ class TranscribeResult:
     setup_seconds: float | None = None
     inference_seconds: float | None = None
     inferred_audio_seconds: float = 0.0
+    chunk_boundaries: list[float] = field(default_factory=list)
 
 
 def parse_args() -> argparse.Namespace:
@@ -105,6 +108,8 @@ def parse_args() -> argparse.Namespace:
                              "cam++ clustering (preset_spk_num) for steadier speaker labels")
     parser.add_argument("--enhance", action="store_true",
                         help="preprocess audio with loudness normalization and light denoising")
+    parser.add_argument("--channel", choices=["mix", "left", "right"], default="mix",
+                        help="source audio channel: mix all (default), first/left, or second/right; not speaker identification")
     parser.add_argument("--offline", action="store_true", help="forbid model/network downloads")
     parser.add_argument("--clip-start", type=float, default=0.0)
     parser.add_argument("--clip-duration", type=float)
@@ -142,17 +147,25 @@ def prepare_wav(
     clip_start: float = 0.0,
     clip_duration: float | None = None,
     enhance: bool = False,
+    channel: str = "mix",
 ) -> None:
+    if channel not in {"mix", "left", "right"}:
+        raise ValueError("channel must be mix, left or right")
     cmd = [ffmpeg_exe(), "-nostdin", "-hide_banner", "-loglevel", "error", "-y"]
     if clip_start > 0:
         cmd += ["-ss", str(clip_start)]
-    cmd += ["-i", str(source)]
+    cmd += ["-i", str(source), "-map", "0:a:0"]
     if clip_duration is not None:
         if clip_duration <= 0:
             raise ValueError("--clip-duration must be positive")
         cmd += ["-t", str(clip_duration)]
+    filters = []
+    if channel != "mix":
+        filters.append("pan=mono|c0=c" + ("0" if channel == "left" else "1"))
     if enhance:
-        cmd += ["-af", "afftdn=nf=-25,loudnorm=I=-16:TP=-1.5:LRA=11"]
+        filters += ["afftdn=nf=-25", "loudnorm=I=-16:TP=-1.5:LRA=11"]
+    if filters:
+        cmd += ["-af", ",".join(filters)]
     cmd += ["-vn", "-ac", "1", "-ar", "16000", "-c:a", "pcm_s16le", str(target)]
     proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
     if proc.returncode != 0:
@@ -368,6 +381,7 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
         setup_seconds=setup_seconds,
         inference_seconds=inference_seconds,
         inferred_audio_seconds=inferred_audio_seconds,
+        chunk_boundaries=[end for _, end in chunks[:-1]],
     )
 
 
@@ -514,6 +528,7 @@ def run_funasr(
         setup_seconds=setup_seconds,
         inference_seconds=inference_seconds,
         inferred_audio_seconds=inferred_audio_seconds,
+        chunk_boundaries=[end for _, end in chunks[:-1]],
     )
 
 
@@ -613,6 +628,7 @@ def write_outputs(
         "raw_asr": True,
         "text": outcome.text.strip(),
         "timestamps": [asdict(x) for x in outcome.stamps],
+        "boundary_review_windows": audio_quality.boundary_windows(outcome.chunk_boundaries, duration),
     }
     payload.update(extra or {})
     paths["json"].write_text(json.dumps(payload, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
@@ -703,16 +719,28 @@ def main() -> int:
         else:
             args.clip_start = 0.0
 
+    processing_started = time.monotonic()
     try:
         with tempfile.TemporaryDirectory(prefix="mmp-asr-") as temp_dir:
             wav_path = Path(temp_dir) / "input.wav"
-            prepare_wav(source, wav_path, args.clip_start, args.clip_duration, enhance=args.enhance)
+            progress({"stage": "audio_diagnostics", "channel": args.channel})
+            try:
+                source_diagnostics = audio_quality.inspect_media(
+                    source, ffmpeg_exe(), args.clip_start, args.clip_duration)
+            except (OSError, RuntimeError, ValueError, EOFError, wave.Error) as exc:
+                source_diagnostics = {"status": "unavailable", "error": str(exc)}
+            if args.channel == "right" and source_diagnostics.get("channel_count", 0) < 2:
+                raise ValueError("--channel right requires at least two confirmed source audio channels; source probing must succeed")
+            prepare_wav(source, wav_path, args.clip_start, args.clip_duration,
+                        enhance=args.enhance, channel=args.channel)
+            processed_diagnostics = audio_quality.inspect_wav(wav_path)
             duration = wav_duration(wav_path)
             sampled = args.clip_duration is not None
             checkpoint_dir = output_dir / f"{safe_stem(source)}.chunks"
             if not sampled:
                 emit_eta(output_dir, source, duration)
             started = time.monotonic()
+            audio_preparation_seconds = started - processing_started
             if args.engine == "funasr":
                 outcome = run_funasr(args, wav_path, duration, checkpoint_dir)
                 device = funasr_device(args.device)
@@ -735,7 +763,17 @@ def main() -> int:
                 "is_partial": sampled or args.clip_start > 0,
                 "recognition_config": {k: v for k, v in vars(args).items() if k not in ("input", "output_dir")},
                 "elapsed_seconds": round(elapsed, 1),
+                "audio_preparation_seconds": round(audio_preparation_seconds, 3),
+                "total_processing_seconds": round(time.monotonic() - processing_started, 3),
                 "realtime_factor": realtime_factor,
+                "audio_diagnostics": {"source": source_diagnostics,
+                                      "processed": processed_diagnostics,
+                                      "channel_selection": args.channel,
+                                      "source_interval_start_seconds": args.clip_start,
+                                      "enhanced": args.enhance,
+                                      "note": "ASR receives mono audio; channel selection does not identify speakers."},
+                "quality_flags": audio_quality.quality_flags(
+                    source_diagnostics, processed_diagnostics, args.channel, outcome.text) + repetition_flags(outcome.text),
             }
             extra.update(timing_summary(outcome, full_duration if sampled else None))
             if full_duration:

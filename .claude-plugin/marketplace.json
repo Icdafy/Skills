@@ -63,7 +63,7 @@
       "name": "meeting-minutes-pro",
       "source": "./meeting-minutes-pro",
       "description": "将本地会议音视频经 FunASR 与 Qwen3-ASR 转录、独立复核后，按固定规则生成“完整总结概述＋完整问答”的公文版式 DOCX；也可整理已有转录稿、访谈或会议笔记，或仅交付转录。",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "strict": false,
       "skills": [
         "./"

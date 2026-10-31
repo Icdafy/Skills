@@ -144,6 +144,13 @@ def audio_evidence(source: Path | None, transcript: Path, raw: Path | None,
     if raw.suffix.lower() != '.json':
         return ['录音模式必须保留原始 JSON 转录稿。'], []
     original = read_json(raw)
+    for flag in original.get('quality_flags', []):
+        if not isinstance(flag, dict) or not isinstance(flag.get('message'), str):
+            errors.append('原始稿音频诊断标记格式无效。')
+            continue
+        if flag.get('severity') == 'warning':
+            findings.append(finding('audio_quality', json.dumps(flag, ensure_ascii=False, sort_keys=True),
+                                    audio=flag.get('code') != 'source_diagnostics_unavailable'))
     accepted = read_json(transcript) if transcript.suffix.lower() == '.json' else {}
     source_sha = file_hash(source)
     for label, payload in [('原始稿', original), ('修订稿', accepted)]:
@@ -203,6 +210,8 @@ def audio_evidence(source: Path | None, transcript: Path, raw: Path | None,
         errors.append('复核报告没有绑定本次原始稿或修订稿。')
     if data.get('primary_engine') != original.get('engine'):
         errors.append('复核报告的主引擎与原始转录稿不一致。')
+    if data.get('channel', 'mix') != original.get('recognition_config', {}).get('channel', 'mix'):
+        errors.append('复核报告与原始转录稿使用的源声道不一致。')
     if original.get('engine') == 'qwen' and 'qwen' in str(data.get('model', '')).lower():
         errors.append('同族 Qwen 模型不能计为独立双引擎复核。')
     duration = data.get('duration_seconds', 0)

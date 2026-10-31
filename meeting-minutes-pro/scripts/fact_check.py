@@ -229,7 +229,7 @@ def _parse_date_component(text: str) -> float | None:
 
 # Units are recorded independently of the raw numeric spelling, so 万/亿
 # equivalence remains possible while 元/美元 and 家/台 cannot silently match.
-UNIT_PATTERN = r"(?:人民币|美元|美金|欧元|港元|港币|日元|英镑|摄氏度|毫米|厘米|公里|千米|公斤|千克|毫秒|分钟|小时|微米|纳米|个月|元|家|台|人|年|天|日|月|秒|米|吨|颗|套|件|个|倍|栋)"
+UNIT_PATTERN = r"(?:人民币|美元|美金|欧元|港元|港币|日元|英镑|摄氏度|毫米|厘米|公里|千米|公斤|千克|毫秒|分钟|小时|微米|纳米|个月|元|家|台|人|年|天|日|月|秒|米|吨|颗|套|件|个|倍|栋|轮|项)"
 UNIT_RE = re.compile(UNIT_PATTERN)
 CN_QUANTITY_TOKEN = re.compile(r"负?[零〇一二两三四五六七八九十百千]+(?:点[零一二三四五六七八九]+)?(?=" + UNIT_PATTERN + r")")
 
@@ -427,13 +427,8 @@ def values_match(a: float, b: float) -> bool:
 
 
 def collect_terms(glossary_paths: list[Path], terms: list[str]) -> list[str]:
-    collected: list[str] = []
-    for path in glossary_paths:
-        for line in path.read_text(encoding="utf-8-sig").splitlines():
-            if not line.lstrip().startswith("#"):
-                collected.extend(line.split())
-    collected.extend(terms)
-    return [term for term in dict.fromkeys(collected) if len(term) >= 2]
+    from glossary import collect_terms as read_terms
+    return read_terms(glossary_paths, terms)
 
 
 def verify(

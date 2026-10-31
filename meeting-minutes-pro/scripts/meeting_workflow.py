@@ -20,14 +20,15 @@ import subprocess
 import sys
 
 from run_state import atomic_json, file_hash
+from glossary import prepare_context
 
 SCRIPTS = Path(__file__).resolve().parent
 STEPS = ('transcribe', 'refine', 'ledger', 'draft', 'docx', 'render',
          'review-template', 'release')
 CODE_DEPENDENCIES = {
-    'transcribe.py': ('transcribe.py', 'run_state.py'),
-    'refine_transcript.py': ('refine_transcript.py', 'transcribe.py', 'run_state.py', 'fact_check.py', 'format_spec.py'),
-    'audit_coverage.py': ('audit_coverage.py', 'fact_check.py', 'format_spec.py'),
+    'transcribe.py': ('transcribe.py', 'audio_quality.py', 'transcript_quality.py', 'glossary.py', 'run_state.py'),
+    'refine_transcript.py': ('refine_transcript.py', 'transcript_compare.py', 'transcript_quality.py', 'transcribe.py', 'audio_quality.py', 'glossary.py', 'run_state.py', 'fact_check.py', 'format_spec.py'),
+    'audit_coverage.py': ('audit_coverage.py', 'fact_check.py', 'glossary.py', 'format_spec.py'),
     'create_minutes_docx.py': ('create_minutes_docx.py', 'quality_check.py', 'format_spec.py',
                               'docx_format_helpers.py', 'embed_fonts.py', 'font_preflight.py', 'local_fonts.py'),
     'render_docx.py': ('render_docx.py', 'format_spec.py', 'run_state.py'),
@@ -136,6 +137,8 @@ def init_job(args):
     source = args.input.expanduser().resolve()
     if not source.is_file():
         raise ValueError(f'输入文件不存在：{source}')
+    if args.assurance is None:
+        args.assurance = 'high' if args.source_kind == 'audio' else 'standard'
     if args.speakers is not None and (args.speakers < 1 or not args.diarize):
         raise ValueError('--speakers 需要 --diarize 且人数须为正整数。')
     if args.diarize and args.engine != 'funasr':
@@ -151,10 +154,18 @@ def init_job(args):
     with job_lock(root):
         if (root / 'workflow.json').exists():
             raise ValueError('任务已存在；使用 run/status，不覆盖已有任务。')
-        reserved = ('raw', 'evidence', 'coverage.txt', '会议纪要.txt', '会议纪要.docx', 'review.json',
+        reserved = ('raw', 'evidence', 'coverage.txt', '会议纪要.txt', '会议纪要.docx', 'review.json', 'hotwords.json',
                     output_stem + '.txt', output_stem + '.docx', output_stem + '.render.json', output_stem + '.pdf')
         if any((root / name).exists() for name in reserved):
             raise ValueError('任务目录已有材料，请选择独立的新目录，避免覆盖。')
+        glossary_paths = [str(p.expanduser().resolve()) for p in args.glossary]
+        # Exact project-name matching only; never mix another project's private terms.
+        if args.project_name and not glossary_paths:
+            for suffix in ('.json', '.txt'):
+                candidate = SCRIPTS.parent / 'glossary' / (filename_component(args.project_name) + suffix)
+                if candidate.is_file():
+                    glossary_paths.append(str(candidate.resolve()))
+                    break
         job = {
             'schema_version': 1, 'created_at': now(), 'job_dir': str(root),
             'source': str(source), 'source_sha256': file_hash(source),
@@ -164,8 +175,9 @@ def init_job(args):
             'interaction_policy': {'ask_once_then_complete': True, 'pause_for_user_review': False},
             'options': {name: getattr(args, name) for name in (
                 'engine', 'assurance', 'offline', 'context', 'diarize', 'speakers',
-                'mode', 'subtitle', 'language', 'device', 'model', 'aligner', 'review_model', 'timestamps')},
-            'glossary': [str(p.expanduser().resolve()) for p in args.glossary],
+                'mode', 'subtitle', 'language', 'device', 'model', 'aligner', 'review_model', 'timestamps',
+                'channel', 'enhance')},
+            'glossary': glossary_paths,
             'waivers': {'allow_line': [], 'skip': [], 'allow': [], 'allow_missing_number': []},
             'artifacts': {
                 'raw_transcript': str(raw), 'transcript': str(raw),
@@ -174,11 +186,21 @@ def init_job(args):
                 'docx': str(root / (output_stem + '.docx')),
                 'render_report': str(root / (output_stem + '.render.json')),
                 'review': str(root / 'review.json'), 'revisions': None,
+                'hotwords': str(root / 'hotwords.json'),
             },
             'steps': {}, 'status': 'initialized', 'release_ready': False,
         }
+        atomic_json(Path(job['artifacts']['hotwords']), context_manifests(job))
         save_job(root, job)
     return {'ok': True, 'job_dir': str(root), 'next': 'run', 'release_ready': False}
+
+
+def context_manifests(job):
+    return {engine: prepare_context([Path(p) for p in job['glossary']],
+                                    context=job['options']['context'], limit=400,
+                                    engine=engine,
+                                    project=job.get('meeting', {}).get('project_name', ''))
+            for engine in ('funasr', 'qwen')}
 
 
 def common_checks(job, final=False):
@@ -215,8 +237,11 @@ def command_for(job, step):
         if job['source_kind'] != 'audio':
             raise ValueError('文本材料不运行 ASR。')
         argv = ['--input', job['source'], '--output-dir', str(root / 'raw'),
-                '--engine', o['engine'], '--context', o['context'],
+                '--engine', o['engine'], '--context', context_manifests(job)[o['engine']]['context'],
                 '--language', o['language'], '--device', o['device']]
+        argv += ['--channel', o.get('channel', 'mix')]
+        if o.get('enhance'):
+            argv += ['--enhance']
         for option in ('model', 'aligner'):
             if o.get(option):
                 argv += ['--' + option, o[option]]
@@ -230,13 +255,16 @@ def command_for(job, step):
             argv += ['--offline']
         outputs = [a['raw_transcript'], str(Path(a['raw_transcript']).with_suffix('.txt')),
                    str(Path(a['raw_transcript']).with_suffix('.md'))]
-        return base + [str(SCRIPTS / 'transcribe.py')] + argv, [job['source']], outputs
+        outputs += [a.get('hotwords', str(root / 'hotwords.json'))]
+        return base + [str(SCRIPTS / 'transcribe.py')] + argv, [job['source'], *job['glossary']], outputs
     if step == 'refine':
         if job['source_kind'] != 'audio' or o['engine'] != 'funasr':
             raise ValueError('自动独立复核仅支持 FunASR→Qwen；Qwen 主稿需另行安排适用独立引擎，不能用同族重跑冒充双引擎。')
         argv = ['--transcript', a['raw_transcript'], '--source', job['source'],
                 '--output-dir', str(root / 'evidence'), '--context', o['context'],
                 '--language', o['language'], '--device', o['device']]
+        argv += ['--project-name', job.get('meeting', {}).get('project_name', ''),
+                 '--channel', o.get('channel', 'mix')]
         if o['assurance'] == 'high':
             argv += ['--all']
         if o.get('review_model'):
@@ -321,8 +349,10 @@ def run_step(root, job, step):
         if old.get('signature') == sig:
             return {'step': step, 'status': 'needs_review', 'preserved': outputs[-1]}
         raise ValueError(f'{step} 输入已变化或存在旧清单；请先另存现有清单，再重新生成并核对。')
-    if step == 'transcribe' and any(Path(p).exists() for p in outputs):
+    if step == 'transcribe' and any(Path(p).exists() for p in outputs[:-1]):
         raise ValueError('原始转录已存在且与阶段记录不一致；请使用新任务目录，避免覆盖证据。')
+    if step == 'transcribe':
+        atomic_json(Path(outputs[-1]), context_manifests(job))
     if step == 'docx' and not current(job, 'draft'):
         raise ValueError('请先对当前版本运行 --step draft 并通过机械检查。')
     if step == 'review-template' and not current(job, 'render'):
@@ -493,7 +523,8 @@ def main(argv=None):
     init.add_argument('--source-kind', choices=('audio', 'transcript', 'notes'), default='audio')
     init.add_argument('--runtime-python', default=sys.executable)
     init.add_argument('--engine', choices=('funasr', 'qwen'), default='funasr')
-    init.add_argument('--assurance', choices=('standard', 'high'), default='standard')
+    init.add_argument('--assurance', choices=('standard', 'high'), default=None,
+                      help='default: high for audio, standard for text; standard audio review is explicitly opt-in')
     init.add_argument('--offline', action='store_true')
     init.add_argument('--context', default='')
     init.add_argument('--model', help='explicit primary model ID or local directory')
@@ -503,6 +534,8 @@ def main(argv=None):
     init.add_argument('--language', default='auto')
     init.add_argument('--device', choices=('auto', 'cpu', 'cuda', 'mps'), default='auto')
     init.add_argument('--diarize', action='store_true')
+    init.add_argument('--channel', choices=('mix', 'left', 'right'), default='mix')
+    init.add_argument('--enhance', action='store_true', help='explicit audio enhancement; keep the original for comparison')
     init.add_argument('--speakers', type=int)
     init.add_argument('--mode', choices=('auto', 'minutes', 'qa-summary'), default='auto')
     init.add_argument('--subtitle', default='')

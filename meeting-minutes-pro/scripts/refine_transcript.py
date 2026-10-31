@@ -34,7 +34,8 @@ human ear stays the final arbiter.
 Outputs <stem>.refine.json and a human-readable <stem>.refine.md. Every clip
 listed under 分歧 must be re-listened to before its numbers enter the
 minutes (待核 annotations are not allowed in the deliverable); agreement
-between two independent engines is strong evidence the figure is right.
+only means the current comparison rules found no discrepancy, not that the
+audio or factual meaning has been independently confirmed.
 Comparison covers numbers/dates (canonically, so 三千万 equals 3000万),
 negation words, and glossary terms.
 """
@@ -44,8 +45,8 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from difflib import SequenceMatcher
 import json
+import math
 from pathlib import Path
 import re
 import shutil
@@ -59,6 +60,9 @@ if str(SCRIPT_DIR) not in sys.path:
 
 import fact_check  # noqa: E402
 import transcribe  # noqa: E402
+import glossary  # noqa: E402
+from transcript_quality import repetition_flags
+from transcript_compare import compare_phrases  # noqa: E402
 from run_state import atomic_json, fingerprint, read_checkpoint, enable_offline, local_model, covered_seconds, file_hash
 
 NEGATIONS = ("没有", "不能", "不可", "禁止", "未", "无法", "取消", "终止", "暂停")
@@ -188,13 +192,6 @@ def compare_texts(funasr_text: str, qwen_text: str, terms: list[str]) -> list[di
     if bool(left_text) != bool(right_text):
         conflicts.append({"category": "文本缺失", "funasr_only": [funasr_text] if left_text else [],
                           "qwen_only": [qwen_text] if right_text else []})
-    elif (left_text and right_text and not left["数字"] and not right["数字"]
-          and max(len(left_text), len(right_text)) >= 6
-          and SequenceMatcher(None, left_text, right_text, autojunk=False).ratio() < 0.45):
-        # Conservative screening, not a semantic verdict. Numeric equivalence
-        # remains handled below; substantial nonnumeric differences need ears.
-        conflicts.append({"category": "文本差异", "funasr_only": [funasr_text],
-                          "qwen_only": [qwen_text]})
     for name in left:
         funasr_only = [left[name][key] for key in left[name] if key not in right[name]]
         qwen_only = [right[name][key] for key in right[name] if key not in left[name]]
@@ -241,6 +238,11 @@ def compare_texts(funasr_text: str, qwen_text: str, terms: list[str]) -> list[di
     rscope = [q for q in qualifiers if q in qwen_text]
     if lscope != rscope and (left_tokens or right_tokens):
         conflicts.append({"category": "时间或限定词", "funasr_only": lscope, "qwen_only": rscope})
+    conflicts.extend(compare_phrases(funasr_text, qwen_text))
+    for side, text in (('funasr_only', funasr_text), ('qwen_only', qwen_text)):
+        for flag in repetition_flags(text):
+            conflicts.append({'category': '重复输出待核', 'funasr_only': [], 'qwen_only': [],
+                              side: [flag['repeated_text']], 'diagnostic': flag})
     return conflicts
 
 
@@ -333,6 +335,55 @@ def plan_clips(
     return clips
 
 
+def add_boundary_reviews(clips: list[Clip], windows: list[dict], stamps: list[dict],
+                         duration: float) -> list[Clip]:
+    """Review uncovered chunk seams; do not delete repeated words in the master.
+
+    A boundary is a review cue, not proof that any speech was lost. Whole
+    timestamped sentences are included where practical, so a tiny edge crop
+    is not compared against an entire long sentence without explanation.
+    """
+    result = list(clips)
+    for window in windows:
+        if not isinstance(window, dict) or window.get('time_basis') != 'processed_audio':
+            raise ValueError('切块边界缺少有效时间基准。')
+        start, end = window.get('start'), window.get('end')
+        if any(isinstance(t, bool) or not isinstance(t, (int, float)) or not math.isfinite(t)
+               for t in (start, end)) or not 0 <= start < end <= duration:
+            raise ValueError('切块边界时间超出源录音。')
+        covered = covered_seconds([(max(start, c.start), min(end, c.end)) for c in result
+                                   if c.start < end and c.end > start])
+        if covered >= end - start - 0.01:
+            continue
+        partial_sentence = False
+        # Expanding one sentence may intersect another speaker's overlapping
+        # sentence. Recompute membership until the bounds stop growing. Each
+        # expansion must add a timestamp boundary, so len(stamps)+1 is a finite
+        # bound; the duration cap prevents following overlaps across a meeting.
+        for _ in range(len(stamps) + 1):
+            members = [s for s in stamps if s.get('start', 0) < end and s.get('end', 0) > start]
+            if not members:
+                break
+            expanded_start = max(0.0, min(start, min(s['start'] for s in members)))
+            expanded_end = min(duration, max(end, max(s['end'] for s in members)))
+            if (expanded_start, expanded_end) == (start, end):
+                break
+            if expanded_end - expanded_start > DEFAULT_MAX_CLIP_SECONDS:
+                partial_sentence = True
+                break
+            start, end = expanded_start, expanded_end
+        # Audio extraction uses these final bounds, so its comparison text must
+        # include every intersecting timestamp, including newly reached ones.
+        members = [s for s in stamps if s.get('start', 0) < end and s.get('end', 0) > start]
+        text = ''.join(str(s['text']).strip() for s in members)
+        reasons = ('chunk_boundary', 'partial_sentence_boundary') if partial_sentence else ('chunk_boundary',)
+        result.append(Clip(0, start, end, reasons, text, score=4))
+    result.sort(key=lambda c: (c.start, c.end))
+    for index, clip in enumerate(result, 1):
+        clip.index = index
+    return result
+
+
 def apply_budget(clips: list[Clip], budget_minutes: float | None) -> tuple[list[Clip], list[Clip]]:
     """Greedy highest-score-first selection within the review time budget.
 
@@ -368,7 +419,8 @@ def safe_hms(seconds: float) -> str:
     return f"{hours:02d}{minutes:02d}{secs:02d}"
 
 
-def export_review_audio(clips: list[Clip], source: Path, output_dir: Path, stem: str) -> str | None:
+def export_review_audio(clips: list[Clip], source: Path, output_dir: Path, stem: str,
+                        channel: str = 'mix') -> str | None:
     """Cut every conflict/review clip from the source media into its own wav so
     re-listening is click-to-play instead of scrubbing the full recording."""
     targets = [clip for clip in clips if clip.status in ("conflict", "review")]
@@ -382,7 +434,8 @@ def export_review_audio(clips: list[Clip], source: Path, output_dir: Path, stem:
         name = f"clip_{clip.index:04d}_{safe_hms(clip.start)}-{safe_hms(clip.end)}.wav"
         path = audio_dir / name
         transcribe.prepare_wav(
-            source, path, clip_start=clip.start, clip_duration=clip.end - clip.start
+            source, path, clip_start=clip.start, clip_duration=clip.end - clip.start,
+            channel=channel,
         )
         clip.audio = str(path)
     return str(audio_dir)
@@ -415,7 +468,7 @@ def write_report(
         f"- 复核片段：{len(reviewed)} 个，共 {covered / 60:.1f} 分钟"
         f"（占全长 {total_duration / 60:.1f} 分钟的 {covered / total_duration * 100:.0f}%）"
         if total_duration else f"- 复核片段：{len(reviewed)} 个",
-        f"- 结果：一致 {len(consistent)}、分歧 {len(conflicted)}"
+        f"- 结果：规则未发现分歧 {len(consistent)}、分歧 {len(conflicted)}"
         + (
             f"（高优先级 {sum(1 for c in conflicted if c.priority != 'low')}、"
             f"低优先级 {sum(1 for c in conflicted if c.priority == 'low')}）"
@@ -483,7 +536,7 @@ def write_report(
                          f"{clip.funasr_text[:60]}{verdict_note}{audio_note}")
         lines.append("")
     if consistent:
-        lines.append("## 双引擎一致的片段")
+        lines.append("## 规则未发现分歧的片段（不等于音频已确认正确）")
         lines.append("")
         for clip in consistent:
             lines.append(f"- 片段 {clip.index}（{hms(clip.start)}–{hms(clip.end)}）"
@@ -509,6 +562,9 @@ def main() -> int:
     parser.add_argument("--glossary", action="append", type=Path, default=[])
     parser.add_argument("--term", action="append", default=[])
     parser.add_argument("--context", default="", help="extra recognition context for Qwen3-ASR")
+    parser.add_argument("--project-name", default="")
+    parser.add_argument("--channel", choices=("mix", "left", "right"), default=None,
+                        help="inherit the primary transcript's source channel by default")
     parser.add_argument("--model", default=transcribe.QWEN_MODEL_DEFAULT)
     parser.add_argument("--language", default="auto")
     parser.add_argument("--offline", action="store_true")
@@ -553,6 +609,10 @@ def main() -> int:
             parser.error(f"找不到术语文件：{path}")
 
     payload = json.loads(args.transcript.read_text(encoding="utf-8-sig"))
+    source_channel = payload.get('recognition_config', {}).get('channel', 'mix')
+    if args.channel is not None and args.channel != source_channel:
+        parser.error('复核声道必须与主转录一致；不同声道应分别建任务。')
+    args.channel = source_channel
     stamps = [
         item for item in payload.get("timestamps") or []
         if str(item.get("text", "")).strip()
@@ -566,16 +626,25 @@ def main() -> int:
         parser.error("不可把样本或裁剪转录当作全片主稿，请提供完整录音转录")
     if payload.get("source_sha256") and payload["source_sha256"] != file_hash(args.source):
         parser.error("主稿与源媒体哈希不一致")
-    terms = fact_check.collect_terms(args.glossary, args.term)
+    try:
+        terms = fact_check.collect_terms(args.glossary, args.term)
+        risk_terms = glossary.collect_risk_terms(args.glossary, args.term)
+        hotwords = glossary.prepare_context(args.glossary, context=args.context,
+                                            extra_terms=args.term, limit=CONTEXT_CHAR_LIMIT,
+                                            engine='qwen', project=args.project_name)
+    except (ValueError, OSError) as exc:
+        parser.error(str(exc))
 
     clips = plan_clips(
-        stamps, terms,
+        stamps, risk_terms,
         select_all=args.all,
         pad=args.pad,
         merge_gap=args.merge_gap,
         max_clip=args.max_clip,
         duration=duration,
     )
+    if not args.all:
+        clips = add_boundary_reviews(clips, payload.get('boundary_review_windows', []), stamps, duration)
     if payload.get("engine") == "qwen":
         parser.error("主稿已由 Qwen 生成；本复核器不能把同族模型重转称为独立双引擎复核。请使用另一适用引擎独立转录并人工核验。")
     if not clips:
@@ -603,6 +672,8 @@ def main() -> int:
             "covered_seconds": round(covered_seconds([(c.start, c.end) for c in selected]), 1),
             "skipped_clips": len(skipped),
             "total_seconds": round(duration, 1),
+            "hotwords": hotwords,
+            "channel": args.channel,
         }, ensure_ascii=False, indent=2))
         return 0
 
@@ -625,7 +696,7 @@ def main() -> int:
     checkpoint_dir.mkdir(parents=True, exist_ok=True)
 
     device, dtype = transcribe.choose_device(torch, args.device)
-    identity = fingerprint(args.source, {**vars(args), "transcript_sha256": file_hash(args.transcript), "terms": terms, "checkpoint_schema": 1, "output_dir": None, "budget_minutes": None, "no_resume": False})
+    identity = fingerprint(args.source, {**vars(args), "transcript_sha256": file_hash(args.transcript), "terms": terms, "effective_context": hotwords['context'], "checkpoint_schema": 2, "output_dir": None, "budget_minutes": None, "no_resume": False})
     max_clip_seconds = max(c.end - c.start for c in clips)
     model = Qwen3ASRModel.from_pretrained(
         local_model(args.model, "hf", args.offline),
@@ -634,7 +705,8 @@ def main() -> int:
         max_inference_batch_size=1,
         max_new_tokens=args.max_new_tokens or transcribe.auto_max_new_tokens(max_clip_seconds),
     )
-    context = " ".join(terms + ([args.context] if args.context.strip() else []))[:CONTEXT_CHAR_LIMIT]
+    context = hotwords['context']
+    atomic_json(output_dir / f'{stem}.hotwords.json', hotwords)
     language = None if args.language.lower() in {"auto", "none", ""} else args.language
 
     voter_model = None
@@ -667,7 +739,8 @@ def main() -> int:
                 return str(cached.get("text", ""))
         voter_wav = Path(temp_dir) / f"clip_{clip.index:04d}.voter.wav"
         transcribe.prepare_wav(
-            args.source, voter_wav, clip_start=clip.start, clip_duration=clip.end - clip.start
+            args.source, voter_wav, clip_start=clip.start, clip_duration=clip.end - clip.start,
+            channel=args.channel,
         )
         results = voter_model.generate(
             input=str(voter_wav), language="auto", use_itn=True,
@@ -697,6 +770,7 @@ def main() -> int:
                 transcribe.prepare_wav(
                     args.source, clip_wav,
                     clip_start=clip.start, clip_duration=clip.end - clip.start,
+                    channel=args.channel,
                 )
                 results = model.transcribe(
                     audio=str(clip_wav), context=context, language=language,
@@ -731,6 +805,7 @@ def main() -> int:
                     args.source, enhanced_wav,
                     clip_start=clip.start, clip_duration=clip.end - clip.start,
                     enhance=True,
+                    channel=args.channel,
                 )
                 results = model.transcribe(
                     audio=str(enhanced_wav), context=context, language=language,
@@ -757,7 +832,7 @@ def main() -> int:
 
     audio_dir: str | None = None
     if not args.no_audio:
-        audio_dir = export_review_audio(clips, args.source, output_dir, stem)
+        audio_dir = export_review_audio(clips, args.source, output_dir, stem, args.channel)
 
     report_json = output_dir / f"{stem}.refine.json"
     report_md = output_dir / f"{stem}.refine.md"
@@ -779,6 +854,9 @@ def main() -> int:
         "review_audio_dir": audio_dir,
         "voter": args.voter,
         "arbitrate": not args.no_arbitrate,
+        "channel": args.channel,
+        "hotwords": hotwords,
+        "comparison_note": "consistent 仅表示规则未发现分歧，不等于已核实音频或语义完全一致。",
         "clips": [
             {"index": c.index, "start": c.start, "end": c.end,
              "reasons": list(c.reasons), "score": c.score, "status": c.status,
