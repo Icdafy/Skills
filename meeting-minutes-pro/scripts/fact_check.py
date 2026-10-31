@@ -429,7 +429,9 @@ def values_match(a: float, b: float) -> bool:
 def collect_terms(glossary_paths: list[Path], terms: list[str]) -> list[str]:
     collected: list[str] = []
     for path in glossary_paths:
-        collected.extend(path.read_text(encoding="utf-8-sig").split())
+        for line in path.read_text(encoding="utf-8-sig").splitlines():
+            if not line.lstrip().startswith("#"):
+                collected.extend(line.split())
     collected.extend(terms)
     return [term for term in dict.fromkeys(collected) if len(term) >= 2]
 

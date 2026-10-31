@@ -51,6 +51,46 @@ def run_verify(minutes: str, transcript: str, **kwargs) -> tuple[int, str]:
         return code, buffer.getvalue()
 
 
+class GlossaryTests(unittest.TestCase):
+    def test_comment_lines_are_ignored_with_bom_and_indentation(self) -> None:
+        with TempFiles() as files:
+            glossary = files.write(
+                "project.txt",
+                "\ufeff# 本项目识别说明\r\n  # 公司名称\r\n"
+                "项目甲 飞天一号\r\n\t# 技术词\r\n\r\n飞发一体化\t极低轨\r\n",
+            )
+            self.assertEqual(
+                FACT_CHECK.collect_terms([glossary], []),
+                ["项目甲", "飞天一号", "飞发一体化", "极低轨"],
+            )
+
+    def test_terms_keep_hashes_order_and_deduplication(self) -> None:
+        with TempFiles() as files:
+            first = files.write("first.txt", "项目甲 C# A 项目甲\n")
+            second = files.write("second.txt", "# 说明\nC# 项目乙\n")
+            self.assertEqual(
+                FACT_CHECK.collect_terms([first, second], ["项目乙", "#标签", "新词"]),
+                ["项目甲", "C#", "项目乙", "#标签", "新词"],
+            )
+
+    def test_comment_only_glossary_is_empty(self) -> None:
+        with TempFiles() as files:
+            glossary = files.write("empty.txt", "# 说明\n\t# 其他说明\n\n")
+            self.assertEqual(FACT_CHECK.collect_terms([glossary], []), [])
+
+    def test_comment_does_not_trigger_rewrite_advisory(self) -> None:
+        with TempFiles() as files:
+            glossary = files.write("project.txt", "# 识别提示\n项目甲\n")
+            terms = FACT_CHECK.collect_terms([glossary], [])
+        code, output = run_verify(
+            minutes_doc("项目甲讨论了识别提示功能。"),
+            "项目甲讨论了一个功能",
+            terms=terms,
+        )
+        self.assertEqual(code, 0)
+        self.assertNotIn("术语改写提示", output)
+
+
 class ParserTests(unittest.TestCase):
     def test_digit_string_year(self) -> None:
         self.assertEqual(FACT_CHECK.parse_cn_int("二〇二五"), 2025)

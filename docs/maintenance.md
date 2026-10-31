@@ -71,6 +71,10 @@ python -m unittest discover -s tools/library_tests
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
 
+### meeting-minutes-pro 1.1.2 验证（2026-11-01）
+
+仅修复词库整行注释解析及对应使用说明。324项技能回归通过，新增测试覆盖 BOM、CRLF、缩进注释、空行、多文件去重、合法井号词条和注释导致的术语误报。本轮未重跑 ASR 模型推理或 Word 渲染；相关既有验证见下方1.1.1记录。私有项目词库仍不进入源码或安装包。
+
 ### meeting-minutes-pro 1.1.1 验证（2026-11-01）
 
 仅升级 meeting-minutes-pro，其他技能源码、版本与安装包保持不变；目标仍参加的共享组副本未改。技能回归共320项通过，技能元数据、资源链接、独立目录DOCX烟测及安装备份检查通过。

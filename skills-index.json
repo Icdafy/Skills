@@ -121,12 +121,12 @@
       "name_zh": "会议转录与正式纪要",
       "category": "公文与会议",
       "source": "meeting-minutes-pro",
-      "version": "1.1.1",
+      "version": "1.1.2",
       "readme": "meeting-minutes-pro/README.md",
       "distribution": "office-skills",
       "verification": {
-        "python": "Windows Python 3.12；320项技能回归通过，独立ZIP烟测、安装与备份通过",
-        "codex": "历史CLI 0.160.0路由通过；本轮Codex桌面已完成连续执行及Word文档验收，未重跑跨客户端路由",
+        "python": "Windows Python 3.12；324项技能回归通过，含词库注释与误报回归；既有ASR及Word验证见1.1.1记录",
+        "codex": "历史CLI 0.160.0路由通过；1.1.1已完成Codex桌面连续执行及Word文档验收；1.1.2仅词库解析回归，未重跑跨客户端路由",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/maintenance.md",
@@ -136,9 +136,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "meeting-minutes-pro/v1.1.1",
+        "tag": "meeting-minutes-pro/v1.1.2",
         "asset": "meeting-minutes-pro.zip",
-        "sha256": "e9b9f2d877010c4664b61e25ca9d33e2dc8b09a60190e28308a659454a314147"
+        "sha256": "10f0e432327254f7236edf8a000bbab14a3e3ab20f6251e079ead576a6872297"
       }
     },
     {
