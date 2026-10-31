@@ -44,6 +44,7 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
+from difflib import SequenceMatcher
 import json
 from pathlib import Path
 import re
@@ -163,6 +164,10 @@ def sentence_risks(text: str, terms: list[str]) -> tuple[str, ...]:
         risks.append("glossary")
     if "？" in text or "?" in text:
         risks.append("question")
+    if any(word in text for word in NEGATIONS):
+        risks.append("negation")
+    if any(word in text for word in CONCLUSION_HINTS):
+        risks.append("commitment")
     return tuple(risks)
 
 
@@ -176,6 +181,20 @@ def compare_texts(funasr_text: str, qwen_text: str, terms: list[str]) -> list[di
 
     conflicts: list[dict] = []
     left, right = categories(funasr_text), categories(qwen_text)
+    left_text = re.sub(r"[^\w]", "", funasr_text).casefold()
+    right_text = re.sub(r"[^\w]", "", qwen_text).casefold()
+    # A primary ASR gap is evidence even when the recovered utterance contains
+    # no numbers or glossary terms. Previously any such gap was 'consistent'.
+    if bool(left_text) != bool(right_text):
+        conflicts.append({"category": "文本缺失", "funasr_only": [funasr_text] if left_text else [],
+                          "qwen_only": [qwen_text] if right_text else []})
+    elif (left_text and right_text and not left["数字"] and not right["数字"]
+          and max(len(left_text), len(right_text)) >= 6
+          and SequenceMatcher(None, left_text, right_text, autojunk=False).ratio() < 0.45):
+        # Conservative screening, not a semantic verdict. Numeric equivalence
+        # remains handled below; substantial nonnumeric differences need ears.
+        conflicts.append({"category": "文本差异", "funasr_only": [funasr_text],
+                          "qwen_only": [qwen_text]})
     for name in left:
         funasr_only = [left[name][key] for key in left[name] if key not in right[name]]
         qwen_only = [right[name][key] for key in right[name] if key not in left[name]]
@@ -417,7 +436,7 @@ def write_report(
     lines += [
         "",
         "一致仅表示已实现的比较项未发现差异，不证明事实或录音绝对准确；分歧须实际回听裁决。",
-        "无法辨识的数字保留可确认部分并就地括注；裁决在 review.json 留痕，不将 ASR 猜测当作事实。",
+        "无法辨识的数字仅保留不误导的可确认内容；问题在对话说明、裁决在 review.json 留痕，不在纪要添加听写括注。",
         "低优先级分歧＝第三份证据支持主稿口径，仍须回听，但可排在高优先级之后处理。",
         "",
     ]

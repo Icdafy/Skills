@@ -28,6 +28,7 @@ import argparse
 from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -75,6 +76,9 @@ class TranscribeResult:
     language: str
     stamps: list[Stamp] = field(default_factory=list)
     speakers: bool = False
+    setup_seconds: float | None = None
+    inference_seconds: float | None = None
+    inferred_audio_seconds: float = 0.0
 
 
 def parse_args() -> argparse.Namespace:
@@ -92,7 +96,8 @@ def parse_args() -> argparse.Namespace:
                         help="engine model override; defaults to paraformer-zh or Qwen/Qwen3-ASR-0.6B")
     parser.add_argument("--aligner", default=ALIGNER_DEFAULT, help="qwen timestamps aligner model")
     parser.add_argument("--device", choices=["auto", "cpu", "cuda", "mps"], default="auto")
-    parser.add_argument("--timestamps", action="store_true", help="emit sentence timestamps and SRT")
+    parser.add_argument("--timestamps", action="store_true",
+                        help="enable Qwen forced alignment; FunASR always retains sentence timestamps")
     parser.add_argument("--diarize", action="store_true",
                         help="funasr only: label speaker turns with the cam++ model")
     parser.add_argument("--speakers", type=int, default=None,
@@ -252,6 +257,7 @@ def auto_max_new_tokens(chunk_seconds: float) -> int:
 # ---------------------------------------------------------------------------
 
 def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoint_dir: Path) -> TranscribeResult:
+    setup_started = time.monotonic()
     try:
         import torch
         from qwen_asr import Qwen3ASRModel
@@ -262,7 +268,8 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
             "then invoke this script with the reported runtime Python"
         ) from exc
 
-    identity = fingerprint(wav_path, {**vars(args), "checkpoint_schema": 1})
+    identity = fingerprint(wav_path, {**vars(args), "checkpoint_schema": 2,
+                                     "no_resume": False})
     device, dtype = choose_device(torch, args.device)
     model_name = local_model(args.model or QWEN_MODEL_DEFAULT, "hf", args.offline)
     single_pass = duration <= QWEN_SINGLE_PASS_SECONDS or args.clip_duration is not None
@@ -289,6 +296,9 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
         model_kwargs["forced_aligner"] = local_model(args.aligner, "hf", args.offline)
         model_kwargs["forced_aligner_kwargs"] = {"dtype": dtype, "device_map": device}
     model = Qwen3ASRModel.from_pretrained(model_name, **model_kwargs)
+    setup_seconds = time.monotonic() - setup_started
+    inference_seconds = 0.0
+    inferred_audio_seconds = 0.0
     language_arg = None if args.language.lower() in {"auto", "none", ""} else args.language
 
     if not single_pass:
@@ -314,12 +324,15 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
             else:
                 chunk_wav = Path(temp_dir) / f"chunk_{index:04d}.wav"
                 prepare_wav(wav_path, chunk_wav, clip_start=start, clip_duration=end - start)
+            inference_started = time.monotonic()
             results = model.transcribe(
                 audio=str(chunk_wav),
                 context=args.context,
                 language=language_arg,
                 return_time_stamps=args.timestamps,
             )
+            inference_seconds += time.monotonic() - inference_started
+            inferred_audio_seconds += end - start
             if not results:
                 raise RuntimeError(f"the model returned no result for chunk {index}")
             result = results[0]
@@ -352,6 +365,9 @@ def run_qwen(args: argparse.Namespace, wav_path: Path, duration: float, checkpoi
         text="\n".join(t for t in texts if t),
         language=detected_language,
         stamps=stamps,
+        setup_seconds=setup_seconds,
+        inference_seconds=inference_seconds,
+        inferred_audio_seconds=inferred_audio_seconds,
     )
 
 
@@ -372,6 +388,7 @@ def funasr_device(requested: str) -> str:
 def run_funasr(
     args: argparse.Namespace, wav_path: Path, duration: float, checkpoint_dir: Path
 ) -> TranscribeResult:
+    setup_started = time.monotonic()
     try:
         from funasr import AutoModel
     except ImportError as exc:
@@ -381,9 +398,11 @@ def run_funasr(
             "then invoke this script with the reported runtime Python"
         ) from exc
 
-    identity = fingerprint(wav_path, {**vars(args), "checkpoint_schema": 1})
+    identity = fingerprint(wav_path, {**vars(args), "checkpoint_schema": 2,
+                                     "no_resume": False})
     device = funasr_device(args.device)
-    want_sentences = args.timestamps or args.diarize
+    # Time-local evidence is needed by both targeted review and coverage audits.
+    # Paraformer's sentence_timestamp does not require a speaker model.
     # cam++ clusters speakers per generate() call, so diarized recordings keep
     # a single pass to hold 说话人N numbering consistent end to end.
     single_pass = (
@@ -417,12 +436,13 @@ def run_funasr(
         "disable_update": True,
         "disable_pbar": True,
     }
-    if want_sentences:
-        # Sentence-level segments come from the speaker pipeline; speaker labels
-        # are only surfaced when --diarize was requested.
+    if args.diarize:
         model_kwargs["spk_model"] = local_model(FUNASR_SPK_DEFAULT, "ms", args.offline)
     progress({"stage": "load", "engine": "funasr", "device": device})
     model = AutoModel(**model_kwargs)
+    setup_seconds = time.monotonic() - setup_started
+    inference_seconds = 0.0
+    inferred_audio_seconds = 0.0
 
     texts: list[str] = []
     stamps: list[Stamp] = []
@@ -430,7 +450,8 @@ def run_funasr(
         for index, (start, end) in enumerate(chunks, start=1):
             checkpoint = checkpoint_dir / f"chunk_{index:04d}.json"
             if not single_pass and not args.no_resume and checkpoint.is_file():
-                cached = read_checkpoint(checkpoint, identity, start, end)
+                cached = read_checkpoint(checkpoint, identity, start, end,
+                                         require_stamps=True)
                 if cached is not None:
                     texts.append(cached["text"])
                     stamps.extend(Stamp(**item) for item in cached.get("stamps", []))
@@ -441,13 +462,17 @@ def run_funasr(
             else:
                 chunk_wav = Path(temp_dir) / f"chunk_{index:04d}.wav"
                 prepare_wav(wav_path, chunk_wav, clip_start=start, clip_duration=end - start)
-            generate_kwargs = {"input": str(chunk_wav), "batch_size_s": 300}
+            generate_kwargs = {"input": str(chunk_wav), "batch_size_s": 300,
+                               "sentence_timestamp": True}
             if args.context.strip():
                 generate_kwargs["hotword"] = args.context.strip()
             if args.diarize and args.speakers:
                 # Known participant count constrains the cam++ clustering.
                 generate_kwargs["preset_spk_num"] = args.speakers
+            inference_started = time.monotonic()
             results = model.generate(**generate_kwargs)
+            inference_seconds += time.monotonic() - inference_started
+            inferred_audio_seconds += end - start
             if not results:
                 raise RuntimeError(f"the model returned no result for chunk {index}")
             result = results[0]
@@ -484,8 +509,11 @@ def run_funasr(
     return TranscribeResult(
         text="\n".join(t for t in texts if t),
         language="Chinese" if args.language.lower() in {"auto", "none", ""} else args.language,
-        stamps=stamps if want_sentences else [],
+        stamps=stamps,
         speakers=args.diarize and any(x.speaker for x in stamps),
+        setup_seconds=setup_seconds,
+        inference_seconds=inference_seconds,
+        inferred_audio_seconds=inferred_audio_seconds,
     )
 
 
@@ -599,21 +627,45 @@ def write_outputs(
     return {name: str(path) for name, path in paths.items()}
 
 
+def timing_summary(outcome: TranscribeResult, full_duration: float | None = None) -> dict:
+    """Separate one-time setup from measured decoding; never extrapolate cache hits."""
+    if outcome.inference_seconds is None or outcome.setup_seconds is None:
+        return {}
+    result = {
+        "setup_seconds": round(outcome.setup_seconds, 3),
+        "inference_seconds": round(outcome.inference_seconds, 3),
+        "inferred_audio_seconds": round(outcome.inferred_audio_seconds, 3),
+    }
+    if outcome.inferred_audio_seconds > 0:
+        rtf = outcome.inference_seconds / outcome.inferred_audio_seconds
+        result["inference_realtime_factor"] = round(rtf, 6)
+        if full_duration:
+            result["estimated_full_run_minutes"] = round(
+                (outcome.setup_seconds + full_duration * rtf) / 60, 1)
+            result["estimate_basis"] = "one-time setup plus measured inference; approximate"
+    return result
+
+
 def emit_eta(output_dir: Path, source: Path, duration: float) -> None:
     """Report an ETA for the full run based on an earlier --sample probe."""
     sample_json = output_dir / f"{safe_stem(source)}.sample.json"
     if not sample_json.is_file():
         return
     try:
-        rtf = json.loads(sample_json.read_text(encoding="utf-8")).get("realtime_factor")
+        sample = json.loads(sample_json.read_text(encoding="utf-8"))
+        rtf = float(sample.get("inference_realtime_factor", sample.get("realtime_factor")))
+        setup = float(sample.get("setup_seconds", 0)) if "inference_realtime_factor" in sample else 0
+        if not math.isfinite(rtf) or rtf < 0 or not math.isfinite(setup) or setup < 0:
+            return
     except Exception:
         return
-    if rtf:
-        progress({
-            "stage": "eta",
-            "estimated_minutes": round(duration * float(rtf) / 60, 1),
-            "based_on": sample_json.name,
-        })
+    progress({
+        "stage": "eta",
+        "estimated_minutes": round((setup + duration * rtf) / 60, 1),
+        "based_on": sample_json.name,
+        "approximate": True,
+        "basis": "setup + inference" if "inference_realtime_factor" in sample else "legacy probe including setup",
+    })
 
 
 def main() -> int:
@@ -685,9 +737,11 @@ def main() -> int:
                 "elapsed_seconds": round(elapsed, 1),
                 "realtime_factor": realtime_factor,
             }
+            extra.update(timing_summary(outcome, full_duration if sampled else None))
             if full_duration:
                 extra["media_duration_seconds"] = round(full_duration, 3)
-            if sampled and realtime_factor and full_duration:
+            if (sampled and realtime_factor and full_duration
+                    and "estimated_full_run_minutes" not in extra):
                 extra["estimated_full_run_minutes"] = round(
                     full_duration * realtime_factor / 60, 1
                 )

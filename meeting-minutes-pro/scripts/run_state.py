@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import socket
@@ -37,11 +38,41 @@ def atomic_json(path: Path, payload: dict) -> None:
         Path(name).unlink(missing_ok=True)
 
 
-def read_checkpoint(path: Path, identity: str, start: float, end: float) -> dict | None:
+def read_checkpoint(path: Path, identity: str, start: float, end: float,
+                    *, require_stamps: bool = False) -> dict | None:
+    """Return only a complete, usable checkpoint; corruption means recompute.
+
+    Refinement checkpoints contain text only. Transcription checkpoints also
+    contain typed timestamp records that callers unpack directly into Stamp.
+    Validate those records here so a truncated/edited cache cannot abort an
+    otherwise resumable multi-hour run or inject invalid timing into evidence.
+    """
     try:
         data = json.loads(path.read_text(encoding='utf-8'))
         if (data.get('identity') == identity and data.get('start') == start
                 and data.get('end') == end and isinstance(data.get('text'), str)):
+            if require_stamps and 'stamps' not in data:
+                return None
+            if 'stamps' in data:
+                stamps = data['stamps']
+                if not isinstance(stamps, list):
+                    return None
+                if require_stamps and data['text'].strip() and not stamps:
+                    return None
+                for item in stamps:
+                    if (not isinstance(item, dict)
+                            or not {'text', 'start', 'end'} <= item.keys()
+                            or set(item) - {'text', 'start', 'end', 'speaker'}
+                            or not isinstance(item['text'], str)
+                            or (item.get('speaker') is not None
+                                and not isinstance(item['speaker'], str))):
+                        return None
+                    times = (item['start'], item['end'])
+                    if any(isinstance(t, bool) or not isinstance(t, (int, float))
+                           or not math.isfinite(t) for t in times):
+                        return None
+                    if not 0 <= item['start'] <= item['end']:
+                        return None
             return data
     except (OSError, ValueError, TypeError, AttributeError):
         pass

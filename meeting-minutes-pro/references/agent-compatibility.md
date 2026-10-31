@@ -74,7 +74,7 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 | 能力 | 适用客户端 | 七个技能的可用范围 |
 |---|---|---|
 | 本机执行（读写本地文件、运行 Python） | Claude Code、Codex、ChatGPT 桌面版、Kimi Work / Kimi Code、豆包电脑版工作模式、WorkBuddy、TRAE、Qoder、ZCode、AutoClaw | 全部功能，含 `meeting-minutes-pro` 本地音视频转录 |
-| 云端代码沙箱 | Claude 网页 / 桌面 Chat、ChatGPT 团队版 | 写作与 Word 生成可用；`meeting-minutes-pro` 仅能基于已有转录稿整理纪要，不能下载 ASR 模型转录本地录音 |
+| 云端代码沙箱 | 以当前会话实际执行环境为准 | 先确认能否读取输入、运行 Python、加载模型及渲染 Word；无法访问本机录音或缺少 ASR 资源时处理已有转录稿。不得为绕过限制静默上传录音，不凭客户端名称宣称语音能力 |
 | 无代码执行 | 仅对话、不运行脚本的入口 | 可交付文本，须说明 Word 排版未生成或未验证，不得宣称已生成合规 Word |
 
 4. **工具名称**：正文中的 WebSearch/WebFetch 代表“检索权威网页/打开来源”的能力，映射到当前 Agent 的搜索、浏览器或网页工具；读取资料、执行 Python 同理使用可用工具。没有网络时保留来源边界，不声称检索已完成。
@@ -102,7 +102,7 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 3. **运行完整**：在宿主执行环境运行 `check --smoke`，确认参考文件可读、生成器能找到同目录辅助模块及本机授权字体。无运行环境的平台不能记录为完整 Word 能力通过。
 4. **输出一致**：用非敏感测试材料生成含表格、`（1）` 标题、分页的 Word，核对中文字体、Times New Roman 数字及百分号、表格五号、奇偶页外侧页码和整段 14 磅页脚。`meeting-minutes-pro` 还须确认已取消解释性括注和加工说明，单位与职务直接书写，辅助文件未引入会议未提及的内容；其他技能按各自规范检查括注样式。
 
-各技能另有首轮行为，验收时一并核对：立项报告三技能首轮先问“早前期或中后期”并等待；`soe-post-investment-report` 首轮只逐字提出四项变更确认问题；`meeting-minutes-pro` 生成纪要前先一次性收集缺失的会议基本信息，并主动询问是否有 BP 等文件用于定点核对模糊的数据或专名；`yiti-skill` 先判定会议类或退出类骨架。
+各技能另有首轮行为，验收时一并核对：立项报告三技能首轮先问“早前期或中后期”并等待；`soe-post-investment-report` 首轮只逐字提出四项变更确认问题；`meeting-minutes-pro` 首轮一次性收集缺失的会议基本信息与命名字段，并主动询问是否有 BP 等辅助文件；首次答复后连续生成最终纪要，不在证据稿后默认暂停或等待“生成”，仅按用户明确的分阶段审阅要求暂停；`yiti-skill` 先判定会议类或退出类骨架。
 
 ### 立项报告三技能附加验收
 

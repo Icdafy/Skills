@@ -336,6 +336,20 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertTrue(any("内容不足" in error for error in errors))
 
+    def test_short_complete_meeting_does_not_require_120_characters(self) -> None:
+        errors = self.errors(
+            "qa-summary",
+            "一、完整总结概述",
+            "样机测试已完成，测试记录已归档。先完成生产线调试，再安排试产。",
+            "二、完整问答纪要",
+            "问：样机测试进展如何？",
+            "答：样机测试已完成，测试记录已归档。",
+            "",
+            "问：试产计划如何安排？",
+            "答：先完成生产线调试，再安排试产。",
+        )
+        self.assertEqual([], errors)
+
     def test_long_qa_demands_proportional_summary(self) -> None:
         # A two-hour interview: ~30k characters of Q/A must not pass with a
         # 600-character overview; the requirement scales up to 2000 characters.

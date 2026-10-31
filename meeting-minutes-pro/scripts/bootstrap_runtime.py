@@ -26,8 +26,10 @@ REQUIREMENTS_ENGINE = {
     "qwen": SCRIPTS_DIR / "requirements-qwen.txt",
 }
 
-BASE_MODULES = ("imageio_ffmpeg", "docx")
+BASE_MODULES = ("imageio_ffmpeg", "docx", "pypdf")
 ENGINE_MODULES = {"funasr": "funasr", "qwen": "qwen_asr"}
+ENGINE_DEPENDENCIES = {"funasr": ("funasr", "modelscope", "torchaudio"),
+                       "qwen": ("qwen_asr",)}
 
 # Hardware tiers drive the dual-engine strategy. The tier is advisory and
 # degrades gracefully — no tier ever blocks producing the minutes; it only
@@ -167,24 +169,31 @@ def runtime_python(root: Path) -> Path:
     return root / "venv" / "bin" / "python"
 
 
-def probe(python: Path) -> dict[str, object]:
+def probe(python: Path, engines: list[str] | None = None) -> dict[str, object]:
+    requested = list(engines if engines is not None else ENGINE_MODULES)
     result: dict[str, object] = {
         "skill_dir": str(SKILL_DIR),
         "runtime_dir": str(python.parent.parent.parent),
         "python": str(python),
         "ready": False,
+        "requested_engines": requested,
+        "probe_level": "module_discovery",
+        "inference_checked": False,
+        "model_cache_checked": False,
     }
     if not python.exists():
         result["reason"] = "runtime Python does not exist"
         return result
-    modules = list(BASE_MODULES) + ["torch"] + list(ENGINE_MODULES.values())
+    modules = list(dict.fromkeys(list(BASE_MODULES) + ["torch"] +
+                  [module for dependencies in ENGINE_DEPENDENCIES.values() for module in dependencies]))
     code = (
         "import json, importlib.util; "
         f"mods={modules!r}; "
         "print(json.dumps({m: importlib.util.find_spec(m) is not None for m in mods}))"
     )
     proc = subprocess.run(
-        [str(python), "-c", code], capture_output=True, text=True, check=False
+        [str(python), "-X", "utf8", "-c", code], capture_output=True,
+        text=True, encoding="utf-8", errors="replace", timeout=30, check=False
     )
     if proc.returncode != 0:
         result["reason"] = proc.stderr.strip() or "runtime probe failed"
@@ -192,20 +201,17 @@ def probe(python: Path) -> dict[str, object]:
     modules_found = json.loads(proc.stdout.strip())
     result["modules"] = modules_found
     result["engines"] = {
-        name: modules_found.get(module, False) for name, module in ENGINE_MODULES.items()
+        name: all(modules_found.get(module, False) for module in dependencies)
+        for name, dependencies in ENGINE_DEPENDENCIES.items()
     }
-    base_ready = all(modules_found.get(m, False) for m in BASE_MODULES)
-    any_engine = any(result["engines"].values())
-    result["ready"] = base_ready and modules_found.get("torch", False) and any_engine
+    required = list(BASE_MODULES) + ["torch"] + [
+        module for engine in requested for module in ENGINE_DEPENDENCIES[engine]]
+    result["missing_modules"] = [module for module in dict.fromkeys(required)
+                                 if not modules_found.get(module, False)]
+    result["missing_engines"] = [engine for engine in requested if not result["engines"][engine]]
+    result["ready"] = not result["missing_modules"]
     if not result["ready"]:
-        if not base_ready:
-            result["reason"] = "base runtime modules are missing"
-        elif not any_engine:
-            result["reason"] = (
-                "no ASR engine installed; rerun with --install --engine funasr (or qwen)"
-            )
-        else:
-            result["reason"] = "torch is missing"
+        result["reason"] = "missing required modules: " + ", ".join(result["missing_modules"])
     return result
 
 
@@ -235,7 +241,7 @@ def install(root: Path, upgrade: bool, engines: list[str]) -> dict[str, object]:
     for requirements in requirement_files:
         pip_command += ["-r", str(requirements)]
     subprocess.run(pip_command, check=True)
-    result = probe(python)
+    result = probe(python, engines)
     installed_engines = result.get("engines", {})
     missing = [e for e in engines if not installed_engines.get(e)]
     if not result.get("ready") or missing:
@@ -252,7 +258,7 @@ def parse_args() -> argparse.Namespace:
         "--engine",
         choices=("funasr", "qwen", "all"),
         default="funasr",
-        help="ASR engine(s) to install (default: funasr)",
+        help="ASR engine(s) required by --check or --install (default: funasr)",
     )
     parser.add_argument("--upgrade", action="store_true", help="upgrade pinned-compatible dependencies")
     parser.add_argument("--runtime-dir", type=Path, help="override the runtime cache directory")
@@ -265,7 +271,7 @@ def main() -> int:
     python = runtime_python(root)
     engines = list(ENGINE_MODULES) if args.engine == "all" else [args.engine]
     try:
-        result = install(root, args.upgrade, engines) if args.install else probe(python)
+        result = install(root, args.upgrade, engines) if args.install else probe(python, engines)
     except Exception as exc:
         print(json.dumps({"ready": False, "error": str(exc)}, ensure_ascii=False, indent=2))
         return 1

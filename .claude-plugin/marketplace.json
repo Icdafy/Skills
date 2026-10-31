@@ -62,8 +62,8 @@
     {
       "name": "meeting-minutes-pro",
       "source": "./meeting-minutes-pro",
-      "description": "本地转录中文、方言或多语言会议音视频（FunASR/Qwen3-ASR，支持数小时长音频、说话人分离和热词），并把录音、转录稿、访谈、尽调问答、路演记录整理为“完整总结概述＋完整问答”的正式会议纪要；先补齐会议基本信息，数字逐项核验，输出公文版式DOCX。",
-      "version": "1.0.3",
+      "description": "将本地会议音视频经 FunASR 与 Qwen3-ASR 转录、独立复核后，按固定规则生成“完整总结概述＋完整问答”的公文版式 DOCX；也可整理已有转录稿、访谈或会议笔记，或仅交付转录。",
+      "version": "1.1.1",
       "strict": false,
       "skills": [
         "./"
