@@ -74,6 +74,47 @@ class WorkflowTests(unittest.TestCase):
         self.assertIn('公司名 术语', primary)
         self.assertIn(str(self.source), primary)
 
+    def test_audio_defaults_to_full_review_and_explicit_channel_flows_to_both_engines(self):
+        job = self.init(True, '--channel', 'right', '--enhance')
+        self.assertEqual(job['options']['assurance'], 'high')
+        primary, _, _ = workflow.command_for(job, 'transcribe')
+        review, _, _ = workflow.command_for(job, 'refine')
+        self.assertIn('--all', review)
+        self.assertIn('--enhance', primary)
+        self.assertNotIn('--enhance', review)  # independent review keeps original audio
+        for argv in (primary, review):
+            self.assertEqual(argv[argv.index('--channel') + 1], 'right')
+
+    def test_glossary_feeds_primary_and_changes_invalidate_recognition_signature(self):
+        path = self.root / 'terms.txt'
+        path.write_text('# 注释\n项目甲 产品乙', encoding='utf-8')
+        job = self.init(True, '--glossary', str(path), '--context', '张三')
+        argv, inputs, _ = workflow.command_for(job, 'transcribe')
+        context = argv[argv.index('--context') + 1]
+        self.assertEqual(context, '张三 项目甲 产品乙')
+        self.assertIn(str(path), inputs)
+        first = workflow.signature(argv, inputs)
+        manifest = json.loads(Path(job['artifacts']['hotwords']).read_text(encoding='utf-8'))
+        self.assertEqual(manifest['funasr']['terms'], ['张三', '项目甲', '产品乙'])
+        self.assertEqual(manifest['qwen']['context'], context)
+        path.write_text('项目甲 产品丙', encoding='utf-8')
+        new_argv, inputs, _ = workflow.command_for(job, 'transcribe')
+        self.assertNotEqual(workflow.signature(new_argv, inputs), first)
+
+    def test_exact_project_glossary_is_discovered_without_loading_other_projects(self):
+        skill = self.root / 'skill'
+        (skill / 'glossary').mkdir(parents=True)
+        project = skill / 'glossary/项目甲.json'
+        project.write_text(json.dumps({'schema_version': 1, 'entries': [
+            {'term': 'Full Mask', 'status': 'confirmed'},
+            {'term': '未确认名称', 'status': 'candidate'}]}, ensure_ascii=False), encoding='utf-8')
+        (skill / 'glossary/项目乙.txt').write_text('其他项目', encoding='utf-8')
+        with patch.object(workflow, 'SCRIPTS', skill / 'scripts'):
+            job = self.init(True, '--project-name', '项目甲')
+        self.assertEqual(job['glossary'], [str(project.resolve())])
+        manifest = json.loads(Path(job['artifacts']['hotwords']).read_text(encoding='utf-8'))
+        self.assertEqual(manifest['qwen']['terms'], ['Full Mask'])
+
     def test_qwen_cannot_claim_independent_self_review(self):
         job = self.init(True, '--engine', 'qwen')
         with self.assertRaisesRegex(ValueError, '独立'):
@@ -159,7 +200,7 @@ class WorkflowTests(unittest.TestCase):
         self.assertFalse(result['release_ready'])
 
     def test_no_targeted_candidates_records_no_review_without_fabricated_report(self):
-        job = self.init(True)
+        job = self.init(True, '--assurance', 'standard')
         raw = Path(job['artifacts']['raw_transcript'])
         raw.parent.mkdir(parents=True)
         raw.write_text('{}', encoding='utf-8')

@@ -92,6 +92,16 @@ class GlossaryTests(unittest.TestCase):
 
 
 class ParserTests(unittest.TestCase):
+    def test_rounds_and_items_are_quantitative_in_both_spellings(self) -> None:
+        for text in ('完成3轮测试及2项验证。', '完成三轮测试及两项验证。'):
+            tokens = [t for t in FACT_CHECK.extract_tokens(text, body_only=False)
+                      if FACT_CHECK.quantitative(t)]
+            self.assertEqual([(t.value, t.unit) for t in tokens], [(3.0, '轮'), (2.0, '项')])
+
+    def test_changed_round_count_is_not_ignored(self) -> None:
+        code, _ = run_verify(minutes_doc('完成3轮测试。'), '完成两轮测试')
+        self.assertEqual(code, 1)
+
     def test_digit_string_year(self) -> None:
         self.assertEqual(FACT_CHECK.parse_cn_int("二〇二五"), 2025)
         self.assertEqual(FACT_CHECK.parse_cn_int("二零二五"), 2025)

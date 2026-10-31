@@ -2,7 +2,7 @@
 
 本地处理会议音视频，使用 FunASR 与 Qwen3-ASR 完成主转录和独立复核，再由智能体按固定写作规则生成“完整总结概述＋完整问答”的正式 DOCX。也支持已有转录稿、访谈笔记，或仅输出原始转录。
 
-源码版本 **1.1.1**，以 [VERSION](VERSION) 为准；变更见 [CHANGELOG.md](CHANGELOG.md)。
+源码版本 **1.2.0**，以 [VERSION](VERSION) 为准；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 从音频到纪要
 
@@ -51,7 +51,7 @@ $meeting-minutes-pro 请处理这份尽调录音：双引擎转录并核对关�
 
 先提取已知信息，一次性询问仍缺失的基本信息及辅助文件；等待时继续环境检查和不依赖答案的音频处理。元信息缺失不阻塞转录，最终不猜填未知字段。首次集中答复后连续完成最终纪要，不在修订证据稿后暂停，不把中间稿发给用户检查后等“生成”指令；仅在用户明确要求分阶段审阅时暂停。
 
-统一入口示例中的路径请替换为实际绝对路径；高风险音频明确传 `--assurance high`：
+统一入口示例中的路径请替换为实际绝对路径。新建音频任务默认 `--assurance high` 全量独立复核，纯文本默认 standard；仅明确选择普通定向复核时为音频传 `--assurance standard`：
 
 ```powershell
 <runtime-python> <skill-dir>/scripts/meeting_workflow.py init --input <录音绝对路径> --job-dir <任务绝对目录> --source-kind audio --engine funasr --assurance high --runtime-python <runtime-python> --project-name "项目甲" --interview-date "2026-11-01" --mode qa-summary
@@ -63,6 +63,9 @@ $meeting-minutes-pro 请处理这份尽调录音：双引擎转录并核对关�
 
 ## 内容与验收规则
 
+- 工作流自动把已选择词库送入主转录，精确项目名可发现本地同名 JSON/TXT，`hotwords.json` 保存两引擎实际使用的词条和舍弃原因。结构化词库区分已确认词、候选、别名与错写，格式见 [术语库](glossary/README.md)。
+- 原始 JSON 保存各声道音频诊断、选择的声道和切块边缘复核区间；`--channel left|right` 可分别建任务，默认 mix 不代表自动分离说话人。增强需显式 `--enhance`，独立复核仍使用原音同一声道。
+- 数字对象、否定/状态/时间归属和部分漏句进入短语级差异筛查；`consistent` 仅指规则未发现分歧。模型选择与热词收益用 [评测工具](references/asr-evaluation.md) 验证，字错率、术语和关键表述分别统计。
 - 录音及确认后的转录稿提供会议内容；BP、公司介绍、笔记和术语库仅用于具体模糊片段核对，不提供纪要提纲或新增会议事实，辅助资料数字不进入 ASR 提示。
 - 保留全部重要数字的对象、单位、区间、时间和限定条件。先梳理事实与问答，再起草总结；原稿漏识别与摘要漏内容分别由独立复核和覆盖审计处理。
 - 存在明确问答时，完整总结先于完整问答，两部分均保留；没有问答不造问题。正文只客观陈述会议内容，不写解释性括注、转录过程、材料来源说明或无依据的判断。职务、单位和必要条件直接书写，公文层级编号保留。

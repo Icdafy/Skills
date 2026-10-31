@@ -121,24 +121,24 @@
       "name_zh": "会议转录与正式纪要",
       "category": "公文与会议",
       "source": "meeting-minutes-pro",
-      "version": "1.1.2",
+      "version": "1.2.0",
       "readme": "meeting-minutes-pro/README.md",
       "distribution": "office-skills",
       "verification": {
-        "python": "Windows Python 3.12；324项技能回归通过，含词库注释与误报回归；既有ASR及Word验证见1.1.1记录",
-        "codex": "历史CLI 0.160.0路由通过；1.1.1已完成Codex桌面连续执行及Word文档验收；1.1.2仅词库解析回归，未重跑跨客户端路由",
+        "python": "414项回归在实际ASR运行环境通过（无跳过）；含词库、差异/重复检测、FFmpeg声道、评测器；独立目录DOCX烟测通过",
+        "codex": "1.2.0本地工作流完成真实60秒样本主转录与全量复核；旧CLI路由和1.1.1 Word逐页验收记录保留，未重跑跨客户端路由",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/maintenance.md",
         "codex_evidence": "docs/maintenance.md",
-        "text_generation": "合成访谈完成默认run连续起草、统一命名、Word渲染及逐页核对，release_ready=true；重复run不改写产物",
-        "asr": "FunASR默认CLI离线CPU处理4秒官方样本通过；Qwen0.6B及ForcedAligner处理4.523秒样本、FunASR到Qwen全量独立复核通过；真实长会议/方言/重叠语音未测"
+        "text_generation": "1.1.1合成访谈完成连续起草、命名、Word逐页验收及release；1.2.0保留流程，执行回归和独立目录DOCX烟测，未重跑Word视觉验收",
+        "asr": "真实录音三个20秒片段合为60秒；FunASR主转录、Qwen0.6全量复核及1.7本地离线CPU对照完成，分歧/重复保持未决；无人工参考稿，不宣称准确率、模型胜出或整场覆盖"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "meeting-minutes-pro/v1.1.2",
+        "tag": "meeting-minutes-pro/v1.2.0",
         "asset": "meeting-minutes-pro.zip",
-        "sha256": "10f0e432327254f7236edf8a000bbab14a3e3ab20f6251e079ead576a6872297"
+        "sha256": "2755b0c38012e843c7677123a03722e5c0a1a9e213b20bfd806f80875d0a013b"
       }
     },
     {
