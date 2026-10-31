@@ -21,7 +21,7 @@
 |---|---|---|---|---|
 | 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.0.2/officialese-skill.zip) | 1.0.2 |
 | 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/yiti-skill%2Fv1.0.2/yiti-skill.zip) | 1.0.2 |
-| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.0.3/meeting-minutes-pro.zip) | 1.0.3 |
+| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.1.1/meeting-minutes-pro.zip) | 1.1.1 |
 
 ### 投后管理
 

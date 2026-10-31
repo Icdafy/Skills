@@ -63,6 +63,13 @@ def check_findings(checks: list[dict], waivers: dict) -> list[dict]:
     for check in checks:
         term_block = False
         for line in check.get('stdout', '').splitlines():
+            # These exact quality_check lines report successful mechanical
+            # checks, not findings needing a separate human decision. Keep
+            # waivers, unusual diagnostics and real warnings reviewable.
+            if check.get('name') == 'quality_check' and re.fullmatch(
+                    r'提示：(?:(?:冗余归因表述|总结概述转述句式|解释性括注|加工元说明)检查：0 处残留。'
+                    r'|问答 \d+ 组。数字事实核对请另行运行 fact_check\.py。)', line):
+                continue
             warning = line.startswith(('警告', '强警告', '提示', '术语改写提示'))
             term_block = term_block or line.startswith('术语改写提示')
             if (warning or ('疑似移用' in line and line.startswith('- 第'))
@@ -72,6 +79,59 @@ def check_findings(checks: list[dict], waivers: dict) -> list[dict]:
         for value in values:
             findings.append(finding('waiver', f'{flag}: {value}'))
     return {row['id']: row for row in findings}.values()
+
+
+def validate_revision_text(original: dict, accepted: dict, entries: list[dict]) -> list[str]:
+    """Replay logged, non-overlapping text edits against the complete transcript.
+
+    Hash binding alone proves which files were supplied, not that the logged
+    edits account for their difference. Ignore whitespace as transcript exports
+    do, but preserve words, numbers and punctuation. Repeated phrases may have
+    several valid positions; retain candidates until the complete replay can be
+    verified instead of silently choosing the first occurrence.
+    """
+    if not isinstance(original.get('text'), str) or not isinstance(accepted.get('text'), str):
+        return ['原始稿或修订稿缺少完整 text，无法核对实际修订差异。']
+    compact = lambda text: re.sub(r'\s+', '', text)
+    before_text, after_text = compact(original['text']), compact(accepted['text'])
+    if not all(isinstance(entry, dict) and isinstance(entry.get('before'), str)
+               and isinstance(entry.get('after'), str) for entry in entries):
+        return ['修订记录的 before/after 必须为文本。']
+    ordered = sorted(entries, key=lambda row: (row.get('start', 0), row.get('end', 0)))
+    states = {(0, 0)}
+    for entry in ordered:
+        before, after = compact(entry['before']), compact(entry['after'])
+        if not before and not after:
+            return ['修订记录不能同时具有空的 before 和 after。']
+        next_states = set()
+        for left, right in states:
+            # Any gap before this edit must be identical in the two versions.
+            # Empty before represents an insertion; only the common prefix can
+            # contain its insertion point.
+            common = 0
+            while (left + common < len(before_text) and right + common < len(after_text)
+                   and before_text[left + common] == after_text[right + common]):
+                common += 1
+            if before:
+                positions = []
+                pos = before_text.find(before, left)
+                while pos != -1 and pos <= left + common:
+                    positions.append(pos)
+                    pos = before_text.find(before, pos + 1)
+            else:
+                positions = range(left, left + common + 1)
+            for pos in positions:
+                target = right + pos - left
+                if after_text.startswith(after, target):
+                    next_states.add((pos + len(before), target + len(after)))
+                    if len(next_states) > 10000:
+                        return ['修订记录位置过于模糊；请在 before/after 中补充完整语句上下文。']
+        states = next_states
+        if not states:
+            return ['修订记录的 before/after 与实际原稿、修订稿不对应；请按时间顺序记录互不重叠的完整修改。']
+    if not any(before_text[left:] == after_text[right:] for left, right in states):
+        return ['修订记录未覆盖原始稿与修订稿的全部文字差异；请补齐修改记录。']
+    return []
 
 
 def audio_evidence(source: Path | None, transcript: Path, raw: Path | None,
@@ -100,6 +160,9 @@ def audio_evidence(source: Path | None, transcript: Path, raw: Path | None,
                     or log.get('accepted_sha256') != file_hash(transcript)):
                 errors.append('修订记录没有绑定本次原始稿和修订稿。')
             entries = log.get('entries') or []
+            if not isinstance(entries, list) or not all(isinstance(entry, dict) for entry in entries):
+                errors.append('修订记录 entries 必须为对象列表。')
+                entries = []
             if not entries:
                 errors.append('修订记录为空。')
             for entry in entries:
@@ -114,6 +177,10 @@ def audio_evidence(source: Path | None, transcript: Path, raw: Path | None,
                 if (isinstance(entry.get('start'), (int, float)) and isinstance(entry.get('end'), (int, float))
                         and not 0 <= entry['start'] < entry['end'] <= float(original.get('duration_seconds', 0))):
                     errors.append('修订记录的时间范围无效。')
+            if entries and all(isinstance(entry, dict)
+                               and isinstance(entry.get('start'), (int, float))
+                               and isinstance(entry.get('end'), (int, float)) for entry in entries):
+                errors.extend(validate_revision_text(original, accepted, entries))
     if report is None or not report.is_file():
         if assurance == 'high':
             errors.append('高风险录音缺少全量独立复核 JSON 报告。')
@@ -227,10 +294,31 @@ def validate_render(report: Path | None, docx: Path | None) -> list[str]:
     errors = []
     if data.get('docx_sha256') != file_hash(docx):
         errors.append('渲染报告对应其他 DOCX 版本。')
+    if data.get('renderer') not in ('word', 'libreoffice'):
+        errors.append('渲染报告缺少实际使用的 Word 或 LibreOffice 渲染器。')
+    if not isinstance(data.get('pdf_sha256'), str) or not re.fullmatch(r'[a-fA-F0-9]{64}', data['pdf_sha256']):
+        errors.append('渲染报告缺少有效 PDF 内容指纹。')
+    page_count = data.get('pages')
+    if type(page_count) is not int or page_count <= 0:
+        errors.append('渲染报告缺少有效的正整数页数。')
+    if not all(isinstance(data.get(key), list) for key in ('missing_required_fonts', 'substituted_fonts')):
+        errors.append('渲染报告缺少完整字体检查结果。')
     if (data.get('ok') is not True or data.get('missing_required_fonts')
             or data.get('substituted_fonts')):
         errors.append('渲染或字体检查未通过。')
     page_check = data.get('page_number_check') or {}
-    if page_check.get('ok') is not True or any(x.get('ok') is not True for x in page_check.get('pages', [])):
+    if not isinstance(page_check, dict):
+        return errors + ['渲染报告缺少有效页码检查对象。']
+    pages = page_check.get('pages')
+    if (not isinstance(pages, list) or not pages or type(page_count) is not int
+            or len(pages) != page_count
+            or any(not isinstance(row, dict) or type(row.get('page')) is not int
+                   or row['page'] != index for index, row in enumerate(pages or [], 1))):
+        errors.append('渲染报告的逐页证据缺失、重复或未覆盖全部页。')
+    elif any(row.get('expected') != ('right' if index % 2 else 'left')
+             or row.get('detected') != row.get('expected')
+             or row.get('ok') is not True for index, row in enumerate(pages, 1)):
+        errors.append('逐页证据中的页码侧别未全部通过。')
+    if page_check.get('available') is not True or page_check.get('ok') is not True:
         errors.append('页码位置未全部检测通过。')
     return errors

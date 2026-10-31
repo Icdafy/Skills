@@ -121,24 +121,24 @@
       "name_zh": "会议转录与正式纪要",
       "category": "公文与会议",
       "source": "meeting-minutes-pro",
-      "version": "1.0.3",
+      "version": "1.1.1",
       "readme": "meeting-minutes-pro/README.md",
       "distribution": "office-skills",
       "verification": {
-        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
-        "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
+        "python": "Windows Python 3.12；320项技能回归通过，独立ZIP烟测、安装与备份通过",
+        "codex": "历史CLI 0.160.0路由通过；本轮Codex桌面已完成连续执行及Word文档验收，未重跑跨客户端路由",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
         "evidence": "docs/maintenance.md",
         "codex_evidence": "docs/maintenance.md",
-        "text_generation": "Codex真实生成及四项检查通过；仅文本draft",
-        "asr": "真实FunASR及Qwen0.6B离线推理通过（13.675秒合成语音）；Qwen CUDA失败、CPU通过；真实会议未实测"
+        "text_generation": "合成访谈完成默认run连续起草、统一命名、Word渲染及逐页核对，release_ready=true；重复run不改写产物",
+        "asr": "FunASR默认CLI离线CPU处理4秒官方样本通过；Qwen0.6B及ForcedAligner处理4.523秒样本、FunASR到Qwen全量独立复核通过；真实长会议/方言/重叠语音未测"
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "meeting-minutes-pro/v1.0.3",
+        "tag": "meeting-minutes-pro/v1.1.1",
         "asset": "meeting-minutes-pro.zip",
-        "sha256": "3afec69d6723d86380f5e265ec6ba4dc527b91a0b7e1b8addabf171582152a1d"
+        "sha256": "e9b9f2d877010c4664b61e25ca9d33e2dc8b09a60190e28308a659454a314147"
       }
     },
     {

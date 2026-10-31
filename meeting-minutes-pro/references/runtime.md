@@ -2,6 +2,8 @@
 
 复核等级、人工裁决和交付验收统一遵循 [evidence-and-release.md](evidence-and-release.md)。硬件建议不得覆盖内容风险要求。
 
+实际执行路径见 [acquisition-and-transcription.md](acquisition-and-transcription.md)。统一入口 `scripts/meeting_workflow.py` 保存任务配置并推进阶段；本文件用于选型及排障，不承担人工裁决。
+
 ## Engines
 
 Two local engines share one isolated runtime. Select with `transcribe.py --engine`; install with `bootstrap_runtime.py --install --engine funasr|qwen|all`.
@@ -11,7 +13,7 @@ Two local engines share one isolated runtime. Select with `transcribe.py --engin
 | 模型 | `paraformer-zh`（seaco-Paraformer）+ `fsmn-vad` + `ct-punc`，可选 `cam++` | `Qwen/Qwen3-ASR-0.6B`，可选 `Qwen/Qwen3-ASR-1.7B` |
 | 下载来源 | ModelScope（魔搭，中国大陆网络友好） | Hugging Face |
 | 长音频 | 原生 VAD 分段；超过 30 分钟且未启用 `--diarize` 时按静音切块（约 10 分钟一块）写检查点、中断自动续传；`--diarize` 时整段单遍处理以保证说话人编号一致 | 脚本按静音切块（ffmpeg silencedetect），逐块转录并写检查点，中断自动续传 |
-| 时间戳 | 句级时间戳随说话人流水线产生，无额外开销 | 需 `--timestamps` 加载 Qwen3-ForcedAligner-0.6B，内存占用较高 |
+| 时间戳 | 默认保留句级时间戳；不要求加载说话人模型，只有 `--diarize` 加载 cam++ | 需 `--timestamps` 加载 Qwen3-ForcedAligner-0.6B，内存占用较高 |
 | 说话人分离 | `--diarize`（cam++）；已知参会人数时加 `--speakers N`（传入 preset_spk_num）提高聚类稳定性 | 不支持 |
 | 热词/上下文 | `--context` 作为热词（hotword） | `--context` 作为上下文提示 |
 | 架构与速度 | 非自回归 Paraformer，CPU 上速度快 | 自回归解码，CPU 上长录音耗时明显 |
@@ -27,16 +29,16 @@ Both transcription and review accept `--offline`. Cached model aliases are resol
 
 ## Hardware
 
-`bootstrap_runtime.py --check` probes RAM, CUDA VRAM (via nvidia-smi), CPU cores, and free disk with the standard library only, and reports an advisory tier that drives how deep the dual-engine assurance goes. Hardware affects execution time and model size; it never automatically shortens the required coverage for high-risk recordings. The following budget suggestions apply only to standard-assurance meetings:
+`bootstrap_runtime.py --check --engine all` probes RAM, CUDA VRAM (via nvidia-smi), CPU cores, and free disk with the standard library only, and reports an advisory hardware tier. It checks module availability for the selected engine(s), not actual model loading or inference; validate those with a real short sample. Hardware affects execution time and model size; it never automatically shortens the required coverage for high-risk recordings. The following budget suggestions apply only to standard-assurance meetings:
 
 | Tier | 判定 | 双引擎策略建议 |
 | --- | --- | --- |
-| T0 | 内存 < 12GB，无≥8GB CUDA | 仅 funasr 主转录；确需复核加 `--budget-minutes 10`，避免 qwen `--timestamps` |
+| T0 | 内存 < 12GB，无≥8GB CUDA | FunASR 主转录；普通会议可设置 Qwen 定向预算，避免 Qwen 强制对齐；无法运行独立复核时披露限制 |
 | T1 | 内存 ≥ 12GB（默认档） | funasr 主转录＋定向复核（0.6B）；长录音加 `--budget-minutes` |
 | T2 | CUDA 显存 ≥ 8GB | 征询用户后可换 1.7B 模型、扩大复核覆盖或 `--voter sensevoice` |
-| T3 | CUDA 显存 ≥ 16GB | 全量双引擎（`--all` / `fact_check --compare`）＋三取二投票 |
+| T3 | CUDA 显存 ≥ 16GB | 可执行完整独立复核；可选投票仅排序分歧，不能代替回听或自动放行 |
 
-The tier is a recommendation: quote it (with the reason) to the user, degrade loudly rather than silently, and honor explicit user overrides with an ETA warning.
+The tier is a recommendation: quote it (with the reason) to the user, disclose any inability to meet the selected assurance level, and honor explicit user overrides with an ETA warning.
 
 - NVIDIA CUDA: automatically selected and normally fastest.
 - CPU: universal fallback. The funasr engine is comfortable on ordinary laptops; for the qwen engine on long recordings expect significant time and prefer 32 GB RAM.
@@ -47,13 +49,15 @@ With the qwen engine, use the 0.6B model on general laptops. When CUDA with ampl
 
 ## Accuracy
 
+After the initial bundled information reply, the agent continues through transcript review, minutes authoring, DOCX generation and available checks. `needs_authoring`, `agent_action` and `accept` are internal handoffs, not reasons to end the turn or ask the user to say "generate". Pause for a staged review only when explicitly requested. Unresolved audio differences remain unresolved in the evidence and are disclosed with the final deliverable; they do not justify fabricated listening or a false release status.
+
 Use `--context` for company names, people's names, abbreviations, technical vocabulary, only; reuse and extend the per-project files under `glossary/`. Context is a recognition hint, not text that must appear; keep it short and relevant. Never put BP figures, conclusions or whole sections into ASR context. Ask at the start whether the user has BP or other reference files, and consult only the specific entries needed to resolve unclear data or names in the meeting. For known Chinese recordings on the qwen engine, also specify `--language Chinese`.
 
-Run `--sample 60` before an important long recording: the probe is taken from the middle of the audio (openings are greetings and mic checks), and the result JSON reports the measured realtime factor plus an estimated full-run duration — quote that estimate to the user before starting the long run. Use `--enhance` for noisy, quiet, or far-field audio (loudness normalization plus light denoising). If names or numbers remain uncertain, preserve the raw output, check the matching entry in user-provided references and listen again or seek user confirmation before correcting the accepted transcript. Record unresolved details in chat and the review ledger; the minutes contain only confirmed meeting content, without explanatory parentheses or transcription, recognition or source-material commentary.
+Run `--sample 60` before an important long recording: the probe is taken from the middle of the audio (openings are greetings and mic checks), and the result JSON reports inference_realtime_factor, setup_seconds and an estimated full-run duration that counts setup once rather than scaling cold-start time by recording length — quote that estimate to the user before starting the long run. Use `--enhance` for noisy, quiet, or far-field audio (loudness normalization plus light denoising). If names or numbers remain uncertain, preserve the raw output, check the matching entry in user-provided references and use available listening and contextual evidence before correcting the accepted transcript; previously supplied user confirmations may also serve as evidence. Keep unresolved details in the review ledger and disclose them together with the final deliverable; continue drafting from unambiguous supported content without inserting another user-confirmation checkpoint. The minutes contain only confirmed meeting content, without explanatory parentheses or transcription, recognition or source-material commentary.
 
-For number-critical recordings, use full independent review (`--all`): clips cover the source media timeline, including gaps in the primary transcript. Budget truncation is rejected in this mode. Standard-assurance meetings may use targeted review and an explicitly disclosed audio-minute budget. `--voter sensevoice` or enhanced-audio Qwen re-passes only adjust review priority; they never resolve a conflict automatically. Record actual listening decisions in the version-bound review ledger. Same-family Qwen re-passes are not independent dual-engine evidence. The comparison detects selected numeric, unit, negation and qualifier differences; it is not a semantic or accuracy guarantee.
+For number-critical recordings, use full independent review (`--all`): clips cover the source media timeline, including gaps in the primary transcript. Budget truncation is rejected in this mode. Standard-assurance meetings may use targeted review and an explicitly disclosed audio-minute budget. `--voter sensevoice` or enhanced-audio Qwen re-passes only adjust review priority; they never resolve a conflict automatically. Record actual listening decisions in the version-bound review ledger. Same-family Qwen re-passes are not independent dual-engine evidence. The comparison detects selected numeric, unit, negation, qualifier and evident text omission/difference signals; it is not a semantic or accuracy guarantee.
 
-Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说话人2…; it does not know real names. Pass the participant count confirmed during 前置信息采集 via `--speakers N`. Map labels to the confirmed participant list, and keep the numeric labels when unsure. Overlapping speech, clipped microphones, background music, and distant voices still require human review.
+Speaker diarization (`--diarize`, funasr engine) labels turns as 说话人1/说话人2…; it does not know real names. Pass the participant count confirmed during 前置信息采集 via `--speakers N`. Map labels to the confirmed participant list only with evidence; when unsure keep numeric labels in the internal transcript only, never in formal minutes. Overlapping speech, clipped microphones, background music and distant voices require additional evidence review; the agent performs what it can, retains unresolved items and discloses them with the final deliverable without inventing a user-review checkpoint.
 
 ## Troubleshooting
 

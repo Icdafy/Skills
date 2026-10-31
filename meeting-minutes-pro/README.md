@@ -1,30 +1,28 @@
 # 会议转录与正式纪要（meeting-minutes-pro）
 
-当前分发版本：**1.0.3**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+本地处理会议音视频，使用 FunASR 与 Qwen3-ASR 完成主转录和独立复核，再由智能体按固定写作规则生成“完整总结概述＋完整问答”的正式 DOCX。也支持已有转录稿、访谈笔记，或仅输出原始转录。
 
-## 用途与边界
+源码版本 **1.1.1**，以 [VERSION](VERSION) 为准；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
-录音、转录稿或访谈的正式纪要，完整概述与完整问答；语音端仅在已有引擎/模型可用时执行。
+## 从音频到纪要
 
-## 输入和输出
+```text
+音视频 → 主转录 → 独立复核 → 分歧裁决/修订证据稿
+                              ↓
+                     逐窗事实和全部问答
+                              ↓
+                完整总结＋完整问答 → 文本检查
+                              ↓
+                  DOCX → 回读/渲染 → 正式验收
+```
 
-输入：会议名称、时间、地点、主持/记录/参会人；文本转录稿或音视频、术语资料。
+`SKILL.md` 是精简的执行入口；详细转录、写作、格式和验收规则按阶段加载。`scripts/meeting_workflow.py` 保存源文件、配置、阶段结果和版本绑定，减少重复手写命令、混用路径和拿旧结果继续处理的问题。`run` 按当前产物状态推进可执行阶段：缺正文时给出 `agent_action: author_minutes`，智能体在同一任务内核对证据、起草纪要并填写覆盖清单，再次 `run` 推进 DOCX 与渲染；出现 `agent_action: review_document` 时完成实际文档复核，再次 `run` 执行正式验收。动作明确 `continuation_required: true`、`user_input_required: false`，旧 `needs_authoring` 同样表示内部接续。脚本不会代写语义内容或自动假定人已听审。
 
-输出：纪要/问答文本、事实与覆盖检查、DOCX；有语音环境时另有转录及证据。
+中文及中英混合录音默认 FunASR；方言、外语等选择适用的 Qwen3-ASR。现有自动独立复核支持 **FunASR 主稿 → Qwen 复核**，Qwen 再跑 Qwen 不计为独立双引擎。初访、尽调、路演、公司/产品/财务讲解和数字密集录音采用全量复核，覆盖源音频完整时间轴，包含主稿没有识别到内容的区间；普通会议可定向复核并披露范围。硬件只影响模型和耗时，不自动降低高风险覆盖要求。
 
-首次调用时，收集会议信息的同时主动询问是否有 BP、演示材料、会议笔记或术语表等辅助文件；已有文件时直接复用。辅助文件仅用于定点核对会议内容中模糊的数据、单位、专名和术语，不作为新增会议内容的来源。BP 中的数字、结论或章节不得直接补入纪要，也不得作为 ASR 数字上下文提示；修订模糊内容须经回听或用户确认，并另存核对记录。
+## 安装与运行
 
-纪要正文只客观整理会议实际内容，不出现解释性括注，或“根据转录”“录音不清晰”“识别结果”“参考 BP”等加工和材料来源说明。确有依据的单位、职务、条件等有效信息改为直接陈述；公文层级编号 `（一）`、`（1）` 保留。未确认事项在对话和复核清单中说明，正文只保留可确认部分。
-
-## 依赖与字体
-
-Python 3.10+；文本检查使用标准库，DOCX 生成需 `scripts/requirements-runtime.txt` 中的依赖。语音环境由 `python scripts/bootstrap_runtime.py --check` 检测；FunASR/Qwen3-ASR、FFmpeg 和模型另行准备，既有FunASR与Qwen0.6B已完成短合成语音实测，实际范围及未测项见下方“已验证环境”。
-
-单技能ZIP和安装器输出不含字体。GitHub源码按维护者要求保留原main三份字体，见 [字体说明](assets/fonts/README.md)；其公开再分发授权仍未确认。自行准备有使用权的仿宋_GB2312、楷体_GB2312、方正小标宋简体等原版式字体，可用 `ICDAFY_FONT_DIR` 指向授权文件目录；运行 `python scripts/font_preflight.py --check` 检测。缺字体须明确说明，不能把草稿称为已通过版式验收；原字体、字号和版式规则保留。
-
-## 完整安装例子
-
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.0.3/meeting-minutes-pro.zip) 下载，解压后进入 `meeting-minutes-pro`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+需要 Python 3.10+ 和能在本机读取媒体的执行环境。请安装完整目录或 [已发布的完整技能包](https://github.com/Icdafy/Skills/releases)，不要只复制 `SKILL.md`；以实际 Release 版本为准，不将尚未发布的源码版本当成已发布包。
 
 ```powershell
 cd "C:/下载/技能包/meeting-minutes-pro"
@@ -34,92 +32,69 @@ python scripts/skill_portability.py install --agent codex --scope project --proj
 python scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目" --apply
 ```
 
-Claude Code 把 `--agent codex` 换成 `--agent claude-code`。其他客户端及安装器目录表见 [跨客户端安装](references/agent-compatibility.md)。运行路径以本次实际加载的 SKILL.md 目录为根；脚本和输入输出使用绝对路径时可在任意任务目录执行。
+Claude Code 使用 `--agent claude-code`；其他客户端、个人范围、检测和安装位置见 [跨客户端安装](references/agent-compatibility.md)。已有安装更新会检查本地差异并备份，项目术语保留。旧版 `install_skill.py` 仅供兼容；推荐用 `skill_portability.py`。
 
-## 调用例子
+先检查语音运行环境，缺组件时在已获授权范围内安装双引擎运行时：
 
-安装后新建会话，在 Codex 输入：
-
-```text
-$meeting-minutes-pro 把这份访谈转录稿整理成完整概述和完整问答的正式会议纪要。
+```powershell
+python scripts/bootstrap_runtime.py --check --engine all
+python scripts/bootstrap_runtime.py --install --engine all
 ```
 
-Claude Code 输入 `/meeting-minutes-pro 把这份访谈转录稿整理成完整概述和完整问答的正式会议纪要。`；自然语言直接使用“把这份访谈转录稿整理成完整概述和完整问答的正式会议纪要。”。先补齐 SKILL.md 要求的缺失输入；不得编造事实。
+模型另行从官方来源下载，技能包不含模型权重。检查命令报告模块和硬件状态，不代表真实模型加载成功；使用它返回的 Python 路径进行试转。模型、硬件、长音频、离线和故障处理见 [运行参考](references/runtime.md)。
 
-## 已验证环境
+使用技能时可直接说：
 
-Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
+```text
+$meeting-minutes-pro 请处理这份尽调录音：双引擎转录并核对关键分歧，按我的完整总结和完整问答框架生成正式纪要 Word。
+```
 
-Codex CLI 0.160.0：新会话显式调用、自然语言和相邻技能反例均实际读取正确项目技能路径，路由通过。文本生成实测保留2组问答、3窗全部内容和24个数字事实，四项检查全部退出0；这是文本草稿，`release_ready:false`。已有FunASR及Qwen0.6B真实离线推理13.675秒合成中文语音均成功；Qwen CUDA首次失败，CPU重试通过。真实长会、方言、说话人分离和全量回听未实测。
+先提取已知信息，一次性询问仍缺失的基本信息及辅助文件；等待时继续环境检查和不依赖答案的音频处理。元信息缺失不阻塞转录，最终不猜填未知字段。首次集中答复后连续完成最终纪要，不在修订证据稿后暂停，不把中间稿发给用户检查后等“生成”指令；仅在用户明确要求分阶段审阅时暂停。
 
-Claude Code当前没有可运行客户端，未实测；其他客户端未实测。脚本成功不代替模型调用或Word视觉验收。原始提示、读取路径、结果和字体探针见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。
+统一入口示例中的路径请替换为实际绝对路径；高风险音频明确传 `--assurance high`：
 
-## 升级入口
+```powershell
+<runtime-python> <skill-dir>/scripts/meeting_workflow.py init --input <录音绝对路径> --job-dir <任务绝对目录> --source-kind audio --engine funasr --assurance high --runtime-python <runtime-python> --project-name "项目甲" --interview-date "2026-11-01" --mode qa-summary
+<runtime-python> <skill-dir>/scripts/meeting_workflow.py run --job-dir <任务绝对目录>
+<runtime-python> <skill-dir>/scripts/meeting_workflow.py status --job-dir <任务绝对目录>
+```
 
-维护者只更新 `meeting-minutes-pro/`、本技能的索引/目录版本及 ZIP，不修改或升级其他技能。`scripts/skill_portability.py` 复制自通用安装工具，现与 `references/agent-compatibility.md` 一同独立维护，这两份资源不得跨技能同步。执行 `python tools/package_skills.py --skill meeting-minutes-pro`（在整库根运行）；源码版本见 [VERSION](VERSION)，记录见 [CHANGELOG.md](CHANGELOG.md)。全部维护步骤见 [维护说明](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md)。
+`needs_authoring` / `agent_action` 是内部继续阶段，不是结束对话或向用户索取“是否继续”的节点。智能体自行完成实际核对、纪要 TXT 和覆盖清单；修订稿用 `accept` 登记后立即继续。完成相应智能体动作后再次 `run`，让入口继续推进；排障或只重跑指定阶段时使用 `run --step draft|docx|render|review-template|release`。步骤的完整命令与智能体衔接分别见 [采集与转录](references/acquisition-and-transcription.md)、[纪要编写与交付](references/minutes-and-delivery.md)。
 
-用户将新版解压到另一个目录，再用同样的 install 命令更新指定项目。已有安装先备份到 skills 目录外的 `skill-backups/`；出现多余文件会停止，手工确认后 `--replace --apply` 把旧目录移入备份。会议纪要私有术语自动保留，其他本地文件在备份中保留。源码保持在仓库根目录 `<仓库>/meeting-minutes-pro/`；GitHub 源码地址及安装后的英文目录名不变。
+## 内容与验收规则
 
-## 许可
+- 录音及确认后的转录稿提供会议内容；BP、公司介绍、笔记和术语库仅用于具体模糊片段核对，不提供纪要提纲或新增会议事实，辅助资料数字不进入 ASR 提示。
+- 保留全部重要数字的对象、单位、区间、时间和限定条件。先梳理事实与问答，再起草总结；原稿漏识别与摘要漏内容分别由独立复核和覆盖审计处理。
+- 存在明确问答时，完整总结先于完整问答，两部分均保留；没有问答不造问题。正文只客观陈述会议内容，不写解释性括注、转录过程、材料来源说明或无依据的判断。职务、单位和必要条件直接书写，公文层级编号保留。
+- `checks_passed` 只代表机械检查通过；最终文件、逐事实裁决、分歧回听和版式检查均完成后，才可能 `release_ready: true`。不能把模型一致或测试通过称为识别绝对正确。
+- 原始转录保持不变；修订稿另存并逐项记录依据。版本绑定覆盖源媒体、原/修订稿、参数、规则和最终文件，修改后旧确认不能直接复用。
 
-[Apache-2.0](LICENSE)；[NOTICE](NOTICE) 保留署名、维护者素材授权确认和本机字体说明。
+详细写作、标题层级、问答空行、数字千位分隔、字体/字号/固定行距、表格和页码见 [格式与输出规范](references/format-and-output.md)。`format_spec.py` 是排版实现的唯一规约，DOCX 需经过内容与样式回读及实际逐页渲染。
 
-## 原业务说明与历史记录
+字体由用户提供授权版本，可用 `ICDAFY_FONT_DIR` 指向字体目录；执行 `font_preflight.py --check`。单技能 ZIP 和安装器不包含字体；源码中的历史字体及其许可状态见 [字体说明](assets/fonts/README.md)。缺字体时不静默替换并声称通过版式验收。
 
-下方保留原业务用法与历史。旧 `install_skill.py` 供兼容初次安装；更新已有版本请使用上方项目安装命令，以获得备份和本地数据保留检查。
+最终文件统一命名为 `项目名称_会议纪要_访谈时间.docx`；无项目名称时，首段改用访谈对象姓名，不能用我方访谈人员或记录人。`项目名称/访谈人名` 中的 `/` 表示二选一，不作为路径分隔符。日期来自用户已确认的访谈时间，例 `项目甲_会议纪要_2026-11-01.docx`；不猜日期。TXT、DOCX 与渲染报告使用同一 stem，缺项处理见 [文件命名](references/format-and-output.md#最终文件命名)。
 
-# meeting-minutes-pro
+每场会议单独归档原始转录、适用的修订稿与记录、复核报告、覆盖清单、纪要 TXT/DOCX、`review.json`、渲染 JSON 和 `checks-summary.json`；阶段执行日志和 `workflow.json` 便于续跑。默认交付 DOCX；仅转录或指定其他格式时遵循用户要求。渲染 PDF 逐页验收后删除，用户需要时保留。
 
-在用户本机转录会议音视频，并依据录音或用户指定的文字材料生成客观、书面化、公文版式的会议纪要。默认中文转录使用 FunASR，外语、方言和多语言场景使用 Qwen3-ASR。含明确问答时保留“完整总结概述＋完整问答”，正式纪要默认交付 DOCX。
+## 隐私与执行边界
 
-## 可靠性与适用边界
+录音在本机处理，不静默上传、不改用云接口。`--offline` 只允许本地模型缓存，并限制 CLI 的 Python 网络连接；它不等同于操作系统防火墙。严格断网要求在系统层断网后运行。
 
-- 有录音时，BP、辅助笔记等只用于核对模糊的数据或术语；核对结果经回听或用户确认后才写入修订稿，不补入会议未谈及的内容。仅提供文字材料时按 transcript/notes 模式处理，核验能力与限制在对话和复核清单中说明。
-- 高风险录音的独立复核覆盖源音频完整时间轴，包括主稿没有识别内容的区间；禁止预算截断。硬件建议不能降低保障要求。
-- 严格数字审计按实例匹配，保留带单位的小数字、中文年份、正负号及币种，区分百分比和百分点；对象、时间、限定条件仍须逐事实语义核对。
-- 短问题保留为候选；多个提问匹配同一纪要问题时提示逐项检查追问与答复。
-- 检查点绑定实际音频及识别配置，模型、热词、语言、增强和时间戳设置变化后不复用旧结果。
-- `checks_passed` 是程序检查结果；`release_ready` 才是该版本完成证据、人工裁决和版式验收的状态。双引擎一致不保证录音绝对准确。
+`glossary/industry/` 是公共词库；项目术语和 `banned-phrases.txt` 是用户数据，安装与打包需保留或排除私有文件。录音、转录、模型缓存、私有资料及本机路径补丁不进入公开技能包。分发规则见 [platforms.md](references/platforms.md)。
 
-## 工作流程
+“实际回听”指理解对应音频；剪片、重复 ASR 和投票均不算。宿主没有音频理解能力或存在未解分歧时，以不误导的可确认内容继续生成最终纪要，疑点与能力限制随最终交付集中披露；不追加中途确认门槛，也不填造听审结果。缺渲染器时也必须明确版式尚未完成验收。完整证据字段与状态含义见 [evidence-and-release.md](references/evidence-and-release.md)。
 
-1. 读取 [SKILL.md](SKILL.md)，确定输入类型、会议信息及风险等级，并主动询问可用于核对模糊内容的辅助文件。
-2. 用运行时 Python 执行 `scripts/bootstrap_runtime.py --check`；模型缺失时在已有授权范围内安装。
-3. 试转样本、完整转录，适用时执行全量或定向独立复核；保留原始稿，修订另存并记录依据。
-4. 只依据确认的会议内容起草完整纪要，删除解释性括注和加工说明；填写覆盖清单并运行 `check_all.py --ledger ...`。修复数字遗漏、问答错误和格式问题。
-5. 生成 DOCX、渲染并逐页检查。用 `--make-review` 生成版本绑定的事实与警告清单，完成实际裁决。
-6. 使用相同输入执行 `check_all.py --stage release --review ... --render-report ...`；以 `release_ready: true` 作为正式验收结果。
-
-完整命令、复核 JSON 字段及状态语义见 [证据链与交付验收](references/evidence-and-release.md)。不要把旧版只运行四个子脚本或只回读 DOCX 的命令当成正式验收。
-
-## 模型与环境
-
-FunASR 提供中文及中英混合转录、热词、句级时间戳和可选说话人分离。Qwen3-ASR 支持30种语言及22种中文方言；其强制对齐模型支持11种语言，转录支持范围不等于对齐支持范围。
-
-主转录和复核均可用 `--offline` 解析本地模型缓存并阻止进程内 Python 网络连接；缺缓存时报错。它不是系统防火墙，严格隔离应在操作系统层断网后运行。具体环境、硬件与故障处理见 [运行参考](references/runtime.md)。
-
-Qwen 主稿再次由 Qwen 重转不计作独立双引擎；当前自动复核器支持 FunASR 主稿→Qwen 复核。没有适用独立引擎时须说明限制，不能填写虚假的高保障状态。
-
-## 版式与归档
-
-纯文本是纪要内容基准，DOCX 按 [固定版式](references/format-and-output.md) 生成；数字按英美写法加半角千位分隔符（`1,234.56`、`2,350万元`，年份、日期、文号、编号等标识性数字除外），`quality_check.py` 扫描未分节数字；`format_spec.py` 统一层级、字体和页面规约。保留内容与样式回读、字体嵌入和逐页渲染检查。PDF 中只要求实际使用的相应字体，不因文档未使用某种标题而误报缺字体。
-
-每场会议独立归档原始转录、适用的修订稿与修订记录、复核报告、覆盖清单、`review.json`、`checks-summary.json`、渲染 JSON 和纪要。渲染 PDF 完成检查后可删除；用户索要时保留。
-
-## 安装、更新与隐私
-
-[下载完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.0.3/meeting-minutes-pro.zip)，在 Claude、ChatGPT、豆包、WorkBuddy、Kimi Work、Qoder、TRAE 的技能界面上传；目录型客户端用 `python scripts/skill_portability.py install --agent <客户端> --apply`（`agents` 子命令列出 claude-code、codex、kimi-code、workbuddy、trae-cn、qoder-cli、zcode、openclaw 等全部目标，`--detect` 自动识别本机客户端）。覆盖更新时旧版先备份到 `skill-backups/`，项目术语与机构禁词始终保留。旧命令 `python scripts/install_skill.py --target codex|claude|workbuddy|all [--force]` 仍可用。旧版无指纹 ASR 检查点自动重算，旧版复核报告须按新版重新生成。
-
-`glossary/industry/` 是公共行业术语库；`glossary/` 根下项目术语和 `banned-phrases.txt` 是用户数据。安装复制与 Git 发布默认排除私有数据。对目录手工打包时也必须排除这些文件，不得仅依赖 `.gitignore`。不把模型、录音、转录稿、项目数据或本机路径补丁上传到技能仓库。
-
-各客户端安装入口、调用方式与验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)，本技能特有的执行环境与分发要求见 [安装参考](references/platforms.md)。从已使用目录分发前按公共文件清单核对；本地环境可能另有平台兼容修复，不随技能复制。
-
-## 验证
+## 验证与维护
 
 ```powershell
 <runtime-python> -B -m unittest discover -s tests
 ```
 
-测试包括转录辅助函数、断点恢复、全量覆盖、数字与问答反例、版本绑定证据、私有术语保留、DOCX 内容/样式和渲染检查。模拟测试不代表真实录音识别准确率；更换依赖或模型后需在本地重新验证加载及样例推理。
+回归测试覆盖转录辅助函数、断点和时间定位、全量复核规划、数字与问答反例、版本绑定证据、DOCX 内容/样式和渲染报告。模拟测试不代表真实长录音准确率；更换引擎、模型或依赖后需要重新做样例加载与推理。
 
-排版分层及暂不引入系统级文档模型的理由见 [架构说明](references/architecture.md)。
+1.1.0 本轮验证：312 项回归通过；默认 FunASR 原始 CLI 对 4 秒官方样本离线转录通过；Qwen3-ASR 0.6B＋ForcedAligner 对 4.523 秒样本的输出契约通过；FunASR 主稿→Qwen 全量独立复核链通过。合成转录稿生成完整总结与两组问答，经本机 Word 真正渲染、逐页目检和正式验收通过。尚未完成真实长会议、方言、多人重叠语音和说话人分离准确率基准；短样本成功不代表这些场景已验证。历史记录见 [维护记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)，本轮变更见 [CHANGELOG.md](CHANGELOG.md)。
+
+只维护本技能目录及其索引/版本/包，不跨技能同步安装器和兼容文档。`scripts/skill_portability.py` 支持 check、install 和 package；完整仓库维护可运行 `python tools/package_skills.py --skill meeting-minutes-pro`。架构约束见 [architecture.md](references/architecture.md)。
+
+许可为 [Apache-2.0](LICENSE)；[NOTICE](NOTICE) 保留署名与素材说明。

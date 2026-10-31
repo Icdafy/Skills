@@ -97,7 +97,7 @@ PROFILES = {
         'required': ('references/evidence-and-release.md', 'references/format-and-output.md',
                      'references/runtime.md', 'references/platforms.md',
                      'references/architecture.md', 'glossary/README.md',
-                     'scripts/bootstrap_runtime.py', 'scripts/transcribe.py',
+                     'scripts/bootstrap_runtime.py', 'scripts/meeting_workflow.py', 'scripts/transcribe.py',
                      'scripts/refine_transcript.py', 'scripts/create_minutes_docx.py',
                      'scripts/format_spec.py', 'scripts/quality_check.py', 'scripts/check_all.py',
                      'scripts/font_preflight.py', 'scripts/embed_fonts.py',

@@ -601,10 +601,11 @@ def validate(
                     ]
                     summary_chars = sum(len(content) for content in summary_body)
                     qa_chars = sum(len(content) for content in qa_body)
-                    # Scale with the Q/A volume: a two-hour interview carries
-                    # thousands of characters of Q/A and deserves far more than
-                    # a token overview, hence the 2000-character ceiling.
-                    minimum_summary_chars = min(2000, max(120, qa_chars // 10))
+                    # Scale with the Q/A volume. A fixed 120-character floor
+                    # forces very short meetings to invent padding. Below 240
+                    # Q/A characters, scale that floor down; retain the existing
+                    # 10% check and 2000-character ceiling for long interviews.
+                    minimum_summary_chars = min(2000, max(min(120, qa_chars // 2), qa_chars // 10))
                     if summary_chars < minimum_summary_chars:
                         errors.append(
                             "“完整总结概述”内容不足：当前正文约 "
