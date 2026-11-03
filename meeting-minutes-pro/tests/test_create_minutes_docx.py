@@ -295,6 +295,36 @@ class PageLayoutTests(unittest.TestCase):
             doc.paragraphs[second_heading - 1].paragraph_format.line_spacing, Pt(28)
         )
 
+    def test_blank_before_subheading_survives_answer_continuation(self) -> None:
+        doc = Document()
+        lines = [
+            "项目会议纪要",
+            "　　二、问答纪要",
+            "　　（一）产能与交付",
+            "　　问：产能和交付情况如何？",
+            "　　答：现有两条产线，年产能合计约5万台。",
+            "　　新产线预计2026年三季度投产。",
+            "",
+            "　　（二）客户与订单",
+            "　　问：主要客户有哪些？",
+            "　　答：前五大客户收入占比约60%。",
+        ]
+        CM.add_minutes_content(doc, lines, "项目会议纪要")
+        texts = [paragraph.text for paragraph in doc.paragraphs]
+        continuation = texts.index("新产线预计2026年三季度投产。")
+        self.assertEqual(texts[continuation - 1], "答：现有两条产线，年产能合计约5万台。")
+        self.assertEqual(texts[continuation + 1], "")
+        self.assertEqual(texts[continuation + 2], "（二）客户与订单")
+
+    def test_question_stays_with_its_answer(self) -> None:
+        doc = Document()
+        CM.add_content_paragraph(doc, "　　问：现有产能能否满足交付？")
+        question = doc.paragraphs[-1].paragraph_format
+        self.assertTrue(question.keep_with_next)
+        self.assertTrue(question.keep_together)
+        CM.add_content_paragraph(doc, "　　答：可以满足。")
+        self.assertFalse(doc.paragraphs[-1].paragraph_format.keep_with_next)
+
     def test_first_line_indent_is_character_based(self) -> None:
         # #5: two-character indent via w:firstLineChars (scales with font size),
         # with the absolute w:firstLine kept as a fallback.
