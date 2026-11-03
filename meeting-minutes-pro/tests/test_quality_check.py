@@ -75,6 +75,47 @@ class ToneRuleTests(unittest.TestCase):
         errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
         self.assertFalse(any("对照式" in error or "后续判断" in error for error in errors))
 
+    def test_ai_tone_phrases_are_flagged(self) -> None:
+        for sentence in ("综上所述，公司经营稳定。",
+                         "总体来看，订单增长较快。",
+                         "由此可见，产品具备竞争力。",
+                         "需要指出的是，产能已满。",
+                         "该项目具有重要的战略意义。",
+                         "新产线为扩产奠定了坚实基础。",
+                         "双方围绕融资安排进行了深入交流。",
+                         "公司持续深耕低空经济领域。",
+                         "首先，团队经验丰富；其次，技术领先。",
+                         "公司打造一体化模式——硬件带动软件。",
+                         "订单增长超过预期！",
+                         "公司收入呈现快速增长态势。"):
+            with self.subTest(sentence=sentence):
+                doc = document("访谈纪要", "一、总体情况", sentence)
+                errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
+                self.assertTrue(any("机器腔" in error for error in errors))
+
+    def test_ai_tone_released_by_allow_line(self) -> None:
+        doc = document("访谈纪要", "一、总体情况", "该项目具有重要的战略意义。")
+        errors = QUALITY_CHECK.validate(doc, "minutes", {3}, [])
+        self.assertFalse(any("机器腔" in error for error in errors))
+
+    def test_qa_openers_are_flagged(self) -> None:
+        for line in ("问：请问公司目前产能多少？", "答：关于这个问题，公司产能约5万台。",
+                     "答：这个问题目前没有统计。"):
+            with self.subTest(line=line):
+                self.assertTrue(any(pattern.search(line)
+                                    for pattern, _ in QUALITY_CHECK.AI_TONE_PATTERNS))
+
+    def test_plain_business_wording_is_not_ai_tone(self) -> None:
+        # Domain terms and plain statements that resemble the patterns.
+        for line in ("客户可以看到设备实时数据。", "公司采用闭环控制方案。",
+                     "通信链路时延约20毫秒。", "2024—2025年收入约1.2亿元。",
+                     "首先完成样机测试，再安排试产。", "毛利率总体上保持稳定。",
+                     "答：是的，已签订框架合同。", "问：公司目前产能多少？",
+                     "就融资安排进行了交流。", "公司赋能下游客户提升效率。"):
+            with self.subTest(line=line):
+                self.assertFalse(any(pattern.search(line)
+                                     for pattern, _ in QUALITY_CHECK.AI_TONE_PATTERNS))
+
     def test_table_rows_skip_indent_rule(self) -> None:
         doc = TextInput("访谈纪要\n　　一、财务情况\n|指标|金额（万元）|\n|---|---|\n|收入|100|\n　　正文。")
         errors = QUALITY_CHECK.validate(doc, "minutes", frozenset(), [])
@@ -275,7 +316,7 @@ class QualityCheckTests(unittest.TestCase):
 
     def test_pure_qa_is_rejected_in_auto(self) -> None:
         errors = self.errors("auto", "一、访谈问答", "问：项目处于什么阶段？", "答：处于验证阶段。")
-        self.assertTrue(any("完整总结概述" in error for error in errors))
+        self.assertTrue(any("总结概述" in error for error in errors))
 
     def test_general_qa_also_requires_summary(self) -> None:
         errors = self.errors(
@@ -285,7 +326,7 @@ class QualityCheckTests(unittest.TestCase):
             "答：在线提交申请。",
             title="产品答疑记录",
         )
-        self.assertTrue(any("完整总结概述" in error for error in errors))
+        self.assertTrue(any("总结概述" in error for error in errors))
 
     def test_ceo_reference_heading_shape_passes(self) -> None:
         errors = self.errors(
@@ -315,11 +356,11 @@ class QualityCheckTests(unittest.TestCase):
 
     def test_minutes_mode_with_qa_still_requires_summary(self) -> None:
         errors = self.errors("minutes", "一、访谈问答", "问：何时测试？", "答：计划下月测试。")
-        self.assertTrue(any("完整总结概述" in error for error in errors))
+        self.assertTrue(any("总结概述" in error for error in errors))
 
     def test_legacy_qa_mode_is_summary_alias(self) -> None:
         errors = self.errors("qa", "一、访谈问答", "问：何时测试？", "答：计划下月测试。")
-        self.assertTrue(any("完整总结概述" in error for error in errors))
+        self.assertTrue(any("总结概述" in error for error in errors))
 
     def test_summary_only_minutes_pass(self) -> None:
         errors = self.errors("auto", "一、会议主要内容", substantial_summary())
@@ -352,7 +393,7 @@ class QualityCheckTests(unittest.TestCase):
 
     def test_long_qa_demands_proportional_summary(self) -> None:
         # A two-hour interview: ~30k characters of Q/A must not pass with a
-        # 600-character overview; the requirement scales up to 2000 characters.
+        # token overview; the floor scales with Q/A but stops at 800 characters.
         answer = "答：" + "回答内容涉及技术路线、订单结构、毛利率与产能爬坡等。" * 60
         qa_lines: list[str] = []
         for _ in range(20):
@@ -367,6 +408,71 @@ class QualityCheckTests(unittest.TestCase):
         )
         self.assertTrue(any("内容不足" in error for error in errors))
 
+    def test_condensed_summary_is_enough_for_long_qa(self) -> None:
+        # The overview is a digest: about 900 characters clears the floor for
+        # the same ~30k-character interview instead of requiring 2,000.
+        answer = "答：" + "回答内容涉及技术路线、订单结构、毛利率与产能爬坡等。" * 60
+        qa_lines: list[str] = []
+        for index in range(20):
+            if index:
+                qa_lines.append("")
+            qa_lines.append(f"问：第{index + 1}项业务的进展和主要客户结构情况如何？")
+            qa_lines.append(answer)
+        errors = self.errors(
+            "auto",
+            "一、总结概述",
+            substantial_summary() * 5,
+            "二、问答纪要",
+            *qa_lines,
+        )
+        self.assertFalse(any("内容不足" in error for error in errors))
+
+    def test_new_default_headings_pass(self) -> None:
+        errors = self.errors(
+            "qa-summary",
+            "一、总结概述",
+            substantial_summary(),
+            "二、问答纪要",
+            "（一）业务进展",
+            "问：样机测试进展如何？",
+            "答：样机测试已完成，测试记录已归档。",
+        )
+        self.assertEqual([], errors)
+
+    def test_answer_may_continue_in_following_paragraph(self) -> None:
+        errors = self.errors(
+            "qa-summary",
+            "一、总结概述",
+            substantial_summary(),
+            "二、问答纪要",
+            "（一）产能与交付",
+            "问：产能和交付情况如何？",
+            "答：现有两条产线，年产能合计约5万台。",
+            "新产线已开工，预计2026年三季度投产，投产后年产能增加约3万台。",
+            "",
+            "（二）客户与订单",
+            "问：主要客户有哪些？",
+            "答：前五大客户收入占比约60%。",
+        )
+        self.assertEqual([], errors)
+
+    def test_heading_right_after_answer_continuation_needs_blank(self) -> None:
+        errors = self.errors(
+            "qa-summary",
+            "一、总结概述",
+            substantial_summary(),
+            "二、问答纪要",
+            "（一）产能与交付",
+            "问：产能和交付情况如何？",
+            "答：现有两条产线。",
+            "新产线预计2026年三季度投产。",
+            "（二）客户与订单",
+            "问：主要客户有哪些？",
+            "答：前五大客户收入占比约60%。",
+        )
+        self.assertTrue(any("应空一行" in error for error in errors))
+
+
     def test_summary_must_precede_questions(self) -> None:
         errors = self.errors(
             "auto",
@@ -376,7 +482,7 @@ class QualityCheckTests(unittest.TestCase):
             "二、完整总结概述",
             substantial_summary(),
         )
-        self.assertTrue(any("完整总结概述" in error for error in errors))
+        self.assertTrue(any("总结概述" in error for error in errors))
 
     def test_pending_verification_phrase_is_rejected(self) -> None:
         errors = self.errors(
@@ -651,6 +757,39 @@ class QualityCheckTests(unittest.TestCase):
             substantial_summary(),
         )
         self.assertTrue(any("解释性括注" in error for error in errors))
+
+
+class SummaryLengthHintTests(unittest.TestCase):
+    def test_condensed_summary_gets_no_hint(self) -> None:
+        self.assertIsNone(QUALITY_CHECK.summary_length_hint({"summary_chars": 1400, "qa_chars": 3000}))
+        self.assertIsNone(QUALITY_CHECK.summary_length_hint({"summary_chars": 2000, "qa_chars": 10000}))
+
+    def test_overlong_summary_is_hinted(self) -> None:
+        for summary_chars, qa_chars in ((2000, 4000), (3200, 20000), (1800, 0)):
+            with self.subTest(summary_chars=summary_chars, qa_chars=qa_chars):
+                hint = QUALITY_CHECK.summary_length_hint(
+                    {"summary_chars": summary_chars, "qa_chars": qa_chars})
+                self.assertIsNotNone(hint)
+                self.assertTrue(hint.startswith("提示：总结概述约"))
+
+    def test_main_prints_reviewable_hint(self) -> None:
+        summary = substantial_summary() * 12  # ~2,000 chars against little Q/A
+        text = "\n".join([
+            "项目会议纪要",
+            INDENT + "一、总结概述",
+            INDENT + summary,
+            INDENT + "二、问答纪要",
+            INDENT + "问：样机测试进展如何？",
+            INDENT + "答：样机测试已完成，测试记录已归档。",
+        ])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "minutes.txt"
+            path.write_text(text, encoding="utf-8")
+            output = io.StringIO()
+            with mock.patch.object(sys, "argv", ["quality_check.py", str(path)]), \
+                    contextlib.redirect_stdout(output):
+                self.assertEqual(QUALITY_CHECK.main(), 0)
+        self.assertIn("提示：总结概述约", output.getvalue())
 
 
 if __name__ == "__main__":

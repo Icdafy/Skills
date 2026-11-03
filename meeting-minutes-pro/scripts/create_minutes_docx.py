@@ -283,7 +283,9 @@ def add_content_paragraph(document: Document, text: str) -> None:
     role, font_name, bold = paragraph_role(content)
     line_spacing = HEADING_LINE_SPACING if role != "body" else BODY_LINE_SPACING
     set_body_layout(paragraph, line_spacing)
-    if role != "body":
+    # Headings stay with what follows; a question stays with its answer so a
+    # page never ends on a lone "问：".
+    if role != "body" or content.startswith("问："):
         paragraph.paragraph_format.keep_together = True
         paragraph.paragraph_format.keep_with_next = True
     add_text_runs(paragraph, content, font_name, BODY_SIZE, bold)
@@ -364,7 +366,9 @@ def add_minutes_content(document: Document, lines: list[str], title: str) -> Non
     """Render source lines while preserving the QA blank-line contract."""
     title_consumed = False
     pending_blank = False
-    previous_content = ""
+    # True from a "答：" line through its unlabelled continuation paragraphs,
+    # so the blank before the next topic heading survives a multi-paragraph answer.
+    in_answer = False
     table_rows: list[list[str]] = []
 
     def flush_table() -> None:
@@ -385,18 +389,20 @@ def add_minutes_content(document: Document, lines: list[str], title: str) -> Non
             if not is_table_separator(content):
                 table_rows.append(table_cells(content))
             pending_blank = False
-            previous_content = content
+            in_answer = False
             continue
         flush_table()
+        level = level_number(content)
         starts_qa_group = content.startswith("问：")
-        starts_qa_subheading = (
-            level_number(content) == 2 and previous_content.startswith("答：")
-        )
+        starts_qa_subheading = level == 2 and in_answer
         if pending_blank and (starts_qa_group or starts_qa_subheading):
             add_qa_separator(document)
         pending_blank = False
         add_content_paragraph(document, line)
-        previous_content = content
+        if content.startswith("答："):
+            in_answer = True
+        elif starts_qa_group or level is not None:
+            in_answer = False
     flush_table()
 
 

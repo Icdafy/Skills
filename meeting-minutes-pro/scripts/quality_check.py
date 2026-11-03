@@ -58,8 +58,12 @@ class _UngroupedNumber:
 UNGROUPED_NUMBER = _UngroupedNumber()
 
 INTERVIEW_METADATA = ("访谈时间：", "访谈地点：", "访谈对象：", "访谈人员：")
+# 默认标题为“总结概述”“问答纪要”；旧版“完整总结概述”“完整问答纪要”及
+# 范文同义标题继续兼容。
 SUMMARY_MARKERS = (
-    "完整总结概述",
+    "总结概述",
+    "访谈要点",
+    "会议要点",
     "总体情况概述",
     "主要内容概述",
     "访谈主要内容",
@@ -188,6 +192,71 @@ PENDING_PATTERNS: list[tuple[re.Pattern[str], str]] = [
     ),
 ]
 
+# 机器腔套话：模型起草时高频出现、有经验的公文撰写人很少使用的总括语、
+# 推论语、空泛拔高、修饰套话、口号式四字格、机械分点和破折号插说等。
+# 这些表述不承载会议事实，删去或改为具体陈述即可；确为会议原话且必须
+# 保留时，与核验类表述一样用 --allow-line <行号> 放行。写法与改写示例见
+# references/writing-style.md。黑话类词语（赋能、抓手、闭环等）常是行业
+# 术语，不在此拦截；机构可写入 glossary/banned-phrases.txt。
+AI_TONE_PATTERNS: list[tuple[re.Pattern[str], str]] = [
+    (
+        re.compile(
+            r"综上(?:所述)?|总而言之|简而言之|一言以蔽之|换言之|换句话说|"
+            r"(?:总体|整体)(?:上看|来看|而言|来说)|总的来(?:看|说)"
+        ),
+        "“综上所述/总体来看”类总括套话",
+    ),
+    (
+        re.compile(r"不难看出|由此可见|可以看出|显而易见|毋庸置疑|不可否认"),
+        "“不难看出/由此可见”类推论套话",
+    ),
+    (
+        re.compile(
+            r"需要指出的是|需要说明的是|值得一提的是|值得强调的是|"
+            r"具体而言|具体来看|具体来说"
+        ),
+        "“需要指出的是/具体而言”类提示语",
+    ),
+    (
+        re.compile(
+            r"(?:具有|有着)[^，。；！？]{0,6}(?:重要|重大|深远|积极|里程碑)[^，。；！？]{0,6}(?:意义|价值)|"
+            r"发挥(?:了|着)?[^，。；！？]{0,4}(?:重要|关键|积极|核心)(?:的)?作用|"
+            r"奠定(?:了)?[^，。；！？]{0,6}基础|"
+            r"提供(?:了)?(?:有力|坚实|强有力|重要)(?:的)?(?:支撑|保障)|"
+            r"注入(?:了)?[^，。；！？]{0,4}(?:动能|活力)|"
+            r"未来可期|前景可期|值得期待|彰显|呈现出?[^，。；！？]{0,10}态势"
+        ),
+        "“具有重要意义/奠定坚实基础”类空泛拔高",
+    ),
+    (
+        re.compile(r"(?:深入|充分|广泛|深度)(?:的)?(?:交流|探讨|沟通|讨论|研讨)|全方位|多维度|深层次"),
+        "“深入交流/全方位”类修饰套话",
+    ),
+    (
+        re.compile(
+            r"持续深耕|深耕细作|蓄势待发|行稳致远|乘势而上|厚积薄发|砥砺前行|扬帆起航|"
+            r"保驾护航|大有可为|如火如荼|日新月异|蒸蒸日上|勇立潮头|(?:再上|迈上)新台阶"
+        ),
+        "口号式四字格",
+    ),
+    (re.compile(r"首先[，,][^\r\n]*?其次"), "“首先……其次……”机械分点，公文分项用“一是……二是……”"),
+    (re.compile(r"——"), "破折号插入说明"),
+    (re.compile(r"[！!]"), "感叹号"),
+    (
+        re.compile(r"^答：(?:这个问题|(?:关于|针对|对于|就)(?:这个|该|此|这一|上述)?问题)"),
+        "答复开头复述问题，“答：”后应直接回应",
+    ),
+    (
+        re.compile(r"^问：(?:请问|想(?:请教|了解|问)一下|我们(?:比较|主要)?(?:关心|想了解))"),
+        "提问口头铺垫，“问：”后应直接写问题",
+    ),
+]
+
+# 总结概述应当浓缩：超过此篇幅且明显偏长时给出可复核提示（不阻断），
+# 详见 references/format-and-output.md 第 6 节。
+SUMMARY_ADVISORY_CHARS = 1500
+SUMMARY_ADVISORY_CEILING = 3000
+
 # 完整总结概述中禁止出现的板块标题（更新规则：总结概述只客观归纳会议
 # 内容，不设“主要风险”“待核实事项”“后续需重点关注”等记录人员自设板块）。
 SUMMARY_BANNED_HEADING = re.compile(
@@ -295,7 +364,10 @@ def validate(
     mode: str,
     allowed_lines: frozenset[int] | set[int] = frozenset(),
     custom_banned: list[str] | None = None,
+    stats: dict | None = None,
 ) -> list[str]:
+    """Return blocking errors. When ``stats`` is given, it receives the
+    summary and Q/A character counts used for the non-blocking length hint."""
     lines = path.read_text(encoding="utf-8-sig").splitlines()
     visible = [(index + 1, line) for index, line in enumerate(lines) if line.strip()]
     errors: list[str] = []
@@ -327,6 +399,8 @@ def validate(
     question_lines_seen: list[tuple[int, str]] = []
     headings: list[tuple[int, int, str]] = []
     body_lines: list[tuple[int, str]] = []
+    # 较长答复可在“答：”段后接续段；续段仍属该答复，直到下一问或标题。
+    in_answer = False
     for line_number, line in visible[1:]:
         content = line.removeprefix(INDENT).strip()
         if is_table_row(content):
@@ -346,11 +420,11 @@ def validate(
             last_level = level
             if level == 2:
                 previous_raw = lines[line_number - 2] if line_number >= 2 else ""
-                previous_content = previous_raw.removeprefix(INDENT).strip()
-                if previous_content.startswith("答："):
+                if in_answer and previous_raw.strip():
                     errors.append(
                         f"第 {line_number} 行二级标题与上一主题末尾答复之间应空一行。"
                     )
+            in_answer = False
         else:
             body_lines.append((line_number, content))
         for field_index, field in enumerate(INTERVIEW_METADATA):
@@ -374,8 +448,10 @@ def validate(
                     f"第 {line_number} 行新一组问答开始前应空一行，"
                     "与上一组问答或正文以空行分隔。"
                 )
+            in_answer = False
         if content.startswith("答："):
             qa_labels.append((line_number, "答"))
+            in_answer = True
     if interview_metadata:
         field_indexes = [field_index for field_index, _, _ in interview_metadata]
         if field_indexes != sorted(field_indexes):
@@ -423,8 +499,8 @@ def validate(
             if pattern.search(content):
                 errors.append(
                     f"第 {line_number} 行出现冗余归因表述（{label}）；"
-                    "请删除归因外壳并完整保留后续实质内容。完整总结概述不得添加泛化主体前缀，"
-                    "完整问答纪要的“答：”后应直接写答复；此规则不可用 "
+                    "请删除归因外壳并完整保留后续实质内容。总结概述不得添加泛化主体前缀，"
+                    "问答纪要的“答：”后应直接写答复；此规则不可用 "
                     "--allow-line 放行。"
                 )
                 break
@@ -443,6 +519,26 @@ def validate(
                     f"会议内容时，用 --allow-line {line_number} 放行并向用户说明。"
                 )
                 break
+
+    # 机器腔套话：标题行除外，正文、基本信息、问答、表格逐行检查；放行
+    # 出口与核验类表述一致。同一行的全部命中一次列出，便于一遍改完。
+    for line_number, line in visible[1:]:
+        if line_number in allowed_lines:
+            continue
+        content = line.removeprefix(INDENT).strip()
+        hits = [
+            f"{label}：…{found.group()[:12]}…"
+            for pattern, label in AI_TONE_PATTERNS
+            for found in [pattern.search(content)]
+            if found
+        ]
+        if hits:
+            errors.append(
+                f"第 {line_number} 行出现机器腔表述（{'；'.join(hits)}）；"
+                "删去套话或改为直接、具体的书面陈述，写法见 references/writing-style.md。"
+                "仅当该表述确为会议原话且必须保留时，"
+                f"用 --allow-line {line_number} 放行并向用户说明。"
+            )
 
     # 机构自定义禁词（glossary/banned-phrases.txt）：命中即失败，出口与
     # 内置禁用表述一致（--allow-line，仅限转录稿真实内容）。
@@ -550,17 +646,17 @@ def validate(
             ]
             if not summary_candidates:
                 errors.append(
-                    "含问答的纪要须在完整问答前设置一级标题“完整总结概述”（或同义标题）。"
+                    "含问答的纪要须在问答前设置一级标题“总结概述”（或同义标题）。"
                 )
             if not qa_section_candidates:
                 errors.append(
-                    "组合式问答纪要须在首个问题前设置一级标题“完整问答纪要”（或同义标题）。"
+                    "组合式问答纪要须在首个问题前设置一级标题“问答纪要”（或同义标题）。"
                 )
             if summary_candidates and qa_section_candidates:
                 summary_line = summary_candidates[0][0]
                 qa_section_line = qa_section_candidates[-1][0]
                 if summary_line >= qa_section_line:
-                    errors.append("“完整总结概述”必须置于“完整问答纪要”之前。")
+                    errors.append("“总结概述”必须置于“问答纪要”之前。")
                 else:
                     for heading_line, _, heading_content in headings:
                         if (
@@ -569,7 +665,7 @@ def validate(
                             and SUMMARY_BANNED_HEADING.search(heading_content)
                         ):
                             errors.append(
-                                f"第 {heading_line} 行：完整总结概述中不得设置"
+                                f"第 {heading_line} 行：总结概述中不得设置"
                                 "“主要风险”“待核实事项”“重点关注”类板块，"
                                 "只按材料实际主题客观归纳。"
                             )
@@ -589,7 +685,7 @@ def validate(
                             for pattern in SUMMARY_REPORTING_CLAUSE_PATTERNS
                         ):
                             errors.append(
-                                f"第 {line_number} 行完整总结概述出现“主体＋介绍/认为/"
+                                f"第 {line_number} 行总结概述出现“主体＋介绍/认为/"
                                 "提到/指出/表示”等转述句式；请删除主体和转述动词，"
                                 "直接陈述实质内容。确需区分来源时改用“管理层口径："
                                 "……”等简洁标签；此规则不可用 --allow-line 放行。"
@@ -601,19 +697,41 @@ def validate(
                     ]
                     summary_chars = sum(len(content) for content in summary_body)
                     qa_chars = sum(len(content) for content in qa_body)
-                    # Scale with the Q/A volume. A fixed 120-character floor
-                    # forces very short meetings to invent padding. Below 240
-                    # Q/A characters, scale that floor down; retain the existing
-                    # 10% check and 2000-character ceiling for long interviews.
-                    minimum_summary_chars = min(2000, max(min(120, qa_chars // 2), qa_chars // 10))
+                    if stats is not None:
+                        stats.update(summary_chars=summary_chars, qa_chars=qa_chars)
+                    # The overview is a condensed digest; the Q/A carries the
+                    # detail. The floor only rejects token summaries: it scales
+                    # with Q/A volume (5%), shrinks for very short meetings so
+                    # they need no padding, and stops at 800 characters (about
+                    # 1.3 pages) so long interviews are not forced to pad.
+                    minimum_summary_chars = min(800, max(min(120, qa_chars // 2), qa_chars // 20))
                     if summary_chars < minimum_summary_chars:
                         errors.append(
-                            "“完整总结概述”内容不足：当前正文约 "
+                            "“总结概述”内容不足：当前正文约 "
                             f"{summary_chars} 字，按问答篇幅至少应达到约 "
-                            f"{minimum_summary_chars} 字，并覆盖整份转录稿的主要主题。"
+                            f"{minimum_summary_chars} 字，并概括整份材料的主要主题。"
                         )
 
     return errors
+
+
+def summary_length_hint(stats: dict) -> str | None:
+    """Non-blocking hint when the overview is clearly not condensed.
+
+    Printed as a ``提示`` line, so review_gate turns it into a reviewable
+    finding; a presentation-heavy meeting with little Q/A may justify it."""
+    summary_chars = stats.get("summary_chars", 0)
+    qa_chars = stats.get("qa_chars", 0)
+    if summary_chars <= SUMMARY_ADVISORY_CHARS:
+        return None
+    if summary_chars <= qa_chars // 4 and summary_chars <= SUMMARY_ADVISORY_CEILING:
+        return None
+    share = f"约为问答部分的 {summary_chars * 100 // qa_chars}%" if qa_chars else "问答篇幅为零"
+    return (
+        f"提示：总结概述约 {summary_chars:,} 字，{share}。总结概述应浓缩，"
+        "一般为问答篇幅的 10%–20%、不超过 1,500 字，细节和例证留在问答纪要；"
+        "会议以单方介绍为主、问答较少等确需保留时，在复核中说明理由。"
+    )
 
 
 def main() -> int:
@@ -645,7 +763,8 @@ def main() -> int:
         parser.error(f"找不到文件：{args.input}")
 
     allowed_lines = frozenset(args.allow_line)
-    errors = validate(args.input, args.mode, allowed_lines)
+    stats: dict = {}
+    errors = validate(args.input, args.mode, allowed_lines, stats=stats)
     if errors:
         print("纪要文本校验未通过：")
         for error in errors:
@@ -663,6 +782,9 @@ def main() -> int:
         released = "、".join(str(number) for number in sorted(allowed_lines))
         print(f"提示：第 {released} 行的表述已按转录稿真实内容放行，交付前向用户说明。")
     print(f"提示：问答 {qa_pairs} 组。数字事实核对请另行运行 fact_check.py。")
+    hint = summary_length_hint(stats)
+    if hint:
+        print(hint)
     return 0
 
 

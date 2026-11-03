@@ -1,4 +1,4 @@
 interface:
   display_name: "会议纪要专业版"
-  short_description: "本地双引擎转录与复核，按固定规则生成完整总结和完整问答的正式会议纪要"
-  default_prompt: "使用 $meeting-minutes-pro 处理这份会议录音，首次集中答复后连续完成转录、复核、完整总结与完整问答 DOCX，不在证据稿后暂停；按项目名称或访谈对象姓名、会议纪要、已确认访谈时间统一命名。"
+  short_description: "本地双引擎转录与复核，按固定规则生成浓缩总结和完整问答、行文平实的正式会议纪要"
+  default_prompt: "使用 $meeting-minutes-pro 处理这份会议录音，首次集中答复后连续完成转录、复核、浓缩总结与完整问答 DOCX，不在证据稿后暂停；按项目名称或访谈对象姓名、会议纪要、已确认访谈时间统一命名。"
