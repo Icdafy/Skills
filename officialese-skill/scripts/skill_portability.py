@@ -80,6 +80,7 @@ PROFILES = {
     'officialese-skill': {
         'required': ('requirements.txt', 'references/format-rules.md',
                      'references/writing-patterns.md', 'references/model-texts.md',
+                     'references/logic-and-cohesion.md',
                      'assets/templates/文件字体格式.doc',
                      'scripts/create_official_docx.py', 'scripts/embed_fonts.py',
                      'scripts/ensure_fonts.py'),

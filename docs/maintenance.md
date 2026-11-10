@@ -71,6 +71,10 @@ python -m unittest discover -s tools/library_tests
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
 
+### officialese-skill 1.2.0 验证（2026-11-10）
+
+仅升级该技能及必要登记。新增逻辑与衔接规范并写入 SKILL.md，方法据维护者提供的本地立项报告等材料提炼，材料不入库，示例均为虚构；脚本和版式规则未改。本技能回归5项、`tools/tests` 50项、`tools/library_tests` 25项通过，`check --smoke`、目录与共享副本检查、`check_library.py` 通过，单技能包已构建并登记 SHA-256。逻辑规则在各客户端的实际成文效果未实测。
+
 ### officialese-skill 1.1.0 验证（2026-11-10）
 
 仅升级该技能及必要登记：索引、首页目录、插件市场和统一格式测试中本技能的页码断言。`scripts/skill_portability.py` 与 `references/agent-compatibility.md` 改由本技能单独维护，已从对应共享组移出，其余五个成员未改动。写作规范和范文据维护者提供的本地公文样本提炼，样本不入库，范文中的单位、人名、文号和金额均为虚构。

@@ -1,10 +1,10 @@
 # 国企公文写作与排版（officialese-skill）
 
-当前分发版本：**1.1.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.2.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
-通知、请示、报告、函、批复、会议纪要、上会议题、情况说明等国企公文的起草、改写、润色和排版。写作规范和范文提炼自实际运行的公文，输出不带口语和机器腔；数量统一加千位分隔符，页码写作 `- 1 -`。投委会表决议题、投后报告、立项章节另有专门技能。
+通知、请示、报告、函、批复、会议纪要、上会议题、情况说明等国企公文的起草、改写、润色和排版。写作规范和范文提炼自实际运行的公文，输出不带口语和机器腔；长篇材料按逻辑与衔接规范成文，先结论后展开、段首下判断、判断有依据、上下文靠内容衔接、数字和称谓前后一致；数量统一加千位分隔符，页码写作 `- 1 -`。投委会表决议题、投后报告、立项章节另有专门技能。
 
 ## 输入和输出
 
@@ -20,7 +20,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.1.0/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.2.0/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/officialese-skill"
@@ -43,6 +43,8 @@ $officialese-skill 帮我起草关于开展项目资料归档的通知，发给�
 Claude Code 输入 `/officialese-skill 帮我起草关于开展项目资料归档的通知，发给各部门，落款为示例公司。`；自然语言直接使用“帮我起草关于开展项目资料归档的通知，发给各部门，落款为示例公司。”。先补齐 SKILL.md 要求的缺失输入；不得编造事实。
 
 ## 已验证环境
+
+1.2.0（2026-11-10）：仅新增和修订写作规则文档，脚本未改，回归与烟测重跑通过；逻辑规则在各客户端的实际成文效果未实测。
 
 1.1.0（2026-11-10）：Windows，Python 3.12.14，本技能5项回归通过，`check --smoke` 通过；DeepSeek Harness、千问办公及其余客户端的模型实际调用未实测，Word 未做逐页目视验收。以下为此前记录。
 
