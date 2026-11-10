@@ -108,9 +108,11 @@ class UnifiedFormatTests(unittest.TestCase):
     def test_every_generator_follows_the_yiti_standard(self) -> None:
         for skill in GENERATORS:
             with self.subTest(skill=skill):
-                self.check(self.build(skill))
+                # officialese-skill 自 1.1.0 起页码写作"- 1 -"，其余技能仍为"-1-"。
+                footer = "- 1 -" if skill == "officialese-skill" else "-1-"
+                self.check(self.build(skill), footer)
 
-    def check(self, doc: Document) -> None:
+    def check(self, doc: Document, footer_text: str = "-1-") -> None:
         paragraphs = doc.paragraphs
         by_text = {p.text: p for p in paragraphs if p.text}
 
@@ -200,7 +202,7 @@ class UnifiedFormatTests(unittest.TestCase):
         section = doc.sections[0]
         for footer in (section.footer, section.even_page_footer):
             paragraph = footer.paragraphs[0]
-            self.assertEqual(paragraph.text, "-1-")
+            self.assertEqual(paragraph.text, footer_text)
             for run in paragraph.runs:
                 for slot in ("ascii", "hAnsi", "cs", "eastAsia"):
                     self.assertEqual(run._r.rPr.rFonts.get(qn("w:" + slot)), "宋体")

@@ -1,78 +1,95 @@
 ---
 name: officialese-skill
-description: 起草、改写、润色并排版中国国企公文及Word文件：通知、请示、报告、函、会议纪要、方案、附件说明等；识别上行文、平行文、下行文口吻，按公司版式设置字体、字号、页边距、标题层级、附件、落款和页码，输出DOC/DOCX。投委会议题、投后报告、立项报告章节另用专门技能。
+description: 起草、改写、润色并排版中国国企公文及Word文件：通知、请示、报告、函、批复、会议纪要、上会议题、情况说明、方案等；按实际公文的句式和结构成文，去除口语和机器腔，识别上行文、平行文、下行文，按公司版式输出DOCX。投委会表决议题、投后报告、立项报告章节另用专门技能。
 ---
 
-# Officialese Skill
+# 国企公文写作与排版（officialese-skill）
 
-## When to Use
+## 适用范围
 
-Draft, revise, and format Chinese state-owned enterprise official documents and Word files using a company-style officialese format. Use for SOE or Chinese corporate/government-style documents such as 通知, 请示, 报告, 函, 会议纪要, 附件说明, 上行文, 平行文, 下行文, formal redrafting, official tone polishing, DOC/DOCX layout, Chinese public-document typography, fonts, margins, headings, attachments, signatures, and page numbers.
+用于起草、改写、润色和排版中国国企及机关风格的书面公文：通知、请示、报告、函、批复、会议纪要、上会议题、情况说明、方案、制度及其附件；也用于把口语、提纲或聊天记录改写成正式公文，以及按公司版式生成Word文件。
 
-Use this skill to create or revise Chinese SOE-style official documents with both correct wording and Word layout. The local rules are based on the uploaded company sample `assets/templates/文件字体格式.doc`, the original official-font requirements, and the company onboarding training PDF's 公文格式 rules.
+本技能有两部分规则，同等重要：
 
-## Cross-Agent Use
+1. **怎么写**：语言、结构和各文种写法，见 `references/writing-patterns.md`；各文种范文见 `references/model-texts.md`。句式和结构提炼自实际运行的国企及区级机关公文。
+2. **怎么排**：字体、字号、行距、标题层级、附件说明、落款和页码，见 `references/format-rules.md`。版式以公司样本 `assets/templates/文件字体格式.doc` 和公司公文格式培训要求为准，与通用国标默认值不一致时以公司样本为准。
 
-This skill uses the standard `SKILL.md` entry (`name` / `description`) and runs unchanged in Claude, ChatGPT, Codex, Kimi, 豆包, 智谱 GLM (ZCode, AutoClaw), WorkBuddy, TRAE and Qoder, invoked by natural language or by picking it from the client's skill list. For installation, migration or triggering problems read `references/agent-compatibility.md` and install the complete folder or ZIP; `scripts/skill_portability.py` checks the package, runs a Word smoke test, installs into client skill folders and builds upload ZIPs.
+## 工作流程
 
-Resolve every `scripts/`, `references/` and `assets/` path against the folder that contains this `SKILL.md`, never against the task working directory; call scripts with absolute paths and write output into the user's task folder. Use whatever web, file and code-execution tools the host provides. Word output needs Python 3.10+ and `requirements.txt`; when the host cannot execute code or install fonts, deliver the text and state plainly that the DOCX was not generated or verified.
+1. **读规范**。起草或润色前读取 `references/writing-patterns.md`，并在 `references/model-texts.md` 中找到同文种范文；需要排版或生成Word时再读取 `references/format-rules.md`。宿主不能读取附带文件时，按本文件"写作硬性规则"和"版式硬性规则"执行。
+2. **定文种和行文方向**。文种：通知、请示、报告、函、批复、会议纪要、上会议题、情况说明、方案、制度、附件。行文方向按以下顺序判定，判定后直接按该口吻成文，不向用户解释判定过程：
+   - 用户写明"上行文"，或为请示、报告、报送、呈报、报批、提请审议，用上行文口吻。
+   - 用户写明"平行文"，或为函、商请、函询、函告、同级及不相隶属单位之间的往来，用平行文口吻。
+   - 用户写明"下行文"，或为通知、通报、决定、批复、印发、下发、部署，用下行文口吻。
+   - 没有任何信号时，用正式书面语，不硬套红头格式。
+3. **核对事实**。发文机关、主送机关、事项、金额、时间、决策程序、政策依据和文号只使用用户提供的内容。缺少成文必需的信息时，一次性列出缺项向用户确认；用户要求先出稿时用"XX"占位，并在公文之外单列待补事项。不编造数据、文号、会议届次、签发人和联系人。
+4. **成文**。照同文种范文的结构、句长和详略写，按"依据或缘由—事实和安排—请求或要求"组织内容，使用规定的过渡句和结语。
+5. **自查**。按 `references/writing-patterns.md` 第六部分逐项核对，重点检查口语、机器腔、千位分隔符和称谓。
+6. **输出**。用户要文本时直接输出公文正文，前后不加开场白、说明和总结；待补事项另起一段放在公文之后。用户要Word文件时按"生成Word"执行。
+7. **附件自动识别**。正文随文附送材料时（用户写了附件、附后、附表、附图、随文报送、见附件、一并印发，或给了附件清单，或原稿已有附件行），不必询问，直接按 `references/format-rules.md` 排附件说明，并把不合规范的原有附件行改正。
 
-## Workflow
+## 写作硬性规则
 
-1. Identify the document type: 通知, 请示, 报告, 函, 会议纪要, 方案, 制度, 附件, or internal presentation material.
-2. Identify 行文方向 before drafting:
-   - Explicit `上行文` in the user prompt, or 请示/报告/报送/呈报/报批/申请批复 style wording, means use 上行文口吻.
-   - Explicit `平行文`, or 函/商请/函询/函告/同级/不相隶属 coordination wording, means use 平行文口吻.
-   - Explicit `下行文`, or 通知/通报/决定/批复/印发/下发/部署/要求 wording, means use 下行文口吻.
-   - If no direction signal appears, default to normal formal SOE written style.
-3. When the task is to draft or polish text, output the document content directly in the detected tone. Do not preface the answer with a long explanation of the detection unless the user asks for analysis.
-4. Draft in formal, concise official language: state the basis, purpose, matter, requirements, responsible parties, and timing.
-5. Apply the format rules in `references/format-rules.md`. The explicit rules below take precedence over the original sample where they differ.
-6. Detect attachments without being asked. If the document ships anything alongside the body — the user writes 附件/附后/附表/附图/随文报送/见附件/一并印发, hands over a list of attached items, or the source already carries a 附件 line — lay out the 附件说明 block per `references/format-rules.md`, and silently normalize an existing 附件 line that does not match: 2-character start, no serial for one attachment, Arabic serials from `1.` for multiple attachments, later serials at 5 characters, each name hanging under its own name column when it wraps, no 书名号, no trailing punctuation. Then set the 发文机关署名 two blank lines below it, right-indented 4 characters, with the 成文日期 on the next line centered on the signature. Do not stop to ask whether to apply this.
-7. Use wording patterns in `references/writing-patterns.md` when the task is drafting, polishing, or converting informal text into officialese.
-8. For Word output, use locally licensed fonts prepared as described in `assets/fonts/README.md` and the sample template in `assets/templates/文件字体格式.doc`.
-9. For a quick DOCX draft, first run `scripts/ensure_fonts.py` (detects the three official fonts and installs only user-supplied licensed files from ICDAFY_FONT_DIR per user when missing), then run `scripts/create_official_docx.py`, then inspect and fine-tune in Word when strict page-number placement or legacy `.doc` compatibility is required. The generator implements the shared company format standard (the same as yiti-skill): tables take `{"table": [[header...], [row...]]}` with the first row as header, attachment bodies go in `appendices`, and `**...**` marks inline bold.
+以下规则适用于每一次输出，包括不能读取参考文件的宿主。
 
-## Required Format Priorities
+1. **只写公文本身**。不写"以下是为您起草的……""希望对您有帮助""如需调整请告知"，不解释写作思路。
+2. **主语是机构**。自称"我司""我公司""我局"，对称"贵公司""贵单位"（平行）、"你公司"（下行）或机关简称（上行）。不用"我们""咱们""大家""您""领导"。
+3. **结构固定**。标题为"发文机关＋关于＋事由＋的＋文种"；主送机关顶格加冒号；开头一句交代依据、目的或缘由；过渡句全篇只用一次（`现将有关情况报告如下：` `现就有关事项请示如下：` `现将有关事项通知如下：` `现批复如下：`）；结语按文种固定：请示`妥否，请批示。`报告`特此报告。`函`特此致函，敬请回复为盼。`通知`特此通知。`议题`现提请……审议。`批复不写结语。
+4. **事实先于评价**。按"主体＋时间＋事项＋数据"陈述，写明决策程序和依据文件；每个判断后面有数据、文件或程序支撑。机构、项目首次出现用全称并括注`（以下简称"XX"）`，之后只用简称。
+5. **数字精确**。写明单位、币种和时点（`截至X年X月X日`），上下限用"不超过""不低于"，构成用"其中"，并列用"分别为……、……和……"。
+6. **千位分隔符**。整数部分满四位的数量，一律从个位起每三位加一个半角西文逗号，小数点用半角句点：`1,234.56` `2,350万元` `245,766.75元` `1,000,000`；写`2,350万元`，不写`2350万元`。标题、正文、括号、表格、附件、落款全部适用；小数部分不分节；分隔符不用全角逗号、空格或句点。年份、日期、时间、发文字号、页码、电话、证件号、统一社会信用代码、证券代码、合同编号、型号、版本号、标准号（`GB/T 9704-2012`）是标识不是数量，不加分隔符。改写时给原文缺分隔符的数量补上。
+7. **并列用"一是、二是、三是"或分条**，不用"首先、其次、最后""此外""总之""综上所述""值得注意的是""需要指出的是"。
+8. **只写肯定判断**。不用"不是……而是……""并非……而是……""不在于……而在于……""……而非……""与其……不如……""不仅……更……"。
+9. **不留后续判断尾巴**。不写"需要后续进行判断""有待进一步研判""需进一步评估""仍需持续观察""后续视情况而定"。事项未定的，写明由谁、何时、按何程序确定。
+10. **不拔高、不修辞**。不用"至关重要""意义深远""深度赋能""重要抓手""注入强劲动力""开启新篇章"等空泛表述，不为整齐而凑排比，不用比喻、设问、反问、感叹号、破折号插入语和省略号。
+11. **不用口语**。"已经"写"已"，"还没有"写"尚未"，"准备、打算"写"拟"，"因为"写"因、鉴于"，"所以"写"故、据此"，"都"写"均"，"大概"写"约"或确数，"一共"写"合计、共计"，"最多、最少"写"不超过、不低于"，"搞、弄"写具体动作。完整对照表见 `references/writing-patterns.md`。
+12. **语气中性**。不夸大，不堆砌限定词；段落写完即收，不加总结句和展望句；篇幅服从内容，转报、印发、备案类可以只有一段。
+13. **上行文附联系人**。请示、报告在成文日期下一行加附注`（联系人：XXX　联系方式：XXXXXXXXXXX）`；用户未提供时保留占位并提醒补充。
+14. **纯文本排法**。标题不缩进，主送机关顶格，正文段落和各级标题以两个全角空格`　　`开头；层级序号依次为`一、` `（一）` `1.` `（1）`；正文不出现Markdown标记（`#` `*` `-`列表、表格竖线、代码块）和表情符号。
 
-- Prefer the uploaded company sample over generic GB/T 9704 defaults when they differ.
-- Main title: 二号方正小标宋简体, centered.
-- Subtitle or department line: 三号楷体_GB2312, centered.
-- After subtitle/department line, leave one blank line before the recipient/body.
-- Body: 三号仿宋_GB2312.
-- All content in Chinese or English round parentheses `（…）` / `(...)`, including the parentheses themselves, uses 楷体_GB2312 at the size of its position: 二号 (22 pt) inside the main title and attachment titles, 三号 (16 pt) in the subtitle, body, headings, attachment names and signatures, 五号 (10.5 pt) in tables. This applies to nested parentheses too; retain the position's bold. The only exception is the leading `（1）` serial of a fourth-level heading, which stays in the heading font. Digits, Latin letters and `%` inside the parentheses follow the Times New Roman rule below.
-- Tables: every character in a table is fixed at 五号 (10.5 pt): 仿宋_GB2312 outside parentheses, 楷体_GB2312 for parenthesized spans. The header row is bold with no shading and repeats across pages; other rows are not bold and never split across pages. Cells use single line spacing, no first-line indent, centered horizontally and vertically. The table fills the text width with content-based column widths, and its lead-in sentence stays on the same page.
-- Convert full-width digits, Latin letters and `％` to half-width (the generator does this automatically).
-- Thousands separators (千位分隔符): every Arabic number whose integer part has four or more digits takes a half-width Western comma `,` every three digits counted from the units digit, with a half-width point `.` as the decimal mark (US/UK style): `1,234.56`、`2,350万元`、`245,766.75`、`1,000,000`; write `2,350万元`, never `2350万元`. This applies everywhere — title, body, headings, parentheses, tables, attachments and signature. The decimal part is not grouped, and the separator is never a full-width `，`, a space or a point. Identifiers are not quantities and stay ungrouped: years (`2026年`), dates, times, 发文字号 (`〔2026〕12号`), page numbers, phone and ID numbers, 统一社会信用代码, stock codes, contract/patent/order numbers, model, version and standard numbers (`GB/T 9704-2012`). When redrafting, add missing separators to the source's numbers.
-- Times New Roman final pass: all digits, Latin letters, `%` and other half-width characters in the whole document (titles, body, headings, parentheses, tables, attachments, signature, date) use Times New Roman. Apply it as the last step, after 方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312 and the 四号宋体 footer have been set: set the Western font (ascii/hAnsi/cs) of every body and table run to Times New Roman while keeping each run's East Asian font unchanged, so Chinese characters keep their Chinese faces. The footer `-1-` stays entirely 四号宋体.
-- Title lines (main title, subtitle and issuing-unit title line) and every numbered heading: exactly 30 pt line spacing. Body, 附件说明 and signature: exactly 28 pt. Space before/after is 0. Do not substitute multiple/minimum spacing or reduce these values to fit a page.
-- Preserve Chinese punctuation and numbering hierarchy: `一、`, `（一）`, `1.`, `（1）`.
-- First-level heading `一、xxxx`: 三号黑体, not bold.
-- Second-level heading `（一）xxxx`: 三号楷体_GB2312, bold.
-- Third-level heading `1.xxxx`: 三号仿宋_GB2312, bold.
-- Fourth-level heading `（1）xxxx` (use only when the content needs a fourth level): 三号仿宋_GB2312, bold; the leading `（1）` serial stays 仿宋_GB2312 bold (digit in Times New Roman) and is not switched to 楷体.
-- Body paragraphs and numbered headings must start with a two-Chinese-character first-line indent. In plain-text output, prefix them with two full-width spaces `　　`; in DOCX output, use Word first-line indent.
-- 附件说明 starts 2 characters in, uses Arabic serials for two or more attachments, and hangs each wrapped name under that attachment's own name column instead of returning to the margin. Names carry no 书名号 and no trailing punctuation.
-- Attachment bodies start on a new page with a top-left 三号仿宋_GB2312 label: `附件：` for a sole attachment, `附件1：` `附件2：` … for several; the attachment title follows in 二号方正小标宋简体, centered, then one blank line. A sole attachment has no Arabic serial in the list either (`附件：XXX`).
-- The entire footer page number `-1-`, including both hyphens and the PAGE field/result, must use 宋体, 四号 (14 pt) — the hyphens are 四号 too, not only the digit. Explicitly set every run's Chinese and Western fonts to 宋体. Odd and even pages use different footers: odd pages right-aligned, even pages left-aligned.
-- 发文机关署名 sits two blank lines below the body or 附件说明, right-indented 4 characters; 成文日期 goes on the next line, centered on the signature (both lines right aligned, right indent = 4 characters + half the width difference, CJK/Latin auto-spacing off). The signature never sits alone on a page.
-- Keep titles short and literal. Put explanatory content in the body, not the title.
-- Do not use casual, promotional, or emotional wording.
-- Tone: formal written officialese with a neutral overall tone — neither overly conservative nor aggressive. State facts, basis and arrangements plainly; avoid both hedging and overstatement.
-- Never end a paragraph (or write anywhere in the text) with follow-up-judgment tails such as `需要后续进行判断`、`有待进一步研判`、`后续视情况再定`、`仍需持续观察`、`需进一步评估`. The document states what it states; do not append such sentences.
-- State necessity and conclusions directly as affirmative statements (`是……`、`需要……`、`有利于……`). Do not use negation-contrast constructions such as `不是……而是……`、`并非……而是……`、`不在于……而在于……`、`……而非……`、`与其……不如……`.
-- Check the final file visually for font fallback, page margins, fixed line spacing, attachment labels, seal/signature area, and page numbers.
+## 版式硬性规则
 
-## Bundled Resources
+完整规则见 `references/format-rules.md`，以下为要点。
 
-- `references/format-rules.md`: typography, margins, spacing, headings, attachment, signature, and page-number rules extracted from the uploaded sample.
-- `references/writing-patterns.md`: concise drafting patterns for common SOE official documents, including 上行文/平行文/下行文 tone detection.
-- `assets/fonts/README.md`: local licensed-font preparation; no font binaries are distributed. Title remains 方正小标宋简体, subtitles/parentheses 楷体_GB2312, and body 仿宋_GB2312.
-- `assets/templates/文件字体格式.doc`: original uploaded format sample.
-- `scripts/create_official_docx.py`: deterministic starter DOCX generator. Parenthesized spans are split into their own runs with 楷体_GB2312 as the Chinese face at the size of their position (二号 in titles, 三号 in the body, 五号 in tables). Tables are given as `{"table": [[...], ...]}` items in `body` or a section's `paragraphs` and render in 五号仿宋_GB2312 with a bold, unshaded, repeating header row. Every run of the footer `-1-` is entirely 四号宋体, with odd/even footers. As its final step the generator runs a Times New Roman pass over every body and table run (ascii/hAnsi/cs → Times New Roman, eastAsia unchanged), so digits, letters and `%` are Times New Roman everywhere outside the footer. On save it embeds locally licensed 仿宋_GB2312 / 楷体_GB2312 into the file so it renders faithfully on machines without those fonts (方正小标宋 is licence-restricted and is skipped); embedding is verified and falls back to the un-embedded file if verification fails. `--attachment` normalizes names and builds the 附件说明 block with the hanging indents described above (one attachment has no serial), and `--issuer`/`--date` emit the 4-character-indented signature with the date centered on it.
-- `scripts/embed_fonts.py`: font embedder used by the generator; run `python scripts/embed_fonts.py --docx out.docx --verify` to re-check an existing file.
-- `references/agent-compatibility.md`: installation, invocation, runtime adaptation and acceptance checks for each supported client.
-- `scripts/skill_portability.py`: stdlib-only package checker, DOCX smoke test, client-folder installer and ZIP packager.
-- `agents/openai.yaml`: Chinese display name and default prompt for Codex and ChatGPT.
-- `requirements.txt`: Python dependency for DOCX output.
-- `scripts/ensure_fonts.py`: detects 仿宋_GB2312, 楷体_GB2312 and 方正小标宋简体 and installs only user-supplied licensed files from ICDAFY_FONT_DIR per user when missing (`--check` only reports).
+- 页面：A4纵向；上3.7厘米、下3.5厘米、左2.8厘米、右2.6厘米。
+- 主标题：二号方正小标宋简体，居中，不加粗。副标题或部门行：三号楷体_GB2312，居中，其后空一行。
+- 正文：三号仿宋_GB2312，两端对齐，首行缩进两字。
+- 标题层级：`一、`三号黑体不加粗；`（一）`三号楷体_GB2312加粗；`1.`三号仿宋_GB2312加粗；`（1）`三号仿宋_GB2312加粗（仅在需要第四级时使用，序号本身不改楷体）。各级标题首行缩进两字。
+- 行距：主标题、副标题和各级标题固定值30磅；正文、附件说明、落款固定值28磅；段前段后均为0。不得为凑页数改用多倍或最小行距。
+- 圆括号：成对的中英文圆括号及其内容一律楷体_GB2312，字号随所在位置（标题内二号、正文三号、表格五号），嵌套括号同样处理，保留所在位置的加粗。
+- 表格：全表五号；括号外仿宋_GB2312，括号内楷体_GB2312；表头加粗、无底纹、跨页重复；其余行不加粗、不跨页断行；单倍行距，无首行缩进，水平垂直居中；表格与版心同宽；引导句与表格同页。
+- 西文和数字：全角数字、字母、`％`先转半角；全文数字、拉丁字母、`%`统一Times New Roman，作为最后一步设置，中文字体不变。
+- 千位分隔符：同"写作硬性规则"第6条；生成器对带单位或带小数的数量自动补齐，标识类数字保持原样。
+- 附件说明：正文下空一行，左空两字写`附件：`；一份不编号，两份及以上用`1.` `2.`，后续序号与`1.`对齐；名称回行与本条名称首字对齐；名称不加书名号，末尾不加标点。附件正文另起一页，左上角顶格标注`附件：`或`附件1：`，三号仿宋_GB2312。
+- 落款：正文或附件说明下空两行；发文机关署名右空四字；成文日期在下一行，与署名居中对齐，写作`2026年6月8日`；落款不单独成页。附注在成文日期下一行，左空两字，加圆括号。
+- 页码：写作`- 1 -`，短横线与数字之间各空一个半角空格；整个页码（两个短横线、空格和数字）均为四号宋体；奇数页居右、偶数页居左。
+- 完成后目视检查字体是否被替换、页边距、固定行距、附件标注、落款位置和页码。
+
+## 生成Word
+
+1. 路径：`scripts/` `references/` `assets/` 均相对本 `SKILL.md` 所在目录解析，不相对任务工作目录；脚本用绝对路径调用，输出写到用户的任务目录。
+2. 环境：Python 3.10及以上，安装 `requirements.txt`（python-docx）。先运行 `scripts/ensure_fonts.py --check` 检测仿宋_GB2312、楷体_GB2312、方正小标宋简体；缺失时按 `assets/fonts/README.md` 准备有使用权的字体文件，本技能不分发字体。
+3. 生成：把公文写成JSON规格后运行 `scripts/create_official_docx.py 输出.docx --input 规格.json`。字段：`title`（可用换行符折行）、`issuer_title`、`subtitle`、`recipient`、`body`（段落列表）、`sections`（`heading` `level` `paragraphs` `children`）、`attachments`（附件名称列表）、`issuer`、`date`、`note`（附注）、`appendices`（附件正文：`title` `body` `sections`）。表格写作 `{"table": [[表头…], [行…]]}`，首行为表头；`**文字**`为行内加粗；`"thousands": false`可关闭自动千位分隔符。简单文件也可直接用命令行参数 `--title` `--recipient` `--body` `--attachment` `--issuer` `--date` `--note`。
+4. 复核：生成后打开文件核对版式；需要旧版`.doc`或严格的页码位置时在Word中另存和微调。
+5. 宿主不能执行代码或不能安装字体时，交付公文文本，并明确说明Word文件未生成或版式未经验证，不得称已生成合规Word。
+
+## 跨客户端使用
+
+本技能采用标准 `SKILL.md` 入口（仅 `name` 和 `description` 两个字段），整包目录或ZIP可在 Claude、ChatGPT、Codex、Qoder、TRAE、WorkBuddy、DeepSeek Harness、千问办公、豆包、Kimi、智谱等支持技能的客户端使用，通过自然语言点名或在技能列表中选择调用。安装入口、目录位置、调用方式和验收方法见 `references/agent-compatibility.md`；`scripts/skill_portability.py` 用于检查包完整性、做Word烟测、安装到客户端技能目录和生成上传用ZIP。必须安装完整目录，不能只复制本文件。
+
+联网检索、读取文件、执行代码使用宿主提供的相应工具；宿主已有通用的Word、PDF读取技能时由其负责读取材料，本技能负责写作规则和指定生成器。
+
+## 附带资源
+
+- `references/writing-patterns.md`：写作规范，包括总要求、行文方向、通用结构、各文种写法、用语规范、不使用的表达和成文前自查。
+- `references/model-texts.md`：请示、报告、函、批复、通知、会议纪要、上会议题、情况说明的范文和口语改写对照，内容均为虚构。
+- `references/format-rules.md`：版式规则全文和终稿版式检查表。
+- `references/agent-compatibility.md`：各客户端安装、调用、运行环境适配和验收。
+- `assets/templates/文件字体格式.doc`：公司版式样本。
+- `assets/fonts/README.md`：本机授权字体准备方法；不分发字体文件。
+- `scripts/create_official_docx.py`：Word生成器，实现上述全部版式规则，保存时嵌入本机已授权且允许嵌入的仿宋_GB2312、楷体_GB2312。
+- `scripts/ensure_fonts.py`：检测三款公文字体；仅在用户通过 `ICDAFY_FONT_DIR` 提供授权文件时按用户级安装。
+- `scripts/embed_fonts.py`：字体嵌入器；`--docx 文件 --verify` 可复查已有文件。
+- `scripts/skill_portability.py`：包检查、Word烟测、目录安装和ZIP打包，仅用标准库。
+- `agents/openai.yaml`：Codex、ChatGPT的中文显示名称和默认提示。
+- `requirements.txt`：生成Word所需的Python依赖。

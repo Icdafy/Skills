@@ -5,9 +5,9 @@ Python 3.10+; stdlib only. ``check --smoke`` additionally needs python-docx.
 No host configuration or font installation is performed. ``install`` is a dry
 run unless ``--apply`` is specified.
 
-One file serves every skill in the repository: the per-skill contract lives in
-PROFILES below. Edit the canonical copy in gongsi-qingkuang and run
-``python tools/check_shared_scripts.py --sync``.
+The per-skill contract lives in PROFILES below. This is officialese-skill's own
+copy (since 1.1.0): it adds the DeepSeek Harness / 千问办公 targets and checks the
+``- 1 -`` footer, so it is no longer synced from gongsi-qingkuang.
 """
 from __future__ import annotations
 
@@ -79,10 +79,11 @@ PROFILES = {
     'gongsi-qingkuang': INVESTMENT,
     'officialese-skill': {
         'required': ('requirements.txt', 'references/format-rules.md',
-                     'references/writing-patterns.md', 'assets/templates/文件字体格式.doc',
+                     'references/writing-patterns.md', 'references/model-texts.md',
+                     'assets/templates/文件字体格式.doc',
                      'scripts/create_official_docx.py', 'scripts/embed_fonts.py',
                      'scripts/ensure_fonts.py'),
-        'smoke': 'officialese', 'fonts': True,
+        'smoke': 'officialese', 'fonts': True, 'footer': '- 1 -',
     },
     'yiti-skill': {
         'required': ('requirements.txt', 'references/format-rules.md',
@@ -141,6 +142,9 @@ AGENTS = {
     'trae': ('.trae/skills', '.trae/skills', None, 'TRAE 国际版'),
     'trae-cn': ('.trae-cn/skills', '.trae/skills', None, 'TRAE 中国版 / TraeCode'),
     'workbuddy': ('.workbuddy/skills', '.workbuddy/skills', None, '腾讯 WorkBuddy'),
+    'dsh': ('.dsh/skills', '.dsh/skills', None,
+            'DeepSeek Harness（DSH）桌面端 / CLI；同时读取 .agents/skills'),
+    'qwenwork': ('.qwenworkcn/skills', None, None, '千问办公（QwenWork）电脑版'),
     'codebuddy': ('.codebuddy/skills', '.codebuddy/skills', None, '腾讯 CodeBuddy IDE / CLI'),
     'zcode': ('.zcode/skills', None, None, '智谱 ZCode（GLM）'),
     'openclaw': ('.openclaw/skills', 'skills', 'OPENCLAW_STATE_DIR',
@@ -153,6 +157,7 @@ DETECT = {
     'claude-code': '.claude', 'codex': '.codex', 'kimi-code': '.kimi-code', 'qoder-cli': '.qoder',
     'qoder-cn': '.lingma', 'qoderwork': '.qoderwork', 'trae': '.trae', 'trae-cn': '.trae-cn',
     'workbuddy': '.workbuddy', 'codebuddy': '.codebuddy', 'zcode': '.zcode', 'openclaw': '.openclaw',
+    'dsh': '.dsh', 'qwenwork': '.qwenworkcn',
 }
 # Clients installed through their own interface; no configuration folder is assumed.
 UI_CLIENTS = (
@@ -161,6 +166,9 @@ UI_CLIENTS = (
     ('豆包电脑版（工作模式）', '插件·技能·伙伴 → 技能 → “+ 添加” → 上传技能，拖入 ZIP 或技能文件夹'),
     ('WorkBuddy', '技能 → 添加技能 → 上传技能，导入 ZIP 后在已安装列表开启'),
     ('Kimi Work', 'Work 模式 → 技能 → 上传本地技能'),
+    ('千问办公（QwenWork）电脑版', '扩展 → 技能 → 安装技能，上传 SKILL.md 及全部辅助文件'
+                                   '（先解压 ZIP，保持目录结构）；或 --agent qwenwork 目录安装'),
+    ('DeepSeek Harness 桌面端', '--agent dsh 目录安装到 ~/.dsh/skills（项目级 .dsh/skills），然后新建会话'),
     ('Qoder 桌面版', 'Extensions → Skills → Add Skills → Upload Skill'),
     ('TRAE / TraeCode IDE', '设置 → 技能与命令 → 创建 → 导入 ZIP（全局或项目）'),
     ('智谱 ZCode', 'Settings → Skills → 右上角导入图标，选“复制”模式'),
@@ -344,7 +352,7 @@ W = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
 NS = {'w': W[1:-1]}
 
 
-def check_docx(output, table_size=True):
+def check_docx(output, table_size=True, footer_text='-1-'):
     """Assertions shared by every official-document generator in this repository."""
     with zipfile.ZipFile(output) as archive:
         doc = ET.fromstring(archive.read('word/document.xml'))
@@ -370,8 +378,8 @@ def check_docx(output, table_size=True):
                 if any(fonts.get(W + slot) != '宋体' for slot in ('ascii', 'hAnsi', 'cs', 'eastAsia')):
                     raise ValueError('Footer page number must be 宋体 in every font slot')
             alignments.add(tree.find('.//w:jc', NS).get(W + 'val'))
-            if ''.join(t.text or '' for t in tree.findall('.//w:t', NS)) != '-1-':
-                raise ValueError('Footer text/field cache must be -1-')
+            if ''.join(t.text or '' for t in tree.findall('.//w:t', NS)) != footer_text:
+                raise ValueError('Footer text/field cache must be ' + footer_text)
             fields = [(t.text or '').strip() for t in tree.findall('.//w:instrText', NS)]
             fields += [(f.get(W + 'instr') or '').strip() for f in tree.findall('.//w:fldSimple', NS)]
             if 'PAGE' not in fields:
@@ -406,7 +414,7 @@ def _smoke_investment(root, temp):
 
 def _smoke_officialese(root, temp):
     spec = {'title': '关于开展格式测试的通知', 'recipient': '各部门：',
-            'body': ['为验证公文生成器，现将有关事项通知如下（测试20%）。',
+            'body': ['为验证公文生成器，现将有关事项通知如下（测试20%，金额12345.6万元）。',
                      {'table': [['项目（说明）', '数值'], ['测试值（20%）', '100']]}],
             'issuer': '测试公司', 'date': '2026年9月27日'}
     source = temp / 'spec.json'
@@ -449,7 +457,8 @@ def smoke(root):
     rules = profile(root)
     with tempfile.TemporaryDirectory(prefix='skill-smoke-') as tmp:
         output = SMOKES[rules['smoke']](root, Path(tmp))
-        check_docx(output, table_size=rules.get('table_size', True))
+        check_docx(output, table_size=rules.get('table_size', True),
+                   footer_text=rules.get('footer', '-1-'))
     print('[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed')
     print('[INFO] This checks package execution, not model invocation in a target client or visual font rendering')
 

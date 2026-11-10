@@ -6,7 +6,7 @@ The typography matches yiti-skill's ``references/format-rules.md`` (the shared
 first each run's Chinese font by role (方正小标宋简体 / 黑体 / 楷体_GB2312 /
 仿宋_GB2312), then round parentheses and their contents to 楷体_GB2312 at the size
 of their position (二号 in titles, 三号 in text, 五号 in tables), then the footer
-``-1-`` to 四号宋体, and finally Times New Roman for every Western slot of the body
+``- 1 -`` to 四号宋体, and finally Times New Roman for every Western slot of the body
 so digits, Latin letters and ``%`` are Times New Roman while Chinese characters
 keep their fonts. The footer is excluded from that last pass. Inline bold uses
 ``**...**``.
@@ -40,7 +40,7 @@ KAITI_FONT = "楷体_GB2312"
 HEITI_FONT = "黑体"
 SONGTI_FONT = "宋体"
 # 西文字母、阿拉伯数字及 % 等半角符号统一 Times New Roman；中文走 eastAsia，
-# Word 在同一 run 内按字符类型自动分派。页码 -1- 整体用四号宋体，不参与西文替换。
+# Word 在同一 run 内按字符类型自动分派。页码 - 1 - 整体用四号宋体，不参与西文替换。
 WESTERN_FONT = "Times New Roman"
 
 TITLE_SIZE = 22  # 二号
@@ -68,6 +68,96 @@ FULLWIDTH = {code: code - 0xFEE0 for code in range(0xFF10, 0xFF1A)}
 FULLWIDTH.update({code: code - 0xFEE0 for code in range(0xFF21, 0xFF3B)})
 FULLWIDTH.update({code: code - 0xFEE0 for code in range(0xFF41, 0xFF5B)})
 FULLWIDTH[0xFF05] = ord("%")
+
+# ---------------------------------------------------------------------------
+# 千位分隔符：整数部分满四位的数量一律每三位加半角逗号（1,234.56、2,350万元）。
+# 年份、日期、文号、电话、代码、编号、标准号等标识不是数量，保持原样。
+# ---------------------------------------------------------------------------
+NUMBER_TOKEN = re.compile(r"\d+(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)*")
+# 紧跟在数字后面、说明它是"数量"的计量单位（允许中间有空格）。
+QUANTITY_UNIT = re.compile(
+    r"\s*(?:%|‰|万|亿|千|百|元|美元|欧元|港元|日元|英镑|人民币|股|份|人|名|户|家|笔|个|件|套|台|辆|"
+    r"项|宗|处|座|栋|幢|间|层|亩|公顷|平方|立方|㎡|吨|千克|公斤|克|米|公里|千米|升|度|千瓦|兆瓦|"
+    r"小时|分钟|天|日均|人次|批次|次|篇|页|条|张|本|册|头|只|支|枚|倍|点|bp|BP)")
+# 紧跟在数字后面、说明它是"标识"的字（年份、文号、门牌、届次等）。
+IDENTIFIER_SUFFIX = re.compile(r"\s*(?:年|号|弄|室|届|版|楼|单元|信箱|路|街|巷)")
+IDENTIFIER_PREFIX = re.compile(
+    r"(?:电话|手机|座机|传真|联系方式|联系电话|邮编|邮政编码|代码|编码|编号|账号|帐号|卡号|证号|"
+    r"单号|合同号|专利号|工号|文号|字号|QQ|微信|热线|No\.?|NO\.?)\s*[:：]?\s*[（(]?\s*$")
+OPEN_BRACKETS = {"〔": "〕", "[": "]", "【": "】", "〈": "〉"}
+
+
+def _group_integer(digits: str) -> str:
+    return f"{int(digits):,}" if digits else digits
+
+
+def add_thousands_separators(text: str) -> str:
+    """给 ``text`` 中的数量补千位分隔符；标识类数字保持原样，已有分隔符的不重复加。"""
+    text = str(text).translate(FULLWIDTH)
+    out: list[str] = []
+    pos = 0
+    bracket_close: str | None = None  # 位于〔〕[]【】内的数字是文号年度，不加
+    for match in NUMBER_TOKEN.finditer(text):
+        start, end = match.span()
+        for char in text[pos:start]:
+            if bracket_close is None and char in OPEN_BRACKETS:
+                bracket_close = OPEN_BRACKETS[char]
+            elif char == bracket_close:
+                bracket_close = None
+        out.append(text[pos:start])
+        pos = end
+        token = match.group()
+        out.append(token if bracket_close else _group_token(text, start, end, token))
+    out.append(text[pos:])
+    return "".join(out)
+
+
+def _group_token(text: str, start: int, end: int, token: str) -> str:
+    if "," in token or token.count(".") > 1:  # 已分节；或版本号、日期 2026.4.29
+        return token
+    integer, _, decimal = token.partition(".")
+    if len(integer) < 4 or integer.startswith("0"):  # 不足四位；0 开头的是编号
+        return token
+    before, after = text[:start], text[end:]
+    prev_char = before[-1:] if before else ""
+    next_char = after[:1]
+    # 数字串的一部分（如 12:30、2026/4/29、2026-04-29、1.2.3、A-1234）不是数量。
+    if (prev_char and prev_char in ".:：/\\_#№") or (next_char and next_char in ":/\\_"):
+        return token
+    if re.fullmatch(r"(?:19|20)\d\d", integer) and re.match(r"\s*[-－—~～至]\s*\d", after):
+        return token  # 2025-2027年、2026-04-29 的起始年份
+    if re.match(r"\.\d", after) or before.endswith("第") or IDENTIFIER_SUFFIX.match(after):
+        return token
+    if re.search(r"\d[-－—~～]$", before) and not QUANTITY_UNIT.match(after):
+        return token  # 2025-2027年、GB/T 9704-2012 的后半段
+
+    def grouped() -> str:
+        return _group_integer(integer) + ("." + decimal if decimal else "")
+
+    if QUANTITY_UNIT.match(after) or decimal:
+        return grouped()  # 带单位或带小数的一定是数量
+    if len(integer) == 4 and 1900 <= int(integer) <= 2100:
+        return token  # 不带单位的四位年份
+    if re.search(r"[A-Za-z][ \-]?$", before) or re.match(r"[A-Za-z]|-\d", after):
+        return token  # ISO9001、STV161、GB/T 9704-2012、型号
+    if len(integer) >= 9 or IDENTIFIER_PREFIX.search(before[-14:]):
+        return token  # 电话、证件号、信用代码、账号等
+    if len(integer) == 6 and prev_char and prev_char in "（(" and next_char and next_char in "）)":
+        return token  # 括注的证券代码
+    return grouped()
+
+
+def normalize_spec_numbers(value):
+    """对整份文档规格递归补千位分隔符（键名不动）。"""
+    if isinstance(value, str):
+        return add_thousands_separators(value)
+    if isinstance(value, list):
+        return [normalize_spec_numbers(item) for item in value]
+    if isinstance(value, dict):
+        return {key: (item if key in {"thousands", "level", "header"} else normalize_spec_numbers(item))
+                for key, item in value.items()}
+    return value
+
 
 # Times New Roman advance widths in em, for hanging-indent alignment.
 TNR_EM = {".": 0.25, ",": 0.25, ":": 0.278, "-": 0.333, " ": 0.25, "/": 0.278, "%": 0.833}
@@ -332,12 +422,13 @@ def normalize_attachment_name(name: str) -> str:
 
 
 def add_page_field(paragraph) -> None:
-    """整个 -1-（左右短横线、PAGE 域及显示数字）均为四号宋体，四个字体槽均为宋体。"""
+    """页码写作"- 1 -"：短横线与数字之间各空一个半角空格。整个页码（左右短横线、
+    空格、PAGE 域及显示数字）均为四号宋体，四个字体槽均为宋体。"""
     def songti(run):
         set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT,
                      east_asia_hint=False)
 
-    songti(paragraph.add_run("-"))
+    songti(paragraph.add_run("- "))
     field_run = paragraph.add_run()
     songti(field_run)
     begin = OxmlElement("w:fldChar")
@@ -353,7 +444,7 @@ def add_page_field(paragraph) -> None:
     end.set(qn("w:fldCharType"), "end")
     for element in (begin, instr, separate, result, end):
         field_run._r.append(element)
-    songti(paragraph.add_run("-"))
+    songti(paragraph.add_run(" -"))
     # Paragraph mark in 四号宋体 too, so the footer line height follows the page number.
     mark = OxmlElement("w:rPr")
     fonts = OxmlElement("w:rFonts")
@@ -554,15 +645,30 @@ def add_attachments(doc: Document, attachments: list[str], *, keep_with_body: bo
         line.paragraph_format.keep_with_next = True  # 多份附件说明不跨页拆开
 
 
-def add_signature_block(doc: Document, issuer: str | None, date: str | None) -> None:
+def normalize_note(note: str | None) -> str:
+    """附注（如"联系人：XXX　联系方式：XXXX"）统一加一对全角圆括号。"""
+    note = str(note or "").strip()
+    if not note:
+        return ""
+    if note[0] in "（(" and note[-1] in "）)":
+        note = note[1:-1].strip()
+    return f"（{note}）"
+
+
+def add_signature_block(doc: Document, issuer: str | None, date: str | None,
+                        note: str | None = None) -> None:
     """落款：正文或附件说明下空两行；署名右空四字，成文日期在署名下居中对齐。
 
     署名与日期都以两者中较宽者为基准居中：右缩进 = 4 字 + (较宽者 − 本行宽) / 2，
     宽度按中文字体 + Times New Roman 实际字宽计算，并关闭中西文自动间距。
+    附注（请示等上行文的联系人和联系方式）居左空二字、加圆括号，排在成文日期下一行。
     """
     issuer = str(issuer or "").strip()
     date = str(date or "").strip()
+    note = normalize_note(note)
     if not issuer and not date:
+        if note:
+            add_text_paragraph(doc, note)
         return
     # 落款不单独成页：附件说明（或正文末段）、两行空行与署名连在一起。
     if doc.paragraphs:
@@ -582,7 +688,9 @@ def add_signature_block(doc: Document, issuer: str | None, date: str | None) -> 
         )
         disable_auto_spacing(p)
         add_formatted_text(p, text, BODY_FONT, BODY_SIZE)
-        p.paragraph_format.keep_with_next = text == issuer and bool(date)
+        p.paragraph_format.keep_with_next = (text == issuer and bool(date)) or bool(note)
+    if note:
+        add_text_paragraph(doc, note)
 
 
 def add_appendices(doc: Document, appendices: list[dict]) -> None:
@@ -610,6 +718,9 @@ def apply_western_font_pass(doc: Document) -> None:
 
 
 def build_docx(data: dict, output: Path) -> None:
+    # 千位分隔符默认开启；规格中写 "thousands": false 可整体关闭（如原文照录的引文）。
+    if data.get("thousands", True):
+        data = normalize_spec_numbers(data)
     doc = Document()
     configure_styles(doc)
     set_chinese_language(doc)
@@ -637,7 +748,7 @@ def build_docx(data: dict, output: Path) -> None:
     add_sections(doc, data.get("sections", []))
     has_signature = bool(data.get("issuer") or data.get("date"))
     add_attachments(doc, data.get("attachments", []), keep_with_body=has_signature)
-    add_signature_block(doc, data.get("issuer"), data.get("date"))
+    add_signature_block(doc, data.get("issuer"), data.get("date"), data.get("note"))
     add_appendices(doc, data.get("appendices") or [])
     # 最后一步：在各中文字体（方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312）
     # 与页脚四号宋体设置完成后，再对全文统一选择一次 Times New Roman。
@@ -662,6 +773,9 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--attachment", action="append", default=[], help="Attachment name; repeat as needed")
     parser.add_argument("--issuer", help="Signature unit")
     parser.add_argument("--date", help="Chinese date, e.g. 2026年6月8日")
+    parser.add_argument("--note", help="附注，如 联系人：XXX　联系方式：XXXX（自动加圆括号，排在成文日期下一行）")
+    parser.add_argument("--no-thousands", action="store_true",
+                        help="不自动补千位分隔符（默认对四位及以上的数量每三位加半角逗号）")
     parser.add_argument("--doc-type", help="Optional document type note, e.g. 通知/请示/报告/函")
     parser.add_argument("--direction", choices=["上行文", "平行文", "下行文", "默认"], help="Optional writing direction note")
     return parser.parse_args()
@@ -674,10 +788,12 @@ def main() -> None:
     else:
         data = {}
 
-    for key in ["title", "issuer_title", "subtitle", "recipient", "issuer", "date", "doc_type", "direction"]:
+    for key in ["title", "issuer_title", "subtitle", "recipient", "issuer", "date", "note", "doc_type", "direction"]:
         value = getattr(args, key)
         if value:
             data[key] = value
+    if args.no_thousands:
+        data["thousands"] = False
     if args.body:
         data["body"] = args.body
     if args.attachment:

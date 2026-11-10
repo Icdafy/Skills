@@ -144,12 +144,80 @@ class OfficialFormatTests(unittest.TestCase):
             section = doc.sections[0]
             for footer in (section.footer, section.even_page_footer):
                 paragraph = footer.paragraphs[0]
-                self.assertEqual(paragraph.text, '-1-')
+                # 页码写作"- 1 -"：短横线与数字之间各一个半角空格。
+                self.assertEqual(paragraph.text, '- 1 -')
+                self.assertEqual([run.text for run in paragraph.runs], ['- ', '1', ' -'])
                 self.assertEqual(len(paragraph.runs), 3)
                 for run in paragraph.runs:
                     self.assert_font(run, generator.SONGTI_FONT, 14)
                 instructions = paragraph._p.xpath('.//w:instrText')
                 self.assertEqual([node.text.strip() for node in instructions], ['PAGE'])
+
+    def test_thousands_separators_for_quantities_only(self):
+        cases = {
+            # 数量：整数部分满四位即每三位加半角逗号，小数部分不分节。
+            '投资总额不超过1500万元，其中出资 1300 万元': '投资总额不超过1,500万元，其中出资 1,300 万元',
+            '资产总额780541.79万元': '资产总额780,541.79万元',
+            '贷款共1695笔，本金合计146.62亿元': '贷款共1,695笔，本金合计146.62亿元',
+            '建筑面积合计4793平方米，共计2612套': '建筑面积合计4,793平方米，共计2,612套',
+            '2026年度计划投资10000万元，带动就业2000人': '2026年度计划投资10,000万元，带动就业2,000人',
+            '１２３４５元': '12,345元',
+            '3000.00': '3,000.00',
+            '12000': '12,000',
+            '增长1234.5%': '增长1,234.5%',
+            '100000000元': '100,000,000元',
+            '已有3,000万元': '已有3,000万元',
+            # 标识：年份、日期、文号、电话、代码、标准号等保持原样。
+            '2026年4月29日': '2026年4月29日',
+            '未城控股字〔2025〕32号': '未城控股字〔2025〕32号',
+            '未国资发[2025]1234号': '未国资发[2025]1234号',
+            '勤信陕审字【2025】第0097号': '勤信陕审字【2025】第0097号',
+            '2023-2025年营收增长': '2023-2025年营收增长',
+            '填表时间:2026/4/29': '填表时间:2026/4/29',
+            '联系人：张某　联系方式：15300001234': '联系人：张某　联系方式：15300001234',
+            '联系电话：029-86001234': '联系电话：029-86001234',
+            'ISO9001国际质量体系认证': 'ISO9001国际质量体系认证',
+            'GB/T 9704-2012': 'GB/T 9704-2012',
+            '证券代码：600519': '证券代码：600519',
+            '示例公司（600519）': '示例公司（600519）',
+            '某某路2488弄218号': '某某路2488弄218号',
+            '第1200次会议': '第1200次会议',
+            '关于工作安排的通知（试行2026）': '关于工作安排的通知（试行2026）',
+            'v1.0.2 与 12:30': 'v1.0.2 与 12:30',
+        }
+        for source, expected in cases.items():
+            with self.subTest(source=source):
+                self.assertEqual(generator.add_thousands_separators(source), expected)
+
+    def test_saved_document_applies_thousands_and_note(self):
+        spec = {
+            'title': '关于2026年度投资计划的请示',
+            'recipient': '集团公司：',
+            'body': ['基金总规模为3960万元，我司出资1980万元。',
+                     {'table': [['项目', '金额（万元）'], ['资产总额', '705482.17']]}],
+            'attachments': ['2026年度投资计划表'],
+            'issuer': '某某公司', 'date': '2026年9月14日',
+            'note': '联系人：张某　联系方式：15300001234',
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'numbers.docx'
+            generator.build_docx(dict(spec), path)
+            doc = Document(path)
+            texts = [p.text for p in doc.paragraphs]
+            self.assertIn('基金总规模为3,960万元，我司出资1,980万元。', texts)
+            self.assertIn('关于2026年度投资计划的请示', texts)
+            self.assertIn('附件：2026年度投资计划表', texts)
+            self.assertEqual(doc.tables[0].rows[1].cells[1].text, '705,482.17')
+            # 附注加圆括号，居左空二字，排在成文日期下一行，电话不分节。
+            date_index = texts.index('2026年9月14日')
+            note = doc.paragraphs[date_index + 1]
+            self.assertEqual(note.text, '（联系人：张某　联系方式：15300001234）')
+            self.assertAlmostEqual(note.paragraph_format.first_line_indent.pt, 32, places=1)
+            # "thousands": false 时原样输出。
+            raw = Path(temp) / 'raw.docx'
+            generator.build_docx(dict(spec, thousands=False), raw)
+            self.assertIn('基金总规模为3960万元，我司出资1980万元。',
+                          [p.text for p in Document(raw).paragraphs])
 
 
 if __name__ == '__main__':

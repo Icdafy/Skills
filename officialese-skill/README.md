@@ -1,10 +1,10 @@
 # 国企公文写作与排版（officialese-skill）
 
-当前分发版本：**1.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.1.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
-通知、请示、报告、函等国企公文起草和排版；投委会议题、投后报告、立项章节另有专门技能。
+通知、请示、报告、函、批复、会议纪要、上会议题、情况说明等国企公文的起草、改写、润色和排版。写作规范和范文提炼自实际运行的公文，输出不带口语和机器腔；数量统一加千位分隔符，页码写作 `- 1 -`。投委会表决议题、投后报告、立项章节另有专门技能。
 
 ## 输入和输出
 
@@ -20,7 +20,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.0.2/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.1.0/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/officialese-skill"
@@ -30,7 +30,7 @@ python scripts/skill_portability.py install --agent codex --scope project --proj
 python scripts/skill_portability.py install --agent codex --scope project --project-dir "C:/项目/示例 项目" --apply
 ```
 
-Claude Code 把 `--agent codex` 换成 `--agent claude-code`。其他客户端及安装器目录表见 [跨客户端安装](references/agent-compatibility.md)。运行路径以本次实际加载的 SKILL.md 目录为根；脚本和输入输出使用绝对路径时可在任意任务目录执行。
+Claude Code 把 `--agent codex` 换成 `--agent claude-code`；DeepSeek Harness 用 `--agent dsh`，千问办公用 `--agent qwenwork`，WorkBuddy 用 `--agent workbuddy`，TRAE 用 `--agent trae-cn`，Qoder CLI 用 `--agent qoder-cli`。Claude 网页版、ChatGPT 团队版、豆包、Qoder 桌面版等上传 ZIP。其他客户端及安装器目录表见 [跨客户端安装](references/agent-compatibility.md)。运行路径以本次实际加载的 SKILL.md 目录为根；脚本和输入输出使用绝对路径时可在任意任务目录执行。
 
 ## 调用例子
 
@@ -43,6 +43,8 @@ $officialese-skill 帮我起草关于开展项目资料归档的通知，发给�
 Claude Code 输入 `/officialese-skill 帮我起草关于开展项目资料归档的通知，发给各部门，落款为示例公司。`；自然语言直接使用“帮我起草关于开展项目资料归档的通知，发给各部门，落款为示例公司。”。先补齐 SKILL.md 要求的缺失输入；不得编造事实。
 
 ## 已验证环境
+
+1.1.0（2026-11-10）：Windows，Python 3.12.14，本技能5项回归通过，`check --smoke` 通过；DeepSeek Harness、千问办公及其余客户端的模型实际调用未实测，Word 未做逐页目视验收。以下为此前记录。
 
 Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
 

@@ -75,11 +75,11 @@
       "name_zh": "国企公文写作与排版",
       "category": "公文与会议",
       "source": "officialese-skill",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "readme": "officialese-skill/README.md",
       "distribution": "office-skills",
       "verification": {
-        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "python": "Windows Python 3.12.14；1.1.0 本技能回归与独立工作目录烟测通过，Word 未逐页目视验收",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
@@ -88,9 +88,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "officialese-skill/v1.0.2",
+        "tag": "officialese-skill/v1.1.0",
         "asset": "officialese-skill.zip",
-        "sha256": "3c488f903e55ee1ccd664ed03b3feced4c5e8c34ac2612f1fd4579f64e0888cd"
+        "sha256": "ca445fe2932f2a576584f5d41cd77c6f22f6fa5077fd193f70dd0430d54a2fb3"
       }
     },
     {
@@ -203,11 +203,10 @@
         "gongsi-qingkuang",
         "hangye-fenxi",
         "zhuying-yewu-fenxi",
-        "officialese-skill",
         "yiti-skill",
         "soe-post-investment-report"
       ],
-      "note": "跨 Agent 完整性检查、打包与目录安装"
+      "note": "跨 Agent 完整性检查、打包与目录安装（officialese-skill 自 1.1.0 起单独维护）"
     },
     {
       "file": "references/agent-compatibility.md",
@@ -216,11 +215,10 @@
         "gongsi-qingkuang",
         "hangye-fenxi",
         "zhuying-yewu-fenxi",
-        "officialese-skill",
         "yiti-skill",
         "soe-post-investment-report"
       ],
-      "note": "跨 Agent 安装与真实调用验收"
+      "note": "跨 Agent 安装与真实调用验收（officialese-skill 自 1.1.0 起单独维护）"
     },
     {
       "file": "scripts/ensure_fonts.py",

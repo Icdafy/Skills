@@ -2,7 +2,7 @@
 
 These rules are extracted from `assets/templates/文件字体格式.doc`, the uploaded fonts, and the company onboarding training PDF section on 公文格式.
 The explicit rules in this file take precedence over the original sample where they differ.
-The typography is the shared company standard defined in yiti-skill `references/format-rules.md`; this skill, yiti-skill, hangye-fenxi, zhuying-yewu-fenxi, gongsi-qingkuang and soe-post-investment-report all follow it.
+The typography follows the shared company standard also used by yiti-skill, hangye-fenxi, zhuying-yewu-fenxi, gongsi-qingkuang and soe-post-investment-report. Since 1.1.0 this skill differs from them in two points: the page number is written `- 1 -` (with spaces) instead of `-1-`, and the generator adds thousands separators automatically.
 
 ## Page Setup
 
@@ -26,8 +26,8 @@ The typography is the shared company standard defined in yiti-skill `references/
 - Parenthesized content: all paired Chinese/English round parentheses `（…）` / `(...)` and their contents use 楷体_GB2312 throughout the document, including nested parentheses, titles, attachment names and signatures. The size follows the position: 二号 (22 pt) inside the main title and attachment titles, 三号 (16 pt) in the subtitle, body, headings, 附件说明 and signature, 五号 (10.5 pt) in tables. Preserve the position's bold. The only exception is the leading `（1）` serial of a fourth-level heading. Digits, Latin letters and `%` inside the parentheses use Times New Roman (see the final pass below). Unpaired parentheses do not change subsequent text formatting.
 - Tables: all text inside a table is fixed at 五号 (10.5 pt): 仿宋_GB2312 outside parentheses, 楷体_GB2312 for parenthesized spans. The header row is bold (no shading) and repeats on every page; other rows are not bold; no row splits across pages. Cells use single line spacing, no first-line indent, centered horizontally and vertically, with plain single black borders. The table fills the text width and column widths follow the content (short columns such as 序号 keep their width, long text columns share the rest). A lead-in sentence ending with `：` precedes the table on the same page; use `—` for empty cells and thousands separators for amounts.
 - Full-width digits, Latin letters and `％` are converted to half-width first (the generator does it automatically; fix them by hand in plain text), otherwise the final pass cannot reach them.
-- Times New Roman final pass: every digit, Latin letter, `%` and other half-width character in the whole document uses Times New Roman — titles, body, headings, parenthesized spans, tables, attachments, signature and date. Apply it last, after 方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312 and the 四号宋体 footer are in place: select the whole text and set only the Western font (ascii/hAnsi/cs) to Times New Roman. Times New Roman has no CJK glyphs, so Chinese characters keep their Chinese faces (eastAsia unchanged). The footer `-1-` is excluded and stays 四号宋体.
-- Page number: the entire `-1-` uses 四号宋体 (14 pt), including both hyphens, the PAGE field and its displayed result — the two hyphens are resized to 四号 as well, not only the digit. Set ascii/hAnsi/cs/eastAsia to 宋体 for every footer page-number run. Odd and even pages use different footers.
+- Times New Roman final pass: every digit, Latin letter, `%` and other half-width character in the whole document uses Times New Roman — titles, body, headings, parenthesized spans, tables, attachments, signature and date. Apply it last, after 方正小标宋简体、黑体、楷体_GB2312、仿宋_GB2312 and the 四号宋体 footer are in place: select the whole text and set only the Western font (ascii/hAnsi/cs) to Times New Roman. Times New Roman has no CJK glyphs, so Chinese characters keep their Chinese faces (eastAsia unchanged). The footer `- 1 -` is excluded and stays 四号宋体.
+- Page number: written `- 1 -` — one half-width space between each hyphen and the digit (hyphen, space, digit, space, hyphen). The entire `- 1 -` uses 四号宋体 (14 pt), including both hyphens, both spaces, the PAGE field and its displayed result — the hyphens and spaces are resized to 四号 as well, not only the digit. Set ascii/hAnsi/cs/eastAsia to 宋体 for every footer page-number run. Odd and even pages use different footers. Do not write `-1-`, `—1—` or `第1页`.
 
 Word size mapping used by the sample:
 
@@ -119,7 +119,8 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 ```
 
 - Page numbers are placed on the outside edge, odd and even pages different (odd pages right, even pages left).
-- Page number format is `-1-`, `-2-`: both hyphens and every part of the PAGE field/result are explicitly 四号宋体 (14 pt), on odd and even pages alike.
+- Page number format is `- 1 -`, `- 2 -`, with one half-width space on each side of the digit: both hyphens, both spaces and every part of the PAGE field/result are explicitly 四号宋体 (14 pt), on odd and even pages alike.
+- 附注 (for 上行文: `（联系人：XXX　联系方式：XXXXXXXXXXX）`): the line directly below the 成文日期, first-line indent 2 characters, wrapped in one pair of full-width round parentheses, 三号 with the parentheses rule applied. The generator takes it as `note` / `--note` and adds the parentheses itself. Phone numbers are identifiers and take no thousands separators.
 - A seal/signature page must contain at least two lines of 正文. Do not create a page headed only by `（此页无正文）`.
 
 ## Punctuation and Typography
@@ -129,6 +130,7 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - Avoid decorative formatting, colored text, emojis, underlines, and unnecessary bold.
 - Keep one formatting system throughout the document; do not mix Microsoft YaHei/SimSun body text unless required by source material.
 - Thousands separators (千位分隔符): every Arabic number whose integer part has four or more digits takes a half-width Western comma `,` every three digits counted from the units digit, with a half-width point `.` as the decimal mark (US/UK style): `1,234.56`、`2,350万元`、`245,766.75`、`1,000,000`; write `2,350万元`, never `2350万元`. This applies everywhere — title, body, headings, parentheses, tables, attachments and signature. The decimal part is not grouped, and the separator is never a full-width `，`, a space or a point. Identifiers are not quantities and stay ungrouped: years (`2026年`), dates, times, 发文字号 (`〔2026〕12号`), page numbers, phone and ID numbers, 统一社会信用代码, stock codes, contract/patent/order numbers, model, version and standard numbers (`GB/T 9704-2012`). When redrafting, add missing separators to the source's numbers.
+- Write the separators in the text yourself; the generator is a second line of defence. On every string of the document spec it groups a number when it carries a unit (`1500万元` → `1,500万元`, `2612套` → `2,612套`, `1234.5%`) or a decimal part (`705482.17` → `705,482.17`), and any other bare number of four or more digits outside the year range (`12000` → `12,000`). It leaves alone: bare four-digit years 1900–2100, numbers followed by 年/号/弄/室/届, numbers after 第, anything inside `〔〕` `[]` `【】`, dates and times (`2026/4/29`, `12:30`), version-like strings (`1.0.2`), numbers starting with 0, numbers attached to Latin letters or hyphens (`ISO9001`, `GB/T 9704-2012`), numbers of nine or more digits without a unit, numbers after 电话/联系方式/代码/编号/账号/邮编 and similar labels, and a six-digit code alone in parentheses. So a bare `2000` in a table cell stays as typed — write `2,000` yourself when it is a quantity. `"thousands": false` in the spec or `--no-thousands` switches the pass off for verbatim quotations.
 - Use Chinese six-angle brackets `〔〕` for 发文年度 in 发文字号, e.g. `未城产投发〔2026〕1号`; do not use square brackets or `【】` for this role.
 
 ## Final Format Checklist
@@ -154,4 +156,5 @@ Column 1 is the left margin; `附件：` occupies columns 3–5, the serial colu
 - A sole attachment has no serial; multiple attachments use Arabic serials. Attachment pages carry `附件：` (sole) or `附件1：` `附件2：` … at the top left.
 - Two blank lines precede the signature; the issuing unit is right-indented 4 characters.
 - The date sits directly below the issuing unit and is centered on it.
-- The complete footer `-1-` uses 宋体 at 14 pt (四号) on odd and even pages, including both hyphens and the field result; odd/even footers are different.
+- The footer reads `- 1 -` (a half-width space on each side of the digit) and is entirely 宋体 at 14 pt (四号) on odd and even pages, including both hyphens, both spaces and the field result; odd/even footers are different.
+- For 上行文, the 附注 with the contact person sits one line below the date, indented 2 characters, in round parentheses.

@@ -71,6 +71,12 @@ python -m unittest discover -s tools/library_tests
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
 
+### officialese-skill 1.1.0 验证（2026-11-10）
+
+仅升级该技能及必要登记：索引、首页目录、插件市场和统一格式测试中本技能的页码断言。`scripts/skill_portability.py` 与 `references/agent-compatibility.md` 改由本技能单独维护，已从对应共享组移出，其余五个成员未改动。写作规范和范文据维护者提供的本地公文样本提炼，样本不入库，范文中的单位、人名、文号和金额均为虚构。
+
+Windows / Python 3.12.14：本技能回归5项、`tools/tests` 50项、`tools/library_tests` 25项全部通过；`check --smoke`、`sync_catalog.py --check`、`check_shared_scripts.py`、`check_library.py` 通过；单技能包已构建并登记 SHA-256。千位分隔符的数量与标识判别另有27组用例覆盖。样例 DOCX 的页脚缓存为 `- 1 -`，数量已分节、年份与电话未分节；本机 Word 自动化接口不可用，未做逐页目视验收。DeepSeek Harness 目录约定取自已安装桌面端程序包内说明，千问办公入口取自阿里云帮助中心；包括这两者在内的各客户端模型调用均未实测。
+
 ### meeting-minutes-pro 1.3.0 验证（2026-11-03）
 
 仅升级该技能及必要登记，ASR 与证据流程未改动。427项回归通过（无跳过），新增机器腔表述拦截及行业术语误报反例、总结篇幅提示、答复续段空行、问句与答复同页等测试；共享脚本检查、技能 smoke 检查通过，单技能包在两个目录分别构建，SHA-256 一致。
