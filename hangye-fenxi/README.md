@@ -1,10 +1,16 @@
 # 所属行业分析（hangye-fenxi）
 
-当前分发版本：**1.0.2**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.1.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
 所属行业、产业链、规模、国产化、壁垒及行业投资判断；不整理工商团队或公司主营业务。
+
+## 1.1.0 的主要变化
+
+- 成文口吻按实际上会的立项报告终稿校准：`SKILL.md` 写入表述十二条、逻辑十条，另附 [书面公文表述](references/formal-expression.md) 和 [硬逻辑论证](references/hard-logic.md) 两份规范；`style_check.py` 增加口语、机器腔、空话和逻辑结构的机械扫描。
+- 页码改为 `- 1 -`；生成 Word 时自动为四位以上的数量补千位分隔符，年份、文号、型号、专利号等标识不变。
+- 新增 DeepSeek Harness、千问办公的安装说明。
 
 ## 输入和输出
 
@@ -20,7 +26,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.0.2/hangye-fenxi.zip) 下载，解压后进入 `hangye-fenxi`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.1.0/hangye-fenxi.zip) 下载，解压后进入 `hangye-fenxi`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/hangye-fenxi"
@@ -43,6 +49,8 @@ $hangye-fenxi 帮我写这家企业所属行业分析，分析市场规模和国
 Claude Code 输入 `/hangye-fenxi 帮我写这家企业所属行业分析，分析市场规模和国产化率。`；自然语言直接使用“帮我写这家企业所属行业分析，分析市场规模和国产化率。”。先回答“早前期”或“中后期”，再填写该阶段的原固定模板。
 
 ## 已验证环境
+
+1.1.0（2026-11-12）：Windows，Python 3.12.14。三技能回归、独立工作目录 `check --smoke`（含 `- 1 -` 页脚和千位分隔符核对）通过；新增表述与逻辑规则在各客户端的实际成文效果未实测，DeepSeek Harness、千问办公的模型调用未实测。以下为此前版本的记录。
 
 Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
 
@@ -214,7 +222,7 @@ python scripts/ensure_fonts.py --check
 | 字号 | 正文与标题基准 16pt |
 | 缩进 | 正文与全部层级标题首行缩进 2 个中文字符，标题与段落平齐 |
 | 字体 | 一级章标题黑体，二级标题楷体_GB2312，正文及三级以下标题仿宋_GB2312 |
-| 页码 | 页脚"-1-"格式，宋体四号，奇偶页外侧 |
+| 页码 | 页脚"- 1 -"格式（短横线与数字之间各一个半角空格），宋体四号，奇偶页外侧 |
 | 表格 | 全表统一仿宋_GB2312、五号字（10.5pt），仅首行表头加粗、不加底纹，表头行跨页重复，所有单元格内容水平和垂直居中，宽度按窗口自动调整（autofit），列宽自适应不写死磅值 |
 | 加粗 | 二级/三级/四级标题、核心结论、段首论点句、启示总结句加粗；证据句与表格正文默认不加粗 |
 
@@ -312,6 +320,6 @@ Use $hangye-fenxi 帮我把这份行业分析改写成范文风格，并生成 .
 
 ## 跨 Agent 安装与调用
 
-[下载完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.0.2/hangye-fenxi.zip)。Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.1.0/hangye-fenxi.zip)。Claude、ChatGPT、Codex、Kimi、豆包、DeepSeek Harness、千问办公、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
 
 本技能名为 `hangye-fenxi`。保留完整文件夹，启用后新建会话点名调用；可运行 `python scripts/skill_portability.py check --smoke` 检查资源及Word生成。技能发现与模型实际调用须在目标客户端按指引验收，不能仅凭复制文件认定成功。

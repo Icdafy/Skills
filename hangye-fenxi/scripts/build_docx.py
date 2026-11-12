@@ -20,9 +20,14 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
   四级仿宋_GB2312 三号加粗（序号"（1）"随标题用仿宋加粗，其余括注适用括注规则）
 - 核心结论/段首论点句：整段加粗（type=p, bold=true）
 - 字体按四步设置：①中文字体按角色；②圆括号及其内文字改楷体_GB2312，字号随所在
-  位置（封面标题二号、正文三号、表格与表注五号），保留加粗；③页脚 -1- 四号宋体；
+  位置（封面标题二号、正文三号、表格与表注五号），保留加粗；③页脚 - 1 - 四号宋体；
   ④最后全文（不含页脚）西文字体统一 Times New Roman，中文字体不变
 - 全角数字、字母和％先转半角，保证第④步能作用到它们
+- 千位分隔符：生成时对全部文字中整数部分满四位的数量自动每三位加半角逗号
+  （2350万元→2,350万元、12345.6→12,345.6）；年份、日期、文号、标准号、型号、
+  电话、证件号、统一社会信用代码、专利号、证券代码等标识保持原样。表头或行首
+  为“代码/编号/专利号/型号”等的表格列（行）整体不处理；原文照录的内容可在
+  content 顶层或单个块上写 "thousands": false 关闭
 - 表格（统一表格规范）：
     * 全表统一五号 10.5pt：括号外仿宋_GB2312，括号及括号内楷体_GB2312
     * 仅首行（表头）加粗，无底纹；其余单元格不加粗
@@ -34,7 +39,8 @@ build_docx.py —— 立项报告章节 Word 生成器（三技能统一公文�
     * 表格前一段（引导句）与表格同页
 - 表注（type=tnote）："单位：万元""注：……"等，仿宋_GB2312 五号、不缩进，
   align 可选 left/right/center（默认 left；"单位"行惯例放表格上方右对齐）
-- 页脚页码（奇偶页不同，奇数页居右、偶数页居左，完整 -1- 四号宋体）
+- 页脚页码（奇偶页不同，奇数页居右、偶数页居左，完整 - 1 - 四号宋体，
+  短横线与页码数字之间各一个半角空格）
 - 附件说明：正文下空一行，"附件："左空二字；多份为"附件：1.XXX"，"2."与"1."对齐，
   回行悬挂对齐到名称首字（按实际字宽计算，关闭中西文自动间距）
 - 落款（可选 signature）：附件说明下空两行，署名右空四字，成文日期在署名下居中
@@ -58,6 +64,7 @@ BLOCK 结构组织好传进来，脚本对内容零编造。
 
 用法：
     python build_docx.py content.json out.docx
+    python build_docx.py content.json out.docx --no-thousands   # 不自动补千位分隔符
 或在 python 中：
     from build_docx import build
     build(content_dict, "out.docx")
@@ -145,6 +152,148 @@ FULLWIDTH = {code: code - 0xFEE0 for code in range(0xFF10, 0xFF1A)}
 FULLWIDTH.update({code: code - 0xFEE0 for code in range(0xFF21, 0xFF3B)})
 FULLWIDTH.update({code: code - 0xFEE0 for code in range(0xFF41, 0xFF5B)})
 FULLWIDTH[0xFF05] = ord('%')
+
+# ---------------------------------------------------------------------------
+# 千位分隔符：整数部分满四位的数量一律每三位加半角逗号（1,234.56、2,350万元）。
+# 年份、日期、文号、电话、代码、编号、标准号、型号等标识不是数量，保持原样。
+# ---------------------------------------------------------------------------
+NUMBER_TOKEN = re.compile(r"\d+(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)*")
+# 紧跟在数字后面、说明它是"数量"的计量单位（允许中间有空格）。
+QUANTITY_UNIT = re.compile(
+    r"\s*(?:%|‰|万|亿|千|百|元|美元|欧元|港元|日元|英镑|人民币|股|份|人|名|户|家|笔|个|件|套|台|辆|架|"
+    r"项|宗|处|座|栋|幢|间|层|亩|公顷|平方|立方|㎡|吨|千克|公斤|克|米|公里|千米|升|度|千瓦|兆瓦|瓦|"
+    r"小时|分钟|天|日均|人次|批次|次|篇|页|条|张|本|册|头|只|支|枚|倍|点|bp|BP|"
+    r"kg|km|kW|MW|GW|Wh|kWh|MWh|GWh|mm|cm|m²|m³|MPa|Pa|rpm|SLPM|L(?![A-Za-z])|t(?![A-Za-z]))")
+# 紧跟在数字后面、说明它是"标识"的字（年份、文号、门牌、届次、番号等）。
+IDENTIFIER_SUFFIX = re.compile(r"\s*(?:年|号|弄|室|届|版|楼|单元|信箱|路|街|巷|所|厂|院)")
+IDENTIFIER_PREFIX = re.compile(
+    r"(?:电话|手机|座机|传真|联系方式|联系电话|邮编|邮政编码|代码|编码|编号|账号|帐号|卡号|证号|"
+    r"单号|合同号|专利号|申请号|注册号|登记号|工号|文号|字号|型号|QQ|微信|热线|No\.?|NO\.?)"
+    r"\s*[:：为]?\s*[（(]?\s*$")
+# 表头（或"项目｜内容"式表格的行首）出现这些字样时，该列（行）是标识，整体不分节。
+IDENTIFIER_HEADER = re.compile(
+    r"代码|编号|编码|专利号|申请号|证号|证书号|文号|电话|手机|邮编|账号|帐号|型号|标准号|注册号|"
+    r"登记号|合同号|订单号|批号|序列号|网址|邮箱")
+OPEN_BRACKETS = {"〔": "〕", "[": "]", "【": "】", "〈": "〉"}
+RANGE_TAIL = re.compile(r"\s*[-－—–~～至]\s*(\d[\d,]*(?:\.\d+)?)")
+
+
+def add_thousands_separators(text):
+    """给 text 中的数量补千位分隔符；标识类数字保持原样，已有分隔符的不重复加。"""
+    text = str(text).translate(FULLWIDTH)
+    out = []
+    pos = 0
+    bracket_close = None  # 位于〔〕[]【】内的数字是文号年度，不加
+    for match in NUMBER_TOKEN.finditer(text):
+        start, end = match.span()
+        for char in text[pos:start]:
+            if bracket_close is None and char in OPEN_BRACKETS:
+                bracket_close = OPEN_BRACKETS[char]
+            elif char == bracket_close:
+                bracket_close = None
+        out.append(text[pos:start])
+        pos = end
+        token = match.group()
+        out.append(token if bracket_close else _group_token(text, start, end, token))
+    out.append(text[pos:])
+    return "".join(out)
+
+
+def _group_token(text, start, end, token):
+    if "," in token or token.count(".") > 1:  # 已分节；或版本号、日期 2026.4.29
+        return token
+    integer, _, decimal = token.partition(".")
+    if len(integer) < 4 or integer.startswith("0"):  # 不足四位；0 开头的是编号
+        return token
+    before, after = text[:start], text[end:]
+    prev_char = before[-1:] if before else ""
+    next_char = after[:1]
+    # 数字串的一部分（如 12:30、2026/4/29、A-1234、688568.SH）不是数量。
+    if (prev_char and prev_char in ".:：/\\_#№") or (next_char and next_char in ":/\\_"):
+        return token
+    if re.match(r"\.\d|\.[A-Za-z]", after) or before.endswith("第"):
+        return token
+    if re.search(r"[A-Za-z][ \-]?$", before):
+        return token  # ZL201811005866.6、ISO9001、FC100、GB/T 9704、T/CIET 1244 等
+    unit_follows = bool(QUANTITY_UNIT.match(after))
+    if re.fullmatch(r"(?:19|20)\d\d", integer) and not decimal:
+        tail = RANGE_TAIL.match(after)
+        if tail and not QUANTITY_UNIT.match(after[tail.end():]):
+            return token  # 2025-2027年、2026-04-29 的起始年份
+        if tail:
+            return f"{int(integer):,}"  # 2000—3000万元：数值范围的起点
+    if IDENTIFIER_SUFFIX.match(after):
+        return token
+    if re.search(r"\d[-－—–~～]$", before) and not unit_follows:
+        return token  # 2025-2027年、GB/T 9704-2012 的后半段
+
+    def grouped():
+        return f"{int(integer):,}" + ("." + decimal if decimal else "")
+
+    if unit_follows:
+        return grouped()  # 带计量单位的一定是数量
+    if decimal and (len(integer) < 9 or len(decimal) == 2):
+        return grouped()  # 带小数的数量（九位以上只认两位小数的金额）
+    if len(integer) == 4 and 1900 <= int(integer) <= 2100:
+        return token  # 不带单位的四位年份
+    if re.match(r"[A-Za-z]|-\d", after):
+        return token  # 型号、带字母后缀的编码、标准号前半段
+    if len(integer) >= 9 or IDENTIFIER_PREFIX.search(before[-14:]):
+        return token  # 电话、证件号、信用代码、专利申请号、账号等
+    if len(integer) == 6 and prev_char and prev_char in "（(" and next_char and next_char in "）)":
+        return token  # 括注的证券代码
+    return grouped()
+
+
+def _group_value(value):
+    if isinstance(value, str):
+        return add_thousands_separators(value)
+    if isinstance(value, list):
+        return [_group_value(item) for item in value]
+    return value
+
+
+def normalize_content_numbers(content):
+    """返回补齐千位分隔符后的 content 副本；只处理会进入文档的文字，路径、类型等键不动。"""
+    if not content.get("thousands", True):
+        return content
+    result = dict(content)
+    if isinstance(result.get("summary"), str):
+        result["summary"] = add_thousands_separators(result["summary"])
+    if isinstance(result.get("cover"), dict):
+        cover = dict(result["cover"])
+        if "title_lines" in cover:
+            cover["title_lines"] = _group_value(cover["title_lines"])
+        result["cover"] = cover
+    if "attachments" in result:
+        result["attachments"] = _group_value(result["attachments"])
+    blocks = []
+    for blk in result.get("blocks", []) or []:
+        if not isinstance(blk, dict) or not blk.get("thousands", True):
+            blocks.append(blk)
+            continue
+        blk = dict(blk)
+        for key in ("text", "lead", "caption", "items"):
+            if key in blk:
+                blk[key] = _group_value(blk[key])
+        if blk.get("type") == "table":
+            header = [str(h) for h in (blk.get("header") or [])]
+            skip_cols = {i for i, h in enumerate(header) if IDENTIFIER_HEADER.search(h)}
+            rows = []
+            for row in blk.get("rows", []) or []:
+                if not isinstance(row, list):
+                    rows.append(row)
+                    continue
+                skip_row = bool(row) and len(row) <= 3 and IDENTIFIER_HEADER.search(str(row[0]))
+                rows.append([cell if (skip_row or i in skip_cols or not isinstance(cell, str))
+                             else add_thousands_separators(cell) for i, cell in enumerate(row)])
+            blk["rows"] = rows
+            if "header" in blk:
+                blk["header"] = _group_value(blk["header"])
+        blocks.append(blk)
+    result["blocks"] = blocks
+    return result
+
 # Times New Roman 字宽（em），用于附件说明悬挂缩进与落款居中。
 TNR_EM = {'.': 0.25, ',': 0.25, ':': 0.278, '-': 0.333, ' ': 0.25, '/': 0.278, '%': 0.833}
 
@@ -442,15 +591,17 @@ def _add_page_number_footer(section):
 
 
 def _add_footer_page_field(p, align):
-    """页码 -1-：两个短横线、PAGE 域及其显示结果全部四号宋体（四个字体槽均为宋体），
-    不参与最后的 Times New Roman 统一。"""
+    """页码 - 1 -：短横线与页码数字之间各一个半角空格；短横线、空格、PAGE 域及其
+    显示结果全部四号宋体（四个字体槽均为宋体），不参与最后的 Times New Roman 统一。"""
     p.alignment = align
 
     def songti(run):
         _set_run_font(run, size=FOOTER_SZ, font_name=FONT_FOOTER,
                       western_font=FONT_FOOTER, east_asia_hint=False)
 
-    songti(p.add_run("-"))
+    lead = p.add_run("- ")
+    lead._r.find(qn('w:t')).set(qn('xml:space'), 'preserve')
+    songti(lead)
     run = p.add_run()
     songti(run)
     f1 = OxmlElement('w:fldChar'); f1.set(qn('w:fldCharType'), 'begin')
@@ -460,7 +611,9 @@ def _add_footer_page_field(p, align):
     f2 = OxmlElement('w:fldChar'); f2.set(qn('w:fldCharType'), 'end')
     for el in (f1, instr, separate, result, f2):
         run._r.append(el)
-    songti(p.add_run("-"))
+    tail = p.add_run(" -")
+    tail._r.find(qn('w:t')).set(qn('xml:space'), 'preserve')
+    songti(tail)
     # 段落标记同为四号宋体，页脚行高随页码。
     mark = OxmlElement('w:rPr')
     fonts = OxmlElement('w:rFonts')
@@ -612,7 +765,7 @@ def _finalize_western_fonts(doc):
 
     覆盖正文、嵌套表格、页眉和样式；清除西文主题覆盖，避免打开 Word
     或刷新域时又恢复主题字体。所有字符（含数字、%和短横线）的西文字体槽
-    均为 Times New Roman，eastAsia 不变。页脚 -1- 不参与这一步，保持四号宋体。
+    均为 Times New Roman，eastAsia 不变。页脚 - 1 - 不参与这一步，保持四号宋体。
     """
     roots = [doc.element, doc.styles.element]
     for part in doc.part.package.parts:
@@ -635,6 +788,8 @@ def build(content, out_path):
     if "report_template" in content:
         from stage_template import validate
         validate(content, root=Path(__file__).resolve().parents[1])
+    # 千位分隔符在模板标题校验之后补齐，默认开启；content 顶层写 "thousands": false 可整体关闭。
+    content = normalize_content_numbers(content)
     doc = Document()
     _fix_zoom(doc)
     _set_chinese_language(doc)
@@ -786,11 +941,16 @@ def build(content, out_path):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 3:
-        print("用法: python build_docx.py content.json out.docx")
+    cli = [a for a in sys.argv[1:] if a != "--no-thousands"]
+    if len(cli) < 2:
+        print("用法: python build_docx.py content.json out.docx [--no-thousands]")
         sys.exit(1)
+    no_thousands = "--no-thousands" in sys.argv[1:]
+    sys.argv = [sys.argv[0]] + cli
     with open(sys.argv[1], "r", encoding="utf-8") as f:
         data = json.load(f)
+    if no_thousands:
+        data["thousands"] = False
     # image 块的相对路径按 content.json 所在目录解析
     data.setdefault("_base_dir", str(Path(sys.argv[1]).resolve().parent))
     path = build(data, sys.argv[2])

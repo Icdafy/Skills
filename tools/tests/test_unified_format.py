@@ -108,8 +108,9 @@ class UnifiedFormatTests(unittest.TestCase):
     def test_every_generator_follows_the_yiti_standard(self) -> None:
         for skill in GENERATORS:
             with self.subTest(skill=skill):
-                # officialese-skill 自 1.1.0 起页码写作"- 1 -"，其余技能仍为"-1-"。
-                footer = "- 1 -" if skill == "officialese-skill" else "-1-"
+                # officialese-skill 自 1.1.0 起、立项报告三技能自 2026-11-12 版本起页码写作"- 1 -"，
+                # yiti-skill 仍为"-1-"。
+                footer = "-1-" if skill == "yiti-skill" else "- 1 -"
                 self.check(self.build(skill), footer)
 
     def check(self, doc: Document, footer_text: str = "-1-") -> None:

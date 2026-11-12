@@ -112,6 +112,114 @@ class ReportStyleTests(unittest.TestCase):
                 with self.subTest(skill=skill, rejected=text):
                     self.assertTrue(any(rule.search(text) for _, rule in module.RULES))
 
+    def test_spoken_and_machine_phrasing_fail_and_formal_phrasing_passes(self):
+        """Fictional sentences; formal ones mirror the register of approved reports."""
+        rejected = [
+            '好的，以下是为您撰写的行业分析。', '希望以上内容对您有帮助。',
+            '值得注意的是，公司收入增长较快。', '综上所述，公司具备竞争优势。',
+            '说白了，公司现在主要靠贸易赚钱。', '这项技术很牛，别人没法做。',
+            '行业前景广阔，公司潜力巨大。', '公司通过平台赋能下游客户。',
+            '笔者认为该赛道值得关注。', '公司产品卖得不错。',
+        ]
+        accepted = [
+            '公司以储能变流器为核心产品，向系统集成延伸。',
+            '行业及市场方面，下游需求持续释放，政策支持方向明确。',
+            '所称长距离作业，指单程50公里以上需返航的任务。',
+            '据公司介绍，A型号已定型并对外销售，B型号处于研发阶段。',
+            '但现有合同仍以测试及小批量交付为主，批量销售尚未形成，后续转化取决于示范项目采购进度。',
+            '2024年《人工智能赋能新型工业化行动方案》发布，对应公司所处环节。',
+            '公司称“卖得不错”，2025年销量为120台。',
+            '总体判断，在需求释放和技术路线收敛的共同作用下，该类装备将由试用验证走向专业应用。',
+        ]
+        for skill in SKILLS:
+            module = self.load(skill)
+            for text in rejected:
+                with self.subTest(skill=skill, rejected=text):
+                    self.assertTrue(any(rule.search(text) for _, rule in module.RULES))
+            for text in accepted:
+                with self.subTest(skill=skill, accepted=text):
+                    self.assertFalse(any(rule.search(text) for _, rule in module.RULES))
+
+    def test_structure_warnings_for_openers_degree_words_and_lead_counts(self):
+        for skill in SKILLS:
+            module = self.load(skill)
+            pairs = [
+                ('L1', '随着行业的不断发展，市场需求持续释放。'),
+                ('L2', '此外，公司还布局了海外市场。'),
+                ('L3', '公司收入大幅增长。'),
+                ('L4', '以下从市场需求、技术路线和政策支持四方面梳理行业现状。'),
+                ('L5', '公司2025年营业收入3,120.36万元，同比大幅增长32.74%。'),
+                ('L6', '以下从市场需求、技术路线、商业化进程和政策支持四方面梳理行业现状。'),
+            ]
+            hits = {}
+            for loc, message in module.expression_warnings(pairs):
+                hits.setdefault(loc, []).append(message)
+            with self.subTest(skill=skill):
+                self.assertIn('L1', hits)
+                self.assertIn('L2', hits)
+                self.assertTrue(any('程度词' in m for m in hits['L3']))
+                self.assertTrue(any('四方面' in m for m in hits['L4']))
+                self.assertNotIn('L5', hits)
+                self.assertNotIn('L6', hits)
+            content = {'blocks': [
+                {'type': 'h2', 'text': '（一）行业发展现状'},
+                {'type': 'p', 'text': '行业处于过渡阶段。以下从需求、路线和政策三方面梳理。'},
+                {'type': 'h3', 'text': '1.需求'}, {'type': 'p', 'text': '需求持续释放。'},
+                {'type': 'h3', 'text': '2.路线'},
+                {'type': 'table', 'header': ['路线', '续航'], 'rows': [['A', '26']]},
+                {'type': 'h2', 'text': '（二）产业链分析'},
+            ]}
+            messages = [m for _, m in module.expression_warnings([], content)]
+            with self.subTest(skill=skill, structure=True):
+                self.assertTrue(any('小标题为2个' in m for m in messages))
+                self.assertTrue(any('表前缺引导句' in m for m in messages))
+
+    def test_generator_groups_quantities_and_keeps_identifiers(self):
+        cases = {
+            '注册资本1221.1121万元，收入12345.6万元': '注册资本1,221.1121万元，收入12,345.6万元',
+            '2025年、2026—2027年、2023-2025年': None,
+            '专利ZL201811005866.6、申请号2025113659119': None,
+            'T/CIET 1244—2025、GB/T 9704-2012、FC100、DF3000': None,
+            '（688568）、688568.SH': None,
+            '2000万—3000万元、1200—1500亿元': '2,000万—3,000万元、1,200—1,500亿元',
+            '工信厅联通信〔2026〕4号、608所': None,
+            '约4700万千瓦、同比增长1437.66%': '约4,700万千瓦、同比增长1,437.66%',
+            '26,294.01万元': None,
+        }
+        for skill in SKILLS:
+            spec = importlib.util.spec_from_file_location(
+                'build_' + skill.replace('-', '_'), ROOT / skill / 'scripts/build_docx.py')
+            module = importlib.util.module_from_spec(spec)
+            import sys
+            sys.path.insert(0, str(ROOT / skill / 'scripts'))
+            try:
+                spec.loader.exec_module(module)
+            finally:
+                sys.path.pop(0)
+            for source, expected in cases.items():
+                with self.subTest(skill=skill, source=source):
+                    self.assertEqual(module.add_thousands_separators(source), expected or source)
+            content = {'blocks': [
+                {'type': 'table', 'header': ['序号', '专利号', '金额（万元）'],
+                 'rows': [['1', '202511365', '12345']]},
+                {'type': 'table', 'header': ['项目', '内容'], 'rows': [['邮编', '710000'], ['注册资本', '5000万元']]},
+                {'type': 'p', 'text': '原文照录12345', 'thousands': False},
+            ]}
+            result = module.normalize_content_numbers(content)['blocks']
+            with self.subTest(skill=skill, table=True):
+                self.assertEqual(result[0]['rows'][0], ['1', '202511365', '12,345'])
+                self.assertEqual(result[1]['rows'], [['邮编', '710000'], ['注册资本', '5,000万元']])
+                self.assertEqual(result[2]['text'], '原文照录12345')
+                self.assertEqual(module.normalize_content_numbers(dict(content, thousands=False)), dict(content, thousands=False))
+
+    @staticmethod
+    def load(skill):
+        spec = importlib.util.spec_from_file_location(
+            'style_' + skill.replace('-', '_'), ROOT / skill / 'scripts/style_check.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
 
 if __name__ == '__main__':
     unittest.main()

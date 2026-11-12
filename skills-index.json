@@ -6,11 +6,11 @@
       "name_zh": "所属行业分析",
       "category": "立项报告",
       "source": "hangye-fenxi",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "readme": "hangye-fenxi/README.md",
       "distribution": "investment-report-skills",
       "verification": {
-        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "python": "Windows Python 3.12.14；本版三技能回归与独立工作目录烟测通过（含 - 1 - 页脚、千位分隔符），Word 未逐页目视验收",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
@@ -19,9 +19,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "hangye-fenxi/v1.0.2",
+        "tag": "hangye-fenxi/v1.1.0",
         "asset": "hangye-fenxi.zip",
-        "sha256": "d8e674eb9a6f75366b4e51e63626c653e218b345a1427c511a5e2e1a57142970"
+        "sha256": "2872b67b42c98404515aaa63ca3cd331cd8eb74e03f6f710b07f794eee662393"
       }
     },
     {
@@ -29,11 +29,11 @@
       "name_zh": "主营业务分析",
       "category": "立项报告",
       "source": "zhuying-yewu-fenxi",
-      "version": "1.0.2",
+      "version": "1.1.0",
       "readme": "zhuying-yewu-fenxi/README.md",
       "distribution": "investment-report-skills",
       "verification": {
-        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "python": "Windows Python 3.12.14；本版三技能回归与独立工作目录烟测通过（含 - 1 - 页脚、千位分隔符），Word 未逐页目视验收",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
@@ -42,9 +42,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "zhuying-yewu-fenxi/v1.0.2",
+        "tag": "zhuying-yewu-fenxi/v1.1.0",
         "asset": "zhuying-yewu-fenxi.zip",
-        "sha256": "5dafc6c7a92658324e3d5202c45df2e7ffba5ad49f9caec58e75e60414ae0cbb"
+        "sha256": "a12367b47387f7e1bbcf526c857661fbf121d035852634d6f0a3d9f8dcaa66ee"
       }
     },
     {
@@ -52,11 +52,11 @@
       "name_zh": "公司情况",
       "category": "立项报告",
       "source": "gongsi-qingkuang",
-      "version": "2.0.3",
+      "version": "2.1.0",
       "readme": "gongsi-qingkuang/README.md",
       "distribution": "investment-report-skills",
       "verification": {
-        "python": "Windows Python 3.12.14；迁移后独立ZIP烟测、项目安装和备份保留通过",
+        "python": "Windows Python 3.12.14；本版三技能回归与独立工作目录烟测通过（含 - 1 - 页脚、千位分隔符），Word 未逐页目视验收",
         "codex": "CLI 0.160.0；显式、自然语言、相邻反例路由实测通过",
         "claude_code": "未实测：当前环境无可运行客户端",
         "other_clients": "未实测",
@@ -65,9 +65,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "gongsi-qingkuang/v2.0.3",
+        "tag": "gongsi-qingkuang/v2.1.0",
         "asset": "gongsi-qingkuang.zip",
-        "sha256": "0fc7883c12d28db59eab36f7a4b165cbf9c0b31483308828b0ded1f7c1f63dd3"
+        "sha256": "5701b7bb8f4e16c5dbd465c0e555fef7dedf24314c13086092351be654a4b677"
       }
     },
     {
@@ -202,11 +202,18 @@
       "skills": [
         "gongsi-qingkuang",
         "hangye-fenxi",
-        "zhuying-yewu-fenxi",
+        "zhuying-yewu-fenxi"
+      ],
+      "note": "立项报告三技能的跨 Agent 完整性检查、打包与目录安装（含 DeepSeek Harness、千问办公与 - 1 - 页脚校验）；仓库打包器使用本组基准副本"
+    },
+    {
+      "file": "scripts/skill_portability.py",
+      "canonical": "yiti-skill",
+      "skills": [
         "yiti-skill",
         "soe-post-investment-report"
       ],
-      "note": "跨 Agent 完整性检查、打包与目录安装（officialese-skill 自 1.1.0 起单独维护）"
+      "note": "跨 Agent 完整性检查、打包与目录安装的原共享版本（officialese-skill 自 1.1.0 起、立项报告三技能自 2026-11-12 版本起分开维护）"
     },
     {
       "file": "references/agent-compatibility.md",
@@ -214,11 +221,38 @@
       "skills": [
         "gongsi-qingkuang",
         "hangye-fenxi",
-        "zhuying-yewu-fenxi",
+        "zhuying-yewu-fenxi"
+      ],
+      "note": "立项报告三技能的跨 Agent 安装与真实调用验收（含 DeepSeek Harness、千问办公）"
+    },
+    {
+      "file": "references/agent-compatibility.md",
+      "canonical": "yiti-skill",
+      "skills": [
         "yiti-skill",
         "soe-post-investment-report"
       ],
-      "note": "跨 Agent 安装与真实调用验收（officialese-skill 自 1.1.0 起单独维护）"
+      "note": "跨 Agent 安装与真实调用验收的原共享版本（officialese-skill 自 1.1.0 起、立项报告三技能自 2026-11-12 版本起分开维护）"
+    },
+    {
+      "file": "references/formal-expression.md",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "gongsi-qingkuang"
+      ],
+      "note": "立项报告三技能统一的书面公文表述规范"
+    },
+    {
+      "file": "references/hard-logic.md",
+      "canonical": "gongsi-qingkuang",
+      "skills": [
+        "hangye-fenxi",
+        "zhuying-yewu-fenxi",
+        "gongsi-qingkuang"
+      ],
+      "note": "立项报告三技能统一的硬逻辑论证规范"
     },
     {
       "file": "scripts/ensure_fonts.py",

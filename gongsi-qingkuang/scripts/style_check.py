@@ -17,6 +17,12 @@ style_check.py —— 公司情况章节语言与口吻扫描。
    缺口规则，报告正文不得出现占位语，全部缺口在对话交付的"资料缺口与待核查
    清单"中提示（本脚本扫描的是报告正文，清单本身不在扫描范围）
 
+另扫书面公文表述与硬逻辑（规则见 references/formal-expression.md、references/hard-logic.md）：
+硬规则——对话痕迹、提示性引子与总结腔、口语及网络表达、空泛拔高与宣传黑话、主观人称、表情符号；
+告警——铺垫式开头、机械连接词起段、第一人称判断、口语化程度词、程度词后无数字、单句超过130字、
+导语列举项数与“N方面”不符、导语预告方面数与下文小标题数不符、表前缺引导句（后两项仅 content.json）。
+书名号和引号内的原文照录不扫描。
+
 用法：
     python style_check.py 章节正文.md
     python style_check.py content.json     # 自动提取全部 text/header/rows 后扫描
@@ -149,6 +155,132 @@ def attribution_warnings(pairs):
     return warnings
 
 
+# ---------------------------------------------------------------------------
+# 书面公文表述与硬逻辑的机械扫描（规则见 references/formal-expression.md、
+# references/hard-logic.md）。书名号《》和引号“”内的文字是原文照录，不扫描。
+# ---------------------------------------------------------------------------
+_QUOTED = re.compile(r"《[^》\n]*》|“[^”\n]*”")
+
+
+class _OutsideQuotes:
+    """在书名号、引号之外匹配（接口同 re.Pattern.search）。"""
+
+    def __init__(self, pattern):
+        self.pattern = re.compile(pattern)
+
+    def search(self, text):
+        masked = _QUOTED.sub(lambda m: "　" * len(m.group(0)), text)
+        return self.pattern.search(masked)
+
+
+RULES += [
+    ("对话痕迹（正文从事实开始、以事实结束，不写开场白和结束语）",
+     _OutsideQuotes(r"^\s*(?:好的|当然|没问题)[，,。！!]|以下是(?:为您|我|根据您)|希望(?:以上|这份|对您)|"
+                    r"如(?:有|需)(?:任何)?(?:疑问|其他需要|进一步(?:的)?(?:帮助|修改|调整))|"
+                    r"请(?:随时)?(?:告知|告诉)我|您|小编")),
+    ("提示性引子或总结腔（删去引子，直接写事实）",
+     _OutsideQuotes(r"值得注意的是|值得一提的是|需要指出的是|需要注意的是|需要强调的是|不难看出|不难发现|"
+                    r"众所周知|毋庸置疑|毫无疑问|总而言之|综上所述|简而言之|换句话说|换言之[，,]|"
+                    r"可以说[，,]|总的来说|这充分(?:说明|表明|体现)")),
+    ("口语或网络表达（改为书面语，见 formal-expression.md 第四部分）",
+     _OutsideQuotes(r"说白了|简单来说|通俗地讲|通俗来说|讲真|靠谱|给力|很牛|厉害|烧钱|砸钱|赚钱|搞定|"
+                    r"踩坑|干货|接地气|拉满|躺赢|内卷|卖得(?:不错|很好|好)|做得(?:不错|很好)|"
+                    r"没法|啥|咋|挺(?:好|大|多|高|强)|蛮(?:好|大|多|高)|差不多|大概(?!率)")),
+    ("空泛拔高或宣传黑话（换成规模、增速、订单、对标等事实）",
+     _OutsideQuotes(r"前景广阔|空间巨大|潜力巨大|巨大的?(?:发展)?潜力|大有可为|未来可期|不可限量|遥遥领先|"
+                    r"独一无二|里程碑意义|划时代|革命性|颠覆性|赋能|抓手|打法|风口|蓝海|降维打击|"
+                    r"弯道超车|驶入快车道|保驾护航|添砖加瓦|颗粒度|心智")),
+    ("主观人称（不写‘笔者’‘我认为’，直接下判断并给依据）",
+     _OutsideQuotes(r"笔者|本人认为|个人认为|我认为|我觉得|我们觉得")),
+    ("表情或装饰符号（正文不使用）",
+     re.compile("[\U0001F300-\U0001FAFF☀-➿⭐⬆✅❌]")),
+]
+
+WARN_RULES += [
+    ("第一人称判断（改为‘整体来看’‘总体判断’，或直接写判断）",
+     _OutsideQuotes(r"我们认为|我们判断|我们相信|我们看好|我们预计")),
+    ("口语化程度词或模糊表达（写数值，或删去）",
+     _OutsideQuotes(r"很多|非常|十分|特别(?!是在|约定|条款|权利|表决|决议|说明|行政|许可|设备|法人|国债)|其实|"
+                    r"好像|似乎|或许|也许|左右(?=[，。；）]|$)")),
+]
+
+_PARA_OPENERS = [
+    ("铺垫式开头（首句直接写判断或事实，背景写具体年份和文件）",
+     re.compile(r"^\s*(?:\*\*)?(?:随着|伴随着?|在[^，。]{2,24}(?:大背景|背景下|浪潮下|趋势下)|近年来|当今|如今|当前，随着)")),
+    ("机械连接词起段（并列用‘一是、二是’或‘××方面，’，递进靠内容承接）",
+     re.compile(r"^\s*(?:\*\*)?(?:首先|其次|再次|再者|最后|此外|另外|除此之外|与此同时|总之)[，,]")),
+]
+_DEGREE = re.compile(r"大幅|显著|明显(?:提升|提高|增长|增加|下降|降低|改善|优于|高于|低于)|快速增长|高速增长|持续攀升|急剧|迅猛")
+_LEAD_COUNT = re.compile(
+    r"([^，。；：:\n]{2,70}?)(?:等)?(两|二|三|四|五|六|七|八)(?:个|大|条|项|类)?"
+    r"(?:方面|部分|维度|层面|角度)(?:梳理|展开|说明|列示|分析|介绍|阐述|论证|[。；，])")
+_CN_NUM = {"两": 2, "二": 2, "三": 3, "四": 4, "五": 5, "六": 6, "七": 7, "八": 8}
+_SENT_SPLIT = re.compile(r"[。；！？!?]")
+_HEADING_LEVEL = {"h1": 1, "h2": 2, "h3": 3, "h4": 4}
+
+
+def _lead_items(fragment):
+    """导语中用顿号和末尾一个‘和/及/与/以及’并列的项数；看不出并列时返回 0。"""
+    fragment = re.split(r"从|按|围绕|体现在|包括|分为|涵盖|覆盖", fragment)[-1]
+    pieces = [p for p in fragment.split("、") if p.strip()]
+    if not pieces:
+        return 0
+    count = len(pieces)
+    if re.search(r"(?:和|及|与|以及)", pieces[-1]):
+        count += 1
+    return count if count >= 2 else 0
+
+
+def expression_warnings(pairs, data=None):
+    """表述与逻辑的结构性告警：起段方式、程度词缺数字、超长句、导语与项数、表前引导句。"""
+    out = []
+    for loc, text in pairs:
+        if loc.startswith("table"):
+            continue
+        body = text.strip()
+        if not body or body.startswith("#") or body.startswith("|"):
+            continue
+        for name, pattern in _PARA_OPENERS:
+            if pattern.search(body):
+                out.append((loc, f"{name}：…{body[:24]}…"))
+        for sentence in _SENT_SPLIT.split(_QUOTED.sub("", body)):
+            if _DEGREE.search(sentence) and not re.search(r"\d", sentence):
+                out.append((loc, f"程度词后没有数字（补数值或删去程度词）：…{sentence.strip()[:30]}…"))
+            if len(sentence) > 130:
+                out.append((loc, f"单句超过130字（拆成每句一个主谓结构）：…{sentence.strip()[:24]}…"))
+        for m in _LEAD_COUNT.finditer(body):
+            listed = _lead_items(m.group(1))
+            if listed and listed != _CN_NUM[m.group(2)]:
+                out.append((loc, f"导语列举{listed}项，却写‘{m.group(2)}方面’，核对项数与下文小标题：…{m.group(0)[-28:]}…"))
+    if isinstance(data, dict):
+        blocks = [b for b in data.get("blocks", []) if isinstance(b, dict)]
+        for i, blk in enumerate(blocks):
+            kind = blk.get("type")
+            if kind == "table":
+                prev = blocks[i - 1].get("type") if i else None
+                if prev in _HEADING_LEVEL or prev in (None, "table", "pagebreak"):
+                    out.append((f"blocks[{i}].table", "表前缺引导句（用一句话交代这张表看什么）"))
+            if kind == "p":
+                m = _LEAD_COUNT.search(str(blk.get("text") or "") + str(blk.get("lead") or ""))
+                level = next((_HEADING_LEVEL[b.get("type")] for b in reversed(blocks[:i])
+                              if b.get("type") in _HEADING_LEVEL), None)
+                prev_is_heading = i and blocks[i - 1].get("type") in _HEADING_LEVEL
+                if not (m and level and prev_is_heading):
+                    continue
+                children = 0
+                for later in blocks[i + 1:]:
+                    lv = _HEADING_LEVEL.get(later.get("type"))
+                    if lv is None:
+                        continue
+                    if lv <= level:
+                        break
+                    if lv == level + 1:
+                        children += 1
+                if children and children != _CN_NUM[m.group(2)]:
+                    out.append((f"blocks[{i}].p", f"导语预告‘{m.group(2)}方面’，下文同级小标题为{children}个，二者须一致"))
+    return out
+
+
 def _texts_from_json(data):
     """从 build_docx 的 content 结构提取全部待扫描文本。"""
     out = []
@@ -179,8 +311,10 @@ def main():
     with io.open(path, "r", encoding="utf-8") as f:
         raw = f.read()
 
+    data = None
     if path.lower().endswith(".json"):
-        pairs = _texts_from_json(json.loads(raw))
+        data = json.loads(raw)
+        pairs = _texts_from_json(data)
     else:
         pairs = [(f"L{i}", line) for i, line in enumerate(raw.splitlines(), 1) if line.strip()]
 
@@ -202,6 +336,9 @@ def main():
             if m:
                 frag = text[max(0, m.start() - 15):m.end() + 15].strip()
                 print(f"[WARN] {rule_name} @ {loc}: …{frag}…")
+
+    for loc, warning in expression_warnings(pairs, data):
+        print(f"[WARN] {warning} @ {loc}")
 
     for loc, warning in attribution_warnings(pairs):
         print(f"[WARN] {warning} @ {loc}")

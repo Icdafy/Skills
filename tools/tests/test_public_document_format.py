@@ -166,10 +166,10 @@ class PublicDocumentFormatTests(unittest.TestCase):
                                       (doc.sections[0].even_page_footer, WD_ALIGN_PARAGRAPH.LEFT)):
                     paragraph = footer.paragraphs[0]
                     self.assertEqual(paragraph.alignment, align)
-                    self.assertEqual(paragraph.text, '-1-')
+                    self.assertEqual(paragraph.text, '- 1 -')
                     self.assertEqual(len(paragraph.runs), 3)
                     for run in paragraph.runs:
-                        # 完整 -1- 四个字体槽均为宋体、四号。
+                        # 完整 - 1 - 四个字体槽均为宋体、四号。
                         for slot in ('ascii', 'hAnsi', 'cs', 'eastAsia'):
                             self.assertEqual(run._r.rPr.rFonts.get(qn('w:' + slot)), '宋体')
                         self.assertEqual(run.font.size.pt, 14)

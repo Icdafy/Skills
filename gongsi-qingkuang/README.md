@@ -1,10 +1,16 @@
 # 公司情况（gongsi-qingkuang）
 
-当前分发版本：**2.0.3**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**2.1.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 用途与边界
 
 公司主体、股权、团队、资质、融资和财务快照；不代写行业或主营业务章节。
+
+## 2.1.0 的主要变化
+
+- 成文口吻按实际上会的立项报告终稿校准：`SKILL.md` 写入表述十二条、逻辑十条，另附 [书面公文表述](references/formal-expression.md) 和 [硬逻辑论证](references/hard-logic.md) 两份规范；`style_check.py` 增加口语、机器腔、空话和逻辑结构的机械扫描。
+- 页码改为 `- 1 -`；生成 Word 时自动为四位以上的数量补千位分隔符，年份、文号、型号、专利号等标识不变。
+- 新增 DeepSeek Harness、千问办公的安装说明。
 
 ## 输入和输出
 
@@ -20,7 +26,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.0.3/gongsi-qingkuang.zip) 下载，解压后进入 `gongsi-qingkuang`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.1.0/gongsi-qingkuang.zip) 下载，解压后进入 `gongsi-qingkuang`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/gongsi-qingkuang"
@@ -43,6 +49,8 @@ $gongsi-qingkuang 帮我写立项报告的公司情况；这是本期尽调资�
 Claude Code 输入 `/gongsi-qingkuang 帮我写立项报告的公司情况；这是本期尽调资料，阶段尚未确定。`；自然语言直接使用“帮我写立项报告的公司情况；这是本期尽调资料，阶段尚未确定。”。先回答“早前期”或“中后期”，再填写该阶段的原固定模板。
 
 ## 已验证环境
+
+2.1.0（2026-11-12）：Windows，Python 3.12.14。三技能回归、独立工作目录 `check --smoke`（含 `- 1 -` 页脚和千位分隔符核对）通过；新增表述与逻辑规则在各客户端的实际成文效果未实测，DeepSeek Harness、千问办公的模型调用未实测。以下为此前版本的记录。
 
 Windows，Python 3.12.14。迁移后原375项用例完整发现，374通过、1项原Windows符号链接环境跳过；本技能ZIP在仓库外中文与空格路径执行 `check --smoke` 通过，项目安装、备份和本地文件保留已实测。
 
@@ -183,6 +191,6 @@ python scripts/extract_docx.py "某公司-尽调资料.docx" out.txt
 
 ## 跨 Agent 安装与调用
 
-[下载完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.0.3/gongsi-qingkuang.zip)。Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
+[下载完整技能 ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.1.0/gongsi-qingkuang.zip)。Claude、ChatGPT、Codex、Kimi、豆包、DeepSeek Harness、千问办公、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 的安装入口、目录差异和验收见 [跨 Agent 安装与调用](references/agent-compatibility.md)。
 
 本技能名为 `gongsi-qingkuang`。保留完整文件夹，启用后新建会话点名调用；可运行 `python scripts/skill_portability.py check --smoke` 检查资源及Word生成。技能发现与模型实际调用须在目标客户端按指引验收，不能仅凭复制文件认定成功。

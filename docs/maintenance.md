@@ -71,6 +71,12 @@ python -m unittest discover -s tools/library_tests
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
 
+### 立项报告三技能验证（2026-11-12）：hangye-fenxi 1.1.0、zhuying-yewu-fenxi 1.1.0、gongsi-qingkuang 2.1.0
+
+按维护者指定同时升级三个技能及必要登记，其余四个技能的源码、版本和安装包未改。新增三技能统一的 `references/formal-expression.md`（书面公文表述）和 `references/hard-logic.md`（硬逻辑论证），规则同步写入三份 `SKILL.md`；方法据维护者提供的本地立项报告终稿提炼，材料只读、不入库，例句中的公司和数字均为虚构。页码改为 `- 1 -`，`build_docx.py` 生成时自动补千位分隔符，`style_check.py` 增加表述与逻辑结构扫描，安装器和兼容说明增加 DeepSeek Harness、千问办公。`scripts/skill_portability.py`、`references/agent-compatibility.md` 拆为两组：三技能一组（基准仍为 gongsi-qingkuang，仓库打包器继续使用），`yiti-skill` 与 `soe-post-investment-report` 保留原内容另成一组（基准 yiti-skill）；`tools/tests` 中三技能的页码断言同步改为 `- 1 -`。
+
+Windows / Python 3.12.14：`tools/tests` 53项（新增表述扫描、结构告警、千位分隔符3项）、`gongsi-qingkuang/evals` 8项、`tools/library_tests` 25项全部通过；三技能 `check --smoke`（核对 `- 1 -` 页脚、数量已分节且年份未分节）、`sync_catalog.py --check`、`check_shared_scripts.py`、`check_library.py` 通过；三个单技能包已构建并登记 SHA-256。新增语言规则在三份实际终稿的文本上试扫：行文最规范的一份未触发新增硬规则，另两份命中的均为“巨大的发展潜力”等拔高措辞。本机 Word 自动化接口不可用，未做逐页目视验收；表述与逻辑规则在各客户端的实际成文效果、DeepSeek Harness 和千问办公的模型调用均未实测。
+
 ### officialese-skill 1.2.0 验证（2026-11-10）
 
 仅升级该技能及必要登记。新增逻辑与衔接规范并写入 SKILL.md，方法据维护者提供的本地立项报告等材料提炼，材料不入库，示例均为虚构；脚本和版式规则未改。本技能回归5项、`tools/tests` 50项、`tools/library_tests` 25项通过，`check --smoke`、目录与共享副本检查、`check_library.py` 通过，单技能包已构建并登记 SHA-256。逻辑规则在各客户端的实际成文效果未实测。

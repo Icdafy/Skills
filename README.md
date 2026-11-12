@@ -11,9 +11,9 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.0.2/hangye-fenxi.zip) | 1.0.2 |
-| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/zhuying-yewu-fenxi%2Fv1.0.2/zhuying-yewu-fenxi.zip) | 1.0.2 |
-| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.0.3/gongsi-qingkuang.zip) | 2.0.3 |
+| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.1.0/hangye-fenxi.zip) | 1.1.0 |
+| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/zhuying-yewu-fenxi%2Fv1.1.0/zhuying-yewu-fenxi.zip) | 1.1.0 |
+| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.1.0/gongsi-qingkuang.zip) | 2.1.0 |
 
 ### 公文与会议
 
