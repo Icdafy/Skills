@@ -117,4 +117,4 @@ Windows / Python 3.12.14：`tools/tests` 53项（新增表述扫描、结构告�
 
 [source-fonts.json](source-fonts.json) 保留18份源码字体的原路径、大小和摘要，仍是当前校验依据。仅索引 font_policy 列出的原文件可保留，禁止新增、改名或替换；单技能 ZIP 和安装器始终排除字体。GitHub整库源码下载仍含原字体，其公开再分发授权未确认，保留文件不等于取得授权。
 
-用户自行准备有使用权的原版式字体，可设置 `ICDAFY_FONT_DIR` 指向仓库外目录。不凭 fsType 或上传作者判断公开再分发许可。缺字体须明确提示，未完成实际渲染和页数核验的 DOCX 仍是草稿。许可与来源见根 [第三方清单](../THIRD_PARTY_NOTICES.md)、[LICENSE](../LICENSE) 和 [NOTICE](../NOTICE)；README、LICENSE、NOTICE、VERSION、CHANGELOG 必须随包分发。旧历史和旧发布保留，不重写或删除。
+用户自行准备有使用权的原版式字体，可设置 `ICDAFY_FONT_DIR` 指向仓库外目录。不凭 fsType 或上传作者判断公开再分发许可。缺字体须明确提示，未完成实际渲染和页数核验的 DOCX 仍是草稿。许可与来源见根 [第三方清单](../THIRD_PARTY_NOTICES.md)、[LICENSE](../LICENSE) 和 [NOTICE](../NOTICE)；README、LICENSE、NOTICE、VERSION、CHANGELOG 必须随包分发。Git 历史保留，不重写；Releases 只保留每个技能的当前版本，发布新版后删除被取代的旧版 Release 及其标签。
