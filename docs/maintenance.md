@@ -29,7 +29,7 @@ Claude Code 也可运行 `/plugin marketplace add Icdafy/Skills`，再运行 `/p
 - 每个技能独立维护源码、VERSION、CHANGELOG、索引自身记录和 Release 安装包。公共元数据只登记目标变更；其他技能的源码、版本、变更记录和发布资产保持不变。
 - 共享组记录当前副本的一致关系，不构成扩大升级范围的授权。单技能任务不运行全库 `check_shared_scripts.py --sync`。需要独立修改共享副本时，只改目标，按实际依赖调整 `shared_groups`；目标为 canonical 时，先将基准移至保留原内容的成员。保持组非空、基准在组内及其余成员一致。
 - 检查公共工具对 canonical 与资源契约的依赖，优先在目标技能适配；必要时只调整支持目标升级所需的公共工具。确实需要修改其他技能时，先说明对象和原因，由用户明确扩大范围。
-- 全库只读检查可以发现影响、确认未指定技能未变化。提交前检查 diff 和目标包。独立分支提交并发可审查 PR，不自动合并。
+- 全库只读检查可以发现影响、确认未指定技能未变化。提交前检查 diff 和目标包。检查通过后直接提交并推送到 main，不另建分支或 PR。
 
 共享文件以索引的 `shared_groups` 为准，独立分发仍保留物理副本，不跨技能 import 或用符号链接代替。`meeting-minutes-pro/scripts/embed_fonts.py` 由自己的 `format_spec.py` 驱动，不属于其他五技能的 embed_fonts 同步组，不能直接覆盖。
 
