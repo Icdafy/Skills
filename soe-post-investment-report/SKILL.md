@@ -3,7 +3,7 @@ name: soe-post-investment-report
 description: 依据随调用提供的投后材料，创建或更新国企股权投资项目投后情况报告：首轮先问四项变更确认，再核验事实、回填数据、披露风险、更新附件；沿用上期定稿的报告形式（文件式或内部报告式）与框架，按定稿表述范式成文，正文不超过10页，输出正式DOCX。用于投后报告、投后管理报告、半年度或年度投后情况报告。
 metadata:
   display_name: "国企股权投资投后报告"
-  version: "1.5.6"
+  version: "1.5.7"
   compatibility: "确定性生成 DOCX 需要 Python 3.10+ 和 python-docx；最终认证还需要 Microsoft Word 或 LibreOffice、pypdf 与 Poppler。未完成完整渲染闭环时，只能交付明确标注的未认证草稿。"
 ---
 

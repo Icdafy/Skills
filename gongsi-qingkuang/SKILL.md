@@ -156,7 +156,7 @@ description: 根据尽调资料与访谈撰写、修订或复核股权投资立�
 python scripts/build_docx.py content.json output.docx
 ```
 
-`content.json` 结构（阶段骨架须由 `scripts/stage_template.py init` 生成；`assets/content_skeleton.json` 为停用入口提示）。封面与目录默认关闭——本章节通常并入整份立项报告；用户要求独立成文时才加 `cover`、把 `toc` 设 true：
+`content.json` 结构（阶段骨架须由 `scripts/stage_template.py init` 生成）。封面与目录默认关闭——本章节通常并入整份立项报告；用户要求独立成文时才加 `cover`、把 `toc` 设 true：
 
 ```json
 {

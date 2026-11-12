@@ -16,8 +16,6 @@ python meeting-minutes-pro/scripts/skill_portability.py install --detect --apply
 
 Project glossaries and banned phrases under `glossary/` (everything except `README.md` and `industry/`) are user data: they are never packaged, never reported as stale files, and `--replace` carries them into the new version after moving the old folder to `skill-backups/`.
 
-`scripts/install_skill.py` remains for existing automation: `--target codex|claude|workbuddy|all`, `--force` to update public files while keeping destination glossaries. Its Codex target is now `~/.agents/skills/meeting-minutes-pro/`, the folder current Codex and the ChatGPT desktop app scan; older Codex builds that still read `$CODEX_HOME/skills` can use `skill_portability.py install --agent codex-legacy`.
-
 Restart the agent if the new skill is not detected. Invoke it as `$meeting-minutes-pro` in Codex, `@meeting-minutes-pro` in ChatGPT, `/meeting-minutes-pro` in Claude Code, `/skill:meeting-minutes-pro` in Kimi Code, or pick it from the skill list (`/` or `@`) in Kimi Work, 豆包, WorkBuddy, TRAE and Qoder. Agents may also activate it automatically when an uploaded media file and a transcription request match the description.
 
 ## Execution environment

@@ -2,7 +2,7 @@
 
 本地处理会议音视频，使用 FunASR 与 Qwen3-ASR 完成主转录和独立复核，再由智能体按固定写作规则生成“浓缩总结概述＋完整问答”、行文平实无机器腔的正式 DOCX。也支持已有转录稿、访谈笔记，或仅输出原始转录。
 
-源码版本 **1.3.0**，以 [VERSION](VERSION) 为准；变更见 [CHANGELOG.md](CHANGELOG.md)。
+源码版本 **1.3.1**，以 [VERSION](VERSION) 为准；变更见 [CHANGELOG.md](CHANGELOG.md)。
 
 ## 从音频到纪要
 

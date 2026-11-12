@@ -21,7 +21,6 @@ import refine_transcript as refine
 import review_gate as gate
 import run_state as state
 import transcribe
-import install_skill
 import qa_reconcile as qa
 
 
@@ -266,29 +265,6 @@ class GateTests(Files):
         run._element.rPr.rFonts.set(qn('w:eastAsia'),'仿宋_GB2312')
         path=self.root/'body.docx';document.save(path)
         self.assertEqual(used_font_markers(path),('FangSong_GB2312',))
-
-
-class InstallTests(Files):
-    def test_update_preserves_private_data_and_does_not_copy_other_projects(self):
-        source=self.root/'source'; target=self.root/'target'
-        self.write('source/SKILL.md','new')
-        self.write('source/glossary/private.txt','source secret')
-        self.write('source/glossary/banned-phrases.txt','source policy')
-        self.write('source/glossary/industry/public.txt','public')
-        self.write('target/SKILL.md','old')
-        private=self.write('target/glossary/own.txt','target secret')
-        banned=self.write('target/glossary/banned-phrases.txt','target policy')
-        install_skill.install_to(source,target,force=True)
-        self.assertEqual(private.read_text(),'target secret')
-        self.assertEqual(banned.read_text(),'target policy')
-        self.assertFalse((target/'glossary/private.txt').exists())
-        self.assertTrue((target/'glossary/industry/public.txt').exists())
-        self.assertEqual((target/'SKILL.md').read_text(),'new')
-
-    def test_nested_install_is_rejected(self):
-        source=self.root/'source';source.mkdir()
-        with self.assertRaises(ValueError):
-            install_skill.install_to(source,source/'child',True)
 
 
 if __name__ == '__main__':

@@ -52,7 +52,7 @@ git diff --check
 
 安装包输出到 `work/releases/<英文名>/<版本>/`，不提交 ZIP 或 SHA-256。GitHub Releases 按 `<英文名>/v<版本>` 分别发布 ZIP 与校验文件；Release 是下载入口，源码仍在根目录技能中。发布前核对 ZIP 中 VERSION、逐文件 manifest、SHA-256 和目标源码。发布一个技能不重新发布其他技能。
 
-`--skill <英文名>` 只构建一个技能，可重复指定获准的集合；无选择参数的写入会被拒绝，`--all` 只用于明确授权的全库构建。旧 `tools/package_investment_skills.py` 也要求明确选择；它的 `--all` 仅指历史立项三个技能，`--check` 默认只读检查这三个技能。只升级共享组的部分成员时，不能因组关系自动重打全部成员。
+`--skill <英文名>` 只构建一个技能，可重复指定获准的集合；无选择参数的写入会被拒绝，`--all` 只用于明确授权的全库构建。只升级共享组的部分成员时，不能因组关系自动重打全部成员。
 
 `package_skills.py --check` 检查本地 Release 缓存；`--check --download` 下载已公开的发布资产并校验。`check_library.py` 默认检查源码、索引、名称、版本、资源、共享关系、链接、许可、字体契约和已有本地包；`--release-assets` 另行核验公开 Release 资产。远端检查需要联网，尚未发布的版本用本地包检查。
 
@@ -71,6 +71,12 @@ python -m unittest discover -s tools/library_tests
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
 
+### 仓库整理（2026-11-12）：hangye-fenxi 1.1.1、zhuying-yewu-fenxi 1.1.1、gongsi-qingkuang 2.1.1、soe-post-investment-report 1.5.7、meeting-minutes-pro 1.3.1
+
+删除已停用或仅为兼容旧命令保留的文件：`gongsi-qingkuang/assets/content_skeleton.json`、`zhuying-yewu-fenxi/scripts/ensure-fonts.ps1`、两份 `scripts/install_skill.py`（投后报告、会议纪要）和 `tools/package_investment_skills.py`，并删除对应测试与说明；删除四个技能 README 末尾与 `SKILL.md`、CHANGELOG 重复的“原业务说明与历史记录”附录；本页只保留各技能最近一次验证记录，旧记录见 Git 历史和各技能 CHANGELOG。合并完毕的远程工作分支已删除。业务规则、生成器、字体和版式不变。
+
+`tools/tests` 53项、`tools/library_tests` 24项、`gongsi-qingkuang/evals` 8项、投后报告55项（跳过1项）、会议纪要420项（跳过1项）、公文5项全部通过；五个技能 `check --smoke`、共享副本检查、`check_library.py` 通过，五个单技能包已构建并登记 SHA-256。
+
 ### 立项报告三技能验证（2026-11-12）：hangye-fenxi 1.1.0、zhuying-yewu-fenxi 1.1.0、gongsi-qingkuang 2.1.0
 
 按维护者指定同时升级三个技能及必要登记，其余四个技能的源码、版本和安装包未改。新增三技能统一的 `references/formal-expression.md`（书面公文表述）和 `references/hard-logic.md`（硬逻辑论证），规则同步写入三份 `SKILL.md`；方法据维护者提供的本地立项报告终稿提炼，材料只读、不入库，例句中的公司和数字均为虚构。页码改为 `- 1 -`，`build_docx.py` 生成时自动补千位分隔符，`style_check.py` 增加表述与逻辑结构扫描，安装器和兼容说明增加 DeepSeek Harness、千问办公。`scripts/skill_portability.py`、`references/agent-compatibility.md` 拆为两组：三技能一组（基准仍为 gongsi-qingkuang，仓库打包器继续使用），`yiti-skill` 与 `soe-post-investment-report` 保留原内容另成一组（基准 yiti-skill）；`tools/tests` 中三技能的页码断言同步改为 `- 1 -`。
@@ -81,42 +87,11 @@ Windows / Python 3.12.14：`tools/tests` 53项（新增表述扫描、结构告�
 
 仅升级该技能及必要登记。新增逻辑与衔接规范并写入 SKILL.md，方法据维护者提供的本地立项报告等材料提炼，材料不入库，示例均为虚构；脚本和版式规则未改。本技能回归5项、`tools/tests` 50项、`tools/library_tests` 25项通过，`check --smoke`、目录与共享副本检查、`check_library.py` 通过，单技能包已构建并登记 SHA-256。逻辑规则在各客户端的实际成文效果未实测。
 
-### officialese-skill 1.1.0 验证（2026-11-10）
-
-仅升级该技能及必要登记：索引、首页目录、插件市场和统一格式测试中本技能的页码断言。`scripts/skill_portability.py` 与 `references/agent-compatibility.md` 改由本技能单独维护，已从对应共享组移出，其余五个成员未改动。写作规范和范文据维护者提供的本地公文样本提炼，样本不入库，范文中的单位、人名、文号和金额均为虚构。
-
-Windows / Python 3.12.14：本技能回归5项、`tools/tests` 50项、`tools/library_tests` 25项全部通过；`check --smoke`、`sync_catalog.py --check`、`check_shared_scripts.py`、`check_library.py` 通过；单技能包已构建并登记 SHA-256。千位分隔符的数量与标识判别另有27组用例覆盖。样例 DOCX 的页脚缓存为 `- 1 -`，数量已分节、年份与电话未分节；本机 Word 自动化接口不可用，未做逐页目视验收。DeepSeek Harness 目录约定取自已安装桌面端程序包内说明，千问办公入口取自阿里云帮助中心；包括这两者在内的各客户端模型调用均未实测。
-
 ### meeting-minutes-pro 1.3.0 验证（2026-11-03）
 
 仅升级该技能及必要登记，ASR 与证据流程未改动。427项回归通过（无跳过），新增机器腔表述拦截及行业术语误报反例、总结篇幅提示、答复续段空行、问句与答复同页等测试；共享脚本检查、技能 smoke 检查通过，单技能包在两个目录分别构建，SHA-256 一致。
 
 合成尽调访谈纪要两份：机器腔版本被 quality_check 逐行拦截，每行列出全部命中；平实版本通过文本校验，生成 DOCX 后样式回读通过、与文本逐段一致，经本机 Word 渲染，无缺失或替换字体，页码奇右偶左通过。逐页目检确认答复续段后的主题空行正常，问句不再与答复跨页分离。未用真实录音重跑整条流程，未重跑跨客户端路由。
-
-### meeting-minutes-pro 1.2.0 验证（2026-11-01）
-
-仅升级该技能及必要登记。414项回归在实际ASR运行环境全部通过（无跳过）；包括词库选择、结构化短语、数字对象/否定/状态/遗漏、轮/项数量、声道探测失败保护、FFmpeg多声道诊断、边界复核、重复异常与评测器。技能元数据/链接检查及独立工作目录DOCX烟测通过，未重新执行Word逐页视觉验收。
-
-用户提供的一场约20分27秒真实录音，按10%、50%、90%位置各取20秒并记录源哈希及偏移，合并为60秒运行样本。默认FunASR主转录与Qwen0.6全量独立复核实际完成，覆盖60/60秒，热词清单、原声道诊断和冲突报告均生成。两模型在型号和数字等处有分歧，保留未决状态，没有填造回听或音频正确性结论。无已校准人工参考稿，因此这不是CER/准确率基准，也不代表整场录音已复核。
-
-同一60秒样本的Qwen1.7B离线CPU转录完成，进程总耗时约285.6秒（含加载），输出出现密集重复。新增提示器在保存的实际输出上检出重复，未改写原文。该抽样有人工拼接边界、没有人工标注，不能据此认定1.7B更优或更差；不自动切换默认模型。旧模型ID离线解析不完整时使用已有完整snapshot路径，没有下载新模型。
-
-真实媒体、识别文本、私有词库和模型日志只保留在本地，不提交仓库。7个本地项目词库升级为可保留完整短语的JSON，原TXT内容完整保留，迁移只记录既有来源、不新增音频确认。详细模型对照与资源限制在本地升级报告中记录；公开验证不暴露会议内容。此前Word完整验收见1.1.1记录。
-
-### meeting-minutes-pro 1.1.2 验证（2026-11-01）
-
-仅修复词库整行注释解析及对应使用说明。324项技能回归通过，新增测试覆盖 BOM、CRLF、缩进注释、空行、多文件去重、合法井号词条和注释导致的术语误报。本轮未重跑 ASR 模型推理或 Word 渲染；相关既有验证见下方1.1.1记录。私有项目词库仍不进入源码或安装包。
-
-### meeting-minutes-pro 1.1.1 验证（2026-11-01）
-
-仅升级 meeting-minutes-pro，其他技能源码、版本与安装包保持不变；目标仍参加的共享组副本未改。技能回归共320项通过，技能元数据、资源链接、独立目录DOCX烟测及安装备份检查通过。
-
-- 默认 FunASR 原始 CLI 在本机 CPU 离线处理4秒官方样本通过；Qwen3-ASR 0.6B＋ForcedAligner处理4.523秒样本的文本/时间戳契约通过，FunASR主稿到Qwen全量独立复核链通过。六个默认模型名能够解析既有本地缓存。
-- 独立合成访谈全程使用默认 `run`，由智能体内部接续起草和实际复核，无需用户中途检查证据稿或另发生成指令；输出 `星河项目_会议纪要_2026-11-01.docx`，经Word实际渲染、逐页目检和正式验收达到 `release_ready: true`。重复运行保持产物哈希和修改时间不变。
-- 命名与连续执行测试覆盖项目名优先、访谈对象姓名回退、已确认日期/时分、非法路径字符、同名文件保护、旧清单归档及终态复用。没有确认的日期不以当前日期代填。
-- 未完成真实数小时会议、方言、多说话人重叠及说话人分离准确率基准；没有重新执行跨客户端调用路由。机械数字提取和差异筛查不能替代全文语义核对或实际回听。
-
-原始测试日志、合成夹具、渲染与复核证据保留在本次本地任务的 `work/`；不将录音、模型、私有词库或测试产物提交到仓库。版本及源码变更见目标技能 [CHANGELOG](../meeting-minutes-pro/CHANGELOG.md)。Release包已在本地按单技能流程构建校验，源码PR合并和发布资产为独立步骤；本节不表示相应远端Release已经发布。
 
 ### 历史实测范围
 

@@ -1,7 +1,0 @@
-{
-  "_deprecated": "此通用骨架已停用。先询问早前期或中后期，再用 scripts/stage_template.py init --stage early|mid-late --output draft.json。",
-  "report_template": {
-    "stage": null
-  },
-  "blocks": []
-}

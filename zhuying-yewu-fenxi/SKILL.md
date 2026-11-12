@@ -154,7 +154,7 @@ description: 根据企业资料与访谈撰写、修订或复核股权投资立�
 - 按 `references/formal-expression.md` 第十部分和 `references/hard-logic.md` 第十四部分逐项自查，并完成第十三部分的质询预演；
 - 默认输出 Markdown 正文，章号按所选模板，标题层级为章→`（一）`→`1.`→`（1）`，不自行新增五级标题；
 - 资料缺口不写入正文：三源（资料包、访谈纪要、联网权威检索）均无法获得的数据，正文与表格直接不写，全部缺口汇总成“资料缺口与待核查清单”随成稿在对话回复中输出（规则见“四、数据红线”第 1 条）；
-- 用户要求 Word 时，先运行 `python scripts/ensure_fonts.py` 做字体自动检测与用户级安装（Windows 亦可用 `scripts/ensure-fonts.ps1`），再把成稿组织成 content.json，用三技能统一渲染脚本生成：`python scripts/build_docx.py content.json 主营业务分析.docx`（产品实物照片用 `{"type":"image","path":"照片.jpg","width_cm":12,"caption":"图1 核心产品实物"}` 块插入）。脚本自动套用 `references/docx-format.md` 的全部公文排版——主标题方正小标宋二号（仅独立成文带封面时）、正文仿宋_GB2312三号28磅固定行距、一级标题黑体三号不加粗、二级楷体_GB2312三号加粗、三级仿宋三号加粗、四级（（1））仿宋三号加粗，正文默认不加粗；**表格五号，中文仿宋_GB2312、括注中文楷体_GB2312、西文Times New Roman；表头首行加粗、不加底纹、表头行跨页重复、宽度按窗口自动调整、所有单元格水平+垂直居中**；“单位：万元”“注：”用 `tnote` 块（仿宋五号）。禁止手写 docx-js/OOXML 排版代码；
+- 用户要求 Word 时，先运行 `python scripts/ensure_fonts.py` 做字体自动检测与用户级安装，再把成稿组织成 content.json，用三技能统一渲染脚本生成：`python scripts/build_docx.py content.json 主营业务分析.docx`（产品实物照片用 `{"type":"image","path":"照片.jpg","width_cm":12,"caption":"图1 核心产品实物"}` 块插入）。脚本自动套用 `references/docx-format.md` 的全部公文排版——主标题方正小标宋二号（仅独立成文带封面时）、正文仿宋_GB2312三号28磅固定行距、一级标题黑体三号不加粗、二级楷体_GB2312三号加粗、三级仿宋三号加粗、四级（（1））仿宋三号加粗，正文默认不加粗；**表格五号，中文仿宋_GB2312、括注中文楷体_GB2312、西文Times New Roman；表头首行加粗、不加底纹、表头行跨页重复、宽度按窗口自动调整、所有单元格水平+垂直居中**；“单位：万元”“注：”用 `tnote` 块（仿宋五号）。禁止手写 docx-js/OOXML 排版代码；
 - 末尾不加免责声明套话，正文中的审慎表述已承担该功能。
 
 ## 四、数据红线
@@ -184,5 +184,4 @@ description: 根据企业资料与访谈撰写、修订或复核股权投资立�
 | `scripts/ensure_fonts.py` | 字体自动检测与用户级安装（仿宋_GB2312、楷体_GB2312、方正小标宋简体；跨平台，Windows 含注册表注册） | 输出 .docx 前运行 |
 | `scripts/embed_fonts.py` | 字体嵌入器：`build_docx.py` 保存后自动把本机授权的仿宋_GB2312、楷体_GB2312 嵌入 .docx（方正小标宋许可禁止嵌入，自动跳过），未装字体的机器打开不掉字；`--verify` 复核 | 自动调用；需复核时手动运行 |
 | `scripts/style_check.py` | 语言红线机械扫描（称谓/对举连词/结论标签/缺口占位语/数值范围/半角括号/不规范用词/本方投资表态；排他论断与复述收尾给警告） | 第 7 步自检时运行 |
-| `scripts/ensure-fonts.ps1` | 字体检测/安装的 PowerShell 兼容入口（调用同目录 ensure_fonts.py，不下载字体） | 需要沿用旧 PowerShell 命令时 |
 | `assets/fonts/` | 本机授权字体准备说明（不含二进制） | 脚本自动调用 |

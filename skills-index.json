@@ -6,7 +6,7 @@
       "name_zh": "所属行业分析",
       "category": "立项报告",
       "source": "hangye-fenxi",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "readme": "hangye-fenxi/README.md",
       "distribution": "investment-report-skills",
       "verification": {
@@ -19,9 +19,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "hangye-fenxi/v1.1.0",
+        "tag": "hangye-fenxi/v1.1.1",
         "asset": "hangye-fenxi.zip",
-        "sha256": "2872b67b42c98404515aaa63ca3cd331cd8eb74e03f6f710b07f794eee662393"
+        "sha256": "7538cf1daa143512f66d24534576168c2880d299d99f3a0b2bd8e85dab2e192e"
       }
     },
     {
@@ -29,7 +29,7 @@
       "name_zh": "主营业务分析",
       "category": "立项报告",
       "source": "zhuying-yewu-fenxi",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "readme": "zhuying-yewu-fenxi/README.md",
       "distribution": "investment-report-skills",
       "verification": {
@@ -42,9 +42,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "zhuying-yewu-fenxi/v1.1.0",
+        "tag": "zhuying-yewu-fenxi/v1.1.1",
         "asset": "zhuying-yewu-fenxi.zip",
-        "sha256": "a12367b47387f7e1bbcf526c857661fbf121d035852634d6f0a3d9f8dcaa66ee"
+        "sha256": "8ac86e7a7f12b72247bf4732a26341009eafbd5c89bd5e09e6204aeb748f6d4b"
       }
     },
     {
@@ -52,7 +52,7 @@
       "name_zh": "公司情况",
       "category": "立项报告",
       "source": "gongsi-qingkuang",
-      "version": "2.1.0",
+      "version": "2.1.1",
       "readme": "gongsi-qingkuang/README.md",
       "distribution": "investment-report-skills",
       "verification": {
@@ -65,9 +65,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "gongsi-qingkuang/v2.1.0",
+        "tag": "gongsi-qingkuang/v2.1.1",
         "asset": "gongsi-qingkuang.zip",
-        "sha256": "5701b7bb8f4e16c5dbd465c0e555fef7dedf24314c13086092351be654a4b677"
+        "sha256": "0b6757fab6f4a06fd273925d151d23880b580debb86cd9a1fb9eb4876067ae0b"
       }
     },
     {
@@ -121,7 +121,7 @@
       "name_zh": "会议转录与正式纪要",
       "category": "公文与会议",
       "source": "meeting-minutes-pro",
-      "version": "1.3.0",
+      "version": "1.3.1",
       "readme": "meeting-minutes-pro/README.md",
       "distribution": "office-skills",
       "verification": {
@@ -136,9 +136,9 @@
       },
       "license_status": "Apache-2.0；原素材已确认；源码保留三份原main字体，字体公开再分发授权未确认；单技能ZIP不含字体",
       "release": {
-        "tag": "meeting-minutes-pro/v1.3.0",
+        "tag": "meeting-minutes-pro/v1.3.1",
         "asset": "meeting-minutes-pro.zip",
-        "sha256": "17c79344791eefb741133e7787d4fa8220469e597a714a5af821ea195575217f"
+        "sha256": "8bad2214b9b1ba11063f1fca7cf6147e20d073efc2e28265b33c2cabab2e4162"
       }
     },
     {
@@ -146,7 +146,7 @@
       "name_zh": "国企股权投资投后报告",
       "category": "投后管理",
       "source": "soe-post-investment-report",
-      "version": "1.5.6",
+      "version": "1.5.7",
       "readme": "soe-post-investment-report/README.md",
       "distribution": "office-skills",
       "verification": {
@@ -159,9 +159,9 @@
       },
       "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体",
       "release": {
-        "tag": "soe-post-investment-report/v1.5.6",
+        "tag": "soe-post-investment-report/v1.5.7",
         "asset": "soe-post-investment-report.zip",
-        "sha256": "010efbd78bf52f83a16504e18bc9ec9d66486b93a4ded164d40db765efb6dda0"
+        "sha256": "2f605059dc452dc38f2086c728a992aaa7341ff50f0d972c0ace1c9666a2de62"
       }
     }
   ],

@@ -14,7 +14,6 @@ from unittest.mock import patch
 TOOLS = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(TOOLS))
 import check_library
-import package_investment_skills
 import package_skills
 import skill_catalog
 import sync_catalog
@@ -70,8 +69,7 @@ class ReleaseDistributionTests(unittest.TestCase):
         with patch.object(package_skills.portable, 'package') as build:
             for command, argv in (
                     (package_skills.main, []),
-                    (package_skills.main, ['--group', 'investment-report-skills']),
-                    (package_investment_skills.main, [])):
+                    (package_skills.main, ['--group', 'investment-report-skills'])):
                 with self.subTest(argv=argv), redirect_stderr(io.StringIO()):
                     with self.assertRaises(SystemExit) as error:
                         command(argv)
@@ -96,19 +94,6 @@ class ReleaseDistributionTests(unittest.TestCase):
             self.assertEqual(other.read_bytes(), b'preserve the other skill archive')
             self.assertEqual(checksum.read_bytes(), b'preserve the other skill checksum')
             self.assertFalse((repo / 'distributions').exists())
-
-    def test_legacy_wrapper_all_selects_exactly_its_three_skills(self):
-        with patch.object(package_skills, 'main', return_value=0) as invoke:
-            self.assertEqual(package_investment_skills.main(['--all']), 0)
-            argv = invoke.call_args.args[0]
-            selected = [argv[i + 1] for i, value in enumerate(argv) if value == '--skill']
-            self.assertEqual(selected, list(package_investment_skills.INVESTMENT))
-            self.assertNotIn('--all', argv)
-            invoke.reset_mock()
-            for argv in (['--skill', 'officialese-skill'], ['--group', 'office-skills']):
-                with self.subTest(argv=argv), redirect_stderr(io.StringIO()), self.assertRaises(SystemExit):
-                    package_investment_skills.main(argv)
-            invoke.assert_not_called()
 
     def test_published_lock_and_current_source_both_have_to_match(self):
         entry = copy.deepcopy(package_skills.CATALOG[SKILL])

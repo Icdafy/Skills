@@ -17,8 +17,6 @@
 | Claude Code、Kimi Code、Qoder、TRAE、WorkBuddy、ZCode、AutoClaw | 多数只显示必填 `name`，即 `soe-post-investment-report`；导入界面提供显示名称字段时手工填写中文名 |
 | 豆包电脑版、Kimi Work | 上传后以 `SKILL.md` 解析结果为准；可编辑名称时填写中文名，不改动 `name` 字段 |
 
-`scripts/install_skill.py` 保留兼容：`--target codex` 现写入 `~/.agents/skills/`（新版 Codex 与 ChatGPT 桌面版读取的目录），`claude`、`qoder`、`trae`、`trae-cli`、`workbuddy` 与 `--zip` 行为不变。
-
 相关规范与平台资料：
 
 - [Agent Skills 规范](https://github.com/agentskills/agentskills/blob/main/docs/specification.mdx)

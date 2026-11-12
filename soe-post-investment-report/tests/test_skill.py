@@ -1308,32 +1308,6 @@ class SkillRegressionTests(unittest.TestCase):
         self.assertTrue(any("read capped" in warning for warning in entry["warnings"]))
         self.assertIn("clamped", payload["preview_notice"])
 
-    def test_backup_collision_stays_under_custom_backup_root(self) -> None:
-        module_spec = importlib.util.spec_from_file_location(
-            "soe_install_skill_for_test", SCRIPTS / "install_skill.py"
-        )
-        self.assertIsNotNone(module_spec)
-        self.assertIsNotNone(module_spec.loader)
-        module = importlib.util.module_from_spec(module_spec)
-        module_spec.loader.exec_module(module)
-
-        destination = self.work / "skills" / "soe-post-investment-report"
-        backup_root = self.work / "skill-backups"
-        backup_root.mkdir()
-        fixed_time = datetime(2026, 8, 29, 12, 34, 56, tzinfo=timezone.utc)
-        collision = backup_root / "soe-post-investment-report.backup-20260829T123456Z"
-        collision.mkdir()
-
-        with patch.object(module, "datetime") as mocked_datetime:
-            mocked_datetime.now.return_value = fixed_time
-            candidate = module._backup_path(destination, backup_root=backup_root)
-
-        self.assertEqual(
-            candidate,
-            backup_root / "soe-post-investment-report.backup-20260829T123456Z-1",
-        )
-        self.assertEqual(candidate.parent, backup_root)
-
     def test_validator_rejects_cutoff_later_than_issue_date(self) -> None:
         """A cutoff after the signing date reports data that does not yet exist."""
 

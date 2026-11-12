@@ -11,9 +11,9 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.1.0/hangye-fenxi.zip) | 1.1.0 |
-| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/zhuying-yewu-fenxi%2Fv1.1.0/zhuying-yewu-fenxi.zip) | 1.1.0 |
-| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.1.0/gongsi-qingkuang.zip) | 2.1.0 |
+| 所属行业分析（`hangye-fenxi`） | [源码](hangye-fenxi/) | [README](hangye-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/hangye-fenxi%2Fv1.1.1/hangye-fenxi.zip) | 1.1.1 |
+| 主营业务分析（`zhuying-yewu-fenxi`） | [源码](zhuying-yewu-fenxi/) | [README](zhuying-yewu-fenxi/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/zhuying-yewu-fenxi%2Fv1.1.1/zhuying-yewu-fenxi.zip) | 1.1.1 |
+| 公司情况（`gongsi-qingkuang`） | [源码](gongsi-qingkuang/) | [README](gongsi-qingkuang/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/gongsi-qingkuang%2Fv2.1.1/gongsi-qingkuang.zip) | 2.1.1 |
 
 ### 公文与会议
 
@@ -21,13 +21,13 @@
 |---|---|---|---|---|
 | 国企公文写作与排版（`officialese-skill`） | [源码](officialese-skill/) | [README](officialese-skill/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.2.0/officialese-skill.zip) | 1.2.0 |
 | 投委会议题（`yiti-skill`） | [源码](yiti-skill/) | [README](yiti-skill/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/yiti-skill%2Fv1.0.2/yiti-skill.zip) | 1.0.2 |
-| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.3.0/meeting-minutes-pro.zip) | 1.3.0 |
+| 会议转录与正式纪要（`meeting-minutes-pro`） | [源码](meeting-minutes-pro/) | [README](meeting-minutes-pro/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/meeting-minutes-pro%2Fv1.3.1/meeting-minutes-pro.zip) | 1.3.1 |
 
 ### 投后管理
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.5.6/soe-post-investment-report.zip) | 1.5.6 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.5.7/soe-post-investment-report.zip) | 1.5.7 |
 <!-- skills:end -->
 
 ## 安装与调用

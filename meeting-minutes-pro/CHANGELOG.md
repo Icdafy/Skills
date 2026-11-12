@@ -1,5 +1,10 @@
 # 变更记录
 
+## 1.3.1（2026-11-12）
+
+- 仓库整理：删除旧安装脚本 `scripts/install_skill.py`（安装、备份与私有词库保留统一由 `scripts/skill_portability.py` 完成）及其测试，`references/platforms.md` 同步去掉兼容说明。
+- 业务规则、写作规范、生成器、字体和版式不变。
+
 ## 1.3.0（2026-11-03）
 
 - 纪要行文改为平实的正式公文表述，避免一眼可辨的机器腔。新增 `references/writing-style.md`：基本要求、机器腔清单、黑话改写、改写示例和交付前通读自查；起草前与 format-and-output.md 一并读取。

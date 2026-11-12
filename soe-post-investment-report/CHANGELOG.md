@@ -1,5 +1,10 @@
 # 变更记录
 
+## 1.5.7（2026-11-12）
+
+- 仓库整理：删除旧安装脚本 `scripts/install_skill.py`（安装、备份与打包统一使用 `scripts/skill_portability.py`）及其测试，`references/platform-compatibility.md` 同步去掉兼容说明；删除 README 末尾与 `SKILL.md`、本变更记录重复的“原业务说明与历史记录”附录。
+- 业务规则、写作规范、生成器、字体和版式不变。
+
 ## 1.5.6（2026-10-05）
 
 - 按维护者要求删除已撤回的待办引用，保留真实客户端验证结果。
