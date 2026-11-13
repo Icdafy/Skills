@@ -275,7 +275,7 @@ class SkillRegressionTests(unittest.TestCase):
                 visible_page_number = "".join(
                     node.text or "" for node in footer_root.findall(".//w:t", namespace)
                 )
-                self.assertEqual(visible_page_number, "-1-")
+                self.assertEqual(visible_page_number, "- 1 -")
                 for run in footer_root.findall(".//w:r", namespace):
                     text = "".join(node.text or "" for node in run.findall("w:t", namespace))
                     instruction = "".join(
@@ -438,8 +438,8 @@ class SkillRegressionTests(unittest.TestCase):
         odd_footer = section.footer.paragraphs[0]
         odd_footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
         self.assertGreaterEqual(len(odd_footer.runs), 3)
-        odd_footer.runs[0].text = "- "
-        odd_footer.runs[-1].text = " -"
+        odd_footer.runs[0].text = "-"
+        odd_footer.runs[-1].text = "-"
 
         mutated_docx = self.work / "fixed-layout-drift.docx"
         document.save(mutated_docx)
@@ -455,7 +455,7 @@ class SkillRegressionTests(unittest.TestCase):
         )
         self.assertIn("header must contain no content", result.stdout)
         self.assertIn("odd-page footer is not aligned to the outside right edge", result.stdout)
-        self.assertIn("footer format is '- 1 -'; expected '-1-'", result.stdout)
+        self.assertIn("footer format is '-1-'; expected '- 1 -'", result.stdout)
 
     def test_generated_docx_follows_shared_official_format(self) -> None:
         """The report uses the shared 公文格式标准 of yiti-skill."""
@@ -1794,6 +1794,84 @@ class InternalReportFormTests(unittest.TestCase):
         self.assertIn("“报告期内”所述事项日期 2026年8月 晚于数据截止日期", result.stdout)
         self.assertIn("标题中的项目名称“甲股份”未在本节正文出现", result.stdout)
         self.assertIn("合计行“项目退出资金（万元）”为 1,400.00，而分项之和为 1,500.00", result.stdout)
+
+    def test_voice_checks_flag_colloquial_and_machine_wording(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        paragraph = next(b for b in spec["main_blocks"] if "累计实缴规模" in str(b.get("text")))
+        paragraph["text"] += "值得注意的是，我们认为今年营收大概持续向好——需紧盯后续进展，同比下降-3.20%。"
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(spec, "voice.json")
+        )
+        for expected in (
+            "提示语、推论套话属机器腔",
+            "自称统一为“我司”",
+            "行业简称和口语应写全称",
+            "口语及约数写法",
+            "无数字的评价或被投企业的自我评价",
+            "破折号引出解释属首稿写法",
+            "管理动作用“跟踪、关注、推进、落实”",
+            "相对时间应写成具体年份",
+            "方向词与负号重复或矛盾",
+        ):
+            self.assertIn(expected, result.stdout)
+
+    def test_logic_checks_flag_unsourced_forecast_risk_and_missing_next_step(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        blocks = spec["main_blocks"]
+        paragraph = next(b for b in blocks if "累计实缴规模" in str(b.get("text")))
+        paragraph["text"] = "此外，预计全年亏损扩大，风险较高。下一步，将按程序推进。"
+        closing = next(b for b in blocks if "下一步，我司将跟进" in str(b.get("text")))
+        closing["text"] = closing["text"].split("下一步，")[0]
+        result = self.run_script(
+            "validate_report.py", "--spec", self.write_spec(spec, "logic.json")
+        )
+        for expected in (
+            "段首为过渡语",
+            "“预计”未写明预测主体、日期或材料",
+            "风险判断缺依据",
+            "“下一步”之后缺主语",
+            "本项目未以“下一步，我司将……”收束",
+        ):
+            self.assertIn(expected, result.stdout)
+
+    def test_approved_wording_raises_no_voice_or_logic_warning(self) -> None:
+        result = self.run_script("validate_report.py", "--spec", self.write_spec())
+        self.assertEqual(result.returncode, 0, result.stdout)
+        for unexpected in ("机器腔", "缺依据", "缺主语", "过渡语", "未写明预测主体", "收束"):
+            self.assertNotIn(unexpected, result.stdout)
+
+    def test_group_thousands_repairs_text_and_assertions_but_not_identifiers(self) -> None:
+        spec = copy.deepcopy(self.spec)
+        target = "1,200.00万元"
+        self.assertTrue(any(target in str(b.get("text")) for b in spec["main_blocks"]))
+        for block in spec["main_blocks"]:
+            if isinstance(block.get("text"), str):
+                block["text"] = block["text"].replace(target, "1200.00万元")
+        for fact in spec["fact_ledger"]:
+            fact["assertions"] = [a.replace(target, "1200.00万元") for a in fact["assertions"]]
+        broken = self.write_spec(spec, "ungrouped.json")
+        check = self.run_script("group_thousands.py", broken, "--check")
+        self.assertEqual(check.returncode, 1, check.stdout)
+        self.assertIn("1200 -> 1,200", check.stdout)
+        self.assertNotIn("2026 ->", check.stdout)
+        repaired = self.work / "grouped.json"
+        fix = self.run_script("group_thousands.py", broken, "--output", repaired)
+        self.assertEqual(fix.returncode, 0, fix.stdout)
+        result = self.run_script("validate_report.py", "--spec", repaired)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertNotIn("千位分隔符", result.stdout)
+
+    def test_footer_reads_hyphen_space_number_space_hyphen(self) -> None:
+        output = self.work / "footer.docx"
+        result = self.run_script("build_report.py", self.write_spec(), output)
+        self.assertEqual(result.returncode, 0, result.stdout)
+        with ZipFile(output) as package:
+            footers = [n for n in package.namelist() if n.startswith("word/footer")]
+            self.assertTrue(footers)
+            for name in footers:
+                xml = package.read(name).decode("utf-8")
+                self.assertIn('<w:t xml:space="preserve">- </w:t>', xml)
+                self.assertIn('<w:t xml:space="preserve"> -</w:t>', xml)
 
 
 if __name__ == "__main__":

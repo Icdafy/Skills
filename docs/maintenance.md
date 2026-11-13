@@ -71,6 +71,12 @@ python -m unittest discover -s tools/library_tests
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
 
+### soe-post-investment-report 1.6.0 验证（2026-11-13）
+
+仅升级该技能及必要登记，其余六个技能的源码、版本和安装包未改。新增 `references/report-voice.md`（口吻与句法）、`references/logic-chain.md`（论证逻辑），规则同步写入 `SKILL.md` 的“口吻与逻辑硬规则”；方法据维护者提供的本地投后报告成稿只读研读得出（年度、半年度、季度汇总报告及各项目附件，同一报告自首稿至定稿的全部修改稿，投后访谈报告和月度投后纪要，去重后59份），材料未改动、不入库，新增例句中的主体和数字均为虚构，提交前对差异做了真实主体名称扫描，无命中。页码改为 `- 1 -`；千位分隔符的校验器阻断规则复查后保留，新增 `scripts/group_thousands.py` 一次补齐；校验器新增口吻警告和 `validate_logic_chain` 逻辑警告。`scripts/skill_portability.py`、`references/agent-compatibility.md` 改为本技能单独维护（增加 DeepSeek Harness、千问办公，冒烟测试核对 `- 1 -` 页脚），索引中两个单成员共享组的说明相应更新。
+
+Windows / Python 3.12.14：`soe-post-investment-report/tests` 60项通过（1项原Windows符号链接环境跳过），`tools/tests` 60项、`tools/library_tests` 24项通过；`check --smoke`、`sync_catalog.py --check`、`check_shared_scripts.py`、`check_library.py` 通过；单技能包已构建并登记 SHA-256，在仓库外含中文和空格的路径解压后 `check --smoke` 通过，`dsh`、`qwenwork` 等安装目标目录预览正确。两份合成示例规格在新增规则下无警告。本机无 LibreOffice，Word 自动化接口不可用，未做 PDF 渲染和逐页目视验收；口吻与逻辑规则在各客户端的实际成文效果，以及 ChatGPT、Claude、Qoder、TRAE、WorkBuddy、DeepSeek Harness、千问办公、豆包的模型调用均未实测。
+
 ### yiti-skill 1.1.0 验证（2026-11-13）
 
 仅升级该技能及必要登记，其余六个技能的源码、版本和安装包未改。新增 `references/expression-style.md`（议题表述规范）、`references/logic-chain.md`（议题论证逻辑）、`references/invest-fund-matter-logic.md`（项目投资、基金组建、经营事项三类骨架及会议表决类三种变体），范文增至十一份，规则同步写入 `SKILL.md`；方法据维护者提供的本地议题成稿（五十余份，含同一议题的初稿与终稿）只读研读得出，材料不入库，新增例句和范文中的主体、行业、数字均为虚构。页码改为 `- 1 -`；生成器在写入 Word 前自动补千位分隔符；`check_yiti_text.py` 增加口语、机器腔、Markdown 三项硬规则及拔高词、破折号、逻辑结构警告；生成器 `kind` 增加 `invest`、`fund`、`matter`。`scripts/skill_portability.py`、`references/agent-compatibility.md` 改为 yiti-skill 单独维护（增加 DeepSeek Harness、千问办公，冒烟测试核对 `- 1 -` 页脚和千位分隔符），原共享组的基准移至 `soe-post-investment-report`，其副本内容未变；`tools/tests` 中 yiti 的页码断言同步改为 `- 1 -`，新增表述、逻辑结构和千位分隔符测试7项。

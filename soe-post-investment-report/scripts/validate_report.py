@@ -256,7 +256,7 @@ PUBLIC_PATTERNS = {
 }
 # Typography follows the shared 公文格式标准 (yiti-skill references/format-rules.md):
 # numbered headings sit on a fixed 30 pt line, 四级标题 is bold, tables use single
-# line spacing, and the footer reads "-1-".
+# line spacing, and the footer reads "- 1 -".
 TEMPLATE_TYPOGRAPHY = {
     "redhead": ("方正小标宋简体", 68.0, True, None),
     "title": ("方正小标宋简体", 22.0, False, 30.0),
@@ -1192,6 +1192,48 @@ EXPRESSION_STYLE_RULES: tuple[tuple[re.Pattern[str], str], ...] = (
         re.compile(r"(?:整体|总体)?风险(?:总体|整体)?可控"),
         "“风险可控”属结论性判断，须有指标或处置进展支撑，否则改为“运营总体正常”等客观表述",
     ),
+    # 以下各条提炼自成稿与访谈、纪要等素材的逐句比对，见 references/report-voice.md。
+    (re.compile(r"我们|本人|笔者"), "自称统一为“我司”"),
+    (
+        re.compile(
+            r"值得注意的是|需要指出的是|需要强调的是|值得一提的是|不难看出|可以看到|可以看出|"
+            r"综上所述|总的来说|总而言之|总体而言|整体而言|由此可见|这表明|这意味着|换言之|毋庸置疑"
+        ),
+        "提示语、推论套话属机器腔，删去后直接写事实；附件的口径说明用“需说明的是，”",
+    ),
+    (
+        re.compile(r"首先.{0,80}?其次|一方面.{0,80}?另一方面"),
+        "不用“首先……其次”“一方面……另一方面”组织内容；附件确需分项时用“一是……；二是……”",
+    ),
+    (re.compile(r"不是.{1,30}?而是|不仅.{1,30}?(?:更|还|而且)"), "对比句式属机器腔，直接陈述肯定的内容"),
+    (
+        re.compile(r"赋能|助力|抓手|闭环|护航|引擎|新台阶|新高度|全方位|多维度|亮眼|强劲"),
+        "拔高词应换成具体动作、对象和数字",
+    ),
+    (
+        re.compile(
+            r"(?:显著|大幅|明显|持续)(?:提升|增长|改善|向好|好转)|稳步推进|成效明显|向好态势|"
+            r"(?:资金|现金)(?:比较|较为)?(?:充足|充裕)|财务状况良好|运作良好|经营良好|无压力|可观"
+        ),
+        "无数字的评价或被投企业的自我评价，应改为同比、较年初、完成率等具体数字，或删去",
+    ),
+    (
+        re.compile(r"大概|左右|上下(?![游文级])|附近|差不多|比较(?:慢|快|紧张|好|差)|不太|挺|蛮"),
+        "口语及约数写法：约数只用“约”，程度用固定程度词或直接写数",
+    ),
+    (
+        re.compile(r"营收|净利(?!润|率)|三板(?<!新三板)|三费|投决会|软著|案子|账上|打款|走流程|上会|过会"),
+        "行业简称和口语应写全称：营业收入、净利润、新三板、期间费用、投资决策委员会、软件著作权、案件、账户余额等",
+    ),
+    (re.compile(r"对赌"), "正文写协议名称和约定目标（如“《增资协议》约定的……目标”“回购条款”），不写“对赌”"),
+    (re.compile(r"紧盯|盯紧|把控|抓好|确保(?!证)"), "管理动作用“跟踪、关注、推进、落实”；不写我司无法单方保证的“确保……”"),
+    (re.compile(r"今年|去年|明年|近期|近日|日前|前不久|眼下|现阶段"), "相对时间应写成具体年份或“截至YYYY年M月”"),
+    (re.compile(r"同比(?:下降|减少|下滑|降低)\s*-\d|同比(?:增长|增加|上升)\s*-\d"), "方向词与负号重复或矛盾，写“同比下降15.20%”，不带负号"),
+    (re.compile(r"每年[^。；]{0,12}年化|年化[^。；]{0,12}每年"), "“每年”与“年化”叠用，写“按照协议约定享有年化N%的投资收益”"),
+    (re.compile(r"——|--"), "破折号引出解释属首稿写法，改为逗号、括注或“即”"),
+    (re.compile(r"[！？!?]|……|\.\.\."), "报告正文不用感叹号、问号和省略号"),
+    (re.compile(r"\*\*|^#{1,6}\s|^\s*[-*•]\s|^\s*>\s"), "规格文本中残留 Markdown 标记或列表符号"),
+    (re.compile(r"\d\s*-\s*\d+月|20\d{2}\s*-\s*20\d{2}年"), "期间连接号用“—”，如“1—9月”“2023—2024年”"),
 )
 ABBREVIATION_PATTERN = re.compile(r"（(?:以下)?简称“([^”]+)”）")
 CHINESE_MONTH_DATE = re.compile(r"(20\d{2})年(\d{1,2})月(?:(\d{1,2})日)?")
@@ -1344,6 +1386,86 @@ def validate_expression_style(spec: dict[str, Any], findings: Findings) -> None:
                 f"main body heading {block.get('text')}: 标题中的项目名称“{name}”未在本节正文出现，"
                 "核对标题与正文所用简称是否一致"
             )
+
+
+FORECAST_CLAIM = re.compile(r"(?<!更新)预计(?!负债)")
+FORECAST_BASIS = re.compile(r"根据|按照|依据|据[^此]|按[^照]|经.{0,12}(?:测算|研判|审议)|若")
+RISK_CLAIM = re.compile(r"风险较高|风险较大|存在较大压力|存在较大风险|难以达到|难以完成|无法完成")
+RISK_BASIS = re.compile(r"根据|按照|依据|研判|测算|预测|因|受|叠加|约定|预算|目标")
+OPENING_FILLER = re.compile(r"^(?:此外|另外|同时|与此同时|除此之外|再者|其次|最后)[，,]")
+NEXT_STEP_SUBJECT = re.compile(r"下一步[，,]\s*(?!我司|投管公司|公司|本公司|一是)")
+
+
+def validate_logic_chain(spec: dict[str, Any], findings: Findings) -> None:
+    """Warn on the logic gaps the approved reports' revisions kept closing.
+
+    Heuristics from references/logic-chain.md: a forecast names its source, a risk
+    judgement carries its basis, a paragraph opens with a positioning phrase rather
+    than a filler, every main-body project ends with a concrete 下一步, and 下一步
+    names who acts.  Hits are warnings; each one needs a recorded decision.
+    """
+
+    main_blocks = spec.get("main_blocks") or []
+    for index, block in enumerate(main_blocks, start=1):
+        if str(block.get("type") or "").lower() != "p":
+            continue
+        text = str(block.get("text") or "").strip()
+        where = f"main body block {index}"
+        if OPENING_FILLER.match(text):
+            findings.warning(
+                f"{where}: 段首为过渡语（“{OPENING_FILLER.match(text).group(0)}”），应以时点、期间、依据或“下一步”等定位词起段"
+            )
+        sentences = report_sentences(text)
+        for position, sentence in enumerate(sentences):
+            context = (sentences[position - 1] if position else "") + sentence
+            if FORECAST_CLAIM.search(sentence) and not FORECAST_BASIS.search(context):
+                findings.warning(
+                    f"{where}: “预计”未写明预测主体、日期或材料（“{sentence[:24]}……”），"
+                    "应写作“根据〔主体〕YYYY年M月D日〔材料〕，预计……”"
+                )
+            if RISK_CLAIM.search(sentence) and not RISK_BASIS.search(context):
+                findings.warning(
+                    f"{where}: 风险判断缺依据（“{RISK_CLAIM.search(sentence).group(0)}”），"
+                    "应写明依据、对象、触发线和程度"
+                )
+            match = NEXT_STEP_SUBJECT.search(sentence)
+            if match is not None:
+                findings.warning(f"{where}: “下一步”之后缺主语，应写“下一步，我司将……”")
+
+    # 正文第一部分每个项目（最末一级标题下的段落组）须以“下一步”收束。
+    section_heading: str | None = None
+    section_text = ""
+    in_first_part = False
+    internal_form = report_form_of(spec.get("document") or {}) == INTERNAL_REPORT_FORM
+    first_part_seen = False
+
+    def close_section() -> None:
+        if section_heading is None or not section_text:
+            return
+        if re.search(r"报告期内无.{0,20}项目", section_text):
+            return
+        if "下一步" not in section_text and "运营总体正常" not in section_text and "尚未开展对外投资" not in section_text:
+            findings.warning(
+                f"main body heading {section_heading}: 本项目未以“下一步，我司将……”收束，"
+                "或未给出运营判断"
+            )
+
+    for block in main_blocks:
+        block_type = str(block.get("type") or "").lower()
+        if block_type == "h1":
+            close_section()
+            section_heading, section_text = None, ""
+            in_first_part = not first_part_seen
+            first_part_seen = True
+            continue
+        if not (in_first_part and internal_form):
+            continue
+        if block_type in {"h2", "h3"}:
+            close_section()
+            section_heading, section_text = str(block.get("text") or ""), ""
+        elif block_type == "p":
+            section_text += str(block.get("text") or "")
+    close_section()
 
 
 def numeric_tokens(text: str) -> set[str]:
@@ -1975,6 +2097,7 @@ def validate_spec(spec: dict[str, Any], findings: Findings, *, template_mode: bo
     if form == INTERNAL_REPORT_FORM:
         validate_ledger_section(main_blocks, findings)
     validate_expression_style(spec, findings)
+    validate_logic_chain(spec, findings)
 
     sources = spec.get("sources") or []
     valid_project_ids = set(project_ids) | {"portfolio"}
@@ -2996,10 +3119,10 @@ def validate_docx_typography(
             visible_text = "".join(
                 str(item.text or "") for item in page_paragraph._p.findall(".//" + qn("w:t"))
             )
-            if visible_text != "-1-":
+            if visible_text != "- 1 -":
                 findings.error(
                     f"DOCX section {section_number} {footer_name}-page footer format is "
-                    f"{visible_text!r}; expected '-1-'"
+                    f"{visible_text!r}; expected '- 1 -'"
                 )
     if page_field_count == 0:
         findings.error("DOCX typography check found no PAGE field run in odd/even footers")

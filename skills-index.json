@@ -146,7 +146,7 @@
       "name_zh": "国企股权投资投后报告",
       "category": "投后管理",
       "source": "soe-post-investment-report",
-      "version": "1.5.7",
+      "version": "1.6.0",
       "readme": "soe-post-investment-report/README.md",
       "distribution": "office-skills",
       "verification": {
@@ -159,9 +159,9 @@
       },
       "license_status": "Apache-2.0；原素材经维护者授权确认；源码及单技能ZIP不含字体",
       "release": {
-        "tag": "soe-post-investment-report/v1.5.7",
+        "tag": "soe-post-investment-report/v1.6.0",
         "asset": "soe-post-investment-report.zip",
-        "sha256": "2f605059dc452dc38f2086c728a992aaa7341ff50f0d972c0ace1c9666a2de62"
+        "sha256": "84535efdffa4239aeb9c4da09d651423268fc8f94f4852fdfb34177351653e76"
       }
     }
   ],
@@ -212,7 +212,7 @@
       "skills": [
         "soe-post-investment-report"
       ],
-      "note": "跨 Agent 完整性检查、打包与目录安装的原共享版本（officialese-skill 自 1.1.0 起、立项报告三技能自 2026-11-12 版本起、yiti-skill 自 1.1.0 起分开维护）"
+      "note": "soe-post-investment-report 自 1.6.0 起单独维护的跨 Agent 完整性检查、打包与目录安装（含 DeepSeek Harness、千问办公与 - 1 - 页脚校验）"
     },
     {
       "file": "references/agent-compatibility.md",
@@ -230,7 +230,7 @@
       "skills": [
         "soe-post-investment-report"
       ],
-      "note": "跨 Agent 安装与真实调用验收的原共享版本（officialese-skill 自 1.1.0 起、立项报告三技能自 2026-11-12 版本起、yiti-skill 自 1.1.0 起分开维护）"
+      "note": "soe-post-investment-report 自 1.6.0 起单独维护的跨 Agent 安装与真实调用验收（含 DeepSeek Harness、千问办公）"
     },
     {
       "file": "references/formal-expression.md",

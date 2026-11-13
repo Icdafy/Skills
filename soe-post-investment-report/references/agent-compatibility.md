@@ -8,7 +8,13 @@
 
 ## 验证程度
 
-Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档；真实调用结果见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。其他客户端保留下列安装参考（原核对日 2026-09-27），本次均未实测，入口可能随版本变化，请以客户端实际界面为准。目录复制或脚本成功均不等于模型调用成功。
+本文件自 soe-post-investment-report 1.6.0 起由本技能单独维护，在原共享版本基础上增加了 DeepSeek Harness 和千问办公，下文以 `soe-post-investment-report` 为例；仓库内其他技能的名称出现在表中时，仅作为同一安装方法的说明。
+
+Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档；真实调用结果见 [验证记录](https://github.com/Icdafy/Skills/blob/main/docs/maintenance.md#历史实测范围)。DeepSeek Harness 的技能目录及优先级取自其桌面端程序包内的说明，千问办公的安装入口、目录和调用方式取自阿里云帮助中心（2026-11-10 核对）。其他客户端保留下列安装参考（原核对日 2026-09-27）。除 Codex 外，各客户端的模型实际调用均未实测，入口可能随版本变化，请以客户端实际界面为准。目录复制或脚本成功均不等于模型调用成功。
+
+本技能对各客户端的适配点：`SKILL.md` 的 frontmatter 只有 `name`、`description` 和一个 `metadata` 映射（显示名、版本、运行要求），不使用其他顶层扩展字段；`name` 为小写连字符形式且与目录名一致；`description` 不超过200字符；`SKILL.md` 小于100 KB；首轮四问、固定框架、数字和页码规则、口吻与逻辑硬规则全部写在 `SKILL.md` 正文，宿主不读取 `references/` 或不能执行脚本时仍可按规则输出报告文本，此时须在交付时说明 Word 未生成、未经校验器核对，千位分隔符由模型逐个写对。
+
+用户常用的八个客户端的安装方式汇总：ChatGPT（桌面版用 `--agent chatgpt` 或设置中上传 ZIP，团队版上传 ZIP）、Claude（Claude Code 用 `--agent claude-code`，网页版和桌面版在设置的技能页上传 ZIP）、Qoder（`--agent qoder-cli`／`qoderwork`，桌面版上传 ZIP）、TRAE（`--agent trae`／`trae-cn`，或设置中导入 ZIP）、WorkBuddy（上传 ZIP 或 `--agent workbuddy`）、DeepSeek Harness（`--agent dsh`）、千问办公（上传解压后的全部文件或 `--agent qwenwork`）、豆包电脑版工作模式（上传 ZIP 或技能文件夹）。逐项入口见下表。
 
 ## 二、各客户端安装与调用
 
@@ -25,6 +31,8 @@ Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档�
 | **智谱 GLM**：ZCode | 设置 → Skills → 右上角导入（选“复制”）；或 `--agent zcode`（`~/.zcode/skills/`） | `$<name>` 或斜杠菜单 | [ZCode Skill](https://zcode.z.ai/en/docs/skill) |
 | **智谱 GLM**：AutoClaw（澳龙，基于 OpenClaw） | `--agent openclaw`（`~/.openclaw/skills/`）或 `--agent agents`（`~/.agents/skills/`），重启后生效。界面“Plugins → Skills”导入限制单文件 1 MiB、总量 8 MiB，遇到体积限制时可用目录安装；本库不分发字体 | 斜杠命令 `/<name>` 或自然语言 | [OpenClaw Skills](https://docs.openclaw.ai/tools/skills) |
 | **WorkBuddy** | 技能 → 添加技能 → 上传技能，导入 ZIP 并在已安装页开启；或 `--agent workbuddy`（`~/.workbuddy/skills/`，项目级 `.workbuddy/skills/`）。CodeBuddy 用 `--agent codebuddy` | 自然语言点名或在技能列表选择 | [WorkBuddy 技能](https://www.workbuddy.cn/docs/workbuddy/From-Beginner-to-Expert-Guide/Function-Description/Skills-Market) |
+| **DeepSeek Harness**（DSH 桌面端 / CLI） | 目录安装 `--agent dsh`（`~/.dsh/skills/`，项目级 `.dsh/skills/`）。DSH 按以下顺序读取技能：项目 `.dsh/skills`、项目 `.agents/skills`、配置项 `customSkillDirs`、用户 `~/.dsh/skills`、用户 `~/.agents/skills`，因此 `--agent agents` 的安装同样可见。目录只扫描一层，须为 `skills/soe-post-investment-report/SKILL.md`；`name` 必须是小写连字符形式 | 新建会话后自然语言点名“使用 soe-post-investment-report 技能……”，或在技能列表中选择 | 桌面端程序包内的技能目录说明（未见公开网页文档） |
+| **千问办公**（QwenWork）电脑版 | 左侧导航“扩展”→“技能”→“安装技能”，上传 `SKILL.md` 及全部辅助文件（先解压 ZIP，保持 `references/`、`scripts/`、`assets/`、`agents/` 目录结构）；或目录安装 `--agent qwenwork`（`~/.qwenworkcn/skills/`）。企业组织技能库的上传须经管理员审核 | 输入框输入 `/` 选择技能，自然语言描述需求自动匹配，或点名“使用 soe-post-investment-report skill……” | [千问办公·技能](https://help.aliyun.com/zh/qwenwork/skills) |
 | **TRAE** / TraeCode | 设置 → 技能与命令 → 创建 → 全局或项目 → 导入 ZIP；中国版 `--agent trae-cn`（`~/.trae-cn/skills/`），国际版 `--agent trae`（`~/.trae/skills/`），项目级 `.trae/skills/` | 直接点名技能，或由 AI 自动加载。使用 `.agents/skills/` 须在“导入设置”开启，同名时 `.trae/skills/` 优先 | [TRAE 技能](https://docs.trae.cn/ide_skills) |
 | **Qoder** 桌面版 | Extensions → Skills → Add Skills → Upload Skill，上传 ZIP，在 Installed 中确认 | 输入 `/` 选择技能 | [Qoder Skills](https://docs.qoder.com/qoder/skills) |
 | **Qoder** CLI / QoderWork / Qoder CN | CLI `--agent qoder-cli`（`~/.qoder/skills/`）；QoderWork `--agent qoderwork`；Qoder CN IDE `--agent qoder-cn`（`~/.lingma/skills/`） | CLI `/<name>`，安装后 `/skills reload`；QoderWork 直接点名 | [CLI](https://docs.qoder.com/cli/Skills)、[QoderWork](https://docs.qoder.com/qoderwork/skills) |
@@ -61,7 +69,7 @@ python scripts/skill_portability.py install --skills-dir "/path/to/skills" --app
 python scripts/skill_portability.py package --output-dir "../skill-zips"
 ```
 
-`--agent` 可选：`claude-code`、`codex`、`chatgpt`、`codex-legacy`、`kimi-code`、`qoder-cli`、`qoder-cn`、`qoderwork`、`trae`、`trae-cn`、`workbuddy`、`codebuddy`、`zcode`、`openclaw`、`agents`。设置了 `CLAUDE_CONFIG_DIR`、`KIMI_CODE_HOME`、`CODEX_HOME`（仅 `codex-legacy`）或 `OPENCLAW_STATE_DIR` 时，安装到对应目录下的 `skills/`。Claude 网页版、ChatGPT 团队版、豆包、Kimi Work、Qoder 桌面版等界面型客户端不虚构配置目录，一律上传 ZIP。
+`--agent` 可选：`claude-code`、`codex`、`chatgpt`、`codex-legacy`、`kimi-code`、`qoder-cli`、`qoder-cn`、`qoderwork`、`trae`、`trae-cn`、`workbuddy`、`codebuddy`、`dsh`、`qwenwork`、`zcode`、`openclaw`、`agents`。设置了 `CLAUDE_CONFIG_DIR`、`KIMI_CODE_HOME`、`CODEX_HOME`（仅 `codex-legacy`）或 `OPENCLAW_STATE_DIR` 时，安装到对应目录下的 `skills/`。Claude 网页版、ChatGPT 团队版、豆包、Kimi Work、Qoder 桌面版等界面型客户端不虚构配置目录，一律上传 ZIP。
 
 覆盖已安装版本前，安装器先把旧版复制到技能根目录之外的 `skill-backups/`，不删除任何文件。旧目录中有新版没有的文件时默认停止，先对照备份确认；确认后加 `--replace`，旧目录整体移入 `skill-backups/` 后写入新版。`meeting-minutes-pro` 的项目术语表与机构禁词（`glossary/` 下除 `README.md`、`industry/` 以外的文件）属于用户数据：不打包、不视为多余文件，`--replace` 时自动迁入新版目录。
 
@@ -73,7 +81,7 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 
 | 能力 | 适用客户端 | 七个技能的可用范围 |
 |---|---|---|
-| 本机执行（读写本地文件、运行 Python） | Claude Code、Codex、ChatGPT 桌面版、Kimi Work / Kimi Code、豆包电脑版工作模式、WorkBuddy、TRAE、Qoder、ZCode、AutoClaw | 全部功能，含 `meeting-minutes-pro` 本地音视频转录 |
+| 本机执行（读写本地文件、运行 Python） | Claude Code、Codex、ChatGPT 桌面版、Kimi Work / Kimi Code、豆包电脑版工作模式、WorkBuddy、TRAE、Qoder、DeepSeek Harness、千问办公电脑版、ZCode、AutoClaw | 全部功能，含 `meeting-minutes-pro` 本地音视频转录 |
 | 云端代码沙箱 | Claude 网页 / 桌面 Chat、ChatGPT 团队版 | 写作与 Word 生成可用；`meeting-minutes-pro` 仅能基于已有转录稿整理纪要，不能下载 ASR 模型转录本地录音 |
 | 无代码执行 | 仅对话、不运行脚本的入口 | 可交付文本，须说明 Word 排版未生成或未验证，不得宣称已生成合规 Word |
 
@@ -81,7 +89,9 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 5. **文档读取**：可使用平台自带的 PDF、表格、Word 读取器；存在同类通用文档技能时由其负责读取，当前技能负责业务逻辑及指定生成器。
 6. **字体**：先运行技能内的字体检查（`ensure_fonts.py --check`；`meeting-minutes-pro`、`soe-post-investment-report` 为 `font_preflight.py`），按宿主权限及现有授权安装。沙箱不能安装系统字体时保留 DOCX 中文字体槽，并用随包嵌入器处理允许嵌入的字体；方正小标宋简体禁止嵌入，打开文档的设备须已安装。Times New Roman、黑体、宋体在非 Windows 环境不能假定存在，字体替换或缺失须在交付说明中如实说明。
 
-`check --smoke` 从不同工作目录调用本包 Word 生成器，核对奇偶页脚、`-1-` 四号宋体页码、PAGE 域、Times New Roman 西文统一及表格五号（投后报告按其自带校验器）。它不安装字体、不修改客户端配置、不上传文档；通过只代表包结构与代码可执行，最终字体显示仍须在目标 Word/渲染器上目视检查。
+本机执行类客户端自带或可调用 Python 时，生成 Word 前仍须在该解释器中安装 `requirements.txt`；客户端自带的解释器没有 python-docx 且不允许安装时，按“无代码执行”处理，只交付报告文本。
+
+`check --smoke` 从不同工作目录调用本包 Word 生成器和校验器，核对奇偶页脚、`- 1 -` 四号宋体页码、PAGE 域、Times New Roman 西文统一。它不安装字体、不修改客户端配置、不上传文档；通过只代表包结构与代码可执行，最终字体显示仍须在目标 Word/渲染器上目视检查。
 
 ## 五、技能路由与调用验收
 
@@ -100,7 +110,8 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 1. **可发现**：技能列表出现原始英文 `name`（支持显示名称的客户端显示中文名），开关开启，无旧版本覆盖。直接说“使用 `<name>` 技能，只读取其规范，概括适用范围和 3 条排版规则”，观察实际技能加载记录；模型仅声称“已调用”不算验收。
 2. **自动选择**：按上表分别输入一句典型请求，观察是否调用对应技能及所需参考文件；信息不足时应先收集必要输入，不能编造。再输入与各技能无关的请求，确认不被误选。
 3. **运行完整**：在宿主执行环境运行 `check --smoke`，确认参考文件可读、生成器能找到同目录辅助模块及本机授权字体。无运行环境的平台不能记录为完整 Word 能力通过。
-4. **输出一致**：用非敏感测试材料生成含表格、括注、`（1）` 标题、分页的 Word，核对中文字体、Times New Roman 数字及百分号、表格五号、奇偶页外侧页码和整段 14 磅页脚。
+4. **输出一致**：用非敏感测试材料生成含表格、括注、`（1）` 标题、分页的 Word，核对中文字体、Times New Roman 数字及百分号、表格五号、奇偶页外侧页码、`- 1 -` 页码写法和整段 14 磅页脚，以及四位以上数量的千位分隔符。
+5. **文风与逻辑一致**：给一段口语化的虚构投后材料（如“公司今年上半年营收大概一个亿，账上现金挺充足，对赌目标应该问题不大”），要求按本技能写一段参股公司正文，核对输出没有开场白、结束语和 Markdown 列表，没有“我们”“首先、其次”“值得注意的是”“综上所述”和破折号；段首为“截至……”“YYYY年上半年，”等定位词，数字带千位分隔符和口径，“预计”带来源，风险判断有依据、对象、触发线和程度，每个项目以“下一步，我司将……”收束。
 
 各技能另有首轮行为，验收时一并核对：立项报告三技能首轮先问“早前期或中后期”并等待；`soe-post-investment-report` 首轮只逐字提出四项变更确认问题；`meeting-minutes-pro` 生成纪要前先一次性收集缺失的会议基本信息；`yiti-skill` 先判定会议类或退出类骨架。
 
@@ -110,4 +121,4 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 
 ## 六、排障
 
-未触发时依次检查：产品与模式（如豆包须在“工作”模式、Kimi 须在 Work 模式）→ 启用开关 → 目录层级（`skills/<name>/SKILL.md`，不能多一层 `Skills-main/`）→ 同名覆盖 → 描述是否完整 → 参考文件可读 → 重载或新会话（Qoder CLI `/skills reload`，Codex、OpenClaw、WorkBuddy 重启）。界面上传因体积失败时改用目录安装。显式点名后仍无加载记录时，按该客户端提供的技能管理方式排查；不要用“文件已经复制”替代调用成功。
+未触发时依次检查：产品与模式（如豆包须在“工作”模式、Kimi 须在 Work 模式、千问须为千问办公的技能入口）→ 启用开关 → 目录层级（`skills/<name>/SKILL.md`，不能多一层 `Skills-main/`）→ 同名覆盖 → 描述是否完整 → 参考文件可读 → 重载或新会话（Qoder CLI `/skills reload`，Codex、OpenClaw、WorkBuddy 重启）。界面上传因体积失败时改用目录安装。显式点名后仍无加载记录时，按该客户端提供的技能管理方式排查；不要用“文件已经复制”替代调用成功。

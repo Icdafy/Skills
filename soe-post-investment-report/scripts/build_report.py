@@ -12,7 +12,7 @@ round parentheses and their contents use 楷体_GB2312 at the size of their posi
 headings sit on a fixed 30 pt line and 四级标题 is 仿宋_GB2312 bold with its "（1）"
 serial in the heading font; tables are single-spaced with a bold, unshaded header;
 the 附件说明 hangs each name under its own column; the date is centred under the
-issuer; the footer reads ``-1-`` in 四号宋体 on every font slot.
+issuer; the footer reads ``- 1 -`` (a space between each hyphen and the number) in 四号宋体 on every font slot.
 """
 
 from __future__ import annotations
@@ -319,13 +319,13 @@ def add_paragraph(
 
 
 def add_page_field(paragraph: Any) -> None:
-    """页码 -1-：两个短横线、PAGE 域及其显示结果全部四号宋体，四个字体槽均为宋体。"""
+    """页码 - 1 -（短横线与数字之间各空一个半角空格）：两个短横线、PAGE 域及其显示结果全部四号宋体，四个字体槽均为宋体。"""
 
     paragraph.paragraph_format.space_before = Pt(0)
     paragraph.paragraph_format.space_after = Pt(0)
     paragraph.paragraph_format.line_spacing = Pt(FOOTER_PT)
 
-    left = paragraph.add_run("-")
+    left = paragraph.add_run("- ")
     set_font(left, FONT_SONG, FOOTER_PT, western=FONT_SONG)
 
     field = paragraph.add_run()
@@ -344,7 +344,7 @@ def add_page_field(paragraph: Any) -> None:
     for element in (begin, instruction, separate, result, end):
         field._r.append(element)
 
-    right = paragraph.add_run("-")
+    right = paragraph.add_run(" -")
     set_font(right, FONT_SONG, FOOTER_PT, western=FONT_SONG)
     # Paragraph mark in 四号宋体 too, so the footer line height follows the page number.
     mark = OxmlElement("w:rPr")

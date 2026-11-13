@@ -1,6 +1,6 @@
 # 正式上行文写作与篇幅压缩规则
 
-本文件规定行文立场、段落逻辑和篇幅控制；逐类项目的句式模板、改前改后对照和附件章节，见 [expression-playbook.md](expression-playbook.md)（提炼自经 16 轮校改定稿通过的报告），所需数据及勾稽公式见 [data-requirements.md](data-requirements.md)。两者与本文件冲突时，以定稿提炼的 `expression-playbook.md` 为准。
+本文件规定行文立场、段落逻辑和篇幅控制；逐类项目的句式模板、改前改后对照和附件章节，见 [expression-playbook.md](expression-playbook.md)（提炼自经 16 轮校改定稿通过的报告），所需数据及勾稽公式见 [data-requirements.md](data-requirements.md)。两者与本文件冲突时，以定稿提炼的 `expression-playbook.md` 为准。句型、用词、素材转写和去机器腔规则见 [report-voice.md](report-voice.md)，判断分级、算式和一致性约束见 [logic-chain.md](logic-chain.md)。
 
 ## 受文对象和行文立场
 

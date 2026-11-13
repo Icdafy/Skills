@@ -27,7 +27,7 @@
 
 | 技能 / 做什么 | 源码 | 说明与调用 | 下载 | 版本 |
 |---|---|---|---|---|
-| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.5.7/soe-post-investment-report.zip) | 1.5.7 |
+| 国企股权投资投后报告（`soe-post-investment-report`） | [源码](soe-post-investment-report/) | [README](soe-post-investment-report/README.md) | [ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.6.0/soe-post-investment-report.zip) | 1.6.0 |
 <!-- skills:end -->
 
 ## 安装与调用

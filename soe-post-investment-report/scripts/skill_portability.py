@@ -5,9 +5,11 @@ Python 3.10+; stdlib only. ``check --smoke`` additionally needs python-docx.
 No host configuration or font installation is performed. ``install`` is a dry
 run unless ``--apply`` is specified.
 
-One file serves every skill in the repository: the per-skill contract lives in
-PROFILES below. Edit the canonical copy in gongsi-qingkuang and run
-``python tools/check_shared_scripts.py --sync``.
+The per-skill contract lives in PROFILES below. This copy belongs to
+soe-post-investment-report (1.6.0 onwards) and is maintained on its own: it
+carries the DeepSeek Harness / 千问办公 targets, checks the ``- 1 -`` footer and
+the thousands-separator helper, and lists this skill's expression and logic
+references as required files. Other skills keep their own copies.
 """
 from __future__ import annotations
 
@@ -113,11 +115,15 @@ PROFILES = {
         'required': ('requirements.txt', 'references/template-contract.md',
                      'references/source-intake-and-fact-ledger.md',
                      'references/writing-and-compression.md', 'references/quality-gates.md',
-                     'references/platform-compatibility.md', 'assets/report-spec.example.json',
+                     'references/platform-compatibility.md', 'references/expression-playbook.md',
+                     'references/report-voice.md', 'references/logic-chain.md',
+                     'references/data-requirements.md', 'references/agent-compatibility.md',
+                     'assets/report-spec.example.json', 'assets/report-spec.internal.example.json',
                      'assets/reference-template.docx', 'scripts/build_report.py',
                      'scripts/validate_report.py', 'scripts/render_docx.py',
-                     'scripts/font_preflight.py', 'scripts/source_inventory.py'),
-        'smoke': 'soe', 'fonts': False, 'table_size': False,
+                     'scripts/font_preflight.py', 'scripts/source_inventory.py',
+                     'scripts/group_thousands.py', 'scripts/stamp_report.py'),
+        'smoke': 'soe', 'fonts': False, 'table_size': False, 'footer': '- 1 -',
         'exclude': ('assets/reference-render/*',),
     },
 }
@@ -141,6 +147,9 @@ AGENTS = {
     'trae': ('.trae/skills', '.trae/skills', None, 'TRAE 国际版'),
     'trae-cn': ('.trae-cn/skills', '.trae/skills', None, 'TRAE 中国版 / TraeCode'),
     'workbuddy': ('.workbuddy/skills', '.workbuddy/skills', None, '腾讯 WorkBuddy'),
+    'dsh': ('.dsh/skills', '.dsh/skills', None,
+            'DeepSeek Harness（DSH）桌面端 / CLI；同时读取 .agents/skills'),
+    'qwenwork': ('.qwenworkcn/skills', None, None, '千问办公（QwenWork）电脑版'),
     'codebuddy': ('.codebuddy/skills', '.codebuddy/skills', None, '腾讯 CodeBuddy IDE / CLI'),
     'zcode': ('.zcode/skills', None, None, '智谱 ZCode（GLM）'),
     'openclaw': ('.openclaw/skills', 'skills', 'OPENCLAW_STATE_DIR',
@@ -153,6 +162,7 @@ DETECT = {
     'claude-code': '.claude', 'codex': '.codex', 'kimi-code': '.kimi-code', 'qoder-cli': '.qoder',
     'qoder-cn': '.lingma', 'qoderwork': '.qoderwork', 'trae': '.trae', 'trae-cn': '.trae-cn',
     'workbuddy': '.workbuddy', 'codebuddy': '.codebuddy', 'zcode': '.zcode', 'openclaw': '.openclaw',
+    'dsh': '.dsh', 'qwenwork': '.qwenworkcn',
 }
 # Clients installed through their own interface; no configuration folder is assumed.
 UI_CLIENTS = (
@@ -161,6 +171,9 @@ UI_CLIENTS = (
     ('豆包电脑版（工作模式）', '插件·技能·伙伴 → 技能 → “+ 添加” → 上传技能，拖入 ZIP 或技能文件夹'),
     ('WorkBuddy', '技能 → 添加技能 → 上传技能，导入 ZIP 后在已安装列表开启'),
     ('Kimi Work', 'Work 模式 → 技能 → 上传本地技能'),
+    ('千问办公（QwenWork）电脑版', '扩展 → 技能 → 安装技能，上传 SKILL.md 及全部辅助文件'
+                                   '（先解压 ZIP，保持目录结构）；或 --agent qwenwork 目录安装'),
+    ('DeepSeek Harness 桌面端', '--agent dsh 目录安装到 ~/.dsh/skills（项目级 .dsh/skills），然后新建会话'),
     ('Qoder 桌面版', 'Extensions → Skills → Add Skills → Upload Skill'),
     ('TRAE / TraeCode IDE', '设置 → 技能与命令 → 创建 → 导入 ZIP（全局或项目）'),
     ('智谱 ZCode', 'Settings → Skills → 右上角导入图标，选“复制”模式'),
@@ -344,7 +357,7 @@ W = '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}'
 NS = {'w': W[1:-1]}
 
 
-def check_docx(output, table_size=True):
+def check_docx(output, table_size=True, footer_text='-1-'):
     """Assertions shared by every official-document generator in this repository."""
     with zipfile.ZipFile(output) as archive:
         doc = ET.fromstring(archive.read('word/document.xml'))
@@ -365,13 +378,13 @@ def check_docx(output, table_size=True):
         alignments = set()
         for name in footers:
             tree = ET.fromstring(archive.read(name))
-            # 页脚 -1- 不参与 Times New Roman 统一，四个字体槽均为宋体。
+            # 页脚 - 1 - 不参与 Times New Roman 统一，四个字体槽均为宋体。
             for fonts in tree.findall('.//w:rFonts', NS):
                 if any(fonts.get(W + slot) != '宋体' for slot in ('ascii', 'hAnsi', 'cs', 'eastAsia')):
                     raise ValueError('Footer page number must be 宋体 in every font slot')
             alignments.add(tree.find('.//w:jc', NS).get(W + 'val'))
-            if ''.join(t.text or '' for t in tree.findall('.//w:t', NS)) != '-1-':
-                raise ValueError('Footer text/field cache must be -1-')
+            if ''.join(t.text or '' for t in tree.findall('.//w:t', NS)) != footer_text:
+                raise ValueError('Footer text/field cache must be ' + footer_text)
             fields = [(t.text or '').strip() for t in tree.findall('.//w:instrText', NS)]
             fields += [(f.get(W + 'instr') or '').strip() for f in tree.findall('.//w:fldSimple', NS)]
             if 'PAGE' not in fields:
@@ -449,7 +462,8 @@ def smoke(root):
     rules = profile(root)
     with tempfile.TemporaryDirectory(prefix='skill-smoke-') as tmp:
         output = SMOKES[rules['smoke']](root, Path(tmp))
-        check_docx(output, table_size=rules.get('table_size', True))
+        check_docx(output, table_size=rules.get('table_size', True),
+                   footer_text=rules.get('footer', '-1-'))
     print('[OK] DOCX smoke test from a separate cwd; no fonts installed or host settings changed')
     print('[INFO] This checks package execution, not model invocation in a target client or visual font rendering')
 
