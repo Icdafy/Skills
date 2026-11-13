@@ -135,7 +135,7 @@ class YitiFormatTests(unittest.TestCase):
                 for slot in ('ascii', 'hAnsi', 'cs'):
                     self.assertEqual(fonts.get(qn('w:' + slot)), 'Times New Roman')
         para = next(p for p in self.docs[0].paragraphs if p.text.startswith('英文括号'))
-        self.assertTrue(para.text.endswith('全角2026%'))
+        self.assertTrue(para.text.endswith('全角2,026%'))  # 全角转半角后按数量补千位分隔符
 
     def test_fixed_title_and_body_spacing(self):
         heading_texts = {'一、基本信息', '（一）议案', '1.依据', '（1）条款（修订）'}
@@ -172,7 +172,7 @@ class YitiFormatTests(unittest.TestCase):
             section = doc.sections[0]
             for footer, align in ((section.footer, 'right'), (section.even_page_footer, 'left')):
                 p = footer.paragraphs[0]
-                self.assertEqual(p.text, '-1-')
+                self.assertEqual(p.text, '- 1 -')
                 self.assertEqual(p._p.pPr.find(qn('w:jc')).get(qn('w:val')), align)
                 for run in p.runs:
                     self.assert_font(run, '宋体', '宋体', 14)
@@ -260,6 +260,86 @@ class YitiTextCheckTests(unittest.TestCase):
         self.assertEqual(proc.returncode, 0, proc.stdout)
         self.assertIn('硬规则命中 0 处，警告 0 处', proc.stdout)
 
+
+
+class YitiExpressionAndLogicTest(unittest.TestCase):
+    """1.1.0：千位分隔符自动补齐、口语与机器腔拦截、逻辑结构复核。"""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, str(SKILL / 'scripts'))
+        import check_yiti_text
+        import create_yiti_docx
+        cls.checker = check_yiti_text
+        cls.generator = create_yiti_docx
+
+    def test_thousands_added_to_quantities_only(self):
+        group = self.generator.add_thousands_separators
+        self.assertEqual(group('认缴总规模3960万元，首期实缴1980万元'), '认缴总规模3,960万元，首期实缴1,980万元')
+        self.assertEqual(group('计提141583.56元'), '计提141,583.56元')
+        self.assertEqual(group('净利润-6661.04万元'), '净利润-6,661.04万元')
+        for kept in ('2026年4月23日17:00前', 'X国资发〔2025〕18号', '登记编号为P1099999',
+                     '电话：029-12345678', '2027—2028年', '注册资本123.4567万元', '已分节1,980万元'):
+            self.assertEqual(group(kept), kept)
+
+    def test_generator_normalizes_spec_and_can_be_switched_off(self):
+        spec = {'title': '关于测试的议题', 'intro': '金额12345.6万元，具体如下：',
+                'blocks': [{'type': 'table', 'header': ['事项', '编号', '金额（元）'],
+                            'rows': [['合计', '20261113', '27408']]},
+                           {'type': 'para', 'text': '原样1980万元', 'thousands': False}]}
+        out = self.generator.normalize_spec_numbers(spec)
+        self.assertEqual(out['intro'], '金额12,345.6万元，具体如下：')
+        self.assertEqual(out['blocks'][0]['rows'][0], ['合计', '20261113', '27,408'])
+        self.assertEqual(out['blocks'][1]['text'], '原样1980万元')
+        self.assertEqual(spec['intro'], '金额12345.6万元，具体如下：')  # 不改调用方的对象
+        self.assertIs(self.generator.normalize_spec_numbers(dict(spec, thousands=False))['intro'], spec['intro'])
+
+    def test_colloquial_and_machine_tone_are_hard_hits(self):
+        scan = self.checker.scan
+        for text in ('我们打算跟XX公司合作。', '这块业务先看一下。', '说白了就是价格低。',
+                     '让我们来看基金概况。', '该事项至关重要。', '以下是具体方案。'):
+            hard, _ = scan([('t', text)])
+            self.assertTrue(hard, text)
+        for text in ('我司拟联合XX公司成立有限合伙企业（SPV）对XX科技进行投资，具体情况如下：',
+                     '经核查，本次两项议案均已履行XX证券内部董事会审议程序，未发现存在损害我司参股股东合法权益的情形。',
+                     '随着公司投资业务持续推进，尽职调查等工作对信息获取的及时性提出了更高要求。',
+                     '合伙人会议为合伙企业的最高权力机构。'):
+            hard, warn = scan([('t', text)])
+            self.assertEqual((hard, warn), ([], []), text)
+
+    def test_puffery_and_dash_are_warnings(self):
+        _, warn = self.checker.scan([('t', '该终端拥有海量数据，整体性价比最佳——建议选用。')])
+        self.assertEqual(len(warn), 3)
+        _, warn = self.checker.scan([('t', '对照《私募投资基金备案指引第3号——私募投资基金生前遗嘱》第四条。')])
+        self.assertEqual(warn, [])
+
+    def test_markdown_in_spec_is_a_hard_hit(self):
+        hard, _ = self.checker.scan_spec({'intro': '具体如下：', 'blocks': [{'type': 'para', 'text': '- 一是成本低。'}]})
+        self.assertTrue(any('Markdown' in line for line in hard))
+
+    def test_structure_warnings(self):
+        spec = {
+            'recipient': '投委会：',
+            'intro': 'XX有限公司（以下简称“XX公司”）拟召开会议。',
+            'blocks': [
+                {'type': 'h1', 'text': '一、基本情况'},
+                {'type': 'para', 'text': '本次投资主要面临两方面风险：一是经营层面，公司拟拓展新业务领域，可能存在盈利不及预期的风险。'},
+                {'type': 'h1', 'text': '三、请示事项'},
+                {'type': 'para', 'text': '综上，拟申请投资金额不超过1,600万元。'},
+                {'type': 'para', 'text': '现提请专题会审议。'},
+            ],
+        }
+        _, warn = self.checker.scan_spec(spec)
+        joined = '\n'.join(warn)
+        for needle in ('导语末句', '审议机构前后不一致', '一级标题序号不连续', "有'一是'而无'二是'",
+                       '1,600万元', '简称『XX公司』'):
+            self.assertIn(needle, joined)
+
+    def test_bundled_examples_pass_cleanly(self):
+        for name in ('exit-yiti-spec.json', 'invest-yiti-spec.json'):
+            data = json.loads((SKILL / 'assets/examples' / name).read_text(encoding='utf-8'))
+            self.assertEqual(self.checker.scan_spec(data), ([], []), name)
+            self.assertEqual(self.generator.normalize_spec_numbers(data), data, name)  # 示例本身已写对
 
 if __name__ == '__main__':
     unittest.main()

@@ -3,17 +3,26 @@
 
 Font order mirrors the manual workflow: first give every run its Chinese font
 (方正小标宋简体 / 黑体 / 楷体_GB2312 / 仿宋_GB2312), then set parentheses and their
-contents to 楷体_GB2312 (二号 in titles, 三号 in text, 五号 in tables), then the footer `-1-` to
+contents to 楷体_GB2312 (二号 in titles, 三号 in text, 五号 in tables), then the footer `- 1 -` to
 四号宋体, and finally apply Times New Roman to the whole body so every digit,
 Latin letter and symbol such as % is Times New Roman while Chinese characters
 keep their fonts. The footer is excluded from that last pass. Inline bold uses
 **...**.
 
-Two kinds of 议题 share one spec format:
+Five kinds of 议题 share one spec format (kind only sets the default submit line
+and recipient; every field can be overridden):
 - kind "meeting" (default): 股东会/合伙人会议参会表决议题, recipient `投委会：`,
   no signature.
 - kind "exit": 投资项目退出议题, no recipient line, two-paragraph intro, signature
   and an attachment document (退出方案) on a new page.
+- kind "invest": 项目投资议题, recipient `投委会：`.
+- kind "fund": 基金组建（设立）议题, recipient `投委会：`.
+- kind "matter": 采购等经营管理事项议题, no recipient line.
+
+Numbers: every quantity whose integer part has four or more digits gets a
+half-width comma every three digits (1,980万元, 141,583.56元) while the document
+is built; years, dates, 文号, codes, phone numbers and other identifiers stay as
+they are. Put "thousands": false on the spec or on one block to switch it off.
 
 JSON spec example (exit):
 {
@@ -75,6 +84,9 @@ SIGNATURE_RIGHT_INDENT_PT = BODY_SIZE * 4  # 落款右空四字
 KIND_DEFAULTS = {
     "meeting": {"submit_line": "提交部门/子公司：投管公司", "recipient": "投委会："},
     "exit": {"submit_line": "提交子公司：投管公司", "recipient": ""},
+    "invest": {"submit_line": "提交部门/子公司：投管公司", "recipient": "投委会："},
+    "fund": {"submit_line": "提交部门/子公司：投管公司", "recipient": "投委会："},
+    "matter": {"submit_line": "提交部门/子公司：投管公司", "recipient": ""},
 }
 
 BOLD_PATTERN = re.compile(r"\*\*(.+?)\*\*", re.S)
@@ -88,6 +100,155 @@ FULLWIDTH[0xFF05] = ord("%")
 
 # Times New Roman advance widths in em, for hanging-indent alignment.
 TNR_EM = {".": 0.25, ",": 0.25, ":": 0.278, "-": 0.333, " ": 0.25, "/": 0.278, "%": 0.833}
+
+
+# ---------------------------------------------------------------------------
+# 千位分隔符：整数部分满四位的数量一律每三位加半角逗号（1,234.56、2,350万元）。
+# 年份、日期、文号、电话、代码、编号、标准号、型号等标识不是数量，保持原样。
+# ---------------------------------------------------------------------------
+NUMBER_TOKEN = re.compile(r"\d+(?:,\d{3})+(?:\.\d+)?|\d+(?:\.\d+)*")
+# 紧跟在数字后面、说明它是"数量"的计量单位（允许中间有空格）。
+QUANTITY_UNIT = re.compile(
+    r"\s*(?:%|‰|万|亿|千|百|元|美元|欧元|港元|日元|英镑|人民币|股|份|人|名|户|家|笔|个|件|套|台|辆|架|"
+    r"项|宗|处|座|栋|幢|间|层|亩|公顷|平方|立方|㎡|吨|千克|公斤|克|米|公里|千米|升|度|千瓦|兆瓦|瓦|"
+    r"小时|分钟|天|日均|人次|批次|次|篇|页|条|张|本|册|头|只|支|枚|倍|点|bp|BP|"
+    r"kg|km|kW|MW|GW|Wh|kWh|MWh|GWh|mm|cm|m²|m³|MPa|Pa|rpm|SLPM|L(?![A-Za-z])|t(?![A-Za-z]))")
+# 紧跟在数字后面、说明它是"标识"的字（年份、文号、门牌、届次、番号等）。
+IDENTIFIER_SUFFIX = re.compile(r"\s*(?:年|号|弄|室|届|版|楼|单元|信箱|路|街|巷|所|厂|院)")
+IDENTIFIER_PREFIX = re.compile(
+    r"(?:电话|手机|座机|传真|联系方式|联系电话|邮编|邮政编码|代码|编码|编号|账号|帐号|卡号|证号|"
+    r"单号|合同号|专利号|申请号|注册号|登记号|工号|文号|字号|型号|QQ|微信|热线|No\.?|NO\.?)"
+    r"\s*[:：为]?\s*[（(]?\s*$")
+# 表头（或"要素｜内容"式表格的行首）出现这些字样时，该列（行）是标识，整体不分节。
+IDENTIFIER_HEADER = re.compile(
+    r"代码|编号|编码|专利号|申请号|证号|证书号|文号|电话|手机|邮编|账号|帐号|型号|标准号|注册号|"
+    r"登记号|合同号|订单号|批号|序列号|网址|邮箱")
+OPEN_BRACKETS = {"〔": "〕", "[": "]", "【": "】", "〈": "〉"}
+RANGE_TAIL = re.compile(r"\s*[-－—–~～至]\s*(\d[\d,]*(?:\.\d+)?)")
+
+
+def add_thousands_separators(text):
+    """给 text 中的数量补千位分隔符；标识类数字保持原样，已有分隔符的不重复加。"""
+    text = str(text).translate(FULLWIDTH)
+    out = []
+    pos = 0
+    bracket_close = None  # 位于〔〕[]【】内的数字是文号年度，不加
+    for match in NUMBER_TOKEN.finditer(text):
+        start, end = match.span()
+        for char in text[pos:start]:
+            if bracket_close is None and char in OPEN_BRACKETS:
+                bracket_close = OPEN_BRACKETS[char]
+            elif char == bracket_close:
+                bracket_close = None
+        out.append(text[pos:start])
+        pos = end
+        token = match.group()
+        out.append(token if bracket_close else _group_token(text, start, end, token))
+    out.append(text[pos:])
+    return "".join(out)
+
+
+def _group_token(text, start, end, token):
+    if "," in token or token.count(".") > 1:  # 已分节；或版本号、日期 2026.4.29
+        return token
+    integer, _, decimal = token.partition(".")
+    if len(integer) < 4 or integer.startswith("0"):  # 不足四位；0 开头的是编号
+        return token
+    before, after = text[:start], text[end:]
+    prev_char = before[-1:] if before else ""
+    next_char = after[:1]
+    # 数字串的一部分（如 12:30、2026/4/29、A-1234、688568.SH）不是数量。
+    if (prev_char and prev_char in ".:：/\\_#№") or (next_char and next_char in ":/\\_"):
+        return token
+    if re.match(r"\.\d|\.[A-Za-z]", after) or before.endswith("第"):
+        return token
+    if re.search(r"[A-Za-z][ \-]?$", before):
+        return token  # P1099999、ISO9001、GB/T 9704 等
+    unit_follows = bool(QUANTITY_UNIT.match(after))
+    if re.fullmatch(r"(?:19|20)\d\d", integer) and not decimal:
+        tail = RANGE_TAIL.match(after)
+        if tail and not QUANTITY_UNIT.match(after[tail.end():]):
+            return token  # 2025-2027年、2026-04-29 的起始年份
+        if tail:
+            return f"{int(integer):,}"  # 2000—3000万元：数值范围的起点
+    if IDENTIFIER_SUFFIX.match(after):
+        return token
+    if re.search(r"\d[-－—–~～]$", before) and not unit_follows:
+        return token  # 2025-2027年、GB/T 9704-2012 的后半段
+
+    def grouped():
+        return f"{int(integer):,}" + ("." + decimal if decimal else "")
+
+    if unit_follows:
+        return grouped()  # 带计量单位的一定是数量
+    if decimal and (len(integer) < 9 or len(decimal) == 2):
+        return grouped()  # 带小数的数量（九位以上只认两位小数的金额）
+    if len(integer) == 4 and 1900 <= int(integer) <= 2100:
+        return token  # 不带单位的四位年份
+    if re.match(r"[A-Za-z]|-\d", after):
+        return token  # 型号、带字母后缀的编码、标准号前半段
+    if len(integer) >= 9 or IDENTIFIER_PREFIX.search(before[-14:]):
+        return token  # 电话、证件号、信用代码、登记编号、账号等
+    if len(integer) == 6 and prev_char and prev_char in "（(" and next_char and next_char in "）)":
+        return token  # 括注的证券代码
+    return grouped()
+
+
+def _group_value(value):
+    if isinstance(value, str):
+        return add_thousands_separators(value)
+    if isinstance(value, list):
+        return [_group_value(item) for item in value]
+    return value
+
+
+def _group_blocks(blocks):
+    result = []
+    for blk in blocks or []:
+        if not isinstance(blk, dict) or not blk.get("thousands", True):
+            result.append(blk)
+            continue
+        blk = dict(blk)
+        for key in ("text", "caption"):
+            if key in blk:
+                blk[key] = _group_value(blk[key])
+        if blk.get("type") == "table":
+            header = [str(h) for h in (blk.get("header") or [])]
+            skip_cols = {i for i, h in enumerate(header) if IDENTIFIER_HEADER.search(h)}
+            rows = []
+            for row in blk.get("rows", []) or []:
+                if not isinstance(row, list):
+                    rows.append(row)
+                    continue
+                skip_row = bool(row) and len(row) <= 3 and IDENTIFIER_HEADER.search(str(row[0]))
+                rows.append([cell if (skip_row or i in skip_cols or not isinstance(cell, str))
+                             else add_thousands_separators(cell) for i, cell in enumerate(row)])
+            blk["rows"] = rows
+            if "header" in blk:
+                blk["header"] = _group_value(blk["header"])
+        result.append(blk)
+    return result
+
+
+def normalize_spec_numbers(data):
+    """返回补齐千位分隔符后的 spec 副本；"thousands": false 时原样返回。"""
+    if not data.get("thousands", True):
+        return data
+    result = dict(data)
+    for key in ("title", "intro", "attachments"):
+        if key in result:
+            result[key] = _group_value(result[key])
+    result["blocks"] = _group_blocks(result.get("blocks"))
+    if "appendices" in result:
+        appendices = []
+        for appendix in result.get("appendices") or []:
+            appendix = dict(appendix)
+            if "title" in appendix:
+                appendix["title"] = _group_value(appendix["title"])
+            appendix["blocks"] = _group_blocks(appendix.get("blocks"))
+            appendices.append(appendix)
+        result["appendices"] = appendices
+    return result
 
 
 def text_width_pt(text: str, size_pt: float = BODY_SIZE) -> float:
@@ -246,7 +407,10 @@ def add_page_field(paragraph) -> None:
     def songti(run):
         set_run_font(run, SONGTI_FONT, PAGE_NUMBER_SIZE, western_font=SONGTI_FONT, east_asia_hint=False)
 
-    songti(paragraph.add_run("-"))
+    # 页码写作"- 1 -"：短横线与数字之间各空一个半角空格，全部四号宋体。
+    lead = paragraph.add_run("- ")
+    lead._r.find(qn("w:t")).set(qn("xml:space"), "preserve")
+    songti(lead)
     field_run = paragraph.add_run()
     songti(field_run)
     begin = OxmlElement("w:fldChar")
@@ -262,7 +426,9 @@ def add_page_field(paragraph) -> None:
     end.set(qn("w:fldCharType"), "end")
     for element in (begin, instr, separate, result, end):
         field_run._r.append(element)
-    songti(paragraph.add_run("-"))
+    tail = paragraph.add_run(" -")
+    tail._r.find(qn("w:t")).set(qn("xml:space"), "preserve")
+    songti(tail)
     # Paragraph mark in 四号宋体 too, so the footer line height follows the page number.
     mark = OxmlElement("w:rPr")
     fonts = OxmlElement("w:rFonts")
@@ -532,6 +698,7 @@ def apply_western_font_pass(doc: Document) -> None:
 
 
 def build_docx(data: dict, output: Path) -> None:
+    data = normalize_spec_numbers(data)  # 数量自动补千位分隔符，标识类数字不动
     kind = data.get("kind", "meeting")
     defaults = KIND_DEFAULTS.get(kind, KIND_DEFAULTS["meeting"])
 
@@ -541,7 +708,7 @@ def build_docx(data: dict, output: Path) -> None:
     normal.font.size = Pt(BODY_SIZE)
     normal.element.rPr.rFonts.set(qn("w:eastAsia"), BODY_FONT)
     set_chinese_language(doc)
-    # 页脚固定为"-1-"四号宋体、奇偶页不同；仅在明确传 false 时关闭。
+    # 页脚固定为"- 1 -"四号宋体、奇偶页不同；仅在明确传 false 时关闭。
     setup_document(doc, page_numbers=bool(data.get("page_numbers", True)))
 
     add_title_lines(doc, data.get("title", "审议关于XXXX的议题"))
@@ -600,7 +767,11 @@ def main() -> None:
         print(f"本机未安装：{'、'.join(missing)}，Word 打开会用替代字体显示；"
               f"运行 python {Path(__file__).with_name('ensure_fonts.py')} --check 检测本机字体；缺失时自行准备授权文件并设置 ICDAFY_FONT_DIR。",
               file=sys.stderr)
-    hard, warn = scan_spec(data)
+    grouped = normalize_spec_numbers(data)
+    if json.dumps(grouped, ensure_ascii=False) != json.dumps(data, ensure_ascii=False):
+        print("已为未分节的数量自动补千位分隔符（如 1980万元 → 1,980万元），Word 中以补齐后的写法为准。",
+              file=sys.stderr)
+    hard, warn = scan_spec(grouped)
     if hard or warn:
         print("文本检查（硬规则须改掉后重新生成）：", file=sys.stderr)
         for line in hard + warn:

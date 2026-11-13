@@ -1,77 +1,121 @@
 ---
 name: yiti-skill
-description: 撰写国企投委会议题（DOCX）：依据股东会、合伙人会议通知及议案撰写参会表决议题；依据投后资料、对赌回购条款、经营数据撰写项目退出、股权回购议题。用于“写投委会议题”“报送投委会”“提请投委会审议”，按公司公文版式排版。
+description: 撰写国企投委会、董事会、专题会议题（DOCX）：股东会及合伙人会议参会表决、项目投资、基金组建、项目退出与股权回购、采购等经营事项。按本单位议题的书面公文口吻和硬逻辑成文，公文版式排版。用于“写议题”“写投委会议题”“报送投委会”“提请投委会审议”。
 ---
 
 # 议题 Skill（投委会议题撰写）
 
 ## 适用范围
 
-Draft Chinese SOE investment-committee deliberation memos (投委会议题). Use when the user provides a 股东会/合伙人会议通知、议案、会议材料 and asks for a 投委会议题/审议议题/参会及表决事项议题, or provides 投后资料、对赌回购条款、经营数据 and asks for a 项目退出议题/股权回购退出议题/提前退出议题, or asks to 报送投委会/提请投委会审议. Covers 参股公司股东会、基金合伙人会议 and 已投项目退出（实际控制人回购、股权转让）, including full DOCX output with company officialese typography (方正小标宋简体标题、仿宋_GB2312正文、括号楷体_GB2312、Times New Roman数字、表格五号、页脚-1-四号宋体奇偶页).
+撰写投管公司等报送主体提交投委会、董事会、党委会、专题会审议的"议题"文书，并生成 Word 文件。五类议题共用一套表述规范、逻辑规范、排版规则和生成器：
 
-Use this skill to draft 投管公司报送投委会的"议题"文书 and render it as a Word file. Two kinds of 议题 share one typography and one generator:
-
-| 类型 | 输入 | 骨架与写法 | 范文 |
+| 类型 | 输入材料 | 骨架与写法 | 范文 |
 |---|---|---|---|
-| A. 会议参会表决议题 | 被投企业/基金管理人发来的会议通知、议案、表决票 | `references/writing-logic.md` | 例一至例五 |
-| B. 投资项目退出议题 | 投资决策文件、增资协议对赌回购条款、投后经营数据、与实际控制人沟通情况 | `references/exit-writing-logic.md` | 例六 |
+| A. 会议参会表决议题 | 被投企业、基金管理人发来的会议通知、议案、表决票、协议草案 | `references/writing-logic.md`；分配、协议修订、建议反对三种变体见 `references/invest-fund-matter-logic.md` | 例一至例五、例十、例十一 |
+| B. 投资项目退出议题 | 投资决策文件、对赌回购条款、投后经营数据、与实际控制人沟通情况 | `references/exit-writing-logic.md` | 例六 |
+| C. 项目投资议题 | 尽调报告、审计与评估报告、法律意见、交易方案 | `references/invest-fund-matter-logic.md` | 例七 |
+| D. 基金组建议题 | 政策文件、合作方及管理人资料、基金方案 | `references/invest-fund-matter-logic.md` | 例八 |
+| E. 经营事项议题（采购等） | 需求说明、供应商报价、比选情况 | `references/invest-fund-matter-logic.md` | 例九 |
 
-Rules come from the gold examples in `references/gold-examples.md` (例六 is a desensitized 2026-09 项目退出议题终稿), the company format sample `assets/templates/文件字体格式.doc`, and the original font requirements.
+不代写一般通知、请示、投后报告和会议纪要。
+
+规则来源：维护者提供的本单位历年议题成稿（只读研读，不入库；仓库内范文和例句已脱敏或改为虚构）、公司行文格式样本 `assets/templates/文件字体格式.doc`。
 
 ## 调用与跨 Agent 运行
 
-本技能采用标准 `SKILL.md`（`name` / `description`）入口，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder 等客户端通过自然语言匹配或在技能列表中显式选择。安装、迁移或触发异常时读取 [跨 Agent 安装与调用](references/agent-compatibility.md)，按实际产品安装完整目录或 ZIP，并完成调用验收；`scripts/skill_portability.py` 提供完整性检查、Word 冒烟测试、目录安装和打包。
+本技能采用标准 `SKILL.md`（`name`、`description`）入口，可在 ChatGPT、Claude、Codex、Qoder、TRAE、WorkBuddy、DeepSeek Harness、千问办公、豆包、Kimi、智谱 ZCode 等客户端通过自然语言匹配或在技能列表中选择。安装、迁移或触发异常时读取 [跨 Agent 安装与调用](references/agent-compatibility.md)；`scripts/skill_portability.py` 提供完整性检查、Word 冒烟测试、目录安装和打包。
 
-执行时以当前已加载 `SKILL.md` 所在目录作为技能根目录，文内 `scripts/`、`references/`、`assets/`都相对此根目录解析，不相对用户任务目录；调用脚本时使用脚本及输入输出的绝对路径，输出文件放用户任务目录。网页检索、文件读取和代码执行使用宿主当前可用的等价工具，不要求特定工具名称。生成 Word 需要 Python 3.10+ 及 `requirements.txt`；宿主无执行或字体条件时，交付议题文本并如实说明 Word 未生成或未验证。
+执行时以当前已加载 `SKILL.md` 所在目录为技能根目录，`scripts/`、`references/`、`assets/` 都相对此目录解析；调用脚本时使用绝对路径，输出文件放用户任务目录。文件读取、检索和代码执行使用宿主当前可用的等价工具。生成 Word 需要 Python 3.10+ 和 `requirements.txt`；宿主不能执行代码或没有字体时，按本文件的规则交付议题文本，并如实说明 Word 未生成或未验证。本文件已写入全部硬性规则，宿主读不到 `references/` 时仍按本文件成文。
 
-## What a 议题 is
+## 工作流程
 
-- 行文方向：上行文。投管公司向投资决策委员会报送，用"提请""现申请""拟"，口吻正式、克制，不用指令性措辞。
-- A 类：不设落款和日期，末尾以附件说明结束。
-- B 类：不设"投委会："主送行，审议机构在导语末句点明；附件说明后落款单位、成文日期；退出方案作为附件另页排在文后。
+1. **通读材料，判断类型。** 读完用户给的全部材料，按上表定 A—E 类；一份议题只属于一类。
+2. **回答六个问题。** 动笔前各用一句话回答：请什么（事项和上限）、为什么办、凭什么办、怎么办、对我方意味着什么、还差什么程序。答不出的回材料里找，材料没有的向用户要，不推测、不编造数字。
+3. **读对应的写法文件和范文**，按固定骨架列出一级、二级标题。
+4. **逐节成文。** 句子按"表述规则"写，论证按"逻辑规则"排；细则见 `references/expression-style.md` 和 `references/logic-chain.md`。
+5. **复算与核对。** 全部数字回材料核对并复算（分项之和、比例之和、差额、占比、上限）；称谓、简称、审议机构全篇一致。
+6. **质询预演。** 站在审议人位置问：为什么要本机构审、为什么是现在、数字什么口径、对我方什么影响、最不利情况、前后程序。文中各有一句能回答。
+7. **文本检查。** 把 JSON 稿交给 `scripts/check_yiti_text.py spec.json`，硬规则命中全部改掉，警告逐条复核。
+8. **生成 Word。** 每台机器先运行一次 `scripts/ensure_fonts.py`；再运行 `scripts/create_yiti_docx.py spec.json out.docx`（示例见 `assets/examples/`）；用 Word 打开，检查字体、行距、表格、附件对齐和页码。
 
-## Workflow
+只输出议题本身。不写开场白、写作说明、结束语，不向用户复述规则；需要用户补材料或确认口径时，在议题之外单独列出。
 
-1. Read every source document. A 类提取会议要素（名称、时间、地点、召集人、方式、表决方式、截止时间）和全部议案；B 类提取投资决策链（立项、尽调、董事会届次及票数、报告和备案文号）、对赌与回购条款原文、最近一个完整年度和最新一期经营数据、合同与回款、与实际控制人沟通结果。
-2. Decide the type (A/B) and draft strictly on its skeleton. Where the source is thin, corroborate with authoritative public sources and cite the document number; never invent figures.
-3. Write in 正式书面公文语体, neutral in tone: judgments rest on data, neither hedged into vagueness nor pushed to absolutes (see 语气基调 in `references/writing-logic.md`).
-4. End every paragraph with a fact or a conclusion. Never close a paragraph with "需要后续进行判断""有待进一步研判""后续持续关注""视情况而定" or any similar deferral sentence.
-5. State what things are and why they are necessary, directly. Never use "不是……而是""并非……而是""不仅……而且""而非" or other set-up-then-negate patterns.
-6. Put the JSON spec through `scripts/check_yiti_text.py spec.json`; fix every 硬规则 hit, review each 警告 in context.
-7. Run `scripts/ensure_fonts.py` once per machine: it detects 仿宋_GB2312, 楷体_GB2312 and 方正小标宋简体 and installs only user-supplied licensed files from ICDAFY_FONT_DIR per-user when missing (Windows registry included, no admin rights). 方正小标宋简体's licence forbids embedding it in the .docx, so the machine that opens the file must have it installed.
-8. Render with `scripts/create_yiti_docx.py spec.json out.docx` (see `assets/examples/exit-yiti-spec.json` for a complete B 类 spec), then open the file in Word and check font fallback, line spacing, table layout, attachment alignment and page numbers.
+## 表述规则（硬性）
 
-## Required Format Priorities
+议题是上行文，读的人要在会上表态。全文只有四种句子：事实句、依据句、判断句、请求句。寒暄、过渡、感想、展望、对读者的提示一律不写。
 
-Apply fonts in this order, exactly as in the manual Word workflow:
+1. **主语是机构。** 用"我司""我方""公司""基金管理人"及各主体简称；不用"我们""大家""笔者"，不用第二人称。同一篇"我司""我方"只用一种。
+2. **动词按主体分工。** 来文方：拟、提议、召集、发来。报送方：拟、拟申请、现申请、现提请、研判、测算、核查。审议机构：审议、同意、表决、授权。上级与监管：出具、批示、备案、印发。未发生的事用"拟"，交代结论来历用"经"（经核查、经测算、经评估），解释原因用"系……所致"。
+3. **段首定位。** 每段第一句用层面词（行业层面、财务方面）、引导词（主要内容：、调整原因：、我司分配情况及影响：）或承接词（根据上述分析、在此背景下、据此、综上）交代本段讲什么。不用"首先""其次""此外""值得注意的是"。
+4. **段内顺序。** 定位 → 事实 → 依据或原因 → 判断或对我方的影响。判断紧跟支撑它的事实。
+5. **段尾落在事实、结论或请求上。** 不写"有待进一步研判""后续持续关注""视情况而定"。取决于后续程序的，写成规则："最终价格以审计、评估结论及国资备案结果为准""暂定名，以工商注册为准"。
+6. **数字自带口径。** 时点（截至XX年X月X日）或期间（XX年度、XX年1—6月）＋主体＋指标＋数值＋单位；比较写出基数和幅度（"较年初92.50万元下降34.00%"）；计算把基数、规则、结果写在一句内。
+7. **判断与证据相称。** 有审计数、协议、决议的用"已、均、符合、未发现存在……情形"；有数据趋势或测算的用"显著、差距较大、极高、大概率"；只有预测或访谈的用"预计、有望、可能"并标明是谁的预测。不用"必然、彻底、毫无、完美、最佳"，也不用"或许、似乎、恐怕"。一句最多一个推测词。
+8. **直接陈述。** 写是什么、为什么必要。不用"不是……而是""并非……而是""不仅……而且""而非"；转折只用"但"，一段只转折一次。
+9. **分项用"一是……；二是……"。** 先写总括句并报项数，各项结构相同；只有一项不用序数。
+10. **称谓一致。** 全称首次出现后括注简称（"（以下简称"XX"）"或"（简称"XX"）"，全篇一种），此后只用简称；主送、导语、提请句的审议机构同名；同一事物全篇一个叫法。人员写"实际控制人XX"，不写"X总""X老师"。
+11. **不用的词。** 口语（搞、看一下、说白了、比如说、挺、这块）；对话腔（让我们、接下来、以下是、希望以上）；总结腔（综上所述、总的来说、由此可见、不难看出）；抒情与拔高（至关重要、不可或缺、日新月异、保驾护航、痛点、海量、全方位、巨大）；感叹号、破折号、问句。收束全文只用"综上，"。
+12. **不照抄来文方的宣传话。** 供应商、被投企业、管理人的自我评价（国内领先、第一家、实力雄厚）改为可核对的事实；没有全量比较不用"最"。
+13. **不用 Markdown。** 正文不出现列表符号、井号标题、代码块；加粗只用于议案标题、引导词和核心结论句。
 
-1. Chinese fonts by role: title 二号方正小标宋简体; `提交子公司：投管公司` 三号楷体_GB2312 centered; body 三号仿宋_GB2312; `一、` 三号黑体 not bold; `（一）` 三号楷体_GB2312 bold; `1.` 三号仿宋_GB2312 bold; `（1）` 三号仿宋_GB2312 bold (四级标题，按需使用).
-2. Every round parenthesis and its contents: 楷体_GB2312. Size follows the location: 二号 in the main title and attachment titles (same size as the title), 三号 in the submit line, body, headings and attachment lines, 五号 inside tables. The serial number `（1）` of a 四级标题 is not changed to 楷体: it stays 仿宋_GB2312 bold with the heading.
-3. Tables: every character 五号; outside parentheses 仿宋_GB2312, inside parentheses 楷体_GB2312; centered horizontally and vertically; header row bold and repeated across pages.
-4. Footer: `-1-`, both hyphens and the PAGE field all 四号宋体 in every font slot; always on; odd/even pages different (odd right, even left).
-5. Last pass: Times New Roman for the whole body — every digit, Latin letter and symbol such as `%` `.` `:` becomes Times New Roman, inside parentheses and tables too, while Chinese characters keep the fonts above. The footer is excluded and stays 四号宋体. Full-width digits and `％` are converted to half-width first so the pass reaches them.
-6. Numbers (千位分隔符): every Arabic number whose integer part has four or more digits takes a half-width comma every three digits counted from the units digit, with a half-width point as the decimal mark (US/UK style): `1,234.56`、`2,350万元`、`141,583.56元`、`1,000,000`; write `1,980万元`, never `1980万元`. This applies in the title, body, parentheses, tables and attachments. The decimal part is not grouped, and the separator is never a full-width `，`, a space or a point. Identifiers are not quantities and stay ungrouped: years (`2026年`), dates, times, 文号 (`〔2026〕12号`), page numbers, phone and ID numbers, 统一社会信用代码, stock codes, contract/patent/order numbers, model, version and standard numbers. `scripts/check_yiti_text.py` flags ungrouped numbers as a 硬规则.
+口语改写示例："我们打算跟XX公司一起成立合伙企业投这家公司" → "我司拟联合XX公司成立有限合伙企业（SPV）对XX科技进行投资"；"这个议案看起来没什么问题" → "经核查，该议案已履行董事会审议程序，符合《公司章程》相关规定，未发现存在损害我司参股股东合法权益的情形"。
 
-Layout:
+## 逻辑规则（硬性）
 
-- Title block and all headings: fixed 30 pt line spacing; body and attachments: fixed 28 pt. Every heading and paragraph starts with a two-character first-line indent (centered title block and the flush-left `投委会：` excepted).
-- Attachment note: after the body, one blank line, then a paragraph indented two characters in 三号仿宋_GB2312. Single: `附件：名称`, wrapped lines align with the first character of the name. Multiple: `附件：1.名称`, then `2.名称` on a new line aligned with `1.`; a long item wraps to align after its own `2.`, never back to the margin. Names carry no 书名号 and no trailing punctuation; the JSON passes names only.
-- B 类 signature: two blank lines after the attachment note; issuer right-indented four characters, date centered beneath it; kept on one page with the attachment note and the closing body line.
-- B 类 attachment document: new page, `附件：` flush left, 二号方正小标宋简体 title, one blank line, then the same heading/body/table rules.
+1. **全文一条链。** 事由 → 事实 → 分析 → 结论 → 请求，后一部分只使用前一部分已给出的内容。各一级标题下的结论连读，应是一段通顺的话。
+2. **节与节相接。** 上一节的结论是下一节的起点，用承接词写明关系：由事实到分析"根据上述分析，"；由背景到动作"在此背景下，"；由原因到对策"因此，基于前述……，"；由依据到结论"据此，"；由比选到选择"综合……等因素，"；由全文到请求"综上，"。承接词指向的内容前文必须存在。
+3. **每个判断四步。** 论点（办成什么事或是什么情况）→ 依据（条款、文件、程序、数据）→ 推理（为什么由此得出）→ 对我方的含义（比例、金额、成本、表决权的变化）。只转述来文而不写对我方影响的，补上；确无影响的写"不涉及我司出资及持股比例变化"。
+4. **推理不跳步。** 相邻两句之间问"所以呢""凭什么"，答案应当就在上下句。例：协议目标 → 最新实际数 → 测算缺口 → 剩余时间 → 访谈印证 → 触发条款的判断 → 对策。
+5. **数字闭合。** 分项之和等于合计，比例之和等于100%，占比等于分子除以分母；正文、表格、附件、请示事项中的同一数字一致；认缴与实缴、含税与不含税、合并与单体不混用，换口径时写明"按合并口径"。
+6. **项数一致。** 总括句、分项正文、核查结论、请示事项的项数相同（"共计审议两项议案"→（一）（二）→"本次两项议案均已……"→"同意两项审议议案"）。
+7. **正反并陈，结论单向。** 不利事实写在风险、问题或影响的位置，交代应对或金额；结论只有一个方向，不写"总体可行但存在较大不确定性，建议审慎决策"。建议反对的，写"建议对该议案投反对票"，并把需要对方补充的材料列入请求。
+8. **来源分开。** 来文方的观点标明"基金管理人认为""公司预计"；我司的判断另起一句。预测与事实分开，测算写明假设。
+9. **请求闭合。** 请示事项先写申请内容（动作、主体、标的、金额或比例、定价规则），再单独一段写"现提请投委会审议。"请求中的每个数字前文已出现；金额写"不超过"；不出现新事实；请求的范围等于正文论证的范围。
 
-## Bundled Resources
+## 各类骨架速览
 
-- `references/format-rules.md`: page setup, font order, sizes, indentation, table, attachment, signature and footer rules.
-- `references/writing-logic.md`: 议题类型判断, A 类 section-by-section logic and sentence bank, tone baseline, forbidden-wording checklist shared by both types.
-- `references/exit-writing-logic.md`: B 类 skeleton, section logic, connective and data sentence bank, 退出方案 template and self-check list.
-- `references/gold-examples.md`: six annotated 议题 (券商股东会两例、基金合伙人会议三例、项目退出一例).
-- `assets/examples/exit-yiti-spec.json`: complete desensitized B 类 spec (正文、附件说明、落款、退出方案附件及流程表).
-- `assets/fonts/`: 方正小标宋简体、楷体_GB2312、仿宋_GB2312 (simfang.ttf), not distributed; use installed licensed fonts or ICDAFY_FONT_DIR.
-- `assets/templates/文件字体格式.doc`: original company format sample.
-- `scripts/create_yiti_docx.py`: deterministic DOCX generator. Spec fields: `kind` (`meeting`/`exit`), `title` (use `\n` to break lines), `submit_line`, `recipient` (empty string omits it), `intro` (string or list of paragraphs), `blocks` (`h1` `h2` `h3` `h4` `para` `table` `blank`; `**...**` for inline bold), `attachments`, `signature` {`issuer`, `date`}, `appendices` [{`title`, `blocks`}], `page_numbers` (default true). Embeds locally licensed 仿宋_GB2312/楷体_GB2312 on save and prints the text-check result.
-- `scripts/check_yiti_text.py`: language scanner for JSON specs or text drafts (deferral endings, set-up-then-negate patterns, stock phrases, tone warnings); exit code 1 on hard hits.
-- `references/agent-compatibility.md`: installation, invocation, runtime adaptation and acceptance checks for each supported client.
-- `scripts/skill_portability.py`: stdlib-only package checker, DOCX smoke test, client-folder installer and ZIP packager.
-- `requirements.txt`: Python dependency for DOCX output.
-- `scripts/ensure_fonts.py`: checks the three official-document fonts and installs missing ones per-user only from the user-supplied ICDAFY_FONT_DIR (`--check` only reports). The generator prints a reminder when any is missing.
-- `scripts/embed_fonts.py`: font embedder used by the generator; `python scripts/embed_fonts.py --docx out.docx --verify` re-checks an existing file.
+- **A 会议表决**：标题"审议关于＋主体全称＋届次会议＋（参会及表决事项）＋的议题" → 提交行 → `投委会：` → 导语（主体、关系、事由、报送目的，"具体如下："）→ 一、会议基本信息 → 二、会议审议事项（每项：结论、依据、关键事实、对我方影响）→ 三、请示事项（核查结论＋明确请求）→ 附件说明。不设落款。
+- **B 项目退出**：标题"审议关于XX有限公司投资项目退出的议题" → 提交行 → 导语两段 → 一、项目基本情况 → 二、XX发展情况 → 三、退出原因（标题即结论）→ 四、退出安排（定价原则、工作流程）→ 五、请示事项 → 附件说明、落款 → 另页退出方案。
+- **C 项目投资**：标题"审议关于对XX有限公司项目投资的议题" → `投委会：` → 导语 → 一、项目基本情况（（一）项目概况：定位、行业层面、业务层面、财务方面、交易层面；（二）交易对手介绍；（三）风险揭示；（四）投资建议）→ 二、投资方案（要素表）→ 三、请示事项 → 附件说明。
+- **D 基金组建**：标题"审议关于与XX组建XX基金的议题" → `投委会：` → 导语（目的、我方角色、合作方关系、设立对象）→ 一、基金设立背景 → 二、基金管理人概况 → 三、基金概况（基本要素、出资结构、管理机制、治理架构、投资、托管、管理费、收益分配、退出）→ 四、请示事项（立项并开展尽调和协议磋商）→ 附件。
+- **E 经营事项**：标题"关于XXXX的议题" → 提交行 → 导语（需求、现状与缺口、拟办事项，"现将有关情况汇报如下："）→ 一、背景 → 二、调研比选（各方案对称，结论单独成段）→ 三、申请方案及费用 → 四、提请审议事项。
+
+同一事项逐级上会时正文不变，只改提交主体行、主送和提请句，并把上一级会议纪要列为附件第一项。
+
+## 格式规则
+
+字体按下列顺序设置，后一步覆盖前一步：
+
+1. 中文字体按角色：主标题二号方正小标宋简体；提交行三号楷体_GB2312居中；正文三号仿宋_GB2312；`一、` 三号黑体不加粗；`（一）` 三号楷体_GB2312加粗；`1.` 三号仿宋_GB2312加粗；`（1）` 三号仿宋_GB2312加粗（四级标题，按需使用）。
+2. 圆括号及括号内文字：楷体_GB2312。字号随位置：主标题和附件标题内二号，正文、标题、附件说明内三号，表格内五号。四级标题序号"（1）"不改楷体。
+3. 表格：全部五号；括号外仿宋_GB2312，括号内楷体_GB2312；水平、垂直居中；表头加粗并跨页重复。
+4. 页脚：`- 1 -`，短横线与页码数字之间各有一个半角空格（"- 数字 -"）；两个短横线、两个空格和 PAGE 域全部四号宋体；固定显示；奇数页居右、偶数页居左。不写作 `-1-`、`—1—`、`第1页`。
+5. 最后一步：正文全部内容的西文槽位设为 Times New Roman，数字、英文字母和 `%` `.` `:` 等半角符号随之改变，汉字不变；页脚不参与，保持四号宋体。全角数字和 `％` 先转半角。
+6. 数字千位分隔符：整数部分四位及以上的数量，自个位起每三位加一个半角西文逗号，小数点用半角点：`1,234.56`、`2,350万元`、`141,583.56元`、`1,000,000`；写 `1,980万元`，不写 `1980万元`。标题、正文、括号内、表格和附件中的全部数量均适用；小数部分不分节；分隔符不用全角逗号、空格或点号。年份（`2026年`）、日期、时刻、文号（`〔2026〕12号`）、页码、电话、证件号、统一社会信用代码、登记编号、股票代码、合同与专利编号、型号、版本号、标准号等标识不加。来文未分节的照此改写。生成器在生成 Word 时自动补齐漏加的分隔符，`scripts/check_yiti_text.py` 把未分节的数字列为硬规则；交付纯文本时须自行逐个检查。
+
+版式：
+
+- 主标题、提交行和各级标题固定行距30磅；正文、附件说明、落款固定行距28磅。标题和段落首行缩进2字（居中的标题区、顶格的主送行、附件页左上角的"附件："除外）。
+- 附件说明：正文下空一行，另起一段首行缩进2字。单份写 `附件：名称`；多份写 `附件：1.名称`，`2.` 与 `1.` 对齐，回行与本项名称首字对齐。名称不加书名号、不加句末标点。
+- 落款（B 类及需要落款的其他议题）：附件说明下空两行，署名单位右空四字，成文日期居于其下；与附件说明、正文末段同页。
+- 附件正文：另起一页，`附件：` 顶格，二号方正小标宋简体标题，空一行后按正文规则排。
+
+## 随附资源
+
+- `references/expression-style.md`：议题表述规范——语体、段落写法、动词分工、14类功能句式、用词对照、口语与机器腔改写、初稿到终稿的七处修改方向。
+- `references/logic-chain.md`：议题论证逻辑——合格标准、六个问题、各类推理链、章节衔接、判断四步、数字逻辑、常见逻辑问题、质询预演、自查清单。
+- `references/writing-logic.md`：类型判断、A 类逐节写法和句式、语气基调与语言禁区。
+- `references/exit-writing-logic.md`：B 类骨架、逐节写法、退出方案模板。
+- `references/invest-fund-matter-logic.md`：C、D、E 类骨架和逐节写法，A 类三种变体。
+- `references/gold-examples.md`：十一份带写作思路还原的范文。
+- `references/format-rules.md`：页面、字体顺序、字号、缩进、表格、附件、落款、页脚、数字的完整规则。
+- `references/agent-compatibility.md`：各客户端的安装、调用、运行适配和验收。
+- `assets/examples/exit-yiti-spec.json`、`assets/examples/invest-yiti-spec.json`：B 类、C 类完整 JSON 示例。
+- `assets/templates/文件字体格式.doc`：公司行文格式样本。
+- `assets/fonts/`：字体说明；字体不随安装包分发，使用本机已有的授权字体或 `ICDAFY_FONT_DIR`。
+- `scripts/create_yiti_docx.py`：Word 生成器。字段：`kind`（`meeting`、`exit`、`invest`、`fund`、`matter`，只决定提交行和主送行的默认值）、`title`（用 `\n` 折行）、`submit_line`、`recipient`（空字符串表示不设主送）、`intro`（字符串或段落数组）、`blocks`（`h1` `h2` `h3` `h4` `para` `table` `blank`；`**…**` 表示行内加粗）、`attachments`、`signature`{`issuer`,`date`}、`appendices`[{`title`,`blocks`}]、`page_numbers`（默认 true）、`thousands`（默认 true，自动补千位分隔符；设为 false 关闭，也可写在单个块上）。保存时嵌入本机授权的仿宋_GB2312、楷体_GB2312，并输出文本检查结果。
+- `scripts/check_yiti_text.py`：文本检查。硬规则：悬置收尾、对举句式、套话、口语与自称、机器腔、Markdown 标记、未分节数字；警告：语气偏激进或偏保守、拔高词、破折号、半角括号、全角数字，以及逻辑结构（导语引出句、提请句、审议机构一致、标题序号连续、"一是二是"连续、请示事项数字闭合、简称使用、段落收尾）。硬规则命中时退出码为1。
+- `scripts/ensure_fonts.py`：检测三款公文字体，缺失时只从用户提供的 `ICDAFY_FONT_DIR` 做用户级安装（`--check` 只检测）。方正小标宋简体的许可不允许嵌入文档，打开文件的电脑须已安装。
+- `scripts/embed_fonts.py`：字体嵌入器；`python scripts/embed_fonts.py --docx out.docx --verify` 复核已有文件。
+- `scripts/skill_portability.py`：包完整性检查、Word 冒烟测试、客户端目录安装和 ZIP 打包，只用标准库。
+- `requirements.txt`：生成 Word 的 Python 依赖。
