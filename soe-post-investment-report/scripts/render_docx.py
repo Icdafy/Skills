@@ -25,6 +25,8 @@ import uuid
 import xml.etree.ElementTree as ET
 from zipfile import BadZipFile, ZipFile
 
+from word_vbs_export import render_word_vbs
+
 
 MACRO_PARTS = (
     "vbaproject.bin",
@@ -289,7 +291,7 @@ def _powershell() -> str | None:
     return shutil.which("powershell") or shutil.which("pwsh")
 
 
-def render_with_word(docx: Path, pdf: Path, timeout: int) -> tuple[bool, str]:
+def render_word_powershell(docx: Path, pdf: Path, timeout: int) -> tuple[bool, str]:
     """Render through Word COM with macros, alerts and link updates disabled."""
     shell = _powershell()
     if not shell:
@@ -352,6 +354,8 @@ try {
         )
     except subprocess.TimeoutExpired:
         return False, f"Microsoft Word conversion timed out after {timeout} seconds"
+    except OSError as error:
+        return False, str(error)
     finally:
         if script_path is not None:
             script_path.unlink(missing_ok=True)
@@ -360,6 +364,16 @@ try {
         return True, ""
     detail = (proc.stderr or proc.stdout or "Word did not create a PDF").strip()
     return False, detail[-2000:]
+
+
+def render_with_word(docx: Path, pdf: Path, timeout: int) -> tuple[bool, str]:
+    success, detail = render_word_powershell(docx, pdf, timeout)
+    if success or os.name != "nt":
+        return success, detail
+    fallback_success, fallback_detail = render_word_vbs(docx, pdf, timeout)
+    if fallback_success:
+        return True, ""
+    return False, f"{detail}\nWindows Script Host: {fallback_detail}"[-2000:]
 
 
 def find_soffice() -> str | None:

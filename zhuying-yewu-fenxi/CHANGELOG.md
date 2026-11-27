@@ -1,5 +1,10 @@
 # 变更记录
 
+## 1.2.0（2026-11-27）
+
+- Antigravity App、CLI 和 IDE 支持用户级及项目级安装。安装器新增 `--agent antigravity`，App 和 CLI 可用斜杠指令点名调用。
+- 增补 Antigravity 执行说明，包含按实际加载路径读取资源、Windows UTF-8、绝对路径调用及结果复核。
+
 ## 1.1.1（2026-11-12）
 
 - 仓库整理：删除 PowerShell 兼容入口 `scripts/ensure-fonts.ps1`（功能与 `python scripts/ensure_fonts.py` 相同），`SKILL.md`、`references/docx-format.md`、`references/quality-checklist.md` 同步去掉该入口；删除 README 末尾与 `SKILL.md`、本变更记录重复的“原业务说明与历史记录”附录。

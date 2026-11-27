@@ -1,5 +1,12 @@
 # 变更记录
 
+## 1.4.0（2026-11-27）
+
+- Antigravity App、CLI 和 IDE 支持用户级及项目级安装。安装器新增 `--agent antigravity`，App 和 CLI 可用斜杠指令点名调用。
+- 增补 Antigravity 执行说明，包含按实际加载路径读取资源、Windows UTF-8、绝对路径调用及结果复核。
+- 修复 Windows 中文或含空格路径中 FFmpeg 日志解码失败而中断转写或复核的问题。在中文路径下回归检测媒体时长、转制和静音识别。
+- Word 的 PowerShell COM 绑定失败时，改用后备的 Word PDF 导出入口，保留本机字体及版式检查。
+
 ## 1.3.1（2026-11-12）
 
 - 仓库整理：删除旧安装脚本 `scripts/install_skill.py`（安装、备份与私有词库保留统一由 `scripts/skill_portability.py` 完成）及其测试，`references/platforms.md` 同步去掉兼容说明。

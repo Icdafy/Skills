@@ -3,7 +3,7 @@ name: soe-post-investment-report
 description: 依据随调用提供的投后材料，创建或更新国企股权投资项目投后情况报告：首轮先问四项变更确认，再核验事实、回填数据、披露风险、更新附件；沿用上期定稿的报告形式与框架，按定稿的口吻、句型和论证逻辑成文，正文不超过10页，输出正式DOCX。用于投后报告、投后管理报告、半年度或年度投后情况报告。
 metadata:
   display_name: "国企股权投资投后报告"
-  version: "1.6.0"
+  version: "1.7.0"
   compatibility: "确定性生成 DOCX 需要 Python 3.10+ 和 python-docx；最终认证还需要 Microsoft Word 或 LibreOffice、pypdf 与 Poppler。未完成完整渲染闭环时，只能交付明确标注的未认证草稿。"
 ---
 
@@ -18,6 +18,8 @@ metadata:
 本技能的表述规范提炼自一批实际投后报告成稿：经 16 轮校改后定稿通过的半年度报告及其全部修改稿、年度和季度报告、各项目附件，以及作为素材的投后访谈报告和月度投后纪要。起草时以 [references/expression-playbook.md](references/expression-playbook.md)（写什么、按什么顺序）、[references/report-voice.md](references/report-voice.md)（每句话怎么说）和 [references/logic-chain.md](references/logic-chain.md)（每句话凭什么成立、上下句怎么接）为准，不得退回首稿写法，不得写成口语稿或机器摘要。
 
 ## 调用与跨 Agent 运行
+
+在 Google Antigravity 中，调用配套脚本或生成 Word 前读取 [Antigravity 执行说明](references/antigravity.md)。
 
 本技能采用标准 `SKILL.md`（`name` / `description`）入口，可在 ChatGPT、Claude、Codex、Qoder、TRAE、WorkBuddy、DeepSeek Harness、千问办公、豆包电脑版（工作模式）、Kimi、智谱 GLM（ZCode、AutoClaw）等客户端通过自然语言匹配或在技能列表中显式选择。安装、迁移或触发异常时读取 [跨 Agent 安装与调用](references/agent-compatibility.md)，按实际产品安装完整目录或 ZIP，并完成调用验收；`scripts/skill_portability.py` 提供完整性检查、Word 冒烟测试、目录安装和打包。
 

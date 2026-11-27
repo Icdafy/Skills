@@ -15,6 +15,8 @@ description: 撰写、修订或复核股权投资立项报告的所属行业分�
 
 ## 调用与跨 Agent 运行
 
+在 Google Antigravity 中，调用配套脚本或生成 Word 前读取 [Antigravity 执行说明](references/antigravity.md)。
+
 本技能采用标准 `SKILL.md`（`name` / `description`）入口，可在 Claude、ChatGPT、Codex、Kimi、豆包、智谱 GLM（ZCode、AutoClaw）、WorkBuddy、TRAE、Qoder、DeepSeek Harness、千问办公等客户端通过自然语言匹配或在技能列表中显式选择；`scripts/skill_portability.py` 提供完整性检查、Word 冒烟测试、目录安装和打包。安装、迁移或触发异常时读取 [跨 Agent 安装与调用](references/agent-compatibility.md)，按实际产品版本安装完整目录或ZIP并完成调用验收。
 
 执行时以当前已加载 `SKILL.md` 的位置作为技能根目录，先确认所需参考文件及脚本可读；文内 `scripts/`、`references/`、`assets/` 都相对此根目录解析，不相对用户任务目录。下文的 `python scripts/...` 示例需在技能根目录运行，或改为脚本和输入输出的绝对路径；输出文件放用户任务目录。网页检索、文件读取和代码执行使用宿主当前可用的等价工具，不要求特定工具名称。Word需要Python 3.10+及 `requirements.txt`；无执行或字体条件时如实说明能力边界。

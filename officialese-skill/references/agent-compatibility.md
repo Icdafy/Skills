@@ -23,6 +23,7 @@ Codex 和 Claude Code 的目录与调用说明于 2026-10-05 核对官方文档�
 | **ChatGPT** 桌面版 | 目录安装 `--agent chatgpt`（与 Codex 共用 `~/.agents/skills/`），侧栏“技能”中确认 | 输入 `@` 选择技能，或按描述自动匹配 | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
 | **ChatGPT** Business / Enterprise / Edu | 技能 → 创建 → 从电脑上传，选择 ZIP；等待安全扫描，标记“需审核”时按提示复核 | `@` 选择技能 | [Skills in ChatGPT](https://help.openai.com/en/articles/20001066-skills-in-chatgpt) |
 | **Codex** CLI / IDE 扩展 | `--agent codex`（`~/.agents/skills/`，项目级 `.agents/skills/`）；或在 Codex 中运行 `$skill-installer install https://github.com/Icdafy/Skills/tree/main/<name>`。仍读取 `$CODEX_HOME/skills` 的旧版用 `--agent codex-legacy` | `$<name>` 或 `/skills` | [Build skills](https://learn.chatgpt.com/docs/build-skills) |
+| **Google Antigravity** App / CLI / IDE | `--agent antigravity`，全局 `~/.gemini/config/skills/`，项目 `.agents/skills/` | App 或 CLI `/<name>`，也可按任务自然语言匹配 | [官方技能文档](https://antigravity.google/docs/skills)、[本技能执行说明](antigravity.md) |
 | **Kimi Work**（Kimi 电脑客户端 Work 模式） | 侧栏“技能”→ 上传本地技能，导入完整 ZIP | 输入框输入 `/` 选择技能，或直接点名 | [Kimi Work](https://www.kimi.com/help/kimi-work/overview) |
 | **Kimi Code CLI** | `--agent kimi-code`（`$KIMI_CODE_HOME/skills/`，默认 `~/.kimi-code/skills/`；也读取 `~/.agents/skills/`） | `/skill:<name>` | [Kimi Code Skills](https://www.kimi.com/code/docs/kimi-code-cli/customization/skills.html) |
 | **豆包** 电脑版（工作模式） | 左侧“插件·技能·伙伴”→“技能”→ 右上角“+ 添加”→“上传技能”，拖入 ZIP 或解压后的技能文件夹；在“我安装的”中确认 | “新工作任务”对话框输入 `/` 或 `@` 选择技能，或直接描述需求自动匹配 | [在豆包工作中使用技能](https://www.doubao.com/work/docs/zh-cn/articles/081010973544-skills) |
@@ -67,7 +68,7 @@ python scripts/skill_portability.py install --skills-dir "/path/to/skills" --app
 python scripts/skill_portability.py package --output-dir "../skill-zips"
 ```
 
-`--agent` 可选：`claude-code`、`codex`、`chatgpt`、`codex-legacy`、`kimi-code`、`qoder-cli`、`qoder-cn`、`qoderwork`、`trae`、`trae-cn`、`workbuddy`、`codebuddy`、`dsh`、`qwenwork`、`zcode`、`openclaw`、`agents`。设置了 `CLAUDE_CONFIG_DIR`、`KIMI_CODE_HOME`、`CODEX_HOME`（仅 `codex-legacy`）或 `OPENCLAW_STATE_DIR` 时，安装到对应目录下的 `skills/`。Claude 网页版、ChatGPT 团队版、豆包、Kimi Work、Qoder 桌面版等界面型客户端不虚构配置目录，一律上传 ZIP。
+`--agent` 可选：`claude-code`、`codex`、`antigravity`、`chatgpt`、`codex-legacy`、`kimi-code`、`qoder-cli`、`qoder-cn`、`qoderwork`、`trae`、`trae-cn`、`workbuddy`、`codebuddy`、`dsh`、`qwenwork`、`zcode`、`openclaw`、`agents`。设置了 `CLAUDE_CONFIG_DIR`、`KIMI_CODE_HOME`、`CODEX_HOME`（仅 `codex-legacy`）或 `OPENCLAW_STATE_DIR` 时，安装到对应目录下的 `skills/`。Claude 网页版、ChatGPT 团队版、豆包、Kimi Work、Qoder 桌面版等界面型客户端不虚构配置目录，一律上传 ZIP。
 
 覆盖已安装版本前，安装器先把旧版复制到技能根目录之外的 `skill-backups/`，不删除任何文件。旧目录中有新版没有的文件时默认停止，先对照备份确认；确认后加 `--replace`，旧目录整体移入 `skill-backups/` 后写入新版。`meeting-minutes-pro` 的项目术语表与机构禁词（`glossary/` 下除 `README.md`、`industry/` 以外的文件）属于用户数据：不打包、不视为多余文件，`--replace` 时自动迁入新版目录。
 
@@ -79,7 +80,7 @@ python scripts/skill_portability.py package --output-dir "../skill-zips"
 
 | 能力 | 适用客户端 | 七个技能的可用范围 |
 |---|---|---|
-| 本机执行（读写本地文件、运行 Python） | Claude Code、Codex、ChatGPT 桌面版、Kimi Work / Kimi Code、豆包电脑版工作模式、WorkBuddy、TRAE、Qoder、DeepSeek Harness、千问办公电脑版、ZCode、AutoClaw | 全部功能，含 `meeting-minutes-pro` 本地音视频转录 |
+| 本机执行（读写本地文件、运行 Python） | Claude Code、Codex、Google Antigravity 本地会话、ChatGPT 桌面版、Kimi Work / Kimi Code、豆包电脑版工作模式、WorkBuddy、TRAE、Qoder、DeepSeek Harness、千问办公电脑版、ZCode、AutoClaw | 全部功能，含 `meeting-minutes-pro` 本地音视频转录 |
 | 云端代码沙箱 | Claude 网页 / 桌面 Chat、ChatGPT 团队版 | 写作与 Word 生成可用；`meeting-minutes-pro` 仅能基于已有转录稿整理纪要，不能下载 ASR 模型转录本地录音 |
 | 无代码执行 | 仅对话、不运行脚本的入口 | 可交付文本，须说明 Word 排版未生成或未验证，不得宣称已生成合规 Word |
 

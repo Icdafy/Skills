@@ -90,6 +90,8 @@ description: 起草、改写、润色并排版中国国企公文及Word文件：
 
 ## 跨客户端使用
 
+在 Google Antigravity 中，调用配套脚本或生成 Word 前读取 [Antigravity 执行说明](references/antigravity.md)。
+
 本技能采用标准 `SKILL.md` 入口（仅 `name` 和 `description` 两个字段），整包目录或ZIP可在 Claude、ChatGPT、Codex、Qoder、TRAE、WorkBuddy、DeepSeek Harness、千问办公、豆包、Kimi、智谱等支持技能的客户端使用，通过自然语言点名或在技能列表中选择调用。安装入口、目录位置、调用方式和验收方法见 `references/agent-compatibility.md`；`scripts/skill_portability.py` 用于检查包完整性、做Word烟测、安装到客户端技能目录和生成上传用ZIP。必须安装完整目录，不能只复制本文件。
 
 联网检索、读取文件、执行代码使用宿主提供的相应工具；宿主已有通用的Word、PDF读取技能时由其负责读取材料，本技能负责写作规则和指定生成器。

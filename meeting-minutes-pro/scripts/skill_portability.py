@@ -126,6 +126,8 @@ PROFILES = {
 # project-level folder (None = no project scope) and the environment variable
 # that relocates the user-level configuration root.
 AGENTS = {
+    'antigravity': ('.gemini/config/skills', '.agents/skills', None,
+                    'Google Antigravity App / CLI / IDE'),
     'claude-code': ('.claude/skills', '.claude/skills', 'CLAUDE_CONFIG_DIR',
                     'Claude Code CLI / 桌面版 Code / IDE 扩展'),
     'codex': ('.agents/skills', '.agents/skills', None,
@@ -150,6 +152,7 @@ AGENTS = {
 }
 # Configuration folders whose presence suggests the client is installed (--detect).
 DETECT = {
+    'antigravity': '.gemini/antigravity',
     'claude-code': '.claude', 'codex': '.codex', 'kimi-code': '.kimi-code', 'qoder-cli': '.qoder',
     'qoder-cn': '.lingma', 'qoderwork': '.qoderwork', 'trae': '.trae', 'trae-cn': '.trae-cn',
     'workbuddy': '.workbuddy', 'codebuddy': '.codebuddy', 'zcode': '.zcode', 'openclaw': '.openclaw',

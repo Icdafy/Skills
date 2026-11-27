@@ -1,6 +1,8 @@
 # 国企公文写作与排版（officialese-skill）
 
-当前分发版本：**1.2.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.3.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+
+Antigravity 安装与调用见 [执行说明](references/antigravity.md)。
 
 ## 用途与边界
 
@@ -20,7 +22,7 @@ Python 3.10+；安装和完整性检查使用标准库，DOCX 生成需 `require
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.2.0/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/officialese-skill%2Fv1.3.0/officialese-skill.zip) 下载，解压后进入 `officialese-skill`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/officialese-skill"

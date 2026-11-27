@@ -23,6 +23,8 @@ description: 撰写国企投委会、董事会、专题会议题（DOCX）：股
 
 ## 调用与跨 Agent 运行
 
+在 Google Antigravity 中，调用配套脚本或生成 Word 前读取 [Antigravity 执行说明](references/antigravity.md)。
+
 本技能采用标准 `SKILL.md`（`name`、`description`）入口，可在 ChatGPT、Claude、Codex、Qoder、TRAE、WorkBuddy、DeepSeek Harness、千问办公、豆包、Kimi、智谱 ZCode 等客户端通过自然语言匹配或在技能列表中选择。安装、迁移或触发异常时读取 [跨 Agent 安装与调用](references/agent-compatibility.md)；`scripts/skill_portability.py` 提供完整性检查、Word 冒烟测试、目录安装和打包。
 
 执行时以当前已加载 `SKILL.md` 所在目录为技能根目录，`scripts/`、`references/`、`assets/` 都相对此目录解析；调用脚本时使用绝对路径，输出文件放用户任务目录。文件读取、检索和代码执行使用宿主当前可用的等价工具。生成 Word 需要 Python 3.10+ 和 `requirements.txt`；宿主不能执行代码或没有字体时，按本文件的规则交付议题文本，并如实说明 Word 未生成或未验证。本文件已写入全部硬性规则，宿主读不到 `references/` 时仍按本文件成文。

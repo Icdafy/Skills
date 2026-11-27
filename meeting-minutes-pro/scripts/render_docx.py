@@ -18,6 +18,7 @@ import shutil
 import subprocess
 import sys
 from run_state import atomic_json, file_hash
+from word_vbs_export import render_word_vbs
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -62,9 +63,10 @@ def render_with_word(docx: Path, pdf: Path) -> bool:
     script = f"""
 $ErrorActionPreference = 'Stop'
 $word = New-Object -ComObject Word.Application
-$word.Visible = $false
-$word.DisplayAlerts = 0
 try {{
+  $word.Visible = $false
+  $word.DisplayAlerts = 0
+  $word.AutomationSecurity = 3
   $doc = $word.Documents.Open('{docx_literal}', $false, $true)
   $doc.SaveAs2('{pdf_literal}', 17)
   $doc.Close($false)
@@ -76,13 +78,20 @@ try {{
         handle.write(script)
         script_path = handle.name
     try:
-        subprocess.run(
-            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", script_path],
-            capture_output=True, text=True, check=False, timeout=180,
-        )
+        try:
+            subprocess.run(
+                ["powershell", "-NoProfile", "-NonInteractive", "-ExecutionPolicy", "Bypass",
+                 "-File", script_path],
+                capture_output=True, check=False, timeout=180,
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            pass
     finally:
         Path(script_path).unlink(missing_ok=True)
-    return pdf.is_file()
+    if pdf.is_file() and pdf.stat().st_size > 0:
+        return True
+    success, _ = render_word_vbs(docx, pdf, timeout=180)
+    return success
 
 
 def find_soffice() -> str | None:

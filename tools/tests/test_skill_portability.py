@@ -144,13 +144,18 @@ class SkillPortabilityTests(unittest.TestCase):
                         self.assertEqual(portable.agent_root(agent, 'project', str(base)), base / project)
                 self.assertEqual(portable.agent_root('codex'), base / '.agents/skills')
                 self.assertEqual(portable.agent_root('trae-cn', 'project', str(base)), base / '.trae/skills')
+                self.assertEqual(portable.agent_root('antigravity'), base / '.gemini/config/skills')
+                self.assertEqual(portable.agent_root('antigravity', 'project', str(base)),
+                                 base / '.agents/skills')
                 # codex, chatgpt and agents share one folder: install it once.
                 roots = portable.install_roots(install_args(agent=['codex', 'chatgpt', 'agents', 'claude-code']))
                 self.assertEqual(roots, [base / '.agents/skills', base / '.claude/skills'])
                 (base / '.workbuddy').mkdir()
                 (base / '.trae-cn').mkdir()
+                (base / '.gemini/antigravity').mkdir(parents=True)
                 self.assertEqual(portable.install_roots(install_args(detect=True)),
-                                 [base / '.trae-cn/skills', base / '.workbuddy/skills'])
+                                 [base / '.gemini/config/skills', base / '.trae-cn/skills',
+                                  base / '.workbuddy/skills'])
             for agent, env in (('kimi-code', 'KIMI_CODE_HOME'), ('claude-code', 'CLAUDE_CONFIG_DIR'),
                                ('codex-legacy', 'CODEX_HOME'), ('openclaw', 'OPENCLAW_STATE_DIR')):
                 with patch.dict(os.environ, {**CLEAN_ENV, env: str(base / 'custom')}):

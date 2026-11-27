@@ -1,6 +1,8 @@
 # 国企股权投资投后报告（soe-post-investment-report）
 
-当前分发版本：**1.6.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+当前分发版本：**1.7.0**；变更见 [CHANGELOG.md](CHANGELOG.md)。
+
+Antigravity 安装与调用见 [执行说明](references/antigravity.md)。
 
 ## 用途与边界
 
@@ -20,7 +22,7 @@ Python 3.10+；安装和资料盘点使用标准库，DOCX 生成需 `requiremen
 
 ## 完整安装例子
 
-从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.6.0/soe-post-investment-report.zip) 下载，解压后进入 `soe-post-investment-report`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
+从 [单技能 ZIP](https://github.com/Icdafy/Skills/releases/download/soe-post-investment-report%2Fv1.7.0/soe-post-investment-report.zip) 下载，解压后进入 `soe-post-investment-report`；不要只复制 SKILL.md。从 Release 下载本页版本的 ZIP，源码安装使用 main；核对本页版本与[VERSION](VERSION)。
 
 ```powershell
 cd "C:/下载/技能包/soe-post-investment-report"

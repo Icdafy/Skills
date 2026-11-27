@@ -1,5 +1,10 @@
 # 变更记录
 
+## 2.2.0（2026-11-27）
+
+- Antigravity App、CLI 和 IDE 支持用户级及项目级安装。安装器新增 `--agent antigravity`，App 和 CLI 可用斜杠指令点名调用。
+- 增补 Antigravity 执行说明，包含按实际加载路径读取资源、Windows UTF-8、绝对路径调用及结果复核。
+
 ## 2.1.1（2026-11-12）
 
 - 仓库整理：删除已停用的 `assets/content_skeleton.json`（阶段骨架统一由 `scripts/stage_template.py init` 生成），`SKILL.md` 同步去掉该文件的说明；删除 README 末尾与 `SKILL.md`、本变更记录重复的“原业务说明与历史记录”附录。

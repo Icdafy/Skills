@@ -15,6 +15,8 @@ description: 将本地会议音视频经 FunASR 与 Qwen3-ASR 转录、独立复
 
 ## 开始执行
 
+在 Google Antigravity 中，先读 [Antigravity 执行说明](references/antigravity.md) 以定位 Python 和本地模型缓存，再推进下列阶段。
+
 1. 确定输入和目标。有媒体按 audio 路径；仅有用户指定转录稿或笔记分别按 transcript / notes 路径，不补称音频回听。用户只要转录时在转录与适用复核完成后结束，尊重指定输出格式。
 2. 以本次加载的 `SKILL.md` 目录为 `<skill-dir>`，脚本、输入和输出使用绝对路径。每场会议独立放入以录音文件名命名的任务目录；中间文件不得写进技能公共目录。使用运行环境检查返回的 Python 路径，避免混用系统解释器。
 3. 从对话和已提供材料提取基本信息；一次性询问确实缺失的时间、地点、对象、人员、项目及热词，并询问是否有辅助文件。已有信息不重复问。等待期间先做本地环境/媒体检查、术语准备和不依赖这些答案的转录；缺少元信息不阻塞技术处理，未知字段最终省略。首次答复后直接继续，不重复索取整条流程的确认。详细采集与转录操作见 [acquisition-and-transcription.md](references/acquisition-and-transcription.md)。

@@ -23,6 +23,9 @@ Claude Code 也可运行 `/plugin marketplace add Icdafy/Skills`，再运行 `/p
 
 安装后新建会话，完成显式调用、自然语言调用和相邻技能反例检查，观察实际加载路径。复制目录或脚本通过不能证明模型已经调用。Codex 的路径与 `$<name>` 见 [官方说明](https://learn.chatgpt.com/docs/build-skills)，Claude Code 的路径与 `/<name>` 见 [官方说明](https://code.claude.com/docs/en/skills)；其他客户端入口及验证程度见各技能 `references/agent-compatibility.md`。
 
+
+Antigravity App、CLI 和 IDE 可用 `--agent antigravity` 安装。用户目录为 `~/.gemini/config/skills/`，项目目录为 `.agents/skills/`。在 App 或 CLI 用 `/<英文名>` 点名调用，由技能目录中的 `references/antigravity.md` 引导本地执行。[官方技能文档](https://antigravity.google/docs/skills)
+
 ## 按技能独立维护
 
 - 用户点名一个技能，只升级该技能；点名多个，只升级指定集合。只有明确要求“所有技能”或“全库升级”，才升级全部技能。整理、修复或优化单个技能不扩大升级范围。
@@ -70,6 +73,10 @@ python -m unittest discover -s tools/library_tests
 ```
 
 Windows 中文输出环境可设置测试进程 `PYTHONIOENCODING=utf-8` 和 `PYTHONUTF8=1`。日志、模型调用输出、安装试验和渲染缓存保存在本地 `work/validation/`，不提交。本页记录结论、日期、受测范围和证据入口；脚本检查不代替客户端调用、实际 ASR 或 Word 逐页验收。
+
+### Antigravity 适配（2026-11-27）
+
+七项技能增加 Antigravity 用户级及项目级安装目标、斜杠调用示例和执行说明。Windows 中文及含空格路径下，七项通过包完整性检查、DOCX 样例生成与 Microsoft Word PDF 渲染。会议纪要的合成音频完成 FunASR 主转录及 Qwen3-ASR 全量复核，已核对的文本样例通过纪要生成、版式检查和正式验收。验收使用合成样例与本地脚本，Antigravity 模型会话中的成文质量需另行实测。
 
 ### soe-post-investment-report 1.6.0 验证（2026-11-13）
 

@@ -10,6 +10,7 @@ import json
 import tempfile
 import sys
 import unittest
+import wave
 from pathlib import Path
 
 
@@ -19,6 +20,23 @@ TRANSCRIBE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader is not None
 sys.modules[SPEC.name] = TRANSCRIBE
 SPEC.loader.exec_module(TRANSCRIBE)
+
+
+@unittest.skipUnless(importlib.util.find_spec("imageio_ffmpeg"), "requires imageio-ffmpeg")
+class MediaPathTests(unittest.TestCase):
+    def test_probe_and_convert_media_with_unicode_path(self) -> None:
+        with tempfile.TemporaryDirectory() as raw:
+            folder = Path(raw) / "试转 数据"
+            folder.mkdir()
+            source = folder / "会议 录音.wav"
+            with wave.open(str(source), "wb") as handle:
+                handle.setparams((1, 2, 16000, 0, "NONE", "not compressed"))
+                handle.writeframes(b"\0" * 32000)
+            self.assertEqual(TRANSCRIBE.media_duration(source), 1.0)
+            converted = folder / "转录 输入.wav"
+            TRANSCRIBE.prepare_wav(source, converted)
+            self.assertEqual(TRANSCRIBE.wav_duration(converted), 1.0)
+            self.assertTrue(TRANSCRIBE.detect_silences(converted))
 
 
 class PlanChunksTests(unittest.TestCase):

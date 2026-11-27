@@ -167,7 +167,7 @@ def prepare_wav(
     if filters:
         cmd += ["-af", ",".join(filters)]
     cmd += ["-vn", "-ac", "1", "-ar", "16000", "-c:a", "pcm_s16le", str(target)]
-    proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    proc = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", check=False)
     if proc.returncode != 0:
         raise RuntimeError(f"FFmpeg conversion failed: {proc.stderr.strip()}")
 
@@ -186,7 +186,7 @@ def media_duration(path: Path) -> float | None:
     try:
         proc = subprocess.run(
             [ffmpeg_exe(), "-nostdin", "-hide_banner", "-i", str(path)],
-            capture_output=True, text=True, check=False,
+            capture_output=True, encoding="utf-8", errors="replace", check=False,
         )
     except Exception:
         return None
@@ -203,7 +203,7 @@ def detect_silences(wav_path: Path) -> list[tuple[float, float]]:
         ffmpeg_exe(), "-nostdin", "-hide_banner", "-i", str(wav_path),
         "-af", "silencedetect=noise=-35dB:d=0.4", "-f", "null", "-",
     ]
-    proc = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    proc = subprocess.run(cmd, capture_output=True, encoding="utf-8", errors="replace", check=False)
     silences: list[tuple[float, float]] = []
     start: float | None = None
     for line in proc.stderr.splitlines():
